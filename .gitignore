@@ -28,6 +28,7 @@ $RECYCLE.BIN/
 # Icon must ends with two \r.
 Icon
 
+*.dll
 
 # Thumbnails
 ._*
