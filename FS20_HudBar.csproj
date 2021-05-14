@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>5</ApplicationRevision>
-    <ApplicationVersion>0.9.0.5</ApplicationVersion>
+    <ApplicationRevision>6</ApplicationRevision>
+    <ApplicationVersion>0.10.0.6</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -140,6 +140,12 @@
     <Compile Include="GUI\V_ICAO.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GUI\V_PressureHPA.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_PressureInHg.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\V_RPM.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -192,7 +198,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <None Include="SimConnect.cfg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -200,8 +206,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HudBar.ico" />
+    <Content Include="Microsoft.FlightSimulator.SimConnect.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="SimConnect.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>

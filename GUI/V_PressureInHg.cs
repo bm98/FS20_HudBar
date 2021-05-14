@@ -7,17 +7,17 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
-  class V_Temp : V_Base
+  class V_PressureInHg : V_Base
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Temp( Label proto, bool showUnit )
+    public V_PressureInHg( Label proto, bool showUnit )
     : base( proto, showUnit )
     {
-      m_unit = "°C";
-      m_default = "_____";
+      m_unit = "InHg";
+      m_default = "__.__";
       Text = UnitString( m_default );
     }
 
@@ -30,7 +30,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:###0}" ); // signed only 4 digits
+          this.Text = UnitString( $"{value,5:#0.00}" ); // positive 2.2 digits
         }
       }
     }

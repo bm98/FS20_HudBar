@@ -19,6 +19,10 @@ namespace FS20_HudBar
     RTrim, // Rudder Trim +-N%
     ATrim, // Aileron Trim +-N%
 
+    OAT,   // Outside AirTemp °C
+    BARO_HPA,   // Altimeter Setting HPA
+    BARO_InHg,  // Altimeter Setting InHg
+
     Gear, // Gear Up/Down
     Brakes, // Brakes On Off
     Flaps, // Flaps N level 
@@ -81,6 +85,8 @@ namespace FS20_HudBar
     public Color c_Gps = Color.Fuchsia;     // GPS (magenta)
     public Color c_Set = Color.Cyan;        // Set Values (cyan)
     public Color c_RA = Color.Orange;       // Radio Alt
+    public Color c_SubZero = Color.DeepSkyBlue;       // Temp sub zero
+
     // Background
     public Color c_ActBG = Color.FromArgb(00,00,75); // Active Background
 
@@ -105,10 +111,11 @@ namespace FS20_HudBar
     private Dictionary<GItem,string> m_cfgNames = new Dictionary<GItem, string>(){
       {GItem.Ad,"MSFS Status" },
       {GItem.ETrim,"Elevator-Trim" },{GItem.RTrim, "Rudder-Trim" }, {GItem.ATrim,"Aileron-Trim" },
+      {GItem.OAT,"Outside Air Temp °C" }, {GItem.BARO_HPA,"Alt.Setting HPA" }, {GItem.BARO_InHg,"Alt.Setting InHg" },
       {GItem.Gear,"Gear" }, {GItem.Brakes,"Brakes" }, {GItem.Flaps,"Flaps" },
       {GItem.E1_TORQP,"Eng.1 Torque %" }, {GItem.E2_TORQP,"Eng.2 Torque %" }, {GItem.E1_TORQ,"Eng.1 Torque ft/lb" }, {GItem.E2_TORQ,"Eng.2 Torque ft/lb" },
       {GItem.P1_RPM,"Prop 1 RPM" }, {GItem.P2_RPM,"Prop 2 RPM" }, {GItem.E1_RPM,"Eng.1 RPM" }, {GItem.E2_RPM,"Eng.2 RPM" },
-      {GItem.E1_N1,"Eng.1 N1 %" }, {GItem.E2_N1,"Eng.2 N1 %" }, 
+      {GItem.E1_N1,"Eng.1 N1 %" }, {GItem.E2_N1,"Eng.2 N1 %" },
       {GItem.E1_ITT,"Eng.1 ITT °C" }, {GItem.E2_ITT,"Eng.2 ITT °C" }, {GItem.E1_EGT,"Eng.1 EGT °C" },{GItem.E2_EGT,"Eng.2 EGT °C" },
       {GItem.E1_FFlow,"Eng.1 Fuel Flow pph" },{GItem.E2_FFlow,"Eng.2 Fuel Flow pph" },
       {GItem.GPS_PWYP,"Prev WYP" }, {GItem.GPS_NWYP,"Next WYP" },
@@ -126,10 +133,11 @@ namespace FS20_HudBar
     private Dictionary<GItem,string> m_barNames = new Dictionary<GItem, string>(){
       {GItem.Ad,"MSFS" },
       {GItem.ETrim,"ETrim" },{GItem.RTrim, "RTrim" }, {GItem.ATrim,"ATrim" },
+      {GItem.OAT,"OAT" }, {GItem.BARO_HPA,"BARO" }, {GItem.BARO_InHg,"BARO" },
       {GItem.Gear,"Gear" }, {GItem.Brakes,"Brakes" }, {GItem.Flaps,"Flaps" },
       {GItem.E1_TORQP,"TORQ" }, {GItem.E2_TORQP,"" }, {GItem.E1_TORQ,"TORQ" }, {GItem.E2_TORQ,"" },
       {GItem.P1_RPM,"PRPM" }, {GItem.P2_RPM,"" }, {GItem.E1_RPM,"ERPM" }, {GItem.E2_RPM,"" },
-      {GItem.E1_N1,"N1%" }, {GItem.E2_N1,"" }, 
+      {GItem.E1_N1,"N1%" }, {GItem.E2_N1,"" },
       {GItem.E1_ITT,"ITT" }, {GItem.E2_ITT,"" }, {GItem.E1_EGT,"EGT" },{GItem.E2_EGT,"" },
       {GItem.E1_FFlow,"FFLOW" },{GItem.E2_FFlow,"" },// omit the label for the second one
       {GItem.GPS_PWYP,"≡GPS≡" }, {GItem.GPS_NWYP,"---" },
@@ -157,7 +165,7 @@ namespace FS20_HudBar
     /// <param name="labelProto"></param>
     /// <param name="valueProto"></param>
     /// <param name="signProto"></param>
-    public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto, 
+    public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
                     bool showUnits, bool opaque, FontSize fontSize )
     {
       // just save them in the HUD mainly for config purpose
@@ -207,6 +215,19 @@ namespace FS20_HudBar
       item = GItem.ATrim;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
       v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+
+      // OAT, BARO
+      item = GItem.OAT;
+      l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
+      v = new V_Temp( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+
+      item = GItem.BARO_HPA;
+      l = new B_ICAO( item, lblProto ) { Name = $"L_{item}", Text = BarName( item ), BackColor = c_ActBG }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
+      v = new V_PressureHPA( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+
+      item = GItem.BARO_InHg;
+      l = new B_ICAO( item, lblProto ) { Name = $"L_{item}", Text = BarName( item ), BackColor = c_ActBG }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
+      v = new V_PressureInHg( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       // Gear, Brakes, Flaps
       item = GItem.Gear;

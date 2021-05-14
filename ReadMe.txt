@@ -1,9 +1,9 @@
-FS20_HudBar V 0.9 - Build 5 BETA
-(c) M. Burri - 10-May-2021
+FS20_HudBar V 0.10 - Build 6 BETA
+(c) M. Burri - 15-May-2021
 
 Contains files:
 
-FS20_HudBar.exe               The program (V0.9-B5)
+FS20_HudBar.exe               The program (V0.10-B6)
 
 - All libraries below MUST be in the same folder as the Exe file
 FSimClientIF.dll            Generic FSim Client interface definition
@@ -31,6 +31,9 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.10-B6
+- Added OAT, BARO fields
+
 V 0.9-B5
 - initial upload
 

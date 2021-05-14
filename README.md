@@ -1,4 +1,4 @@
-# MSFS HudBar V 0.9.0.5
+# MSFS HudBar V 0.10.0.6
 
 ### Display essential Information as Bar at the bottom of the primary screen   
 
@@ -44,6 +44,7 @@ Also note that the bar is shown on the ++PRIMARY monitor++ at the bottom of the 
 
 * Autopilot commands that accept mouse clicks to toggle have a dark blue background and show a hand while hovering the active area  
 * AP,HDG,ALT,VS,FLC,NAV and APR can be directly toggled
+* BARO set to current (keyboard B button)
 
 * ETrim - Elevator Trim: clicking the ETrim label will activate the Auto Elevator Trim module
 for about 20 seconds. 

@@ -170,11 +170,6 @@ namespace FS20_HudBar
 
     #region GUI
 
-    private Color c_AP = Color.LimeGreen;
-    private Color c_Gps = Color.Fuchsia;
-    private Color c_Set = Color.Cyan;
-    private Color c_RA = Color.Orange;
-
     private HudBar HUD = null;
     private CProfile PROFILE = null;
 
@@ -266,6 +261,12 @@ namespace FS20_HudBar
           SC.SimConnectClient.Instance.AutoETrimModule.Enabled = !SC.SimConnectClient.Instance.AutoETrimModule.Enabled; // toggles
           m_aETrimTimer = c_aETrimTime;
           break;
+        case GItem.BARO_HPA:
+          SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting = true;
+          break;
+        case GItem.BARO_InHg:
+          SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting=true;
+          break;
         default: break; // nothing 
       }
     }
@@ -281,10 +282,16 @@ namespace FS20_HudBar
       // we do this one by one..
 
       // TRIMS
-      HUD.LabelControl( GItem.ETrim ).BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? c_AP : this.BackColor;
+      HUD.LabelControl( GItem.ETrim ).BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? HUD.c_AP : this.BackColor;
       HUD.Value( GItem.ETrim ).Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
       HUD.Value( GItem.RTrim ).Value = SC.SimConnectClient.Instance.AircraftModule.RudderTrim_prct;
       HUD.Value( GItem.ATrim ).Value = SC.SimConnectClient.Instance.AircraftModule.AileronTrim_prct;
+      // OAT, BARO
+      HUD.Value( GItem.OAT ).Value = SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC;
+      HUD.ValueControl( GItem.OAT ).ForeColor = ( SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC < 0 ) ? HUD.c_SubZero : HUD.c_Info;
+
+      HUD.Value( GItem.BARO_HPA ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_inHg;
+      HUD.Value( GItem.BARO_InHg ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_mbar;
 
       // Gear, Brakes, Flaps
       if ( SC.SimConnectClient.Instance.AircraftModule.IsGearRetractable ) {
