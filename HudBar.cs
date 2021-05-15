@@ -15,6 +15,8 @@ namespace FS20_HudBar
   internal enum GItem
   {
     Ad = 0, // MSFS connection status...
+    SimRate, // simulation rate
+
     ETrim, // Elevator Trim +-N%
     RTrim, // Rudder Trim +-N%
     ATrim, // Aileron Trim +-N%
@@ -54,6 +56,9 @@ namespace FS20_HudBar
     GPS_TRK,  // GPS Track 000°
     GPS_GS,  // GPS Groundspeed 000kt
 
+    EST_VS,   // Estimate VS to reach WYP@Altitude
+    EST_ALT,  // Estimate ALT@WYP
+
     HDG,  // Heading Mag 000°
     ALT,  // Altitude 00000 ft
     RA,   // Radio Altitude 000 ft 
@@ -86,9 +91,12 @@ namespace FS20_HudBar
     public Color c_Set = Color.Cyan;        // Set Values (cyan)
     public Color c_RA = Color.Orange;       // Radio Alt
     public Color c_SubZero = Color.DeepSkyBlue;       // Temp sub zero
+    public Color c_Est = Color.Plum;        // Estimates 
+    public Color c_SRATE = Color.Goldenrod;  // SimRate >1
 
     // Background
     public Color c_ActBG = Color.FromArgb(00,00,75); // Active Background
+    public Color c_BG = Color.Black;
 
     /// <summary>
     /// Show Units if true
@@ -110,17 +118,24 @@ namespace FS20_HudBar
     // Configuration label names to match the enum above
     private Dictionary<GItem,string> m_cfgNames = new Dictionary<GItem, string>(){
       {GItem.Ad,"MSFS Status" },
+      {GItem.SimRate,"Simulation Rate" },
+
       {GItem.ETrim,"Elevator-Trim" },{GItem.RTrim, "Rudder-Trim" }, {GItem.ATrim,"Aileron-Trim" },
       {GItem.OAT,"Outside Air Temp °C" }, {GItem.BARO_HPA,"Alt.Setting HPA" }, {GItem.BARO_InHg,"Alt.Setting InHg" },
       {GItem.Gear,"Gear" }, {GItem.Brakes,"Brakes" }, {GItem.Flaps,"Flaps" },
+
       {GItem.E1_TORQP,"Eng.1 Torque %" }, {GItem.E2_TORQP,"Eng.2 Torque %" }, {GItem.E1_TORQ,"Eng.1 Torque ft/lb" }, {GItem.E2_TORQ,"Eng.2 Torque ft/lb" },
       {GItem.P1_RPM,"Prop 1 RPM" }, {GItem.P2_RPM,"Prop 2 RPM" }, {GItem.E1_RPM,"Eng.1 RPM" }, {GItem.E2_RPM,"Eng.2 RPM" },
       {GItem.E1_N1,"Eng.1 N1 %" }, {GItem.E2_N1,"Eng.2 N1 %" },
       {GItem.E1_ITT,"Eng.1 ITT °C" }, {GItem.E2_ITT,"Eng.2 ITT °C" }, {GItem.E1_EGT,"Eng.1 EGT °C" },{GItem.E2_EGT,"Eng.2 EGT °C" },
       {GItem.E1_FFlow,"Eng.1 Fuel Flow pph" },{GItem.E2_FFlow,"Eng.2 Fuel Flow pph" },
+
       {GItem.GPS_PWYP,"Prev WYP" }, {GItem.GPS_NWYP,"Next WYP" },
       {GItem.GPS_DIST,"WYP Distance" }, {GItem.GPS_ETE,"WYP ETE" }, {GItem.GPS_TRK,"GPS Track" }, {GItem.GPS_GS,"GPS Groundspeed" },
+      {GItem.EST_VS,"Estimate VS to WYP" }, {GItem.EST_ALT,"Estimate ALT @ WYP" },
+
       {GItem.HDG,"HDG" }, {GItem.ALT,"ALT" }, {GItem.RA,"RA" },{GItem.IAS,"IAS" }, {GItem.VS,"VS" },
+
       {GItem.AP,"Autopilot Master" },
       {GItem.AP_HDG,"HDG Mode" },{GItem.AP_HDGset, "HDG Set" },
       {GItem.AP_ALT,"ALT Mode" },{GItem.AP_ALTset, "ALT Set" },
@@ -132,17 +147,24 @@ namespace FS20_HudBar
     // Bar label names to match the enum above
     private Dictionary<GItem,string> m_barNames = new Dictionary<GItem, string>(){
       {GItem.Ad,"MSFS" },
+      {GItem.SimRate,"SR" },
+
       {GItem.ETrim,"ETrim" },{GItem.RTrim, "RTrim" }, {GItem.ATrim,"ATrim" },
       {GItem.OAT,"OAT" }, {GItem.BARO_HPA,"BARO" }, {GItem.BARO_InHg,"BARO" },
       {GItem.Gear,"Gear" }, {GItem.Brakes,"Brakes" }, {GItem.Flaps,"Flaps" },
+
       {GItem.E1_TORQP,"TORQ" }, {GItem.E2_TORQP,"" }, {GItem.E1_TORQ,"TORQ" }, {GItem.E2_TORQ,"" },
       {GItem.P1_RPM,"PRPM" }, {GItem.P2_RPM,"" }, {GItem.E1_RPM,"ERPM" }, {GItem.E2_RPM,"" },
       {GItem.E1_N1,"N1%" }, {GItem.E2_N1,"" },
       {GItem.E1_ITT,"ITT" }, {GItem.E2_ITT,"" }, {GItem.E1_EGT,"EGT" },{GItem.E2_EGT,"" },
       {GItem.E1_FFlow,"FFLOW" },{GItem.E2_FFlow,"" },// omit the label for the second one
+
       {GItem.GPS_PWYP,"≡GPS≡" }, {GItem.GPS_NWYP,"---" },
       {GItem.GPS_DIST,"DIST" }, {GItem.GPS_ETE,"ETE" }, {GItem.GPS_TRK,"TRK" }, {GItem.GPS_GS,"GS" },
+      {GItem.EST_VS,"E.VS" }, {GItem.EST_ALT,"E.ALT" },
+
       {GItem.HDG,"HDG" }, {GItem.ALT,"ALT" }, {GItem.RA,"RA" },{GItem.IAS,"IAS" }, {GItem.VS,"VS" },
+
       {GItem.AP,"≡AP≡" },
       {GItem.AP_HDG,"HDG" },{GItem.AP_HDGset, "" },
       {GItem.AP_ALT,"ALT" },{GItem.AP_ALTset, "" },
@@ -186,8 +208,8 @@ namespace FS20_HudBar
       signProto.Font = FONTS.SignFont;
 
       // The Value Item Background - used when assessing and debugging only
-      Color backCol = lblProto.BackColor;
-      // backCol = Color.MidnightBlue; // Debug color
+      c_BG = lblProto.BackColor;
+      // c_BG = Color.MidnightBlue; // Debug color
 
       // reload all
       m_lblItems.Clear( );
@@ -202,148 +224,161 @@ namespace FS20_HudBar
       item = GItem.Ad;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
       v = new V_ICAO( lblProto ) { Name = $"V_{item}", Text = "" }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      // Sim Rate
+      item = GItem.SimRate;
+      l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
+      v = new V_SRate( lblProto ) { Name = $"V_{item}", Text = "" }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+
       // TRIMS - we use value2Proto to get a smaller font for the numbers
       item = GItem.ETrim;
       // the ETrim label gets a button to activate the AutoTrim Module
       l = new B_ICAO( item, lblProto ) { Name = $"L_{item}", Text = BarName( item ), BackColor = c_ActBG }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.RTrim;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.ATrim;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       // OAT, BARO
       item = GItem.OAT;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Temp( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Temp( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.BARO_HPA;
       l = new B_ICAO( item, lblProto ) { Name = $"L_{item}", Text = BarName( item ), BackColor = c_ActBG }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_PressureHPA( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_PressureHPA( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.BARO_InHg;
       l = new B_ICAO( item, lblProto ) { Name = $"L_{item}", Text = BarName( item ), BackColor = c_ActBG }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_PressureInHg( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_PressureInHg( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       // Gear, Brakes, Flaps
       item = GItem.Gear;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Steps( signProto ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Steps( signProto ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.Brakes;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Steps( signProto ) { Name = $"V_{item}", ForeColor = c_RA, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Steps( signProto ) { Name = $"V_{item}", ForeColor = c_RA, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.Flaps;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Steps( signProto ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Steps( signProto ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       // TORQ, PRPM, ERPM, FFLOW - we use value2Proto to get a smaller font for the numbers
       item = GItem.E1_TORQP;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
       item = GItem.E2_TORQP;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.E1_TORQ;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Torque( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Torque( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
       item = GItem.E2_TORQ;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Torque( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Torque( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.P1_RPM;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_RPM( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_RPM( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
       item = GItem.P2_RPM;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_RPM( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_RPM( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.E1_RPM;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_RPM( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_RPM( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
       item = GItem.E2_RPM;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_RPM( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_RPM( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.E1_N1;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
       item = GItem.E2_N1;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Prct( value2Proto ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.E1_ITT;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Temp( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Temp( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
       item = GItem.E2_ITT;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Temp( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Temp( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.E1_EGT;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Temp( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Temp( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
       item = GItem.E2_EGT;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Temp( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Temp( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.E1_FFlow;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Flow( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Flow( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
       item = GItem.E2_FFlow;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Flow( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Flow( value2Proto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       // GPS
       item = GItem.GPS_PWYP;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_ICAO( valueProto ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_ICAO( valueProto ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.GPS_NWYP;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_ICAO( valueProto ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_ICAO( valueProto ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.GPS_DIST;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Dist( valueProto, showUnits ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Dist( valueProto, showUnits ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.GPS_ETE;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Time( valueProto ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Time( valueProto ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.GPS_TRK;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Deg( valueProto ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Deg( valueProto ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.GPS_GS;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Speed( valueProto, showUnits ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Speed( valueProto, showUnits ) { Name = $"V_{item}", ForeColor = c_Gps, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+
+      item = GItem.EST_VS;
+      l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
+      v = new V_VSpeed( valueProto, showUnits ) { Name = $"V_{item}", ForeColor = c_Est, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+
+      item = GItem.EST_ALT;
+      l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
+      v = new V_Alt( valueProto, showUnits ) { Name = $"V_{item}", ForeColor = c_Est,BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       // Aircraft Data
       item = GItem.HDG;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Deg( valueProto ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Deg( valueProto ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.ALT;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Alt( valueProto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Alt( valueProto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.RA;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Alt( valueProto, showUnits ) { Name = $"V_{item}", ForeColor = c_RA, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Alt( valueProto, showUnits ) { Name = $"V_{item}", ForeColor = c_RA, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.IAS;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Speed( valueProto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Speed( valueProto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       item = GItem.VS;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_VSpeed( valueProto, showUnits ) { Name = $"V_{item}", BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_VSpeed( valueProto, showUnits ) { Name = $"V_{item}", BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       // Autopilot
       item = GItem.AP;
@@ -355,7 +390,7 @@ namespace FS20_HudBar
 
       item = GItem.AP_HDGset;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Deg( value2Proto ) { Name = $"V_{item}", ForeColor = c_Set, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Deg( value2Proto ) { Name = $"V_{item}", ForeColor = c_Set, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       // AP Altitude
       item = GItem.AP_ALT;
@@ -363,7 +398,7 @@ namespace FS20_HudBar
 
       item = GItem.AP_ALTset;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Alt( value2Proto, showUnits ) { Name = $"V_{item}", ForeColor = c_Set, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Alt( value2Proto, showUnits ) { Name = $"V_{item}", ForeColor = c_Set, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       // AP VSpeed
       item = GItem.AP_VS;
@@ -371,7 +406,7 @@ namespace FS20_HudBar
 
       item = GItem.AP_VSset;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_VSpeed( value2Proto, showUnits ) { Name = $"V_{item}", ForeColor = c_Set, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_VSpeed( value2Proto, showUnits ) { Name = $"V_{item}", ForeColor = c_Set, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       // AP FLChange
       item = GItem.AP_FLC;
@@ -379,7 +414,7 @@ namespace FS20_HudBar
 
       item = GItem.AP_FLCset;
       l = new V_ICAO( lblProto ) { Name = $"L_{item}", Text = BarName( item ) }; m_lblItems.Add( item, (IValue)l ); m_lblLabelItems.Add( item, l );
-      v = new V_Speed( value2Proto, showUnits ) { Name = $"V_{item}", ForeColor = c_Set, BackColor = backCol }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
+      v = new V_Speed( value2Proto, showUnits ) { Name = $"V_{item}", ForeColor = c_Set, BackColor = c_BG }; m_valItems.Add( item, (IValue)v ); m_valLabelItems.Add( item, v );
 
       // AP Nav, Apr, GS
       item = GItem.AP_NAV;

@@ -1,4 +1,4 @@
-# MSFS HudBar V 0.10.0.6
+# MSFS HudBar V 0.11.0.7
 
 ### Display essential Information as Bar at the bottom of the primary screen   
 

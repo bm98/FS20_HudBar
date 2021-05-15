@@ -26,6 +26,7 @@ namespace FS20_HudBar
 
     private frmConfig CFG = new frmConfig( );
 
+    private float m_avgVs = 0;
 
     public frmMain( )
     {
@@ -62,7 +63,7 @@ namespace FS20_HudBar
         }
       }
       this.Width = mainScreen.Bounds.Width;
-      // this.Height = ??   need to derive from DPI etc ??? we take it from the current GUI design for the moment
+      this.Height = 80; //   need to derive from DPI etc ??? we take it from the current GUI design for the moment
       this.Location = new Point( mainScreen.Bounds.X, mainScreen.Bounds.Y + mainScreen.Bounds.Height - this.Height );
 
       // Get the controls
@@ -189,8 +190,8 @@ namespace FS20_HudBar
 
       // start from scratch
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
-                          AppSettings.Instance.ShowUnits, 
-                          AppSettings.Instance.Opaque, 
+                          AppSettings.Instance.ShowUnits,
+                          AppSettings.Instance.Opaque,
                           (GUI.FontSize)AppSettings.Instance.FontSize );
       // set form opacity from settings (use the const value for slight transparency)
       this.Opacity = HUD.OpaqueBackground ? 1 : c_opacity;
@@ -265,7 +266,7 @@ namespace FS20_HudBar
           SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting = true;
           break;
         case GItem.BARO_InHg:
-          SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting=true;
+          SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting = true;
           break;
         default: break; // nothing 
       }
@@ -281,6 +282,11 @@ namespace FS20_HudBar
 
       // we do this one by one..
 
+      // SimRate
+      HUD.Value( GItem.SimRate ).Value = SC.SimConnectClient.Instance.AircraftModule.SimRate_rate;
+      HUD.ValueControl( GItem.SimRate ).ForeColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? HUD.c_BG : HUD.c_Info;
+      HUD.ValueControl( GItem.SimRate ).BackColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? HUD.c_SRATE : HUD.c_BG;
+
       // TRIMS
       HUD.LabelControl( GItem.ETrim ).BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? HUD.c_AP : this.BackColor;
       HUD.Value( GItem.ETrim ).Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
@@ -290,8 +296,8 @@ namespace FS20_HudBar
       HUD.Value( GItem.OAT ).Value = SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC;
       HUD.ValueControl( GItem.OAT ).ForeColor = ( SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC < 0 ) ? HUD.c_SubZero : HUD.c_Info;
 
-      HUD.Value( GItem.BARO_HPA ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_inHg;
-      HUD.Value( GItem.BARO_InHg ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_mbar;
+      HUD.Value( GItem.BARO_HPA ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_mbar;
+      HUD.Value( GItem.BARO_InHg ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_inHg;
 
       // Gear, Brakes, Flaps
       if ( SC.SimConnectClient.Instance.AircraftModule.IsGearRetractable ) {
@@ -347,6 +353,28 @@ namespace FS20_HudBar
         HUD.Value( GItem.GPS_ETE ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_ete;
         HUD.Value( GItem.GPS_TRK ).Value = SC.SimConnectClient.Instance.GpsModule.GTRK;
         HUD.Value( GItem.GPS_GS ).Value = SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt;
+        // Estimates use WYP ALT if >0 (there is no distinction if a WYP ALT is given - it is 0 if not)
+        float tgtAlt = SC.SimConnectClient.Instance.GpsModule.WYP_alt;
+        Color estCol = HUD.c_Est;
+        if ( tgtAlt == 0 ) {
+          // use Set Alt
+          tgtAlt = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
+          estCol = HUD.c_Set;
+        }
+        HUD.Value( GItem.EST_VS ).Value = Estimates.VSToTgt_AtAltitude(
+          SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt,
+          SC.SimConnectClient.Instance.AircraftModule.AltMsl_ft,
+          tgtAlt,
+          SC.SimConnectClient.Instance.GpsModule.WYP_dist
+          );
+        HUD.ValueControl( GItem.EST_VS ).ForeColor = estCol;
+        HUD.Value( GItem.EST_ALT ).Value = Estimates.AltitudeAtTgt(
+          SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt,
+          SC.SimConnectClient.Instance.AircraftModule.AltMsl_ft,
+          m_avgVs,
+          SC.SimConnectClient.Instance.GpsModule.WYP_dist
+          );
+        HUD.ValueControl( GItem.EST_ALT ).ForeColor = estCol;
       }
       else {
         HUD.Value( GItem.GPS_PWYP ).Text = "_____";
@@ -355,6 +383,8 @@ namespace FS20_HudBar
         HUD.Value( GItem.GPS_ETE ).Value = null;
         HUD.Value( GItem.GPS_TRK ).Value = null;
         HUD.Value( GItem.GPS_GS ).Value = null;
+        HUD.Value( GItem.EST_VS ).Value = null;
+        HUD.Value( GItem.EST_VS ).Value = null;
       }
 
       // Autopilot
@@ -435,7 +465,7 @@ namespace FS20_HudBar
         else {
           m_aETrimTimer -= timer1.Interval; // dec timer
         }
-
+        m_avgVs = ( m_avgVs + SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin ) / 2.0f;
         return; // already connected
       }
 

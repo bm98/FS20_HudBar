@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>6</ApplicationRevision>
-    <ApplicationVersion>0.10.0.6</ApplicationVersion>
+    <ApplicationRevision>7</ApplicationRevision>
+    <ApplicationVersion>0.11.0.7</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -98,6 +98,7 @@
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
     <Compile Include="CProfile.cs" />
+    <Compile Include="Estimates.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -147,6 +148,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\V_RPM.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_SRate.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\V_Steps.cs">

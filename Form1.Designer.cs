@@ -54,7 +54,7 @@ namespace FS20_HudBar
       this.lblProto.AutoSize = true;
       this.lblProto.Font = new System.Drawing.Font("Bahnschrift", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.lblProto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.lblProto.Location = new System.Drawing.Point(397, 6);
+      this.lblProto.Location = new System.Drawing.Point(367, 9);
       this.lblProto.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
       this.lblProto.Name = "lblProto";
       this.lblProto.Size = new System.Drawing.Size(44, 16);
@@ -77,7 +77,7 @@ namespace FS20_HudBar
       this.valueProto.AutoSize = true;
       this.valueProto.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.valueProto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.valueProto.Location = new System.Drawing.Point(529, 6);
+      this.valueProto.Location = new System.Drawing.Point(499, 9);
       this.valueProto.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.valueProto.Name = "valueProto";
       this.valueProto.Size = new System.Drawing.Size(57, 19);
@@ -162,7 +162,7 @@ namespace FS20_HudBar
       this.signProto.AutoSize = true;
       this.signProto.Font = new System.Drawing.Font("Wingdings", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
       this.signProto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.signProto.Location = new System.Drawing.Point(791, 3);
+      this.signProto.Location = new System.Drawing.Point(761, 6);
       this.signProto.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.signProto.Name = "signProto";
       this.signProto.Size = new System.Drawing.Size(106, 29);
@@ -183,7 +183,7 @@ namespace FS20_HudBar
       this.value2Proto.AutoSize = true;
       this.value2Proto.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.value2Proto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.value2Proto.Location = new System.Drawing.Point(604, 6);
+      this.value2Proto.Location = new System.Drawing.Point(574, 9);
       this.value2Proto.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.value2Proto.Name = "value2Proto";
       this.value2Proto.Size = new System.Drawing.Size(52, 16);
@@ -212,7 +212,7 @@ namespace FS20_HudBar
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
       this.BackColor = System.Drawing.Color.Black;
       this.CausesValidation = false;
-      this.ClientSize = new System.Drawing.Size(933, 40);
+      this.ClientSize = new System.Drawing.Size(872, 43);
       this.ContextMenuStrip = this.cMenu;
       this.Controls.Add(this.B);
       this.Controls.Add(this.value2Proto);
