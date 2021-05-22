@@ -45,6 +45,7 @@ namespace FS20_HudBar
       this.cbxUnits = new System.Windows.Forms.CheckBox();
       this.txP1 = new System.Windows.Forms.TextBox();
       this.cbxFont = new System.Windows.Forms.ComboBox();
+      this.cbxPlace = new System.Windows.Forms.ComboBox();
       this.tableLayoutPanel1.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -55,7 +56,7 @@ namespace FS20_HudBar
       this.clbxP1.FormattingEnabled = true;
       this.clbxP1.Location = new System.Drawing.Point(3, 33);
       this.clbxP1.Name = "clbxP1";
-      this.clbxP1.Size = new System.Drawing.Size(162, 621);
+      this.clbxP1.Size = new System.Drawing.Size(162, 591);
       this.clbxP1.TabIndex = 0;
       // 
       // tableLayoutPanel1
@@ -66,7 +67,6 @@ namespace FS20_HudBar
       this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
       this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
       this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-      this.tableLayoutPanel1.Controls.Add(this.cbxOpaque, 0, 2);
       this.tableLayoutPanel1.Controls.Add(this.txP5, 4, 0);
       this.tableLayoutPanel1.Controls.Add(this.txP4, 3, 0);
       this.tableLayoutPanel1.Controls.Add(this.txP3, 2, 0);
@@ -76,17 +76,20 @@ namespace FS20_HudBar
       this.tableLayoutPanel1.Controls.Add(this.clbxP3, 2, 1);
       this.tableLayoutPanel1.Controls.Add(this.clbxP4, 3, 1);
       this.tableLayoutPanel1.Controls.Add(this.clbxP5, 4, 1);
-      this.tableLayoutPanel1.Controls.Add(this.btCancel, 4, 2);
-      this.tableLayoutPanel1.Controls.Add(this.btAccept, 3, 2);
       this.tableLayoutPanel1.Controls.Add(this.cbxUnits, 0, 2);
       this.tableLayoutPanel1.Controls.Add(this.txP1, 0, 0);
+      this.tableLayoutPanel1.Controls.Add(this.btAccept, 3, 3);
+      this.tableLayoutPanel1.Controls.Add(this.btCancel, 4, 3);
+      this.tableLayoutPanel1.Controls.Add(this.cbxOpaque, 0, 3);
       this.tableLayoutPanel1.Controls.Add(this.cbxFont, 2, 2);
+      this.tableLayoutPanel1.Controls.Add(this.cbxPlace, 2, 3);
       this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
       this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-      this.tableLayoutPanel1.RowCount = 3;
+      this.tableLayoutPanel1.RowCount = 4;
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
       this.tableLayoutPanel1.Size = new System.Drawing.Size(844, 697);
       this.tableLayoutPanel1.TabIndex = 1;
@@ -94,7 +97,7 @@ namespace FS20_HudBar
       // cbxOpaque
       // 
       this.cbxOpaque.AutoSize = true;
-      this.cbxOpaque.Location = new System.Drawing.Point(171, 660);
+      this.cbxOpaque.Location = new System.Drawing.Point(3, 660);
       this.cbxOpaque.Name = "cbxOpaque";
       this.cbxOpaque.Size = new System.Drawing.Size(135, 19);
       this.cbxOpaque.TabIndex = 14;
@@ -148,7 +151,7 @@ namespace FS20_HudBar
       this.clbxP2.FormattingEnabled = true;
       this.clbxP2.Location = new System.Drawing.Point(171, 33);
       this.clbxP2.Name = "clbxP2";
-      this.clbxP2.Size = new System.Drawing.Size(162, 621);
+      this.clbxP2.Size = new System.Drawing.Size(162, 591);
       this.clbxP2.TabIndex = 0;
       // 
       // clbxP3
@@ -158,7 +161,7 @@ namespace FS20_HudBar
       this.clbxP3.FormattingEnabled = true;
       this.clbxP3.Location = new System.Drawing.Point(339, 33);
       this.clbxP3.Name = "clbxP3";
-      this.clbxP3.Size = new System.Drawing.Size(162, 621);
+      this.clbxP3.Size = new System.Drawing.Size(162, 591);
       this.clbxP3.TabIndex = 0;
       // 
       // clbxP4
@@ -168,7 +171,7 @@ namespace FS20_HudBar
       this.clbxP4.FormattingEnabled = true;
       this.clbxP4.Location = new System.Drawing.Point(507, 33);
       this.clbxP4.Name = "clbxP4";
-      this.clbxP4.Size = new System.Drawing.Size(162, 621);
+      this.clbxP4.Size = new System.Drawing.Size(162, 591);
       this.clbxP4.TabIndex = 0;
       // 
       // clbxP5
@@ -178,7 +181,7 @@ namespace FS20_HudBar
       this.clbxP5.FormattingEnabled = true;
       this.clbxP5.Location = new System.Drawing.Point(675, 33);
       this.clbxP5.Name = "clbxP5";
-      this.clbxP5.Size = new System.Drawing.Size(166, 621);
+      this.clbxP5.Size = new System.Drawing.Size(166, 591);
       this.clbxP5.TabIndex = 0;
       // 
       // btCancel
@@ -209,7 +212,7 @@ namespace FS20_HudBar
       // cbxUnits
       // 
       this.cbxUnits.AutoSize = true;
-      this.cbxUnits.Location = new System.Drawing.Point(3, 660);
+      this.cbxUnits.Location = new System.Drawing.Point(3, 630);
       this.cbxUnits.Name = "cbxUnits";
       this.cbxUnits.Size = new System.Drawing.Size(85, 19);
       this.cbxUnits.TabIndex = 8;
@@ -233,10 +236,22 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFont.Location = new System.Drawing.Point(339, 660);
+      this.cbxFont.Location = new System.Drawing.Point(339, 630);
       this.cbxFont.Name = "cbxFont";
       this.cbxFont.Size = new System.Drawing.Size(128, 23);
       this.cbxFont.TabIndex = 15;
+      // 
+      // cbxPlace
+      // 
+      this.cbxPlace.FormattingEnabled = true;
+      this.cbxPlace.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxPlace.Location = new System.Drawing.Point(339, 660);
+      this.cbxPlace.Name = "cbxPlace";
+      this.cbxPlace.Size = new System.Drawing.Size(128, 23);
+      this.cbxPlace.TabIndex = 16;
       // 
       // frmConfig
       // 
@@ -282,5 +297,6 @@ namespace FS20_HudBar
     private System.Windows.Forms.TextBox txP1;
     private System.Windows.Forms.CheckBox cbxOpaque;
     private System.Windows.Forms.ComboBox cbxFont;
+    private System.Windows.Forms.ComboBox cbxPlace;
   }
 }

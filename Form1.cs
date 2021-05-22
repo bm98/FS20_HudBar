@@ -28,6 +28,8 @@ namespace FS20_HudBar
 
     private float m_avgVs = 0;
 
+    Screen m_mainScreen;
+
     public frmMain( )
     {
       InitializeComponent( );
@@ -43,6 +45,14 @@ namespace FS20_HudBar
       m_selProfile = AppSettings.Instance.SelProfile;
       // ShowUnits and Opacity are set via HUD in InitGUI
 
+      Screen[] screens = Screen.AllScreens;
+      m_mainScreen = screens[0];
+      // now get the Primary one
+      foreach ( Screen screen in screens ) {
+        if ( screen.Primary ) {
+          m_mainScreen = screen;
+        }
+      }
     }
 
     private void frmMain_Load( object sender, EventArgs e )
@@ -51,20 +61,6 @@ namespace FS20_HudBar
       flp.Dock = DockStyle.Fill;
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc.
       this.TopMost = true; // make sure we float on top
-
-      // attach it to the bottom of the PRIMARY screen (we assume the FS is run on the primary anyway...)
-      // full width
-      Screen[] screens = Screen.AllScreens;
-      Screen mainScreen = screens[0];
-      // now get the Primary one
-      foreach ( Screen screen in screens ) {
-        if ( screen.Primary ) {
-          mainScreen = screen;
-        }
-      }
-      this.Width = mainScreen.Bounds.Width;
-      this.Height = 80; //   need to derive from DPI etc ??? we take it from the current GUI design for the moment
-      this.Location = new Point( mainScreen.Bounds.X, mainScreen.Bounds.Y + mainScreen.Bounds.Height - this.Height );
 
       // Get the controls
       InitGUI( );
@@ -106,6 +102,7 @@ namespace FS20_HudBar
         AppSettings.Instance.ShowUnits = HUD.ShowUnits;
         AppSettings.Instance.Opaque = HUD.OpaqueBackground;
         AppSettings.Instance.FontSize = (int)HUD.FontSize;
+        AppSettings.Instance.Placement = (int)HUD.Placement;
 
         AppSettings.Instance.SelProfile = m_selProfile;
         AppSettings.Instance.Profile_1_Name = m_profiles[0].PName;
@@ -192,7 +189,45 @@ namespace FS20_HudBar
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
                           AppSettings.Instance.ShowUnits,
                           AppSettings.Instance.Opaque,
-                          (GUI.FontSize)AppSettings.Instance.FontSize );
+                          (GUI.FontSize)AppSettings.Instance.FontSize,
+                          (GUI.Placement)AppSettings.Instance.Placement );
+      // attach it to the bottom of the PRIMARY screen (we assume the FS is run on the primary anyway...)
+      // full width
+      switch ( HUD.Placement ) {
+        case GUI.Placement.Bottom:
+          this.Width = m_mainScreen.Bounds.Width;
+          this.Height = 40; //   need to derive from DPI etc ??? we take it from the current GUI design for the moment
+          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
+          flp.FlowDirection = FlowDirection.LeftToRight;
+          break;
+        case GUI.Placement.Left:
+          this.Height = m_mainScreen.Bounds.Height;
+          this.Width = HUD.FontSize == GUI.FontSize.Regular ? 200 : HUD.FontSize == GUI.FontSize.Larger ? 230 : 260;
+          this.Width += HUD.ShowUnits ? 40 : 0; // add width for Units
+          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          flp.FlowDirection = FlowDirection.TopDown;
+          break;
+        case GUI.Placement.Right:
+          this.Height = m_mainScreen.Bounds.Height;
+          this.Width = HUD.FontSize == GUI.FontSize.Regular ? 200 : HUD.FontSize == GUI.FontSize.Larger ? 250 : 300;
+          this.Width += HUD.ShowUnits ? 40 : 0; // add width for Units
+          this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, m_mainScreen.Bounds.Y );
+          flp.FlowDirection = FlowDirection.TopDown;
+          break;
+        case GUI.Placement.Top:
+          this.Width = m_mainScreen.Bounds.Width;
+          this.Height = 40; //   need to derive from DPI etc ??? we take it from the current GUI design for the moment
+          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          flp.FlowDirection = FlowDirection.LeftToRight;
+          break;
+        default:
+          // Bottom
+          this.Width = m_mainScreen.Bounds.Width;
+          this.Height = 40; //   need to derive from DPI etc ??? we take it from the current GUI design for the moment
+          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
+          flp.FlowDirection = FlowDirection.LeftToRight;
+          break;
+      }
       // set form opacity from settings (use the const value for slight transparency)
       this.Opacity = HUD.OpaqueBackground ? 1 : c_opacity;
 
@@ -200,27 +235,36 @@ namespace FS20_HudBar
 
       flp.Controls.Clear( ); // reload
 
-      // load flowLayout from Config Profile
-      foreach ( GItem i in Enum.GetValues( typeof( GItem ) ) ) {
-        if ( i == GItem.ITEM_COUNT ) continue; // murks..
-
+      // load flowLayout 
+      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
+        var di = HUD.DispItem(i);
         if ( PROFILE.ShowItem( i ) ) {
-          Control l = HUD.LabelControl( i );
-          if ( l != null ) {
-            if ( l is GUI.B_Base ) {
-              ( l as GUI.B_Base ).ButtonClicked += FrmMain_ButtonClicked;
-            }
-            if ( l != null ) flp.Controls.Add( l );
+          if ( di != null && di.Controls.Count > 0 ) {
+            // add when we have to show something
+            flp.Controls.Add( di );
           }
-          l = HUD.ValueControl( i );
-          if ( l != null ) {
-            if ( l is GUI.B_Base ) {
-              ( l as GUI.B_Base ).ButtonClicked += FrmMain_ButtonClicked;
-            }
-            flp.Controls.Add( l );
+        }
+        else {
+          di.Visible = false;
+        }
+      }
+
+      // attach handlers
+      foreach ( GItem i in Enum.GetValues( typeof( GItem ) ) ) {
+        Control l = HUD.LabelControl( i );
+        if ( l != null ) {
+          if ( l is GUI.B_Base ) {
+            ( l as GUI.B_Base ).ButtonClicked += FrmMain_ButtonClicked;
+          }
+        }
+        l = HUD.ValueControl( i );
+        if ( l != null ) {
+          if ( l is GUI.B_Base ) {
+            ( l as GUI.B_Base ).ButtonClicked += FrmMain_ButtonClicked;
           }
         }
       }
+
       if ( SC.SimConnectClient.Instance.IsConnected )
         flp.Controls[0].ForeColor = Color.LimeGreen;
 
@@ -280,6 +324,8 @@ namespace FS20_HudBar
       if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity..
       if ( !initDone ) return; // cannot access items at this time
 
+      int numEngines = SC.SimConnectClient.Instance.EngineModule.NumEngines;
+
       // we do this one by one..
 
       // SimRate
@@ -327,23 +373,35 @@ namespace FS20_HudBar
       // TORQ, PRPM, ERPM, FFLOW
       HUD.Value( GItem.E1_TORQP ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine1_Torque_prct / 100;  // needs to be 0..1
       HUD.Value( GItem.E2_TORQP ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine2_Torque_prct / 100;  // needs to be 0..1
+      HUD.ValueControl( GItem.E2_TORQP ).Visible = ( numEngines > 1 );
+
       HUD.Value( GItem.E1_TORQ ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_Torque_ft_lbs;
       HUD.Value( GItem.E2_TORQ ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_Torque_ft_lbs;
+      HUD.ValueControl( GItem.E2_TORQ ).Visible = ( numEngines > 1 );
 
       HUD.Value( GItem.P1_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Propeller1_rpm;
       HUD.Value( GItem.P2_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Propeller2_rpm;
+      HUD.ValueControl( GItem.P2_RPM ).Visible = ( numEngines > 1 );
+
       HUD.Value( GItem.E1_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_rpm;
       HUD.Value( GItem.E2_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_rpm;
+      HUD.ValueControl( GItem.E2_RPM ).Visible = ( numEngines > 1 );
+
       HUD.Value( GItem.E1_N1 ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_N1_prct / 100;  // needs to be 0..1
       HUD.Value( GItem.E2_N1 ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_N1_prct / 100;  // needs to be 0..1
+      HUD.ValueControl( GItem.E2_N1 ).Visible = ( numEngines > 1 );
 
       HUD.Value( GItem.E1_ITT ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine1_itt;
       HUD.Value( GItem.E2_ITT ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine2_itt;
+      HUD.ValueControl( GItem.E2_ITT ).Visible = ( numEngines > 1 );
+
       HUD.Value( GItem.E1_EGT ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_egt;
       HUD.Value( GItem.E2_EGT ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_egt;
+      HUD.ValueControl( GItem.E2_EGT ).Visible = ( numEngines > 1 );
 
       HUD.Value( GItem.E1_FFlow ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_FuelFlow_lbPh;
       HUD.Value( GItem.E2_FFlow ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_FuelFlow_lbPh;
+      HUD.ValueControl( GItem.E2_FFlow ).Visible = ( numEngines > 1 );
 
       // GPS
       if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
@@ -353,11 +411,12 @@ namespace FS20_HudBar
         HUD.Value( GItem.GPS_ETE ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_ete;
         HUD.Value( GItem.GPS_TRK ).Value = SC.SimConnectClient.Instance.GpsModule.GTRK;
         HUD.Value( GItem.GPS_GS ).Value = SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt;
-        // Estimates use WYP ALT if >0 (there is no distinction if a WYP ALT is given - it is 0 if not)
         float tgtAlt = SC.SimConnectClient.Instance.GpsModule.WYP_alt;
+        HUD.Value( GItem.GPS_ALT ).Value = tgtAlt;
+        // Estimates use WYP ALT if >0 (there is no distinction if a WYP ALT is given - it is 0 if not)
         Color estCol = HUD.c_Est;
         if ( tgtAlt == 0 ) {
-          // use Set Alt
+          // use Set Alt if WYP ALT is zero (see comment above)
           tgtAlt = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
           estCol = HUD.c_Set;
         }
@@ -383,8 +442,8 @@ namespace FS20_HudBar
         HUD.Value( GItem.GPS_ETE ).Value = null;
         HUD.Value( GItem.GPS_TRK ).Value = null;
         HUD.Value( GItem.GPS_GS ).Value = null;
-        HUD.Value( GItem.EST_VS ).Value = null;
-        HUD.Value( GItem.EST_VS ).Value = null;
+        HUD.Value( GItem.EST_VS ).Value = null; // cannot if we don't have a WYP to aim at
+        HUD.Value( GItem.EST_ALT ).Value = null; // cannot if we don't have a WYP to aim at
       }
 
       // Autopilot
@@ -429,8 +488,9 @@ namespace FS20_HudBar
     private void SimConnect( )
     {
       HUD.Value( GItem.Ad ).Text = ""; // reset in case it had an error message
-      flp.Controls[0].ForeColor = this.ForeColor;
-      flp.Controls[0].BackColor = this.BackColor;
+      HUD.LabelControl( GItem.Ad ).ForeColor = HUD.c_Info;
+      HUD.LabelControl( GItem.Ad ).BackColor = HUD.c_BG;
+
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         // Disconnect from Input and SimConnect
         SC.SimConnectClient.Instance.Disconnect( );
@@ -438,12 +498,13 @@ namespace FS20_HudBar
       else {
         // try to connect
         if ( SC.SimConnectClient.Instance.Connect( ) ) {
-          flp.Controls[0].ForeColor = Color.LimeGreen;
+          HUD.LabelControl( GItem.Ad ).ForeColor = Color.LimeGreen;
           _ = SC.SimConnectClient.Instance.AircraftModule.AcftConfigFile; // init by pulling one item, so it registers the module
         }
         else {
-          flp.Controls[0].BackColor = Color.Red;
-          HUD.Value( GItem.Ad ).Text = SC.SimConnectClient.Instance.ErrorList.FirstOrDefault( ); // error message
+          HUD.LabelControl( GItem.Ad ).BackColor = Color.Red;
+          //HUD.Value( GItem.Ad ).Text = SC.SimConnectClient.Instance.ErrorList.FirstOrDefault( ); // error message
+          HUD.Value( GItem.Ad ).Text = "NO SIM";
         }
       }
 
@@ -463,14 +524,14 @@ namespace FS20_HudBar
           SC.SimConnectClient.Instance.AutoETrimModule.Enabled = false;
         }
         else {
-          m_aETrimTimer -= timer1.Interval; // dec timer
+          m_aETrimTimer -= timer1.Interval; // dec timer for the AutoTrim lifetime
         }
-        m_avgVs = ( m_avgVs + SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin ) / 2.0f;
-        return; // already connected
+        m_avgVs = ( 3 * m_avgVs + SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin ) / 4.0f; // take 3/4 from the previous value to dampen it
       }
-
-      // If not connected try again
-      SimConnect( );
+      else {
+        // If not connected try again
+        SimConnect( );
+      }
     }
 
 

@@ -16,7 +16,7 @@ namespace FS20_HudBar
   class CProfile
   {
 
-    private Dictionary<GItem, bool> m_profile = new Dictionary<GItem, bool>();
+    private Dictionary<LItem, bool> m_profile = new Dictionary<LItem, bool>();
 
     public string PName { get; set; } = "Profile";
 
@@ -25,8 +25,7 @@ namespace FS20_HudBar
     /// </summary>
     public CProfile( )
     {
-      foreach ( GItem i in Enum.GetValues( typeof( GItem ) ) ) {
-        if ( i == GItem.ITEM_COUNT ) continue; // murks..
+      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         m_profile.Add( i, true );
       }
     }
@@ -49,9 +48,7 @@ namespace FS20_HudBar
     {
       box.Items.Clear( );
 
-      foreach ( GItem i in Enum.GetValues( typeof( GItem ) ) ) {
-        if ( i == GItem.ITEM_COUNT ) continue; // murks..
-
+      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         int idx = box.Items.Add( hudBar.CfgName( i ) );
         box.SetItemChecked( idx, m_profile[i] );
       }
@@ -65,9 +62,7 @@ namespace FS20_HudBar
     /// <param name="hudBar">The HudBar</param>
     public void GetFromCbx( CheckedListBox box, HudBar hudBar )
     {
-      foreach ( GItem i in Enum.GetValues( typeof( GItem ) ) ) {
-        if ( i == GItem.ITEM_COUNT ) continue; // murks..
-
+      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         m_profile[i] = box.GetItemChecked( (int)i );
       }
     }
@@ -93,15 +88,13 @@ namespace FS20_HudBar
       string[] e = profile.Split(new char[]{ ';' }, StringSplitOptions.RemoveEmptyEntries );
 
       m_profile.Clear( );
-      foreach ( GItem i in Enum.GetValues( typeof( GItem ) ) ) {
-        if ( i == GItem.ITEM_COUNT ) continue; // murks..
+      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         bool show = true; // default ON
         if ( e.Length > (int)i ) {
           show = e[(int)i] == "1";
         }
         m_profile.Add( i, show );
       }
-
     }
 
     /// <summary>
@@ -109,7 +102,7 @@ namespace FS20_HudBar
     /// </summary>
     /// <param name="item">An item</param>
     /// <returns>True if it is shown</returns>
-    public bool ShowItem(GItem item )
+    public bool ShowItem(LItem item )
     {
       return m_profile[item];
     }

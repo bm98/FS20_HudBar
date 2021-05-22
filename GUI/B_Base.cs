@@ -13,7 +13,7 @@ namespace FS20_HudBar.GUI
   /// </summary>
   abstract class B_Base : Button, IValue
   {
-    protected GItem m_mID = GItem.ITEM_COUNT;
+    protected GItem m_mID = GItem.Ad;
     protected string m_default = "";
     protected string m_unit = "";
     protected bool m_showUnit = false;

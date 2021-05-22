@@ -8,12 +8,27 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
+  /// <summary>
+  /// HUD GUI FontSize
+  /// </summary>
   public enum FontSize
   {
     Regular=0,
     Larger,
     Largest,
   }
+
+  /// <summary>
+  /// Placement of the Bar
+  /// </summary>
+  public enum Placement
+  {
+    Bottom=0,
+    Left,
+    Right,
+    Top,
+  }
+
   /// <summary>
   /// Font provider
   /// </summary>

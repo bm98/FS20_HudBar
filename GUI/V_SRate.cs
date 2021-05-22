@@ -30,7 +30,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,3:x#0.##}" ); // sign 2.2 digits
+          this.Text = UnitString( $"{value,3:x#0.##}" ); // x sign 2.2 digits
         }
       }
     }

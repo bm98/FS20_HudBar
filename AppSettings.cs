@@ -72,6 +72,13 @@ namespace FS20_HudBar
 
     [UserScopedSetting( )]
     [DefaultSettingValue( "0" )]
+    public int Placement {
+      get { return (int)this["Placement"]; }
+      set { this["Placement"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
     public int SelProfile {
       get { return (int)this["SelProfile"]; }
       set { this["SelProfile"] = value; }

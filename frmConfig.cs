@@ -37,6 +37,13 @@ namespace FS20_HudBar
       cbxFont.Items.Add( GUI.FontSize.Largest + " Font Size" );
       cbxFont.SelectedIndex = (int)HudBarRef.FontSize; // take care this matches the item list (and ENUM FontSize)
 
+      cbxPlace.Items.Clear( );
+      cbxPlace.Items.Add( GUI.Placement.Bottom + " bound" );
+      cbxPlace.Items.Add( GUI.Placement.Left + " bound" );
+      cbxPlace.Items.Add( GUI.Placement.Right + " bound" );
+      cbxPlace.Items.Add( GUI.Placement.Top + " bound" );
+      cbxPlace.SelectedIndex = (int)HudBarRef.Placement; // take care this matches the item list (and ENUM FontSize)
+
       txP1.Text = ProfilesRef[0].PName;
       ProfilesRef[0].LoadCbx( clbxP1, HudBarRef );
       txP2.Text = ProfilesRef[1].PName;
@@ -66,6 +73,7 @@ namespace FS20_HudBar
       HudBarRef.ShowUnits = cbxUnits.Checked;
       HudBarRef.OpaqueBackground = cbxOpaque.Checked;
       HudBarRef.FontSize = (GUI.FontSize)cbxFont.SelectedIndex;
+      HudBarRef.Placement = (GUI.Placement)cbxPlace.SelectedIndex;
 
       ProfilesRef[0].PName = txP1.Text;
       ProfilesRef[0].GetFromCbx( clbxP1, HudBarRef );

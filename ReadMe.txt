@@ -1,9 +1,9 @@
-FS20_HudBar V 0.11 - Build 7 BETA
-(c) M. Burri - 15-May-2021
+FS20_HudBar V 0.12 - Build 8 BETA
+(c) M. Burri - 22-May-2021
 
 Contains files:
 
-FS20_HudBar.exe               The program (V0.11-B7)
+FS20_HudBar.exe               The program
 
 - All libraries below MUST be in the same folder as the Exe file
 FSimClientIF.dll            Generic FSim Client interface definition
@@ -31,6 +31,12 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.12-B8
+- Added Left, right, top alignment
+- Added Font selection Regular, Larger, Largest
+- Update detects 1/2 engines on its own
+- Update some refactoring due to alignment update
+
 V 0.11-B7
 - Added SimRate, Estimates
 - Fix BARO mismatch

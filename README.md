@@ -1,4 +1,4 @@
-# MSFS HudBar V 0.11.0.7
+# MSFS HudBar V 0.12.0.8
 
 ### Display essential Information as Bar at the bottom of the primary screen   
 
@@ -58,11 +58,10 @@ Name and use up to 5 different profiles
 
 ![FS20_HudBar Configuration](https://raw.githubusercontent.com/bm98/FS20_HudBar/main/doc/HudBar-config.jpg "HudBar Configuration")
 
-Check ++Show Units++ to display the units along the values  
-
-Check ++Opaque Background++ to have the Bar completely black, else it is slightly transparent
-
-Select a ++Fontsize++ from Regular, Larger and Largest (you may limit the items so all fit the screen)
+Check __Show Units__ to display the units along the values  
+Check __Opaque Background__ to have the Bar completely black, else it is slightly transparent  
+Select a __Fontsize__ from Regular, Larger and Largest (you may limit the items so all fit the screen)  
+Select the __Alignment__ of the bar (left, right, top, bottom)  
 
 -----
 
