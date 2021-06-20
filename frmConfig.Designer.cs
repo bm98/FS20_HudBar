@@ -31,7 +31,6 @@ namespace FS20_HudBar
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmConfig));
       this.clbxP1 = new System.Windows.Forms.CheckedListBox();
       this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-      this.cbxOpaque = new System.Windows.Forms.CheckBox();
       this.txP5 = new System.Windows.Forms.TextBox();
       this.txP4 = new System.Windows.Forms.TextBox();
       this.txP3 = new System.Windows.Forms.TextBox();
@@ -40,12 +39,21 @@ namespace FS20_HudBar
       this.clbxP3 = new System.Windows.Forms.CheckedListBox();
       this.clbxP4 = new System.Windows.Forms.CheckedListBox();
       this.clbxP5 = new System.Windows.Forms.CheckedListBox();
-      this.btCancel = new System.Windows.Forms.Button();
-      this.btAccept = new System.Windows.Forms.Button();
-      this.cbxUnits = new System.Windows.Forms.CheckBox();
       this.txP1 = new System.Windows.Forms.TextBox();
-      this.cbxFont = new System.Windows.Forms.ComboBox();
-      this.cbxPlace = new System.Windows.Forms.ComboBox();
+      this.btAccept = new System.Windows.Forms.Button();
+      this.btCancel = new System.Windows.Forms.Button();
+      this.cbxOpaque = new System.Windows.Forms.CheckBox();
+      this.cbxPlaceP1 = new System.Windows.Forms.ComboBox();
+      this.cbxFontP1 = new System.Windows.Forms.ComboBox();
+      this.cbxFontP2 = new System.Windows.Forms.ComboBox();
+      this.cbxFontP3 = new System.Windows.Forms.ComboBox();
+      this.cbxFontP4 = new System.Windows.Forms.ComboBox();
+      this.cbxFontP5 = new System.Windows.Forms.ComboBox();
+      this.cbxUnits = new System.Windows.Forms.CheckBox();
+      this.cbxPlaceP2 = new System.Windows.Forms.ComboBox();
+      this.cbxPlaceP3 = new System.Windows.Forms.ComboBox();
+      this.cbxPlaceP4 = new System.Windows.Forms.ComboBox();
+      this.cbxPlaceP5 = new System.Windows.Forms.ComboBox();
       this.tableLayoutPanel1.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -56,7 +64,7 @@ namespace FS20_HudBar
       this.clbxP1.FormattingEnabled = true;
       this.clbxP1.Location = new System.Drawing.Point(3, 33);
       this.clbxP1.Name = "clbxP1";
-      this.clbxP1.Size = new System.Drawing.Size(162, 591);
+      this.clbxP1.Size = new System.Drawing.Size(162, 583);
       this.clbxP1.TabIndex = 0;
       // 
       // tableLayoutPanel1
@@ -76,33 +84,32 @@ namespace FS20_HudBar
       this.tableLayoutPanel1.Controls.Add(this.clbxP3, 2, 1);
       this.tableLayoutPanel1.Controls.Add(this.clbxP4, 3, 1);
       this.tableLayoutPanel1.Controls.Add(this.clbxP5, 4, 1);
-      this.tableLayoutPanel1.Controls.Add(this.cbxUnits, 0, 2);
       this.tableLayoutPanel1.Controls.Add(this.txP1, 0, 0);
-      this.tableLayoutPanel1.Controls.Add(this.btAccept, 3, 3);
-      this.tableLayoutPanel1.Controls.Add(this.btCancel, 4, 3);
-      this.tableLayoutPanel1.Controls.Add(this.cbxOpaque, 0, 3);
-      this.tableLayoutPanel1.Controls.Add(this.cbxFont, 2, 2);
-      this.tableLayoutPanel1.Controls.Add(this.cbxPlace, 2, 3);
+      this.tableLayoutPanel1.Controls.Add(this.btAccept, 3, 4);
+      this.tableLayoutPanel1.Controls.Add(this.btCancel, 4, 4);
+      this.tableLayoutPanel1.Controls.Add(this.cbxOpaque, 0, 4);
+      this.tableLayoutPanel1.Controls.Add(this.cbxFontP1, 0, 2);
+      this.tableLayoutPanel1.Controls.Add(this.cbxFontP2, 1, 2);
+      this.tableLayoutPanel1.Controls.Add(this.cbxFontP3, 2, 2);
+      this.tableLayoutPanel1.Controls.Add(this.cbxFontP4, 3, 2);
+      this.tableLayoutPanel1.Controls.Add(this.cbxFontP5, 4, 2);
+      this.tableLayoutPanel1.Controls.Add(this.cbxUnits, 1, 4);
+      this.tableLayoutPanel1.Controls.Add(this.cbxPlaceP1, 0, 3);
+      this.tableLayoutPanel1.Controls.Add(this.cbxPlaceP2, 1, 3);
+      this.tableLayoutPanel1.Controls.Add(this.cbxPlaceP3, 2, 3);
+      this.tableLayoutPanel1.Controls.Add(this.cbxPlaceP4, 3, 3);
+      this.tableLayoutPanel1.Controls.Add(this.cbxPlaceP5, 4, 3);
       this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
       this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-      this.tableLayoutPanel1.RowCount = 4;
+      this.tableLayoutPanel1.RowCount = 5;
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+      this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-      this.tableLayoutPanel1.Size = new System.Drawing.Size(844, 697);
+      this.tableLayoutPanel1.Size = new System.Drawing.Size(844, 719);
       this.tableLayoutPanel1.TabIndex = 1;
-      // 
-      // cbxOpaque
-      // 
-      this.cbxOpaque.AutoSize = true;
-      this.cbxOpaque.Location = new System.Drawing.Point(3, 660);
-      this.cbxOpaque.Name = "cbxOpaque";
-      this.cbxOpaque.Size = new System.Drawing.Size(135, 19);
-      this.cbxOpaque.TabIndex = 14;
-      this.cbxOpaque.Text = "Opaque Background";
-      this.cbxOpaque.UseVisualStyleBackColor = true;
       // 
       // txP5
       // 
@@ -151,7 +158,7 @@ namespace FS20_HudBar
       this.clbxP2.FormattingEnabled = true;
       this.clbxP2.Location = new System.Drawing.Point(171, 33);
       this.clbxP2.Name = "clbxP2";
-      this.clbxP2.Size = new System.Drawing.Size(162, 591);
+      this.clbxP2.Size = new System.Drawing.Size(162, 583);
       this.clbxP2.TabIndex = 0;
       // 
       // clbxP3
@@ -161,7 +168,7 @@ namespace FS20_HudBar
       this.clbxP3.FormattingEnabled = true;
       this.clbxP3.Location = new System.Drawing.Point(339, 33);
       this.clbxP3.Name = "clbxP3";
-      this.clbxP3.Size = new System.Drawing.Size(162, 591);
+      this.clbxP3.Size = new System.Drawing.Size(162, 583);
       this.clbxP3.TabIndex = 0;
       // 
       // clbxP4
@@ -171,7 +178,7 @@ namespace FS20_HudBar
       this.clbxP4.FormattingEnabled = true;
       this.clbxP4.Location = new System.Drawing.Point(507, 33);
       this.clbxP4.Name = "clbxP4";
-      this.clbxP4.Size = new System.Drawing.Size(162, 591);
+      this.clbxP4.Size = new System.Drawing.Size(162, 583);
       this.clbxP4.TabIndex = 0;
       // 
       // clbxP5
@@ -181,43 +188,8 @@ namespace FS20_HudBar
       this.clbxP5.FormattingEnabled = true;
       this.clbxP5.Location = new System.Drawing.Point(675, 33);
       this.clbxP5.Name = "clbxP5";
-      this.clbxP5.Size = new System.Drawing.Size(166, 591);
+      this.clbxP5.Size = new System.Drawing.Size(166, 583);
       this.clbxP5.TabIndex = 0;
-      // 
-      // btCancel
-      // 
-      this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.btCancel.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCancel.Location = new System.Drawing.Point(735, 669);
-      this.btCancel.Name = "btCancel";
-      this.btCancel.Size = new System.Drawing.Size(106, 25);
-      this.btCancel.TabIndex = 6;
-      this.btCancel.Text = "Cancel";
-      this.btCancel.UseVisualStyleBackColor = true;
-      this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
-      // 
-      // btAccept
-      // 
-      this.btAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.btAccept.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btAccept.Location = new System.Drawing.Point(563, 669);
-      this.btAccept.Name = "btAccept";
-      this.btAccept.Size = new System.Drawing.Size(106, 25);
-      this.btAccept.TabIndex = 7;
-      this.btAccept.Text = "Accept";
-      this.btAccept.UseVisualStyleBackColor = true;
-      this.btAccept.Click += new System.EventHandler(this.btAccept_Click);
-      // 
-      // cbxUnits
-      // 
-      this.cbxUnits.AutoSize = true;
-      this.cbxUnits.Location = new System.Drawing.Point(3, 630);
-      this.cbxUnits.Name = "cbxUnits";
-      this.cbxUnits.Size = new System.Drawing.Size(85, 19);
-      this.cbxUnits.TabIndex = 8;
-      this.cbxUnits.Text = "Show Units";
-      this.cbxUnits.UseVisualStyleBackColor = true;
       // 
       // txP1
       // 
@@ -229,29 +201,180 @@ namespace FS20_HudBar
       this.txP1.TabIndex = 9;
       this.txP1.Text = "Profile 1";
       // 
-      // cbxFont
+      // btAccept
       // 
-      this.cbxFont.FormattingEnabled = true;
-      this.cbxFont.Items.AddRange(new object[] {
+      this.btAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btAccept.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btAccept.Location = new System.Drawing.Point(563, 691);
+      this.btAccept.Name = "btAccept";
+      this.btAccept.Size = new System.Drawing.Size(106, 25);
+      this.btAccept.TabIndex = 7;
+      this.btAccept.Text = "Accept";
+      this.btAccept.UseVisualStyleBackColor = true;
+      this.btAccept.Click += new System.EventHandler(this.btAccept_Click);
+      // 
+      // btCancel
+      // 
+      this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+      this.btCancel.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btCancel.Location = new System.Drawing.Point(735, 691);
+      this.btCancel.Name = "btCancel";
+      this.btCancel.Size = new System.Drawing.Size(106, 25);
+      this.btCancel.TabIndex = 6;
+      this.btCancel.Text = "Cancel";
+      this.btCancel.UseVisualStyleBackColor = true;
+      this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
+      // 
+      // cbxOpaque
+      // 
+      this.cbxOpaque.AutoSize = true;
+      this.cbxOpaque.Location = new System.Drawing.Point(3, 682);
+      this.cbxOpaque.Name = "cbxOpaque";
+      this.cbxOpaque.Size = new System.Drawing.Size(135, 19);
+      this.cbxOpaque.TabIndex = 14;
+      this.cbxOpaque.Text = "Opaque Background";
+      this.cbxOpaque.UseVisualStyleBackColor = true;
+      // 
+      // cbxPlaceP1
+      // 
+      this.cbxPlaceP1.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxPlaceP1.FormattingEnabled = true;
+      this.cbxPlaceP1.Items.AddRange(new object[] {
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFont.Location = new System.Drawing.Point(339, 630);
-      this.cbxFont.Name = "cbxFont";
-      this.cbxFont.Size = new System.Drawing.Size(128, 23);
-      this.cbxFont.TabIndex = 15;
+      this.cbxPlaceP1.Location = new System.Drawing.Point(3, 652);
+      this.cbxPlaceP1.Name = "cbxPlaceP1";
+      this.cbxPlaceP1.Size = new System.Drawing.Size(162, 23);
+      this.cbxPlaceP1.TabIndex = 16;
       // 
-      // cbxPlace
+      // cbxFontP1
       // 
-      this.cbxPlace.FormattingEnabled = true;
-      this.cbxPlace.Items.AddRange(new object[] {
+      this.cbxFontP1.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxFontP1.FormattingEnabled = true;
+      this.cbxFontP1.Items.AddRange(new object[] {
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxPlace.Location = new System.Drawing.Point(339, 660);
-      this.cbxPlace.Name = "cbxPlace";
-      this.cbxPlace.Size = new System.Drawing.Size(128, 23);
-      this.cbxPlace.TabIndex = 16;
+      this.cbxFontP1.Location = new System.Drawing.Point(3, 622);
+      this.cbxFontP1.Name = "cbxFontP1";
+      this.cbxFontP1.Size = new System.Drawing.Size(162, 23);
+      this.cbxFontP1.TabIndex = 17;
+      // 
+      // cbxFontP2
+      // 
+      this.cbxFontP2.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxFontP2.FormattingEnabled = true;
+      this.cbxFontP2.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxFontP2.Location = new System.Drawing.Point(171, 622);
+      this.cbxFontP2.Name = "cbxFontP2";
+      this.cbxFontP2.Size = new System.Drawing.Size(162, 23);
+      this.cbxFontP2.TabIndex = 17;
+      // 
+      // cbxFontP3
+      // 
+      this.cbxFontP3.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxFontP3.FormattingEnabled = true;
+      this.cbxFontP3.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxFontP3.Location = new System.Drawing.Point(339, 622);
+      this.cbxFontP3.Name = "cbxFontP3";
+      this.cbxFontP3.Size = new System.Drawing.Size(162, 23);
+      this.cbxFontP3.TabIndex = 17;
+      // 
+      // cbxFontP4
+      // 
+      this.cbxFontP4.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxFontP4.FormattingEnabled = true;
+      this.cbxFontP4.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxFontP4.Location = new System.Drawing.Point(507, 622);
+      this.cbxFontP4.Name = "cbxFontP4";
+      this.cbxFontP4.Size = new System.Drawing.Size(162, 23);
+      this.cbxFontP4.TabIndex = 17;
+      // 
+      // cbxFontP5
+      // 
+      this.cbxFontP5.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxFontP5.FormattingEnabled = true;
+      this.cbxFontP5.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxFontP5.Location = new System.Drawing.Point(675, 622);
+      this.cbxFontP5.Name = "cbxFontP5";
+      this.cbxFontP5.Size = new System.Drawing.Size(166, 23);
+      this.cbxFontP5.TabIndex = 17;
+      // 
+      // cbxUnits
+      // 
+      this.cbxUnits.AutoSize = true;
+      this.cbxUnits.Location = new System.Drawing.Point(171, 682);
+      this.cbxUnits.Name = "cbxUnits";
+      this.cbxUnits.Size = new System.Drawing.Size(85, 19);
+      this.cbxUnits.TabIndex = 8;
+      this.cbxUnits.Text = "Show Units";
+      this.cbxUnits.UseVisualStyleBackColor = true;
+      // 
+      // cbxPlaceP2
+      // 
+      this.cbxPlaceP2.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxPlaceP2.FormattingEnabled = true;
+      this.cbxPlaceP2.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxPlaceP2.Location = new System.Drawing.Point(171, 652);
+      this.cbxPlaceP2.Name = "cbxPlaceP2";
+      this.cbxPlaceP2.Size = new System.Drawing.Size(162, 23);
+      this.cbxPlaceP2.TabIndex = 16;
+      // 
+      // cbxPlaceP3
+      // 
+      this.cbxPlaceP3.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxPlaceP3.FormattingEnabled = true;
+      this.cbxPlaceP3.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxPlaceP3.Location = new System.Drawing.Point(339, 652);
+      this.cbxPlaceP3.Name = "cbxPlaceP3";
+      this.cbxPlaceP3.Size = new System.Drawing.Size(162, 23);
+      this.cbxPlaceP3.TabIndex = 16;
+      // 
+      // cbxPlaceP4
+      // 
+      this.cbxPlaceP4.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxPlaceP4.FormattingEnabled = true;
+      this.cbxPlaceP4.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxPlaceP4.Location = new System.Drawing.Point(507, 652);
+      this.cbxPlaceP4.Name = "cbxPlaceP4";
+      this.cbxPlaceP4.Size = new System.Drawing.Size(162, 23);
+      this.cbxPlaceP4.TabIndex = 16;
+      // 
+      // cbxPlaceP5
+      // 
+      this.cbxPlaceP5.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxPlaceP5.FormattingEnabled = true;
+      this.cbxPlaceP5.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxPlaceP5.Location = new System.Drawing.Point(675, 652);
+      this.cbxPlaceP5.Name = "cbxPlaceP5";
+      this.cbxPlaceP5.Size = new System.Drawing.Size(166, 23);
+      this.cbxPlaceP5.TabIndex = 16;
       // 
       // frmConfig
       // 
@@ -259,7 +382,7 @@ namespace FS20_HudBar
       this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.btCancel;
-      this.ClientSize = new System.Drawing.Size(844, 697);
+      this.ClientSize = new System.Drawing.Size(844, 719);
       this.Controls.Add(this.tableLayoutPanel1);
       this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
@@ -296,7 +419,15 @@ namespace FS20_HudBar
     private System.Windows.Forms.TextBox txP2;
     private System.Windows.Forms.TextBox txP1;
     private System.Windows.Forms.CheckBox cbxOpaque;
-    private System.Windows.Forms.ComboBox cbxFont;
-    private System.Windows.Forms.ComboBox cbxPlace;
+    private System.Windows.Forms.ComboBox cbxPlaceP1;
+    private System.Windows.Forms.ComboBox cbxFontP1;
+    private System.Windows.Forms.ComboBox cbxFontP2;
+    private System.Windows.Forms.ComboBox cbxFontP3;
+    private System.Windows.Forms.ComboBox cbxFontP4;
+    private System.Windows.Forms.ComboBox cbxFontP5;
+    private System.Windows.Forms.ComboBox cbxPlaceP2;
+    private System.Windows.Forms.ComboBox cbxPlaceP3;
+    private System.Windows.Forms.ComboBox cbxPlaceP4;
+    private System.Windows.Forms.ComboBox cbxPlaceP5;
   }
 }

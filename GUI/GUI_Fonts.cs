@@ -14,8 +14,13 @@ namespace FS20_HudBar.GUI
   public enum FontSize
   {
     Regular=0,
-    Larger,
-    Largest,
+    Plus_2,
+    Plus_4,
+    Plus_6,
+    Plus_8,
+    Plus_10,
+    Minus_2,
+    Minus_4,
   }
 
   /// <summary>
@@ -40,8 +45,34 @@ namespace FS20_HudBar.GUI
     private Font m_valueFont;
     private Font m_value2Font;
 
-    private float m_largerInc = 2;  // add this to the regular fontsize
-    private float m_largestInc = 4; // add this to the regular fontsize
+    private const float m_plus2Inc = 2;  // add this to the regular fontsize
+    private const float m_plus4Inc = 4; // add this to the regular fontsize
+    private const float m_plus6Inc = 6; // add this to the regular fontsize
+    private const float m_plus8Inc = 8; // add this to the regular fontsize
+    private const float m_plus10Inc = 10; // add this to the regular fontsize
+    private const float m_minus2Inc = -2;  // add this to the regular fontsize
+    private const float m_minus4Inc = -4;  // add this to the regular fontsize
+
+    /// <summary>
+    /// Returns a Font Increment for a FontSize Enum 
+    ///   add this to the regular fontsize
+    /// </summary>
+    /// <param name="fontSize">The FontSize Enum</param>
+    /// <returns>An increment </returns>
+    public static float FontIncrement(FontSize fontSize )
+    {
+      switch ( fontSize ) {
+        case FontSize.Regular:return 0;
+        case FontSize.Plus_2:return 2;
+        case FontSize.Plus_4:return 4;
+        case FontSize.Plus_6: return 6;
+        case FontSize.Plus_8: return 8;
+        case FontSize.Plus_10:return 10;
+        case FontSize.Minus_2: return -2;
+        case FontSize.Minus_4:return -4;
+        default: return 0;
+      }
+    }
 
     public Font LabelFont { get; private set; }
     public Font SignFont { get; private set; }
@@ -72,33 +103,11 @@ namespace FS20_HudBar.GUI
       if ( m_value2Font != null ) m_value2Font.Dispose( );
 
       // alloc each font only once and use it as ref
-      switch ( fontSize ) {
-        case FontSize.Largest:
-          LabelFont = new Font( m_labelFont.FontFamily, m_labelFont.Size + m_largestInc );
-          SignFont = new Font( m_signFont.FontFamily, m_signFont.Size + m_largestInc );
-          ValueFont = new Font( m_valueFont.FontFamily, m_valueFont.Size + m_largestInc );
-          Value2Font = new Font( m_value2Font.FontFamily, m_value2Font.Size + m_largestInc );
-          break;
-        case FontSize.Larger:
-          LabelFont = new Font( m_labelFont.FontFamily, m_labelFont.Size + m_largerInc );
-          SignFont = new Font( m_signFont.FontFamily, m_signFont.Size + m_largerInc );
-          ValueFont = new Font( m_valueFont.FontFamily, m_valueFont.Size + m_largerInc );
-          Value2Font = new Font( m_value2Font.FontFamily, m_value2Font.Size + m_largerInc );
-          break;
-        case FontSize.Regular:
-          LabelFont = new Font( m_labelFont.FontFamily, m_labelFont.Size );
-          SignFont = new Font( m_signFont.FontFamily, m_signFont.Size );
-          ValueFont = new Font( m_valueFont.FontFamily, m_valueFont.Size );
-          Value2Font = new Font( m_value2Font.FontFamily, m_value2Font.Size );
-          break;
-
-        default:
-          LabelFont = new Font( m_labelFont.FontFamily, m_labelFont.Size );
-          SignFont = new Font( m_signFont.FontFamily, m_signFont.Size );
-          ValueFont = new Font( m_valueFont.FontFamily, m_valueFont.Size );
-          Value2Font = new Font( m_value2Font.FontFamily, m_value2Font.Size );
-          break;
-      }
+      float fontInc = FontIncrement(fontSize);
+      LabelFont = new Font( m_labelFont.FontFamily, m_labelFont.Size + fontInc );
+      SignFont = new Font( m_signFont.FontFamily, m_signFont.Size + fontInc );
+      ValueFont = new Font( m_valueFont.FontFamily, m_valueFont.Size + fontInc );
+      Value2Font = new Font( m_value2Font.FontFamily, m_value2Font.Size + fontInc );
     }
 
   }

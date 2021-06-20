@@ -33,6 +33,8 @@ namespace FS20_HudBar
       this.flp = new System.Windows.Forms.FlowLayoutPanel();
       this.valueProto = new System.Windows.Forms.Label();
       this.cMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.mSelProfile = new System.Windows.Forms.ToolStripTextBox();
+      this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       this.mProfile = new System.Windows.Forms.ToolStripMenuItem();
       this.mP1 = new System.Windows.Forms.ToolStripMenuItem();
       this.mP2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,7 +47,11 @@ namespace FS20_HudBar
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
+      this.spc = new System.Windows.Forms.SplitContainer();
       this.cMenu.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.spc)).BeginInit();
+      this.spc.Panel2.SuspendLayout();
+      this.spc.SuspendLayout();
       this.SuspendLayout();
       // 
       // lblProto
@@ -54,7 +60,7 @@ namespace FS20_HudBar
       this.lblProto.AutoSize = true;
       this.lblProto.Font = new System.Drawing.Font("Bahnschrift", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.lblProto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.lblProto.Location = new System.Drawing.Point(367, 9);
+      this.lblProto.Location = new System.Drawing.Point(510, 38);
       this.lblProto.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
       this.lblProto.Name = "lblProto";
       this.lblProto.Size = new System.Drawing.Size(44, 16);
@@ -65,10 +71,11 @@ namespace FS20_HudBar
       // 
       // flp
       // 
+      this.flp.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.flp.CausesValidation = false;
-      this.flp.Location = new System.Drawing.Point(0, 0);
+      this.flp.Location = new System.Drawing.Point(3, 3);
       this.flp.Name = "flp";
-      this.flp.Size = new System.Drawing.Size(324, 31);
+      this.flp.Size = new System.Drawing.Size(198, 31);
       this.flp.TabIndex = 1;
       // 
       // valueProto
@@ -77,7 +84,7 @@ namespace FS20_HudBar
       this.valueProto.AutoSize = true;
       this.valueProto.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.valueProto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.valueProto.Location = new System.Drawing.Point(499, 9);
+      this.valueProto.Location = new System.Drawing.Point(586, 38);
       this.valueProto.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.valueProto.Name = "valueProto";
       this.valueProto.Size = new System.Drawing.Size(57, 19);
@@ -89,11 +96,24 @@ namespace FS20_HudBar
       // cMenu
       // 
       this.cMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mSelProfile,
+            this.toolStripSeparator1,
             this.mProfile,
             this.mConfig,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(143, 70);
+      this.cMenu.Size = new System.Drawing.Size(181, 123);
+      // 
+      // mSelProfile
+      // 
+      this.mSelProfile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.mSelProfile.Name = "mSelProfile";
+      this.mSelProfile.Size = new System.Drawing.Size(100, 23);
+      // 
+      // toolStripSeparator1
+      // 
+      this.toolStripSeparator1.Name = "toolStripSeparator1";
+      this.toolStripSeparator1.Size = new System.Drawing.Size(157, 6);
       // 
       // mProfile
       // 
@@ -104,7 +124,7 @@ namespace FS20_HudBar
             this.mP4,
             this.mP5});
       this.mProfile.Name = "mProfile";
-      this.mProfile.Size = new System.Drawing.Size(142, 22);
+      this.mProfile.Size = new System.Drawing.Size(160, 22);
       this.mProfile.Text = "Select Profile";
       // 
       // mP1
@@ -145,14 +165,14 @@ namespace FS20_HudBar
       // mConfig
       // 
       this.mConfig.Name = "mConfig";
-      this.mConfig.Size = new System.Drawing.Size(142, 22);
+      this.mConfig.Size = new System.Drawing.Size(160, 22);
       this.mConfig.Text = "Configure...";
       this.mConfig.Click += new System.EventHandler(this.mConfig_Click);
       // 
       // mExit
       // 
       this.mExit.Name = "mExit";
-      this.mExit.Size = new System.Drawing.Size(142, 22);
+      this.mExit.Size = new System.Drawing.Size(160, 22);
       this.mExit.Text = "Exit";
       this.mExit.Click += new System.EventHandler(this.mExit_Click);
       // 
@@ -162,7 +182,7 @@ namespace FS20_HudBar
       this.signProto.AutoSize = true;
       this.signProto.Font = new System.Drawing.Font("Wingdings", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
       this.signProto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.signProto.Location = new System.Drawing.Point(761, 6);
+      this.signProto.Location = new System.Drawing.Point(761, 35);
       this.signProto.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.signProto.Name = "signProto";
       this.signProto.Size = new System.Drawing.Size(106, 29);
@@ -183,7 +203,7 @@ namespace FS20_HudBar
       this.value2Proto.AutoSize = true;
       this.value2Proto.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.value2Proto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.value2Proto.Location = new System.Drawing.Point(574, 9);
+      this.value2Proto.Location = new System.Drawing.Point(677, 38);
       this.value2Proto.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.value2Proto.Name = "value2Proto";
       this.value2Proto.Size = new System.Drawing.Size(52, 16);
@@ -194,12 +214,13 @@ namespace FS20_HudBar
       // 
       // B
       // 
+      this.B.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.B.AutoSize = true;
       this.B.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.B.FlatAppearance.BorderSize = 0;
       this.B.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.B.ForeColor = System.Drawing.Color.Coral;
-      this.B.Location = new System.Drawing.Point(681, 6);
+      this.B.Location = new System.Drawing.Point(734, 12);
       this.B.Name = "B";
       this.B.Size = new System.Drawing.Size(26, 26);
       this.B.TabIndex = 4;
@@ -207,19 +228,38 @@ namespace FS20_HudBar
       this.B.UseVisualStyleBackColor = true;
       this.B.Visible = false;
       // 
+      // spc
+      // 
+      this.spc.Location = new System.Drawing.Point(12, 12);
+      this.spc.Name = "spc";
+      // 
+      // spc.Panel1
+      // 
+      this.spc.Panel1.BackColor = System.Drawing.Color.Transparent;
+      this.spc.Panel1MinSize = 10;
+      // 
+      // spc.Panel2
+      // 
+      this.spc.Panel2.Controls.Add(this.flp);
+      this.spc.Panel2MinSize = 100;
+      this.spc.Size = new System.Drawing.Size(310, 46);
+      this.spc.SplitterDistance = 58;
+      this.spc.TabIndex = 5;
+      this.spc.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.spc_SplitterMoved);
+      // 
       // frmMain
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
       this.BackColor = System.Drawing.Color.Black;
       this.CausesValidation = false;
-      this.ClientSize = new System.Drawing.Size(872, 43);
+      this.ClientSize = new System.Drawing.Size(872, 72);
       this.ContextMenuStrip = this.cMenu;
+      this.Controls.Add(this.spc);
       this.Controls.Add(this.B);
       this.Controls.Add(this.value2Proto);
       this.Controls.Add(this.signProto);
       this.Controls.Add(this.lblProto);
       this.Controls.Add(this.valueProto);
-      this.Controls.Add(this.flp);
       this.Font = new System.Drawing.Font("Bahnschrift", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
       this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -234,6 +274,10 @@ namespace FS20_HudBar
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
       this.Load += new System.EventHandler(this.frmMain_Load);
       this.cMenu.ResumeLayout(false);
+      this.cMenu.PerformLayout();
+      this.spc.Panel2.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.spc)).EndInit();
+      this.spc.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -257,6 +301,9 @@ namespace FS20_HudBar
     private System.Windows.Forms.ToolStripMenuItem mP5;
     private System.Windows.Forms.Label value2Proto;
     private System.Windows.Forms.Button B;
+    private System.Windows.Forms.SplitContainer spc;
+    private System.Windows.Forms.ToolStripTextBox mSelProfile;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
   }
 }
 

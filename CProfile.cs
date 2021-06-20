@@ -17,8 +17,12 @@ namespace FS20_HudBar
   {
 
     private Dictionary<LItem, bool> m_profile = new Dictionary<LItem, bool>();
+    private GUI.FontSize m_fontSize = GUI.FontSize.Regular;
+    private GUI.Placement m_placement = GUI.Placement.Bottom;
 
     public string PName { get; set; } = "Profile";
+    public GUI.FontSize FontSize => m_fontSize;
+    public GUI.Placement Placement => m_placement;
 
     /// <summary>
     /// Create an empty profile with all items enabled
@@ -33,10 +37,13 @@ namespace FS20_HudBar
     /// <summary>
     /// Create a profile from the profile string, must match, no existing items are set to true
     /// </summary>
+    /// <param name="profileName">The Name of the Profile</param>
     /// <param name="profile">A semicolon separated string of 0 or 1 (shown) </param>
-    public CProfile(string profileName, string profile )
+    /// <param name="fontSize">The FontSize Number (matches the enum)</param>
+    /// <param name="placement">The Placement Number (matches the enum)</param>
+    public CProfile(string profileName, string profile, int fontSize, int placement )
     {
-      LoadProfile(profileName, profile );
+      LoadProfile(profileName, profile, (GUI.FontSize)fontSize, (GUI.Placement)placement );
     }
 
     /// <summary>
@@ -59,12 +66,47 @@ namespace FS20_HudBar
     /// Update this profile from the checked listbox
     /// </summary>
     /// <param name="box">The CListBox</param>
-    /// <param name="hudBar">The HudBar</param>
-    public void GetFromCbx( CheckedListBox box, HudBar hudBar )
+    public void GetItemsFromCbx( CheckedListBox box )
     {
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         m_profile[i] = box.GetItemChecked( (int)i );
       }
+    }
+
+    /// <summary>
+    /// Make the current FontSize the selected one
+    /// </summary>
+    /// <param name="box">The ComboBox</param>
+    public void LoadFontSize( ComboBox box )
+    {
+      box.SelectedIndex = (int)m_fontSize;
+    }
+
+    /// <summary>
+    /// Update this profile from the FontSize ComboBox
+    /// </summary>
+    /// <param name="box">The ComboBox</param>
+    public void GetFontSizeFromCombo( ComboBox box )
+    {
+      m_fontSize = (GUI.FontSize)box.SelectedIndex;
+    }
+
+    /// <summary>
+    /// Make the current Placement the selected one
+    /// </summary>
+    /// <param name="box">The ComboBox</param>
+    public void LoadPlacement( ComboBox box )
+    {
+      box.SelectedIndex = (int)m_placement;
+    }
+
+    /// <summary>
+    /// Update this profile from the Placement ComboBox
+    /// </summary>
+    /// <param name="box">The ComboBox</param>
+    public void GetPlacementFromCombo( ComboBox box )
+    {
+      m_placement = (GUI.Placement)box.SelectedIndex;
     }
 
     /// <summary>
@@ -82,9 +124,12 @@ namespace FS20_HudBar
     }
 
 
-    public void LoadProfile(string profileName, string profile )
+    public void LoadProfile(string profileName, string profile, GUI.FontSize fontSize, GUI.Placement placement )
     {
       PName = profileName;
+      m_fontSize = fontSize;
+      m_placement = placement;
+
       string[] e = profile.Split(new char[]{ ';' }, StringSplitOptions.RemoveEmptyEntries );
 
       m_profile.Clear( );
@@ -106,6 +151,7 @@ namespace FS20_HudBar
     {
       return m_profile[item];
     }
+
 
   }
 }

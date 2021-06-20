@@ -33,7 +33,8 @@ namespace FS20_HudBar
     N1,
     ITT,
     EGT,
-    FFlow,
+    FFlow_pph,    // pounds ph
+    FFlow_gph,    // gallons ph
     GPS_WYP,    // prev-next WYP
     GPS_DIST,  // GPS Distance to next Waypoint
     GPS_ETE,   // GPS Time to next Waypoint
@@ -96,8 +97,11 @@ namespace FS20_HudBar
     E1_EGT,  // EGT 1 Celsius
     E2_EGT,  // EGT 2 Celsius
 
-    E1_FFlow,  // Fuel1 Flow pph
-    E2_FFlow,  // Fuel2 Flow pph
+    E1_FFlow_pph,  // Fuel1 Flow pph
+    E2_FFlow_pph,  // Fuel2 Flow pph
+
+    E1_FFlow_gph,  // Fuel1 Flow gph
+    E2_FFlow_gph,  // Fuel2 Flow gph
 
     GPS_PWYP, // GPS Prev Waypoint
     GPS_NWYP, // GPS Next Waypoint
@@ -157,7 +161,7 @@ namespace FS20_HudBar
     public bool OpaqueBackground { get; set; } = false;
 
     /// <summary>
-    /// The FontSize to use
+    /// The Current FontSize to use
     /// </summary>
     public FontSize FontSize { get; set; } = FontSize.Regular;
 
@@ -165,7 +169,6 @@ namespace FS20_HudBar
     /// Placement of the Bar
     /// </summary>
     public Placement Placement { get; set; } = Placement.Bottom;
-
 
 
     // Hud Bar label names to match the enum above (as short as possible)
@@ -185,7 +188,7 @@ namespace FS20_HudBar
       {LItem.N1,"N1" },
       {LItem.ITT,"ITT" },
       {LItem.EGT,"EGT" },
-      {LItem.FFlow,"FFLOW" },
+      {LItem.FFlow_pph,"FFLOW" }, {LItem.FFlow_gph,"FFLOW" },
 
       {LItem.GPS_WYP,"≡GPS≡" },
       {LItem.GPS_DIST,"DIST" },
@@ -229,7 +232,8 @@ namespace FS20_HudBar
       {LItem.N1,"Turbine N1" },
       {LItem.ITT,"Turbine ITT °C" },
       {LItem.EGT,"Engine EGT °C" },
-      {LItem.FFlow,"Fuel Flow pph" },
+      {LItem.FFlow_pph,"Fuel Flow pph" },
+      {LItem.FFlow_gph,"Fuel Flow gph" },
 
       {LItem.GPS_WYP,"≡GPS≡" },
       {LItem.GPS_DIST,"WYP Distance nm" },
@@ -268,7 +272,8 @@ namespace FS20_HudBar
       {GItem.P1_RPM,"PRPM" }, {GItem.P2_RPM,"" }, {GItem.E1_RPM,"ERPM" }, {GItem.E2_RPM,"" },
       {GItem.E1_N1,"N1%" }, {GItem.E2_N1,"" },
       {GItem.E1_ITT,"ITT" }, {GItem.E2_ITT,"" }, {GItem.E1_EGT,"EGT" },{GItem.E2_EGT,"" },
-      {GItem.E1_FFlow,"FFLOW" },{GItem.E2_FFlow,"" },// omit the label for the second one
+      {GItem.E1_FFlow_pph,"FFLOW" },{GItem.E2_FFlow_pph,"" },// omit the label for the second one
+      {GItem.E1_FFlow_gph,"FFLOW" },{GItem.E2_FFlow_gph,"" },// omit the label for the second one
 
       {GItem.GPS_PWYP,"≡GPS≡" }, {GItem.GPS_NWYP,"---" },
       {GItem.GPS_DIST,"DIST" }, {GItem.GPS_ETE,"ETE" }, {GItem.GPS_TRK,"TRK" }, {GItem.GPS_GS,"GS" },
@@ -320,6 +325,10 @@ namespace FS20_HudBar
     /// <param name="valueProto">A GUI prototype value, carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="value2Proto">A GUI prototype value type 2, carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="signProto">A GUI prototype icon(Wingdings), carrying fonts, colors etc (set in GUI design mode)</param>
+    /// <param name="showUnits">Showing units flag</param>
+    /// <param name="opaque">Opaque flag</param>
+    /// <param name="fontSize">Used fontsize</param>
+    /// <param name="placement">Screen alignment of the bar</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
                     bool showUnits, bool opaque, FontSize fontSize, Placement placement )
     {
@@ -477,12 +486,19 @@ namespace FS20_HudBar
       v = new V_Temp( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
 
-      disp = LItem.FFlow; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.E1_FFlow;
+      disp = LItem.FFlow_pph; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.E1_FFlow_pph;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Flow( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.E2_FFlow;
-      v = new V_Flow( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      v = new V_Flow_pph( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = GItem.E2_FFlow_pph;
+      v = new V_Flow_pph( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.FFlow_gph; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.E1_FFlow_gph;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Flow_gph( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = GItem.E2_FFlow_gph;
+      v = new V_Flow_gph( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // GPS
       disp = LItem.GPS_WYP; di = new DispItem( ); AddDisp( disp, di );

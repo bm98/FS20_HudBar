@@ -7,13 +7,13 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
-  class V_Flow : V_Base
+  class V_Flow_pph : V_Base
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Flow( Label proto, bool showUnit )
+    public V_Flow_pph( Label proto, bool showUnit )
     : base( proto, showUnit )
     {
       m_unit = "pph";

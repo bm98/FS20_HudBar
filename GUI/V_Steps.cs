@@ -29,7 +29,7 @@ namespace FS20_HudBar.GUI
 
 
     /// <summary>
-    /// cTor:
+    /// cTor: Inherits from Label Control
     /// </summary>
     /// <param name="proto"></param>
     public V_Steps( Label proto)
@@ -39,7 +39,8 @@ namespace FS20_HudBar.GUI
       UseCompatibleTextRendering = true; // MUST for WingDings else it is not showing all chars properly...
 
       m_unit = "";
-      m_default = Convert.ToChar( 0xA0 ).ToString( );
+      //m_default = Convert.ToChar( 0xA0 ).ToString( );
+      m_default = Convert.ToChar( 0xB4 ).ToString( ); // Diamond with ? mark - bigger and may be avoid resize jumps to some extent (not monospace font issue)
       Text = UnitString( m_default );
     }
 

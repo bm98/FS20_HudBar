@@ -21,6 +21,33 @@ namespace FS20_HudBar
         // migrate the settings to the new version if the app runs the first time
         try {
           this.Upgrade( );
+          // V 0.18 TO V 0.2
+          // upgrade from prev to add the Fuel GPH setting (hide the new item)
+          string p = (string)this.GetPreviousVersion( "Profile_1" );
+          if ( p.Length == 78 ) {
+            p = p.Insert( 19 * 2, "0;" ); // insert gph at GPS_WYP Pos and shift all one item
+            this.Profile_1 = p;
+          }
+          p = (string)this.GetPreviousVersion( "Profile_2" );
+          if ( p.Length == 78 ) {
+            p = p.Insert( 19 * 2, "0;" );
+            this.Profile_2 = p;
+          }
+          p = (string)this.GetPreviousVersion( "Profile_3" );
+          if ( p.Length == 78 ) {
+            p = p.Insert( 19 * 2, "0;" );
+            this.Profile_3 = p;
+          }
+          p = (string)this.GetPreviousVersion( "Profile_4" );
+          if ( p.Length == 78 ) {
+            p = p.Insert( 19 * 2, "0;" );
+            this.Profile_4 = p;
+          }
+          p = (string)this.GetPreviousVersion( "Profile_5" );
+          if ( p.Length == 78 ) {
+            p = p.Insert( 19 * 2, "0;" );
+            this.Profile_5 = p;
+          }
         }
         catch { }
         this.FirstRun = false;
@@ -64,17 +91,10 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
-    [DefaultSettingValue( "0" )]
-    public int FontSize {
-      get { return (int)this["FontSize"]; }
-      set { this["FontSize"] = value; }
-    }
-
-    [UserScopedSetting( )]
-    [DefaultSettingValue( "0" )]
-    public int Placement {
-      get { return (int)this["Placement"]; }
-      set { this["Placement"] = value; }
+    [DefaultSettingValue( "10" )]
+    public int SplitDistance {
+      get { return (int)this["SplitDistance"]; }
+      set { this["SplitDistance"] = value; }
     }
 
     [UserScopedSetting( )]
@@ -93,11 +113,26 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_1_FontSize {
+      get { return (int)this["Profile_1_FontSize"]; }
+      set { this["Profile_1_FontSize"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_1_Placement {
+      get { return (int)this["Profile_1_Placement"]; }
+      set { this["Profile_1_Placement"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_1 {
       get { return (string)this["Profile_1"]; }
       set { this["Profile_1"] = value; }
     }
+
 
     [UserScopedSetting( )]
     [DefaultSettingValue( "Profile 2" )]
@@ -107,11 +142,26 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_2_FontSize {
+      get { return (int)this["Profile_2_FontSize"]; }
+      set { this["Profile_2_FontSize"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_2_Placement {
+      get { return (int)this["Profile_2_Placement"]; }
+      set { this["Profile_2_Placement"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_2 {
       get { return (string)this["Profile_2"]; }
       set { this["Profile_2"] = value; }
     }
+
 
     [UserScopedSetting( )]
     [DefaultSettingValue( "Profile 3" )]
@@ -121,11 +171,26 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_3_FontSize {
+      get { return (int)this["Profile_3_FontSize"]; }
+      set { this["Profile_3_FontSize"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_3_Placement {
+      get { return (int)this["Profile_3_Placement"]; }
+      set { this["Profile_3_Placement"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_3 {
       get { return (string)this["Profile_3"]; }
       set { this["Profile_3"] = value; }
     }
+
 
     [UserScopedSetting( )]
     [DefaultSettingValue( "Profile 4" )]
@@ -135,17 +200,46 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_4_FontSize {
+      get { return (int)this["Profile_4_FontSize"]; }
+      set { this["Profile_4_FontSize"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_4_Placement {
+      get { return (int)this["Profile_4_Placement"]; }
+      set { this["Profile_4_Placement"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_4 {
       get { return (string)this["Profile_4"]; }
       set { this["Profile_4"] = value; }
     }
 
+
     [UserScopedSetting( )]
     [DefaultSettingValue( "Profile 5" )]
     public string Profile_5_Name {
       get { return (string)this["Profile_5_Name"]; }
       set { this["Profile_5_Name"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_5_FontSize {
+      get { return (int)this["Profile_5_FontSize"]; }
+      set { this["Profile_5_FontSize"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_5_Placement {
+      get { return (int)this["Profile_5_Placement"]; }
+      set { this["Profile_5_Placement"] = value; }
     }
 
     [UserScopedSetting( )]

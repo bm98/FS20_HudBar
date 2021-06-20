@@ -17,7 +17,7 @@ namespace FS20_HudBar
 
     private List<CProfile> m_profiles = new List<CProfile>();
     private int m_selProfile = 0;
-    private bool initDone = false; // need to stop processing while reconfiguring the bar
+    private bool m_initDone = false; // need to stop processing while reconfiguring the bar
 
     private const int c_aETrimTime = 20_000; // 20 sec
     private int m_aETrimTimer = 0; // switch AET off when expired (<=0)
@@ -36,13 +36,20 @@ namespace FS20_HudBar
 
       AppSettings.Instance.Reload( );
 
-      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_1_Name, AppSettings.Instance.Profile_1 ) );
-      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_2_Name, AppSettings.Instance.Profile_2 ) );
-      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_3_Name, AppSettings.Instance.Profile_3 ) );
-      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_4_Name, AppSettings.Instance.Profile_4 ) );
-      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_5_Name, AppSettings.Instance.Profile_5 ) );
+      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_1_Name, AppSettings.Instance.Profile_1, 
+        AppSettings.Instance.Profile_1_FontSize, AppSettings.Instance.Profile_1_Placement ) );
+      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_2_Name, AppSettings.Instance.Profile_2, 
+        AppSettings.Instance.Profile_2_FontSize, AppSettings.Instance.Profile_2_Placement ) );
+      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_3_Name, AppSettings.Instance.Profile_3, 
+        AppSettings.Instance.Profile_3_FontSize, AppSettings.Instance.Profile_3_Placement ) );
+      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_4_Name, AppSettings.Instance.Profile_4,
+        AppSettings.Instance.Profile_4_FontSize, AppSettings.Instance.Profile_4_Placement ) );
+      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_5_Name, AppSettings.Instance.Profile_5, 
+        AppSettings.Instance.Profile_5_FontSize, AppSettings.Instance.Profile_5_Placement ) );
 
       m_selProfile = AppSettings.Instance.SelProfile;
+      mSelProfile.Text = m_profiles[m_selProfile].PName;
+
       // ShowUnits and Opacity are set via HUD in InitGUI
 
       Screen[] screens = Screen.AllScreens;
@@ -58,7 +65,11 @@ namespace FS20_HudBar
     private void frmMain_Load( object sender, EventArgs e )
     {
       // prepare the GUI
+      spc.Dock = DockStyle.Fill;
+      spc.SplitterDistance = AppSettings.Instance.SplitDistance;
+
       flp.Dock = DockStyle.Fill;
+      flp.WrapContents = true;
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc.
       this.TopMost = true; // make sure we float on top
 
@@ -74,6 +85,9 @@ namespace FS20_HudBar
 
     private void frmMain_FormClosing( object sender, FormClosingEventArgs e )
     {
+      AppSettings.Instance.SelProfile = m_selProfile;
+      AppSettings.Instance.SplitDistance = spc.SplitterDistance;
+      AppSettings.Instance.Save( );
       // stop connecting tries
       timer1.Enabled = false;
 
@@ -101,20 +115,34 @@ namespace FS20_HudBar
         // Save all configuration properties
         AppSettings.Instance.ShowUnits = HUD.ShowUnits;
         AppSettings.Instance.Opaque = HUD.OpaqueBackground;
-        AppSettings.Instance.FontSize = (int)HUD.FontSize;
-        AppSettings.Instance.Placement = (int)HUD.Placement;
 
         AppSettings.Instance.SelProfile = m_selProfile;
+
         AppSettings.Instance.Profile_1_Name = m_profiles[0].PName;
         AppSettings.Instance.Profile_1 = m_profiles[0].ProfileString( );
+        AppSettings.Instance.Profile_1_FontSize = (int)m_profiles[0].FontSize;
+        AppSettings.Instance.Profile_1_Placement = (int)m_profiles[0].Placement;
+
         AppSettings.Instance.Profile_2_Name = m_profiles[1].PName;
         AppSettings.Instance.Profile_2 = m_profiles[1].ProfileString( );
+        AppSettings.Instance.Profile_2_FontSize = (int)m_profiles[1].FontSize;
+        AppSettings.Instance.Profile_2_Placement = (int)m_profiles[1].Placement;
+
         AppSettings.Instance.Profile_3_Name = m_profiles[2].PName;
         AppSettings.Instance.Profile_3 = m_profiles[2].ProfileString( );
+        AppSettings.Instance.Profile_3_FontSize = (int)m_profiles[2].FontSize;
+        AppSettings.Instance.Profile_3_Placement = (int)m_profiles[2].Placement;
+
         AppSettings.Instance.Profile_4_Name = m_profiles[3].PName;
         AppSettings.Instance.Profile_4 = m_profiles[3].ProfileString( );
+        AppSettings.Instance.Profile_4_FontSize = (int)m_profiles[3].FontSize;
+        AppSettings.Instance.Profile_4_Placement = (int)m_profiles[3].Placement;
+
         AppSettings.Instance.Profile_5_Name = m_profiles[4].PName;
         AppSettings.Instance.Profile_5 = m_profiles[4].ProfileString( );
+        AppSettings.Instance.Profile_5_FontSize = (int)m_profiles[4].FontSize;
+        AppSettings.Instance.Profile_5_Placement = (int)m_profiles[4].Placement;
+
         AppSettings.Instance.Save( );
 
         InitGUI( ); // redraw changes
@@ -155,6 +183,16 @@ namespace FS20_HudBar
       InitGUI( );
     }
 
+    private void spc_SplitterMoved( object sender, SplitterEventArgs e )
+    {
+      // When the splitter finished moving we have to reinit the GUI, else it does not rescale
+      if ( !m_initDone ) return; // bail out if in Init - the splitter is moved during some init and resize events on it's own..
+
+      AppSettings.Instance.SplitDistance = spc.SplitterDistance;
+      AppSettings.Instance.Save( );
+      InitGUI( );
+    }
+
 
     #region Callback Handlers
 
@@ -171,11 +209,11 @@ namespace FS20_HudBar
     private HudBar HUD = null;
     private CProfile PROFILE = null;
 
-    // initialize the labels and default values
+    // initialize the form, the labels and default values
     // sequence defines appearance
     private void InitGUI( )
     {
-      initDone = false; // stop updating values while reconfiguring
+      m_initDone = false; // stop updating values while reconfiguring
 
       // Update profile selection items
       mP1.Text = m_profiles[0].PName;
@@ -183,69 +221,83 @@ namespace FS20_HudBar
       mP3.Text = m_profiles[2].PName;
       mP4.Text = m_profiles[3].PName;
       mP5.Text = m_profiles[4].PName;
+      mSelProfile.Text = m_profiles[m_selProfile].PName;
 
+      PROFILE = m_profiles[m_selProfile];
 
       // start from scratch
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
                           AppSettings.Instance.ShowUnits,
                           AppSettings.Instance.Opaque,
-                          (GUI.FontSize)AppSettings.Instance.FontSize,
-                          (GUI.Placement)AppSettings.Instance.Placement );
-      // attach it to the bottom of the PRIMARY screen (we assume the FS is run on the primary anyway...)
+                          PROFILE.FontSize,
+                          PROFILE.Placement);
+
+      // attach it to the PRIMARY screen (we assume the FS is run on the primary anyway...)
       // full width
       switch ( HUD.Placement ) {
         case GUI.Placement.Bottom:
           this.Width = m_mainScreen.Bounds.Width;
-          this.Height = 40; //   need to derive from DPI etc ??? we take it from the current GUI design for the moment
+          this.Height = 40; //  any will do as we rescale it below
           this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
+          spc.Orientation = Orientation.Vertical;
           flp.FlowDirection = FlowDirection.LeftToRight;
           break;
         case GUI.Placement.Left:
           this.Height = m_mainScreen.Bounds.Height;
-          this.Width = HUD.FontSize == GUI.FontSize.Regular ? 200 : HUD.FontSize == GUI.FontSize.Larger ? 230 : 260;
-          this.Width += HUD.ShowUnits ? 40 : 0; // add width for Units
+          this.Width = 200; //  any will do as we rescale it below
           this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          spc.Orientation = Orientation.Horizontal;
           flp.FlowDirection = FlowDirection.TopDown;
           break;
         case GUI.Placement.Right:
           this.Height = m_mainScreen.Bounds.Height;
-          this.Width = HUD.FontSize == GUI.FontSize.Regular ? 200 : HUD.FontSize == GUI.FontSize.Larger ? 250 : 300;
-          this.Width += HUD.ShowUnits ? 40 : 0; // add width for Units
+          this.Width = 200; //  any will do as we rescale it below
           this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, m_mainScreen.Bounds.Y );
+          spc.Orientation = Orientation.Horizontal;
           flp.FlowDirection = FlowDirection.TopDown;
           break;
         case GUI.Placement.Top:
           this.Width = m_mainScreen.Bounds.Width;
-          this.Height = 40; //   need to derive from DPI etc ??? we take it from the current GUI design for the moment
+          this.Height = 40; //  any will do as we rescale it below
           this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          spc.Orientation = Orientation.Vertical;
           flp.FlowDirection = FlowDirection.LeftToRight;
           break;
         default:
           // Bottom
           this.Width = m_mainScreen.Bounds.Width;
-          this.Height = 40; //   need to derive from DPI etc ??? we take it from the current GUI design for the moment
+          this.Height = 40; //  any will do as we rescale it below
           this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
+          spc.Orientation = Orientation.Vertical;
           flp.FlowDirection = FlowDirection.LeftToRight;
           break;
       }
       // set form opacity from settings (use the const value for slight transparency)
       this.Opacity = HUD.OpaqueBackground ? 1 : c_opacity;
+//      this.Opacity = 0.1;
+      flp.BackColor = Color.FromArgb( 255, 0, 0, 1 );
+      spc.SplitterDistance = AppSettings.Instance.SplitDistance;
 
-      PROFILE = m_profiles[m_selProfile];
 
       flp.Controls.Clear( ); // reload
 
       // load flowLayout 
+      int maxHeight = 0;
+      int maxWidth = 0;
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         var di = HUD.DispItem(i);
         if ( PROFILE.ShowItem( i ) ) {
           if ( di != null && di.Controls.Count > 0 ) {
             // add when we have to show something
             flp.Controls.Add( di );
+            int h = di.Top+di.Height;
+            maxHeight = ( h > maxHeight ) ? h : maxHeight;
+            int w = di.Left+di.Width;
+            maxWidth = ( w > maxWidth ) ? w : maxWidth;
           }
         }
         else {
-          di.Visible = false;
+          if ( di != null ) di.Visible = false;
         }
       }
 
@@ -265,14 +317,40 @@ namespace FS20_HudBar
         }
       }
 
+      // post proc - allocate the needed height
+      switch ( HUD.Placement ) {
+        case GUI.Placement.Bottom:
+          this.Height = maxHeight+5;
+          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
+          break;
+        case GUI.Placement.Left:
+          this.Width = maxWidth + 5;
+          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          break;
+        case GUI.Placement.Right:
+          this.Width = maxWidth + 5;
+          this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, m_mainScreen.Bounds.Y );
+          break;
+        case GUI.Placement.Top:
+          this.Height = maxHeight + 5;
+          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          break;
+        default:
+          // Bottom
+          this.Height = maxHeight + 5;
+          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
+          break;
+      }
+
+      // Color it if connected
       if ( SC.SimConnectClient.Instance.IsConnected )
         flp.Controls[0].ForeColor = Color.LimeGreen;
 
-      initDone = true;
+      m_initDone = true;
     }
 
     /// <summary>
-    /// Handle the click events here
+    /// Handle the BAR click events here
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -285,22 +363,22 @@ namespace FS20_HudBar
           SC.SimConnectClient.Instance.AP_G1000Module.Master_toggle( );
           break;
         case GItem.AP_ALT:
-          SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold = true; // toggles independet of the set value
+          SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold = true; // toggles independent of the set value
           break;
         case GItem.AP_APR:
-          SC.SimConnectClient.Instance.AP_G1000Module.APR_hold = true; // toggles independet of the set value
+          SC.SimConnectClient.Instance.AP_G1000Module.APR_hold = true; // toggles independent of the set value
           break;
         case GItem.AP_FLC:
-          SC.SimConnectClient.Instance.AP_G1000Module.FLC_active = true; // toggles independet of the set value
+          SC.SimConnectClient.Instance.AP_G1000Module.FLC_active = true; // toggles independent of the set value
           break;
         case GItem.AP_HDG:
-          SC.SimConnectClient.Instance.AP_G1000Module.HDG_hold = true; // toggles independet of the set value
+          SC.SimConnectClient.Instance.AP_G1000Module.HDG_hold = true; // toggles independent of the set value
           break;
         case GItem.AP_NAV:
-          SC.SimConnectClient.Instance.AP_G1000Module.NAV_hold = true; // toggles independet of the set value
+          SC.SimConnectClient.Instance.AP_G1000Module.NAV_hold = true; // toggles independent of the set value
           break;
         case GItem.AP_VS:
-          SC.SimConnectClient.Instance.AP_G1000Module.VS_hold = true; // toggles independet of the set value
+          SC.SimConnectClient.Instance.AP_G1000Module.VS_hold = true; // toggles independent of the set value
           break;
         case GItem.ETrim:
           SC.SimConnectClient.Instance.AutoETrimModule.Enabled = !SC.SimConnectClient.Instance.AutoETrimModule.Enabled; // toggles
@@ -322,7 +400,7 @@ namespace FS20_HudBar
     private void UpdateGUI( )
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity..
-      if ( !initDone ) return; // cannot access items at this time
+      if ( !m_initDone ) return; // cannot access items at this time
 
       int numEngines = SC.SimConnectClient.Instance.EngineModule.NumEngines;
 
@@ -399,9 +477,13 @@ namespace FS20_HudBar
       HUD.Value( GItem.E2_EGT ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_egt;
       HUD.ValueControl( GItem.E2_EGT ).Visible = ( numEngines > 1 );
 
-      HUD.Value( GItem.E1_FFlow ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_FuelFlow_lbPh;
-      HUD.Value( GItem.E2_FFlow ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_FuelFlow_lbPh;
-      HUD.ValueControl( GItem.E2_FFlow ).Visible = ( numEngines > 1 );
+      HUD.Value( GItem.E1_FFlow_pph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_FuelFlow_lbPh;
+      HUD.Value( GItem.E2_FFlow_pph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_FuelFlow_lbPh;
+      HUD.ValueControl( GItem.E2_FFlow_pph ).Visible = ( numEngines > 1 );
+
+      HUD.Value( GItem.E1_FFlow_gph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_FuelFlow_galPh;
+      HUD.Value( GItem.E2_FFlow_gph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_FuelFlow_galPh;
+      HUD.ValueControl( GItem.E2_FFlow_gph ).Visible = ( numEngines > 1 );
 
       // GPS
       if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
@@ -533,8 +615,6 @@ namespace FS20_HudBar
         SimConnect( );
       }
     }
-
-
 
   }
 }

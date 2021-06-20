@@ -1,5 +1,5 @@
-FS20_HudBar V 0.12 - Build 8 BETA
-(c) M. Burri - 22-May-2021
+FS20_HudBar V 0.20 - Build 13 BETA
+(c) M. Burri - 20-June-2021
 
 Contains files:
 
@@ -31,6 +31,15 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.20-B13
+- Add Splitter to shift left/top start of bar
+- Add FontSize and Placement are now profile specific
+- Add Fuel Flow field for Gal per hour
+- Add Bar auto scales from 1 to more rows/columns to show all selected items
+- Update more Font Sizes to choose from
+- Update context menu shows currently selected profile
+- Fix Save Selected Profile on Exit
+
 V 0.12-B8
 - Added Left, right, top alignment
 - Added Font selection Regular, Larger, Largest

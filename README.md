@@ -1,14 +1,14 @@
-# MSFS HudBar V 0.12.0.8
+# MSFS HudBar V 0.20.0.13
 
-### Display essential Information as Bar at the bottom of the primary screen   
+### Display essential Information as Bar at any side of the primary screen   
 
 
-* Displays essential information as Bar at the bottom of the primary screen
+* Displays essential aircraft and flight information as Bar
 * Supports 1 and 2 engine aircrafts (Prop/Engine RPM, FuelFlow for each)
 * Provides 5 different content profiles which are fully configurable
 * The pilot can directly activate Autopilot commands
 * Auto Elevator Trim on a click
-* Works best with wide screen monitors
+* Bottom/Top Bars work best with wide screen monitors
 
 
 ![FS20_HudBar wide screen view](https://raw.githubusercontent.com/bm98/FS20_HudBar/main/doc/HudBar-screen.jpg "Wide Screen view")
@@ -28,29 +28,35 @@ https://www.youtube.com/c/JayDeeGaming/about
 
 * Deploy the release zip content in a folder (no installer provided or needed)
 * Start FS20_HudBar.exe
-* It attempts to connect to the Flightsimulator in 5 sec intervals, but shows an error message while it cannot connect   
-
+* It attempts to connect to the Flightsimulator in 5 sec intervals, but shows an error message while it cannot connect  
+<br>
 * Start MSFS2020 - it will connect once the Sim is up and running  
 Note: the shown values are a bit meaningless until the aircraft is live   
 Also note that the bar is shown on the ++PRIMARY monitor++ at the bottom of the screen   
-   
-
-* Right Click the Bar at the bottom of the screen and choose from the pop up menu
-  * To select a Profile (1..5)
+<br>
+* Right Click the Bar and choose from the pop up menu
+  * To select a Profile (1..5 - your names)
   * To Configure.. to check or uncheck the items to be shown
   * To Exit and stop the program
-
+<br>
+* Grab the Splitter left or above the first shown item and move the left/top start of the bar
+<br>
 ![FS20_HudBar Overview](https://raw.githubusercontent.com/bm98/FS20_HudBar/main/doc/HudBar-overview.jpg "HudBar Overview")
-
-* Autopilot commands that accept mouse clicks to toggle have a dark blue background and show a hand while hovering the active area  
+<br>
+Autopilot commands that accept mouse clicks to toggle have a dark blue background and show a hand while hovering the active area  
 * AP,HDG,ALT,VS,FLC,NAV and APR can be directly toggled
 * BARO set to current (keyboard B button)
-
-* ETrim - Elevator Trim: clicking the ETrim label will activate the Auto Elevator Trim module
-for about 20 seconds. 
+<br>
+* ETrim - Elevator Trim: clicking the ETrim label will activate the Auto Elevator Trim module for about 20 seconds. 
 It will display ETrim in green color while active - clicking the active module again will switch it off   
 Note: the module controls the Elevator Trim in a way to level the aircraft towards zero vertical speed.
 It may or may not work to your expectation.. so use it only if you feel comfortable with.
+<br>
+* Calculated fields when a "Next Waypoint" is available:
+  * Estimate VS to WYP@ALT (WP-VS):   
+  Calculated VS to reach the next Waypoint at the proposed Altitude with the current GS and DIST (ALTP when purple or Setting Alt when blue)
+  * Estimate ALT@WYP (WP-ALT):   
+  Calculated Altitude at next Waypoint using the actual GS, VS and DIST
 
 ### Configuration
 
@@ -60,7 +66,8 @@ Name and use up to 5 different profiles
 
 Check __Show Units__ to display the units along the values  
 Check __Opaque Background__ to have the Bar completely black, else it is slightly transparent  
-Select a __Fontsize__ from Regular, Larger and Largest (you may limit the items so all fit the screen)  
+Select a __Fontsize__ from Regular, Plus 2,4,6,8,10 an Minus 2,4   
+(the bar rescales to multiple rows/columns to fit all checked items on the screen)  
 Select the __Alignment__ of the bar (left, right, top, bottom)  
 
 -----
