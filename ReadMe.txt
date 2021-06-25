@@ -31,6 +31,14 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.21-B14
+- Add Movable Tile Mode (replaces Splitter)
+- Add Re-arrange item sequence
+- Add Manual Line Breaks
+- Update Selected profile marking in Configuration
+- Update Dampen and Round Estimates to 100 increments
+- Update QuickGuide
+
 V 0.20-B13
 - Add Splitter to shift left/top start of bar
 - Add FontSize and Placement are now profile specific

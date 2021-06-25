@@ -1,9 +1,9 @@
-# MSFS HudBar V 0.20.0.13
+# MSFS HudBar V 0.21.0.14
 
-### Display essential Information as Bar at any side of the primary screen   
+### Display essential Information as Bar or Tile at any side of the primary screen   
 
 
-* Displays essential aircraft and flight information as Bar
+* Displays essential aircraft and flight information as Bar or Tile
 * Supports 1 and 2 engine aircrafts (Prop/Engine RPM, FuelFlow for each)
 * Provides 5 different content profiles which are fully configurable
 * The pilot can directly activate Autopilot commands
@@ -27,19 +27,27 @@ https://www.youtube.com/c/JayDeeGaming/about
 ## Usage 
 
 * Deploy the release zip content in a folder (no installer provided or needed)
-* Start FS20_HudBar.exe
-* It attempts to connect to the Flightsimulator in 5 sec intervals, but shows an error message while it cannot connect  
+
+Best is to start MSFS first, then the Bar  
 <br>
-* Start MSFS2020 - it will connect once the Sim is up and running  
-Note: the shown values are a bit meaningless until the aircraft is live   
-Also note that the bar is shown on the ++PRIMARY monitor++ at the bottom of the screen   
+*	Start MSFS2020 first and once the Main Menu is shown
+*	Start FS20_HudBar.exe
+*	It attempts to connect to the Flight simulator in 5 sec intervals, but shows an error message while it cannot connect
+* Note: the shown values are a bit meaningless until the aircraft and flight is live
+Also note that the bar is shown on the ++PRIMARY monitor++ at the bottom of the screen
 <br>
 * Right Click the Bar and choose from the pop up menu
   * To select a Profile (1..5 - your names)
   * To Configure.. to check or uncheck the items to be shown
   * To Exit and stop the program
 <br>
-* Grab the Splitter left or above the first shown item and move the left/top start of the bar
+*	The Hud can be shown as Bar or Tile 
+(to be changed in Configuration, default is Bar at the Bottom of the screen)
+    * Bar: a full width window attached to the defined side of the screen
+    * Tile: a window sized to accommodate the selected items
+A Tile can be moved freely along the side where it is attached to   
+
+Note: the previous Splitter is no longer available – use Tile and move the tile wherever you want.
 <br>
 ![FS20_HudBar Overview](https://raw.githubusercontent.com/bm98/FS20_HudBar/main/doc/HudBar-overview.jpg "HudBar Overview")
 <br>
@@ -60,15 +68,10 @@ It may or may not work to your expectation.. so use it only if you feel comforta
 
 ### Configuration
 
-Name and use up to 5 different profiles   
+Find more information in the QuickGuide here:
 
-![FS20_HudBar Configuration](https://raw.githubusercontent.com/bm98/FS20_HudBar/main/doc/HudBar-config.jpg "HudBar Configuration")
+https://github.com/bm98/FS20_HudBar/tree/main/doc/MSFS_HudBar-QuickGuide.pdf
 
-Check __Show Units__ to display the units along the values  
-Check __Opaque Background__ to have the Bar completely black, else it is slightly transparent  
-Select a __Fontsize__ from Regular, Plus 2,4,6,8,10 an Minus 2,4   
-(the bar rescales to multiple rows/columns to fit all checked items on the screen)  
-Select the __Alignment__ of the bar (left, right, top, bottom)  
 
 -----
 

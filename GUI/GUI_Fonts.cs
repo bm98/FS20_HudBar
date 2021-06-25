@@ -35,6 +35,15 @@ namespace FS20_HudBar.GUI
   }
 
   /// <summary>
+  /// Display Kind of the Bar
+  /// </summary>
+  public enum Kind
+  {
+    Bar=0,
+    Tile,
+  }
+
+  /// <summary>
   /// Font provider
   /// </summary>
   class GUI_Fonts

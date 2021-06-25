@@ -127,10 +127,38 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_1_Kind {
+      get { return (int)this["Profile_1_Kind"]; }
+      set { this["Profile_1_Kind"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0, 0" )]
+    public Point Profile_1_Location {
+      get { return (Point)this["Profile_1_Location"]; }
+      set { this["Profile_1_Location"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_1 {
       get { return (string)this["Profile_1"]; }
       set { this["Profile_1"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string FlowBreak_1 {
+      get { return (string)this["FlowBreak_1"]; }
+      set { this["FlowBreak_1"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string Sequence_1 {
+      get { return (string)this["Sequence_1"]; }
+      set { this["Sequence_1"] = value; }
     }
 
 
@@ -156,10 +184,38 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_2_Kind {
+      get { return (int)this["Profile_2_Kind"]; }
+      set { this["Profile_2_Kind"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0, 0" )]
+    public Point Profile_2_Location {
+      get { return (Point)this["Profile_2_Location"]; }
+      set { this["Profile_2_Location"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_2 {
       get { return (string)this["Profile_2"]; }
       set { this["Profile_2"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string FlowBreak_2 {
+      get { return (string)this["FlowBreak_2"]; }
+      set { this["FlowBreak_2"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string Sequence_2 {
+      get { return (string)this["Sequence_2"]; }
+      set { this["Sequence_2"] = value; }
     }
 
 
@@ -185,10 +241,38 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_3_Kind {
+      get { return (int)this["Profile_3_Kind"]; }
+      set { this["Profile_3_Kind"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0, 0" )]
+    public Point Profile_3_Location {
+      get { return (Point)this["Profile_3_Location"]; }
+      set { this["Profile_3_Location"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_3 {
       get { return (string)this["Profile_3"]; }
       set { this["Profile_3"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string FlowBreak_3 {
+      get { return (string)this["FlowBreak_3"]; }
+      set { this["FlowBreak_3"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string Sequence_3 {
+      get { return (string)this["Sequence_3"]; }
+      set { this["Sequence_3"] = value; }
     }
 
 
@@ -214,10 +298,38 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_4_Kind {
+      get { return (int)this["Profile_4_Kind"]; }
+      set { this["Profile_4_Kind"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0, 0" )]
+    public Point Profile_4_Location {
+      get { return (Point)this["Profile_4_Location"]; }
+      set { this["Profile_4_Location"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_4 {
       get { return (string)this["Profile_4"]; }
       set { this["Profile_4"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string FlowBreak_4 {
+      get { return (string)this["FlowBreak_4"]; }
+      set { this["FlowBreak_4"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string Sequence_4 {
+      get { return (string)this["Sequence_4"]; }
+      set { this["Sequence_4"] = value; }
     }
 
 
@@ -243,10 +355,38 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_5_Kind {
+      get { return (int)this["Profile_5_Kind"]; }
+      set { this["Profile_5_Kind"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0, 0" )]
+    public Point Profile_5_Location {
+      get { return (Point)this["Profile_5_Location"]; }
+      set { this["Profile_5_Location"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_5 {
       get { return (string)this["Profile_5"]; }
       set { this["Profile_5"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string FlowBreak_5 {
+      get { return (string)this["FlowBreak_5"]; }
+      set { this["FlowBreak_5"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string Sequence_5 {
+      get { return (string)this["Sequence_5"]; }
+      set { this["Sequence_5"] = value; }
     }
 
     #endregion

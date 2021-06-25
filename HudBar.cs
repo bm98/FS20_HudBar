@@ -170,11 +170,16 @@ namespace FS20_HudBar
     /// </summary>
     public Placement Placement { get; set; } = Placement.Bottom;
 
+    /// <summary>
+    /// Display Kind of the Bar
+    /// </summary>
+    public Kind Kind { get; set; } = Kind.Bar;
+
 
     // Hud Bar label names to match the enum above (as short as possible)
     private Dictionary<LItem,string> m_guiNames = new Dictionary<LItem, string>(){
       {LItem.MSFS,"MSFS" },
-      {LItem.SimRate,"SR" },
+      {LItem.SimRate,"SimRate" },
 
       {LItem.ETrim,"E-Trim" }, {LItem.RTrim,"R-Trim" }, {LItem.ATrim,"A-Trim" },
       {LItem.OAT,"OAT" },
@@ -330,7 +335,7 @@ namespace FS20_HudBar
     /// <param name="fontSize">Used fontsize</param>
     /// <param name="placement">Screen alignment of the bar</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
-                    bool showUnits, bool opaque, FontSize fontSize, Placement placement )
+                    bool showUnits, bool opaque, FontSize fontSize, Placement placement, Kind kind )
     {
       // just save them in the HUD mainly for config purpose
       ShowUnits = showUnits;
@@ -338,6 +343,7 @@ namespace FS20_HudBar
 
       FontSize = fontSize;
       Placement = placement;
+      Kind = kind;
 
       // init once from the submitted labels
       if ( FONTS == null ) {

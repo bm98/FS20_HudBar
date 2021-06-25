@@ -26,8 +26,6 @@ namespace FS20_HudBar
 
     private frmConfig CFG = new frmConfig( );
 
-    private float m_avgVs = 0;
-
     Screen m_mainScreen;
 
     public frmMain( )
@@ -36,16 +34,30 @@ namespace FS20_HudBar
 
       AppSettings.Instance.Reload( );
 
-      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_1_Name, AppSettings.Instance.Profile_1, 
-        AppSettings.Instance.Profile_1_FontSize, AppSettings.Instance.Profile_1_Placement ) );
-      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_2_Name, AppSettings.Instance.Profile_2, 
-        AppSettings.Instance.Profile_2_FontSize, AppSettings.Instance.Profile_2_Placement ) );
-      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_3_Name, AppSettings.Instance.Profile_3, 
-        AppSettings.Instance.Profile_3_FontSize, AppSettings.Instance.Profile_3_Placement ) );
-      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_4_Name, AppSettings.Instance.Profile_4,
-        AppSettings.Instance.Profile_4_FontSize, AppSettings.Instance.Profile_4_Placement ) );
-      m_profiles.Add( new CProfile( AppSettings.Instance.Profile_5_Name, AppSettings.Instance.Profile_5, 
-        AppSettings.Instance.Profile_5_FontSize, AppSettings.Instance.Profile_5_Placement ) );
+      m_profiles.Add( new CProfile( 1, AppSettings.Instance.Profile_1_Name,
+                                       AppSettings.Instance.Profile_1, AppSettings.Instance.FlowBreak_1, AppSettings.Instance.Sequence_1,
+                                       AppSettings.Instance.Profile_1_FontSize, AppSettings.Instance.Profile_1_Placement, 
+                                       AppSettings.Instance.Profile_1_Kind, AppSettings.Instance.Profile_1_Location ) );
+
+      m_profiles.Add( new CProfile( 2, AppSettings.Instance.Profile_2_Name,
+                                       AppSettings.Instance.Profile_2, AppSettings.Instance.FlowBreak_2, AppSettings.Instance.Sequence_3,
+                                       AppSettings.Instance.Profile_2_FontSize, AppSettings.Instance.Profile_2_Placement, 
+                                       AppSettings.Instance.Profile_2_Kind, AppSettings.Instance.Profile_2_Location ) );
+
+      m_profiles.Add( new CProfile( 3, AppSettings.Instance.Profile_3_Name,
+                                       AppSettings.Instance.Profile_3, AppSettings.Instance.FlowBreak_3, AppSettings.Instance.Sequence_3,
+                                       AppSettings.Instance.Profile_3_FontSize, AppSettings.Instance.Profile_3_Placement, 
+                                       AppSettings.Instance.Profile_3_Kind, AppSettings.Instance.Profile_3_Location ) );
+
+      m_profiles.Add( new CProfile( 4, AppSettings.Instance.Profile_4_Name,
+                                       AppSettings.Instance.Profile_4, AppSettings.Instance.FlowBreak_4, AppSettings.Instance.Sequence_4,
+                                       AppSettings.Instance.Profile_4_FontSize, AppSettings.Instance.Profile_4_Placement, 
+                                       AppSettings.Instance.Profile_4_Kind, AppSettings.Instance.Profile_4_Location ) );
+
+      m_profiles.Add( new CProfile( 5, AppSettings.Instance.Profile_5_Name,
+                                       AppSettings.Instance.Profile_5, AppSettings.Instance.FlowBreak_5, AppSettings.Instance.Sequence_5,
+                                       AppSettings.Instance.Profile_5_FontSize, AppSettings.Instance.Profile_5_Placement, 
+                                       AppSettings.Instance.Profile_5_Kind, AppSettings.Instance.Profile_5_Location ) );
 
       m_selProfile = AppSettings.Instance.SelProfile;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
@@ -65,10 +77,8 @@ namespace FS20_HudBar
     private void frmMain_Load( object sender, EventArgs e )
     {
       // prepare the GUI
-      spc.Dock = DockStyle.Fill;
-      spc.SplitterDistance = AppSettings.Instance.SplitDistance;
-
       flp.Dock = DockStyle.Fill;
+     // flp.BorderStyle = BorderStyle.FixedSingle; // DEBUG
       flp.WrapContents = true;
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc.
       this.TopMost = true; // make sure we float on top
@@ -86,7 +96,6 @@ namespace FS20_HudBar
     private void frmMain_FormClosing( object sender, FormClosingEventArgs e )
     {
       AppSettings.Instance.SelProfile = m_selProfile;
-      AppSettings.Instance.SplitDistance = spc.SplitterDistance;
       AppSettings.Instance.Save( );
       // stop connecting tries
       timer1.Enabled = false;
@@ -110,6 +119,8 @@ namespace FS20_HudBar
 
       CFG.HudBarRef = HUD;
       CFG.ProfilesRef = m_profiles;
+      CFG.SelectedProfile = m_selProfile;
+
       if ( CFG.ShowDialog( this ) == DialogResult.OK ) {
 
         // Save all configuration properties
@@ -120,28 +131,43 @@ namespace FS20_HudBar
 
         AppSettings.Instance.Profile_1_Name = m_profiles[0].PName;
         AppSettings.Instance.Profile_1 = m_profiles[0].ProfileString( );
+        AppSettings.Instance.FlowBreak_1 = m_profiles[0].FlowBreakString( );
+        AppSettings.Instance.Sequence_1 = m_profiles[0].ItemPosString( );
         AppSettings.Instance.Profile_1_FontSize = (int)m_profiles[0].FontSize;
         AppSettings.Instance.Profile_1_Placement = (int)m_profiles[0].Placement;
+        AppSettings.Instance.Profile_1_Kind = (int)m_profiles[0].Kind;
 
         AppSettings.Instance.Profile_2_Name = m_profiles[1].PName;
         AppSettings.Instance.Profile_2 = m_profiles[1].ProfileString( );
+        AppSettings.Instance.FlowBreak_2 = m_profiles[1].FlowBreakString( );
+        AppSettings.Instance.Sequence_2 = m_profiles[1].ItemPosString( );
         AppSettings.Instance.Profile_2_FontSize = (int)m_profiles[1].FontSize;
         AppSettings.Instance.Profile_2_Placement = (int)m_profiles[1].Placement;
+        AppSettings.Instance.Profile_2_Kind = (int)m_profiles[1].Kind;
 
         AppSettings.Instance.Profile_3_Name = m_profiles[2].PName;
         AppSettings.Instance.Profile_3 = m_profiles[2].ProfileString( );
+        AppSettings.Instance.FlowBreak_3 = m_profiles[2].FlowBreakString( );
+        AppSettings.Instance.Sequence_3 = m_profiles[2].ItemPosString( );
         AppSettings.Instance.Profile_3_FontSize = (int)m_profiles[2].FontSize;
         AppSettings.Instance.Profile_3_Placement = (int)m_profiles[2].Placement;
+        AppSettings.Instance.Profile_3_Kind = (int)m_profiles[2].Kind;
 
         AppSettings.Instance.Profile_4_Name = m_profiles[3].PName;
         AppSettings.Instance.Profile_4 = m_profiles[3].ProfileString( );
+        AppSettings.Instance.FlowBreak_4 = m_profiles[3].FlowBreakString( );
+        AppSettings.Instance.Sequence_4 = m_profiles[3].ItemPosString( );
         AppSettings.Instance.Profile_4_FontSize = (int)m_profiles[3].FontSize;
         AppSettings.Instance.Profile_4_Placement = (int)m_profiles[3].Placement;
+        AppSettings.Instance.Profile_4_Kind = (int)m_profiles[3].Kind;
 
         AppSettings.Instance.Profile_5_Name = m_profiles[4].PName;
         AppSettings.Instance.Profile_5 = m_profiles[4].ProfileString( );
+        AppSettings.Instance.FlowBreak_5 = m_profiles[4].FlowBreakString( );
+        AppSettings.Instance.Sequence_5 = m_profiles[4].ItemPosString( );
         AppSettings.Instance.Profile_5_FontSize = (int)m_profiles[4].FontSize;
         AppSettings.Instance.Profile_5_Placement = (int)m_profiles[4].Placement;
+        AppSettings.Instance.Profile_5_Kind = (int)m_profiles[4].Kind;
 
         AppSettings.Instance.Save( );
 
@@ -183,14 +209,71 @@ namespace FS20_HudBar
       InitGUI( );
     }
 
+    private bool m_moving = false;
+    private Point m_moveOffset = new Point(0,0);
+
+    private void frmMain_MouseDown( object sender, MouseEventArgs e )
+    {
+      if ( !m_initDone ) return; // bail out if in Init - the splitter is moved during some init and resize events on it's own..
+      if ( HUD.Kind == GUI.Kind.Bar ) return; // cannot move the bar
+
+      m_moving = true;
+      m_moveOffset = e.Location;
+    }
+
+    private void frmMain_MouseMove( object sender, MouseEventArgs e )
+    {
+      if ( !m_initDone ) return; // bail out if in Init - the splitter is moved during some init and resize events on it's own..
+      if ( HUD.Kind == GUI.Kind.Bar ) return; // cannot move the bar
+      if ( !m_moving ) return;
+
+      switch ( HUD.Placement ) {
+        case GUI.Placement.Bottom:
+          this.Location = new Point(this.Location.X + e.X -m_moveOffset.X, this.Location.Y );
+          break;
+        case GUI.Placement.Left:
+          this.Location = new Point( this.Location.X, this.Location.Y + e.Y - m_moveOffset.Y );
+          break;
+        case GUI.Placement.Right:
+          this.Location = new Point( this.Location.X, this.Location.Y + e.Y - m_moveOffset.Y );
+          break;
+        case GUI.Placement.Top:
+          this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y );
+          break;
+        default: break;
+      }
+    }
+
+    private void frmMain_MouseUp( object sender, MouseEventArgs e )
+    {
+      if ( !m_initDone ) return; // bail out if in Init - the splitter is moved during some init and resize events on it's own..
+      if ( HUD.Kind == GUI.Kind.Bar ) return; // cannot move the bar
+      if ( !m_moving ) return;
+
+      m_moving = false;
+      PROFILE.UpdateLocation( this.Location );
+      // store new location per profile
+      switch ( m_selProfile ) {
+        case 0: AppSettings.Instance.Profile_1_Location = this.Location; break;
+        case 1: AppSettings.Instance.Profile_2_Location = this.Location; break;
+        case 2: AppSettings.Instance.Profile_3_Location = this.Location; break;
+        case 3: AppSettings.Instance.Profile_4_Location = this.Location; break;
+        case 4: AppSettings.Instance.Profile_5_Location = this.Location; break;
+        default: AppSettings.Instance.Profile_1_Location = this.Location; break;
+      }
+      AppSettings.Instance.Save( );
+
+    }
+
+
     private void spc_SplitterMoved( object sender, SplitterEventArgs e )
     {
       // When the splitter finished moving we have to reinit the GUI, else it does not rescale
       if ( !m_initDone ) return; // bail out if in Init - the splitter is moved during some init and resize events on it's own..
 
-      AppSettings.Instance.SplitDistance = spc.SplitterDistance;
-      AppSettings.Instance.Save( );
-      InitGUI( );
+      //      AppSettings.Instance.SplitDistance = spc.SplitterDistance;
+      //      AppSettings.Instance.Save( );
+      //      InitGUI( );
     }
 
 
@@ -214,6 +297,7 @@ namespace FS20_HudBar
     private void InitGUI( )
     {
       m_initDone = false; // stop updating values while reconfiguring
+      this.Visible = false; // hide, else we see all kind of shaping
 
       // Update profile selection items
       mP1.Text = m_profiles[0].PName;
@@ -223,6 +307,7 @@ namespace FS20_HudBar
       mP5.Text = m_profiles[4].PName;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
 
+      // current profile
       PROFILE = m_profiles[m_selProfile];
 
       // start from scratch
@@ -230,37 +315,42 @@ namespace FS20_HudBar
                           AppSettings.Instance.ShowUnits,
                           AppSettings.Instance.Opaque,
                           PROFILE.FontSize,
-                          PROFILE.Placement);
+                          PROFILE.Placement,
+                          PROFILE.Kind );
+
+      // Prepare FLPanel to load controls
+      flp.Controls.Clear( ); // reload
+      // release dock to allow the bar to autosize
+      flp.Dock = DockStyle.None;
+      flp.AutoSize = true;
+      // can move a tile kind profile (but not a bar)
+      flp.Cursor = PROFILE.Kind == GUI.Kind.Tile ? Cursors.SizeAll : this.Cursor;
 
       // attach it to the PRIMARY screen (we assume the FS is run on the primary anyway...)
-      // full width
+      // preliminary  windows full width/height
       switch ( HUD.Placement ) {
         case GUI.Placement.Bottom:
           this.Width = m_mainScreen.Bounds.Width;
           this.Height = 40; //  any will do as we rescale it below
           this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
-          spc.Orientation = Orientation.Vertical;
           flp.FlowDirection = FlowDirection.LeftToRight;
           break;
         case GUI.Placement.Left:
           this.Height = m_mainScreen.Bounds.Height;
           this.Width = 200; //  any will do as we rescale it below
           this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
-          spc.Orientation = Orientation.Horizontal;
           flp.FlowDirection = FlowDirection.TopDown;
           break;
         case GUI.Placement.Right:
           this.Height = m_mainScreen.Bounds.Height;
           this.Width = 200; //  any will do as we rescale it below
           this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, m_mainScreen.Bounds.Y );
-          spc.Orientation = Orientation.Horizontal;
           flp.FlowDirection = FlowDirection.TopDown;
           break;
         case GUI.Placement.Top:
           this.Width = m_mainScreen.Bounds.Width;
           this.Height = 40; //  any will do as we rescale it below
           this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
-          spc.Orientation = Orientation.Vertical;
           flp.FlowDirection = FlowDirection.LeftToRight;
           break;
         default:
@@ -268,32 +358,39 @@ namespace FS20_HudBar
           this.Width = m_mainScreen.Bounds.Width;
           this.Height = 40; //  any will do as we rescale it below
           this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
-          spc.Orientation = Orientation.Vertical;
           flp.FlowDirection = FlowDirection.LeftToRight;
           break;
       }
       // set form opacity from settings (use the const value for slight transparency)
       this.Opacity = HUD.OpaqueBackground ? 1 : c_opacity;
-//      this.Opacity = 0.1;
+      //      this.Opacity = 0.1;
       flp.BackColor = Color.FromArgb( 255, 0, 0, 1 );
-      spc.SplitterDistance = AppSettings.Instance.SplitDistance;
-
-
-      flp.Controls.Clear( ); // reload
 
       // load flowLayout 
       int maxHeight = 0;
       int maxWidth = 0;
+      GUI.DispItem prevDi = null;
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
-        var di = HUD.DispItem(i);
-        if ( PROFILE.ShowItem( i ) ) {
+        // use the enum index only to count from 0..max items
+        var key = PROFILE.ItemKeyFromPos( (int)i);
+        var di = HUD.DispItem( key );
+        if ( PROFILE.ShowItem( key ) ) {
           if ( di != null && di.Controls.Count > 0 ) {
             // add when we have to show something
             flp.Controls.Add( di );
+
+            // the flowbreak causes the tagged item to be on the same line and then to break for the next one
+            // Not so intuitive for the user - so we mark the one that goes on the next line but need to attach the FB then to the prev one
+            if ( PROFILE.BreakItem( key ) && prevDi != null ) {
+              // We set the FlowBreak to the item before the marked one
+              flp.SetFlowBreak( prevDi, true );
+            }
             int h = di.Top+di.Height;
             maxHeight = ( h > maxHeight ) ? h : maxHeight;
             int w = di.Left+di.Width;
             maxWidth = ( w > maxWidth ) ? w : maxWidth;
+
+            prevDi = di; // store for FlowBreak attachment for valid and visible ones if the next one is tagged
           }
         }
         else {
@@ -317,35 +414,75 @@ namespace FS20_HudBar
         }
       }
 
-      // post proc - allocate the needed height
+      // post proc - allocate the needed height/width/location
+      // reduce width/ height for Tiles
       switch ( HUD.Placement ) {
         case GUI.Placement.Bottom:
-          this.Height = maxHeight+5;
-          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
+          this.Height = maxHeight + 5;
+          if ( PROFILE.Kind == GUI.Kind.Tile ) {
+            this.Width = flp.Width + 5;
+            this.Location = new Point( PROFILE.Location.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
+          }
+          else {
+            this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
+          }
           break;
+
         case GUI.Placement.Left:
           this.Width = maxWidth + 5;
-          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          if ( PROFILE.Kind == GUI.Kind.Tile ) {
+            this.Height = flp.Height + 5;
+            this.Location = new Point( m_mainScreen.Bounds.X, PROFILE.Location.Y );
+          }
+          else {
+            this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          }
           break;
+
         case GUI.Placement.Right:
           this.Width = maxWidth + 5;
-          this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, m_mainScreen.Bounds.Y );
+          if ( PROFILE.Kind == GUI.Kind.Tile ) {
+            this.Height = flp.Height + 5;
+            this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, PROFILE.Location.Y );
+          }
+          else {
+            this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, m_mainScreen.Bounds.Y );
+          }
           break;
+
         case GUI.Placement.Top:
           this.Height = maxHeight + 5;
-          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          if ( PROFILE.Kind == GUI.Kind.Tile ) {
+            this.Width = flp.Width + 5;
+            this.Location = new Point( PROFILE.Location.X, m_mainScreen.Bounds.Y );
+          }
+          else {
+            this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          }
           break;
+
         default:
           // Bottom
           this.Height = maxHeight + 5;
           this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
           break;
       }
+      // after sizing the Window - re-dock the FLPanel for full Fill
+      flp.Dock = DockStyle.Fill;
 
       // Color it if connected
-      if ( SC.SimConnectClient.Instance.IsConnected )
-        flp.Controls[0].ForeColor = Color.LimeGreen;
+      if ( SC.SimConnectClient.Instance.IsConnected ) {
+        HUD.LabelControl( GItem.Ad ).ForeColor = Color.LimeGreen;
+        HUD.LabelControl( GItem.Ad ).BackColor = flp.BackColor;
+        HUD.Value( GItem.Ad ).Text = "";
+      }
+      else {
+        HUD.LabelControl( GItem.Ad ).ForeColor = HUD.c_Info;
+        HUD.LabelControl( GItem.Ad ).BackColor = Color.Red;
+        HUD.Value( GItem.Ad ).Text = "NO SIM";
+      }
 
+      this.Visible = true; // Unhide when finished
       m_initDone = true;
     }
 
@@ -502,19 +639,16 @@ namespace FS20_HudBar
           tgtAlt = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
           estCol = HUD.c_Set;
         }
-        HUD.Value( GItem.EST_VS ).Value = Estimates.VSToTgt_AtAltitude(
+        // Update Estimate Calculation with Acf data
+        Estimates.UpdateValues(
           SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt,
           SC.SimConnectClient.Instance.AircraftModule.AltMsl_ft,
-          tgtAlt,
-          SC.SimConnectClient.Instance.GpsModule.WYP_dist
-          );
+          SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin
+        );
+
+        HUD.Value( GItem.EST_VS ).Value = Estimates.VSToTgt_AtAltitude( tgtAlt, SC.SimConnectClient.Instance.GpsModule.WYP_dist );
         HUD.ValueControl( GItem.EST_VS ).ForeColor = estCol;
-        HUD.Value( GItem.EST_ALT ).Value = Estimates.AltitudeAtTgt(
-          SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt,
-          SC.SimConnectClient.Instance.AircraftModule.AltMsl_ft,
-          m_avgVs,
-          SC.SimConnectClient.Instance.GpsModule.WYP_dist
-          );
+        HUD.Value( GItem.EST_ALT ).Value = Estimates.AltitudeAtTgt( SC.SimConnectClient.Instance.GpsModule.WYP_dist );
         HUD.ValueControl( GItem.EST_ALT ).ForeColor = estCol;
       }
       else {
@@ -581,7 +715,8 @@ namespace FS20_HudBar
         // try to connect
         if ( SC.SimConnectClient.Instance.Connect( ) ) {
           HUD.LabelControl( GItem.Ad ).ForeColor = Color.LimeGreen;
-          _ = SC.SimConnectClient.Instance.AircraftModule.AcftConfigFile; // init by pulling one item, so it registers the module
+          // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
+          _ = SC.SimConnectClient.Instance.AircraftModule.AcftConfigFile;
         }
         else {
           HUD.LabelControl( GItem.Ad ).BackColor = Color.Red;
@@ -608,7 +743,6 @@ namespace FS20_HudBar
         else {
           m_aETrimTimer -= timer1.Interval; // dec timer for the AutoTrim lifetime
         }
-        m_avgVs = ( 3 * m_avgVs + SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin ) / 4.0f; // take 3/4 from the previous value to dampen it
       }
       else {
         // If not connected try again

@@ -47,11 +47,7 @@ namespace FS20_HudBar
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
-      this.spc = new System.Windows.Forms.SplitContainer();
       this.cMenu.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.spc)).BeginInit();
-      this.spc.Panel2.SuspendLayout();
-      this.spc.SuspendLayout();
       this.SuspendLayout();
       // 
       // lblProto
@@ -71,12 +67,15 @@ namespace FS20_HudBar
       // 
       // flp
       // 
-      this.flp.Anchor = System.Windows.Forms.AnchorStyles.None;
+      this.flp.AutoSize = true;
       this.flp.CausesValidation = false;
-      this.flp.Location = new System.Drawing.Point(3, 3);
+      this.flp.Location = new System.Drawing.Point(12, 12);
       this.flp.Name = "flp";
-      this.flp.Size = new System.Drawing.Size(198, 31);
+      this.flp.Size = new System.Drawing.Size(110, 31);
       this.flp.TabIndex = 1;
+      this.flp.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseDown);
+      this.flp.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseMove);
+      this.flp.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseUp);
       // 
       // valueProto
       // 
@@ -102,7 +101,7 @@ namespace FS20_HudBar
             this.mConfig,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(181, 123);
+      this.cMenu.Size = new System.Drawing.Size(161, 101);
       // 
       // mSelProfile
       // 
@@ -228,25 +227,6 @@ namespace FS20_HudBar
       this.B.UseVisualStyleBackColor = true;
       this.B.Visible = false;
       // 
-      // spc
-      // 
-      this.spc.Location = new System.Drawing.Point(12, 12);
-      this.spc.Name = "spc";
-      // 
-      // spc.Panel1
-      // 
-      this.spc.Panel1.BackColor = System.Drawing.Color.Transparent;
-      this.spc.Panel1MinSize = 10;
-      // 
-      // spc.Panel2
-      // 
-      this.spc.Panel2.Controls.Add(this.flp);
-      this.spc.Panel2MinSize = 100;
-      this.spc.Size = new System.Drawing.Size(310, 46);
-      this.spc.SplitterDistance = 58;
-      this.spc.TabIndex = 5;
-      this.spc.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.spc_SplitterMoved);
-      // 
       // frmMain
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -254,12 +234,13 @@ namespace FS20_HudBar
       this.CausesValidation = false;
       this.ClientSize = new System.Drawing.Size(872, 72);
       this.ContextMenuStrip = this.cMenu;
-      this.Controls.Add(this.spc);
+      this.Controls.Add(this.flp);
       this.Controls.Add(this.B);
       this.Controls.Add(this.value2Proto);
       this.Controls.Add(this.signProto);
       this.Controls.Add(this.lblProto);
       this.Controls.Add(this.valueProto);
+      this.Cursor = System.Windows.Forms.Cursors.Arrow;
       this.Font = new System.Drawing.Font("Bahnschrift", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
       this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -273,11 +254,11 @@ namespace FS20_HudBar
       this.TopMost = true;
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
       this.Load += new System.EventHandler(this.frmMain_Load);
+      this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseDown);
+      this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseMove);
+      this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseUp);
       this.cMenu.ResumeLayout(false);
       this.cMenu.PerformLayout();
-      this.spc.Panel2.ResumeLayout(false);
-      ((System.ComponentModel.ISupportInitialize)(this.spc)).EndInit();
-      this.spc.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -301,7 +282,6 @@ namespace FS20_HudBar
     private System.Windows.Forms.ToolStripMenuItem mP5;
     private System.Windows.Forms.Label value2Proto;
     private System.Windows.Forms.Button B;
-    private System.Windows.Forms.SplitContainer spc;
     private System.Windows.Forms.ToolStripTextBox mSelProfile;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
   }
