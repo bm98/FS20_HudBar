@@ -55,6 +55,10 @@ namespace FS20_HudBar
     AP_FLCs,
     AP_NAVg,
     AP_APR_GS,
+
+    M_TIM_DIST1,  // Checkpoint 1
+    M_TIM_DIST2,  // Checkpoint 2
+    M_TIM_DIST3,  // Checkpoint 3
   }
 
 
@@ -133,6 +137,13 @@ namespace FS20_HudBar
     AP_NAVgps,  // AP NAV follow GPS
     AP_APR,  // AP APR hold active
     AP_GS,   // AP GS  hold active
+
+    M_Elapsed1, // Checkpoint 1
+    M_Dist1, // Checkpoint 1
+    M_Elapsed2, // Checkpoint 2
+    M_Dist2, // Checkpoint 2
+    M_Elapsed3, // Checkpoint 3
+    M_Dist3, // Checkpoint 3
   }
 
   internal class HudBar
@@ -216,7 +227,12 @@ namespace FS20_HudBar
       {LItem.AP_VSs,"VS" },
       {LItem.AP_FLCs,"FLC" },
       {LItem.AP_NAVg,"NAV" },
-      {LItem.AP_APR_GS,"APR/GS" },
+      {LItem.AP_APR_GS,"APR" },
+
+      {LItem.M_TIM_DIST1,"CP 1" },
+      {LItem.M_TIM_DIST2,"CP 2" },
+      {LItem.M_TIM_DIST3,"CP 3" },
+
     };
 
     // Descriptive GUI label names to match the enum above (shown in Config)
@@ -262,37 +278,18 @@ namespace FS20_HudBar
       {LItem.AP_FLCs,"AP FLC / Set" },
       {LItem.AP_NAVg,"AP NAV and GPS" },
       {LItem.AP_APR_GS,"AP APR and GS" },
+
+      {LItem.M_TIM_DIST1,"Checkpoint 1" },
+      {LItem.M_TIM_DIST2,"Checkpoint 2" },
+      {LItem.M_TIM_DIST3,"Checkpoint 3" },
     };
 
-    // Bar label names to match the enum above
-    private Dictionary<GItem,string> m_barNames = new Dictionary<GItem, string>(){
-      {GItem.Ad,"MSFS" },
-      {GItem.SimRate,"SR" },
-
-      {GItem.ETrim,"ETrim" },{GItem.RTrim, "RTrim" }, {GItem.ATrim,"ATrim" },
-      {GItem.OAT,"OAT" }, {GItem.BARO_HPA,"BARO" }, {GItem.BARO_InHg,"BARO" },
-      {GItem.Gear,"Gear" }, {GItem.Brakes,"Brakes" }, {GItem.Flaps,"Flaps" },
-
-      {GItem.E1_TORQP,"TORQ" }, {GItem.E2_TORQP,"" }, {GItem.E1_TORQ,"TORQ" }, {GItem.E2_TORQ,"" },
-      {GItem.P1_RPM,"PRPM" }, {GItem.P2_RPM,"" }, {GItem.E1_RPM,"ERPM" }, {GItem.E2_RPM,"" },
-      {GItem.E1_N1,"N1%" }, {GItem.E2_N1,"" },
-      {GItem.E1_ITT,"ITT" }, {GItem.E2_ITT,"" }, {GItem.E1_EGT,"EGT" },{GItem.E2_EGT,"" },
-      {GItem.E1_FFlow_pph,"FFLOW" },{GItem.E2_FFlow_pph,"" },// omit the label for the second one
-      {GItem.E1_FFlow_gph,"FFLOW" },{GItem.E2_FFlow_gph,"" },// omit the label for the second one
-
-      {GItem.GPS_PWYP,"≡GPS≡" }, {GItem.GPS_NWYP,"---" },
-      {GItem.GPS_DIST,"DIST" }, {GItem.GPS_ETE,"ETE" }, {GItem.GPS_TRK,"TRK" }, {GItem.GPS_GS,"GS" },
-      {GItem.GPS_ALT,"ALT" },
-      {GItem.EST_VS,"E.VS" }, {GItem.EST_ALT,"E.ALT" },
-
-      {GItem.HDG,"HDG" }, {GItem.ALT,"ALT" }, {GItem.RA,"RA" },{GItem.IAS,"IAS" }, {GItem.VS,"VS" },
-
-      {GItem.AP,"≡AP≡" },
-      {GItem.AP_HDG,"HDG" },{GItem.AP_HDGset, "" },
-      {GItem.AP_ALT,"ALT" },{GItem.AP_ALTset, "" },
-      {GItem.AP_VS,"VS" }, {GItem.AP_VSset, "" },
-      {GItem.AP_FLC,"FLC" }, {GItem.AP_FLCset,"" },
-      {GItem.AP_NAV,"NAV" }, {GItem.AP_NAVgps,"GPS" }, {GItem.AP_APR,"APR" }, {GItem.AP_GS,"►GS◄" },
+    // Bar value label names to match the enum above
+    // Used when the individual value item is meant and the text here is the value 
+    //  only used as GPS and GS  for NAV / GPS and APR / GS the rest is for completenes only
+    private Dictionary<GItem,string> m_barValueLabels = new Dictionary<GItem, string>(){
+      {GItem.AP_NAVgps,"GPS" }, 
+      {GItem.AP_GS,"►GS◄" },
     };
 
     // maintain collections of the created Controls to do the processing
@@ -612,13 +609,34 @@ namespace FS20_HudBar
       item = GItem.AP_NAV;
       l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       item = GItem.AP_NAVgps;
-      l = new V_ICAO( value2Proto ) { Text = BarName( item ) }; di.AddItem( l ); AddLbl( item, l );
+      l = new V_ICAO( value2Proto ) { Text = BarValueLabel( item ) }; di.AddItem( l ); AddLbl( item, l );
 
       disp = LItem.AP_APR_GS; di = new DispItem( ); AddDisp( disp, di );
       item = GItem.AP_APR;
-      l = new B_ICAO( item, value2Proto ) { Text = BarName( item ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       item = GItem.AP_GS;
-      l = new V_ICAO( value2Proto ) { Text = BarName( item ) }; di.AddItem( l ); AddLbl( item, l );
+      l = new V_ICAO( value2Proto ) { Text = BarValueLabel( item ) }; di.AddItem( l ); AddLbl( item, l );
+
+      disp = LItem.M_TIM_DIST1; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.M_Elapsed1;
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      v = new V_Time( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = GItem.M_Dist1;
+      v = new V_Dist( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.M_TIM_DIST2; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.M_Elapsed2;
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      v = new V_Time( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = GItem.M_Dist2;
+      v = new V_Dist( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.M_TIM_DIST3; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.M_Elapsed3;
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      v = new V_Time( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = GItem.M_Dist3;
+      v = new V_Dist( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // Apply Unit mod to Values
       foreach ( var lx in m_valItems ) {
@@ -722,17 +740,17 @@ namespace FS20_HudBar
     }
 
     /// <summary>
-    /// Returns the Bar Name of a GItem
+    /// Returns the Bar Value Label of a GItem
     /// </summary>
     /// <param name="item">A GItem</param>
-    /// <returns>The Bar Name</returns>
-    public string BarName( GItem item )
+    /// <returns>The Bar Value Label</returns>
+    public string BarValueLabel( GItem item )
     {
       try {
-        return m_barNames[item];
+        return m_barValueLabels[item];
       }
       catch {
-        return $"Bar Name undef {item}";
+        return $"Bar VLabel undef {item}";
       }
     }
 

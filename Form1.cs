@@ -24,9 +24,14 @@ namespace FS20_HudBar
 
     private const float c_opacity = 0.85f;  // Form opacity when not Fully opaque (slightly transparent)
 
+    //private SC.Input.InputHandler FSInput;  // Receive commands from FSim -  not yet used
     private frmConfig CFG = new frmConfig( );
 
     Screen m_mainScreen;
+
+    private CPointMeter m_cpMeter1 = new CPointMeter();
+    private CPointMeter m_cpMeter2 = new CPointMeter();
+    private CPointMeter m_cpMeter3 = new CPointMeter();
 
     public frmMain( )
     {
@@ -279,10 +284,22 @@ namespace FS20_HudBar
 
     #region Callback Handlers
 
+    // fired from Sim for new Data
     private void Instance_DataArrived( object sender, FSimClientIF.ClientDataArrivedEventArgs e )
     {
       UpdateGUI( );
     }
+
+    // Receive commands from FSim -  not yet used
+    /*
+    private void FSInput_InputArrived( object sender, SC.Input.FSInputEventArgs e )
+    {
+      // FSInput should be valid when this event fires..
+      if ( SC.SimConnectClient.Instance.IsConnected && ( e.ActionName == FSInput.Inputname ) ) {
+        // DO SOMETHING HERE
+      }
+    }
+    */
 
     #endregion
 
@@ -527,6 +544,20 @@ namespace FS20_HudBar
         case GItem.BARO_InHg:
           SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting = true;
           break;
+        // Start Meters
+        case GItem.M_Elapsed1:
+          m_cpMeter1.Start( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon,
+                            SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
+          break;
+        case GItem.M_Elapsed2:
+          m_cpMeter2.Start( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon,
+                            SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
+          break;
+        case GItem.M_Elapsed3:
+          m_cpMeter3.Start( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon,
+                            SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
+          break;
+
         default: break; // nothing 
       }
     }
@@ -549,7 +580,7 @@ namespace FS20_HudBar
       HUD.ValueControl( GItem.SimRate ).BackColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? HUD.c_SRATE : HUD.c_BG;
 
       // TRIMS
-      HUD.LabelControl( GItem.ETrim ).BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? HUD.c_AP : this.BackColor;
+      HUD.LabelControl( GItem.ETrim ).BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? HUD.c_AP : HUD.c_ActBG;
       HUD.Value( GItem.ETrim ).Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
       HUD.Value( GItem.RTrim ).Value = SC.SimConnectClient.Instance.AircraftModule.RudderTrim_prct;
       HUD.Value( GItem.ATrim ).Value = SC.SimConnectClient.Instance.AircraftModule.AileronTrim_prct;
@@ -693,6 +724,23 @@ namespace FS20_HudBar
       }
       HUD.Value( GItem.IAS ).Value = SC.SimConnectClient.Instance.AircraftModule.IAS_kt;
       HUD.Value( GItem.VS ).Value = SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin;
+
+      // Eval Meters
+      m_cpMeter1.Lapse( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon,
+                            SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
+      m_cpMeter2.Lapse( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon,
+                            SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
+      m_cpMeter3.Lapse( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon,
+                            SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
+      HUD.Value( GItem.M_Elapsed1 ).Value = m_cpMeter1.Duration;
+      HUD.Value( GItem.M_Dist1 ).Value = (float)m_cpMeter1.Distance;
+      HUD.Value( GItem.M_Elapsed2 ).Value = m_cpMeter2.Duration;
+      HUD.Value( GItem.M_Dist2 ).Value = (float)m_cpMeter2.Distance;
+      HUD.Value( GItem.M_Elapsed3 ).Value = m_cpMeter3.Duration;
+      HUD.Value( GItem.M_Dist3 ).Value = (float)m_cpMeter3.Distance;
+      HUD.LabelControl( GItem.M_Elapsed1 ).BackColor = m_cpMeter1.Started ? HUD.c_AP : HUD.c_ActBG;
+      HUD.LabelControl( GItem.M_Elapsed2 ).BackColor = m_cpMeter2.Started ? HUD.c_AP : HUD.c_ActBG;
+      HUD.LabelControl( GItem.M_Elapsed3 ).BackColor = m_cpMeter3.Started ? HUD.c_AP : HUD.c_ActBG;
     }
 
 
@@ -709,6 +757,7 @@ namespace FS20_HudBar
 
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         // Disconnect from Input and SimConnect
+        // FSInput.InputArrived -= FSInput_InputArrived; // Receive commands from FSim -  not yet used
         SC.SimConnectClient.Instance.Disconnect( );
       }
       else {
@@ -717,6 +766,11 @@ namespace FS20_HudBar
           HUD.LabelControl( GItem.Ad ).ForeColor = Color.LimeGreen;
           // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
           _ = SC.SimConnectClient.Instance.AircraftModule.AcftConfigFile;
+          // Receive commands from FSim -  not yet used
+          /*
+          FSInput = SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_01 ); // use first input
+          FSInput.InputArrived += FSInput_InputArrived;
+          */
         }
         else {
           HUD.LabelControl( GItem.Ad ).BackColor = Color.Red;
@@ -726,6 +780,7 @@ namespace FS20_HudBar
       }
 
     }
+
 
     /// <summary>
     /// Try every intervall to connect - and if connected.. do in Sim chores

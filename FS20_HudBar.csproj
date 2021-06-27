@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>14</ApplicationRevision>
-    <ApplicationVersion>0.21.0.14</ApplicationVersion>
+    <ApplicationRevision>15</ApplicationRevision>
+    <ApplicationVersion>0.22.0.15</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="CPointMeter.cs" />
     <Compile Include="CProfile.cs" />
     <Compile Include="Estimates.cs" />
     <Compile Include="Form1.cs">
@@ -136,6 +137,9 @@
     </Compile>
     <Compile Include="GUI\IValue.cs" />
     <Compile Include="GUI\V_Dist.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_Elapsed.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\V_Flow_gph.cs">

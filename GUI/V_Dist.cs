@@ -22,7 +22,7 @@ namespace FS20_HudBar.GUI
     }
 
     /// <summary>
-    /// Set the value of the Control - formatted as +NN'NN0ft
+    /// Set the value of the Control
     /// </summary>
     override public float? Value {
       set {

@@ -7,17 +7,20 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
-  class V_Time : V_Base
+  /// <summary>
+  /// Elapsed Time and Distance
+  /// </summary>
+  class V_Elapsed : V_Base
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Time( Label proto )
+    public V_Elapsed( Label proto )
     : base( proto, false )
     {
-      m_unit = "";
-      m_default = $"{"__:__",8}";
+      m_unit = "nm";
+      m_default = $"{"__:__",8} {"___._"}";
       Text = UnitString( m_default );
     }
 

@@ -1,5 +1,5 @@
-FS20_HudBar V 0.20 - Build 13 BETA
-(c) M. Burri - 20-June-2021
+FS20_HudBar V 0.22 - Build 15 BETA
+(c) M. Burri - 27-June-2021
 
 Contains files:
 
@@ -31,6 +31,10 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.22-B15
+- Add 3 independent Chekpoints to track elapsed time and distance from Startpoint (Lat/Lon based)
+- Update QuickGuide
+
 V 0.21-B14
 - Add Movable Tile Mode (replaces Splitter)
 - Add Re-arrange item sequence
