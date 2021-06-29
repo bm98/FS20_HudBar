@@ -1,5 +1,5 @@
-FS20_HudBar V 0.22 - Build 15 BETA
-(c) M. Burri - 27-June-2021
+FS20_HudBar V 0.22 - Build 16 BETA
+(c) M. Burri - 29-June-2021
 
 Contains files:
 
@@ -31,9 +31,13 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
-V 0.22-B15
+V 0.22-B16
 - Add 3 independent Chekpoints to track elapsed time and distance from Startpoint (Lat/Lon based)
+- Add MAN Pressure inHg item
+- Add Set Trim to 0% Action for all 3 Trims
+- Update Create a separate Auto E-Trim item - showing the %Value (same as the regular E-Trim does)
 - Update QuickGuide
+- Fix Get the Pointer Cursor back when hovering the item fiels (where Tile movement is not available)
 
 V 0.21-B14
 - Add Movable Tile Mode (replaces Splitter)

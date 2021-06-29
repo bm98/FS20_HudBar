@@ -49,7 +49,8 @@ namespace FS20_HudBar.GUI
       Anchor = proto.Anchor;
       Margin = proto.Margin;
       m_showUnit = showUnit;
-      UseCompatibleTextRendering = true;
+      UseCompatibleTextRendering = true; // make sure the WingDings an other font special chars display properly
+      Cursor = Cursors.Default; // avoid the movement cross on the item controls
       Text = m_default;
     }
 

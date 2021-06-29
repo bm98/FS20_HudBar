@@ -139,9 +139,6 @@
     <Compile Include="GUI\V_Dist.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Elapsed.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="GUI\V_Flow_gph.cs">
       <SubType>Component</SubType>
     </Compile>

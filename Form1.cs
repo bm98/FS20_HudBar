@@ -41,27 +41,27 @@ namespace FS20_HudBar
 
       m_profiles.Add( new CProfile( 1, AppSettings.Instance.Profile_1_Name,
                                        AppSettings.Instance.Profile_1, AppSettings.Instance.FlowBreak_1, AppSettings.Instance.Sequence_1,
-                                       AppSettings.Instance.Profile_1_FontSize, AppSettings.Instance.Profile_1_Placement, 
+                                       AppSettings.Instance.Profile_1_FontSize, AppSettings.Instance.Profile_1_Placement,
                                        AppSettings.Instance.Profile_1_Kind, AppSettings.Instance.Profile_1_Location ) );
 
       m_profiles.Add( new CProfile( 2, AppSettings.Instance.Profile_2_Name,
                                        AppSettings.Instance.Profile_2, AppSettings.Instance.FlowBreak_2, AppSettings.Instance.Sequence_3,
-                                       AppSettings.Instance.Profile_2_FontSize, AppSettings.Instance.Profile_2_Placement, 
+                                       AppSettings.Instance.Profile_2_FontSize, AppSettings.Instance.Profile_2_Placement,
                                        AppSettings.Instance.Profile_2_Kind, AppSettings.Instance.Profile_2_Location ) );
 
       m_profiles.Add( new CProfile( 3, AppSettings.Instance.Profile_3_Name,
                                        AppSettings.Instance.Profile_3, AppSettings.Instance.FlowBreak_3, AppSettings.Instance.Sequence_3,
-                                       AppSettings.Instance.Profile_3_FontSize, AppSettings.Instance.Profile_3_Placement, 
+                                       AppSettings.Instance.Profile_3_FontSize, AppSettings.Instance.Profile_3_Placement,
                                        AppSettings.Instance.Profile_3_Kind, AppSettings.Instance.Profile_3_Location ) );
 
       m_profiles.Add( new CProfile( 4, AppSettings.Instance.Profile_4_Name,
                                        AppSettings.Instance.Profile_4, AppSettings.Instance.FlowBreak_4, AppSettings.Instance.Sequence_4,
-                                       AppSettings.Instance.Profile_4_FontSize, AppSettings.Instance.Profile_4_Placement, 
+                                       AppSettings.Instance.Profile_4_FontSize, AppSettings.Instance.Profile_4_Placement,
                                        AppSettings.Instance.Profile_4_Kind, AppSettings.Instance.Profile_4_Location ) );
 
       m_profiles.Add( new CProfile( 5, AppSettings.Instance.Profile_5_Name,
                                        AppSettings.Instance.Profile_5, AppSettings.Instance.FlowBreak_5, AppSettings.Instance.Sequence_5,
-                                       AppSettings.Instance.Profile_5_FontSize, AppSettings.Instance.Profile_5_Placement, 
+                                       AppSettings.Instance.Profile_5_FontSize, AppSettings.Instance.Profile_5_Placement,
                                        AppSettings.Instance.Profile_5_Kind, AppSettings.Instance.Profile_5_Location ) );
 
       m_selProfile = AppSettings.Instance.SelProfile;
@@ -83,7 +83,7 @@ namespace FS20_HudBar
     {
       // prepare the GUI
       flp.Dock = DockStyle.Fill;
-     // flp.BorderStyle = BorderStyle.FixedSingle; // DEBUG
+      // flp.BorderStyle = BorderStyle.FixedSingle; // DEBUG
       flp.WrapContents = true;
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc.
       this.TopMost = true; // make sure we float on top
@@ -234,7 +234,7 @@ namespace FS20_HudBar
 
       switch ( HUD.Placement ) {
         case GUI.Placement.Bottom:
-          this.Location = new Point(this.Location.X + e.X -m_moveOffset.X, this.Location.Y );
+          this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y );
           break;
         case GUI.Placement.Left:
           this.Location = new Point( this.Location.X, this.Location.Y + e.Y - m_moveOffset.Y );
@@ -535,6 +535,15 @@ namespace FS20_HudBar
           SC.SimConnectClient.Instance.AP_G1000Module.VS_hold = true; // toggles independent of the set value
           break;
         case GItem.ETrim:
+          SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct = 0; // Set 0
+          break;
+        case GItem.RTrim:
+          SC.SimConnectClient.Instance.AircraftModule.RudderTrim_prct=0; // Set 0
+          break;
+        case GItem.ATrim:
+          SC.SimConnectClient.Instance.AircraftModule.AileronTrim_prct = 0; // Set 0
+          break;
+        case GItem.A_ETRIM:
           SC.SimConnectClient.Instance.AutoETrimModule.Enabled = !SC.SimConnectClient.Instance.AutoETrimModule.Enabled; // toggles
           m_aETrimTimer = c_aETrimTime;
           break;
@@ -580,7 +589,10 @@ namespace FS20_HudBar
       HUD.ValueControl( GItem.SimRate ).BackColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? HUD.c_SRATE : HUD.c_BG;
 
       // TRIMS
-      HUD.LabelControl( GItem.ETrim ).BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? HUD.c_AP : HUD.c_ActBG;
+      // Auto ETrim
+      HUD.LabelControl( GItem.A_ETRIM ).BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? HUD.c_AP : HUD.c_ActBG;
+      HUD.Value( GItem.A_ETRIM ).Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
+      // Regular Trim
       HUD.Value( GItem.ETrim ).Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
       HUD.Value( GItem.RTrim ).Value = SC.SimConnectClient.Instance.AircraftModule.RudderTrim_prct;
       HUD.Value( GItem.ATrim ).Value = SC.SimConnectClient.Instance.AircraftModule.AileronTrim_prct;
@@ -644,6 +656,10 @@ namespace FS20_HudBar
       HUD.Value( GItem.E1_EGT ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_egt;
       HUD.Value( GItem.E2_EGT ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_egt;
       HUD.ValueControl( GItem.E2_EGT ).Visible = ( numEngines > 1 );
+
+      HUD.Value( GItem.E1_MAN ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1MAN_inhg;
+      HUD.Value( GItem.E2_MAN ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2MAN_inhg;
+      HUD.ValueControl( GItem.E2_MAN ).Visible = ( numEngines > 1 );
 
       HUD.Value( GItem.E1_FFlow_pph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_FuelFlow_lbPh;
       HUD.Value( GItem.E2_FFlow_pph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_FuelFlow_lbPh;

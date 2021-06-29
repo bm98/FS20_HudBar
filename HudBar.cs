@@ -59,6 +59,10 @@ namespace FS20_HudBar
     M_TIM_DIST1,  // Checkpoint 1
     M_TIM_DIST2,  // Checkpoint 2
     M_TIM_DIST3,  // Checkpoint 3
+
+    A_ETRIM,      // Auto ETrim
+
+    MAN,          // MAN Pressure inHg
   }
 
 
@@ -144,6 +148,11 @@ namespace FS20_HudBar
     M_Dist2, // Checkpoint 2
     M_Elapsed3, // Checkpoint 3
     M_Dist3, // Checkpoint 3
+
+    A_ETRIM,  // Auto ETrim
+
+    E1_MAN,   // Man Pressure InHg
+    E2_MAN,   // Man Pressure InHg
   }
 
   internal class HudBar
@@ -233,6 +242,9 @@ namespace FS20_HudBar
       {LItem.M_TIM_DIST2,"CP 2" },
       {LItem.M_TIM_DIST3,"CP 3" },
 
+      {LItem.A_ETRIM,"A-ETrim" },
+
+      {LItem.MAN,"MAN" },
     };
 
     // Descriptive GUI label names to match the enum above (shown in Config)
@@ -282,6 +294,10 @@ namespace FS20_HudBar
       {LItem.M_TIM_DIST1,"Checkpoint 1" },
       {LItem.M_TIM_DIST2,"Checkpoint 2" },
       {LItem.M_TIM_DIST3,"Checkpoint 3" },
+
+      {LItem.A_ETRIM,"Auto E-Trim" },
+
+      {LItem.MAN,"MAN Pressure inHg" },
     };
 
     // Bar value label names to match the enum above
@@ -386,18 +402,18 @@ namespace FS20_HudBar
       // TRIMS - we use value2Proto to get a smaller font for the numbers
       disp = LItem.ETrim; di = new DispItem( ); AddDisp( disp, di );
       item = GItem.ETrim;
-      // the ERA-Trim label gets a button to activate the AutoTrim Module
+      // the ERA-Trim label gets a button to activate the 0 Trim action
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.RTrim; di = new DispItem( ); AddDisp( disp, di );
       item = GItem.RTrim;
-      l = new V_ICAO( lblProto ) { Text = GuiName( disp ), BackColor = c_BG }; di.AddItem( l );
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.ATrim; di = new DispItem( ); AddDisp( disp, di );
       item = GItem.ATrim;
-      l = new V_ICAO( lblProto ) { Text = GuiName( disp ), BackColor = c_BG }; di.AddItem( l );
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // OAT, BARO
@@ -637,6 +653,20 @@ namespace FS20_HudBar
       v = new V_Time( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
       item = GItem.M_Dist3;
       v = new V_Dist( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.A_ETRIM; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.A_ETRIM;
+      // the Auto E-Trim label gets a button to activate the AutoTrim Module
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.MAN; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.E1_MAN;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_PressureInHg( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = GItem.E2_MAN;
+      v = new V_PressureInHg( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
 
       // Apply Unit mod to Values
       foreach ( var lx in m_valItems ) {
