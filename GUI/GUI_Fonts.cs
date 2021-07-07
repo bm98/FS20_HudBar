@@ -21,6 +21,8 @@ namespace FS20_HudBar.GUI
     Plus_10,
     Minus_2,
     Minus_4,
+    Plus_12,
+    Plus_14,
   }
 
   /// <summary>
@@ -62,6 +64,21 @@ namespace FS20_HudBar.GUI
     private const float m_minus2Inc = -2;  // add this to the regular fontsize
     private const float m_minus4Inc = -4;  // add this to the regular fontsize
 
+
+    private static char c_NSpace =Convert.ToChar(0x2007);  // Number size Space
+
+    /// <summary>
+    /// Pad a string on the right side with NSpaces up to fieldSize
+    /// </summary>
+    /// <param name="label">The Input string</param>
+    /// <param name="fieldSize">The fieldSize</param>
+    /// <returns></returns>
+    public static string PadRight(string label, int fieldSize )
+    {
+      return label.PadRight( fieldSize, c_NSpace );
+    }
+
+
     /// <summary>
     /// Returns a Font Increment for a FontSize Enum 
     ///   add this to the regular fontsize
@@ -76,7 +93,9 @@ namespace FS20_HudBar.GUI
         case FontSize.Plus_4:return 4;
         case FontSize.Plus_6: return 6;
         case FontSize.Plus_8: return 8;
-        case FontSize.Plus_10:return 10;
+        case FontSize.Plus_10: return 10;
+        case FontSize.Plus_12: return 12;
+        case FontSize.Plus_14: return 14;
         case FontSize.Minus_2: return -2;
         case FontSize.Minus_4:return -4;
         default: return 0;

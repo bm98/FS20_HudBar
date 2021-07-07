@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>15</ApplicationRevision>
-    <ApplicationVersion>0.22.0.15</ApplicationVersion>
+    <ApplicationRevision>17</ApplicationRevision>
+    <ApplicationVersion>0.23.0.17</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -129,6 +129,9 @@
     <Compile Include="GUI\V_Alt.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GUI\V_Angle.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\V_Base.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -137,6 +140,9 @@
     </Compile>
     <Compile Include="GUI\IValue.cs" />
     <Compile Include="GUI\V_Dist.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_Dist2.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\V_Flow_gph.cs">

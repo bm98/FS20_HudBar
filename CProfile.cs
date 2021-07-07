@@ -397,7 +397,7 @@ namespace FS20_HudBar
       string[] e = profile.Split(new char[]{ ';' }, StringSplitOptions.RemoveEmptyEntries );
       m_profile.Clear( );
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
-        bool show = true; // default ON
+        bool show = false; // default OFF 20210707
         if ( e.Length > (int)i ) {
           show = e[(int)i] == "1"; // found an element in the string
         }

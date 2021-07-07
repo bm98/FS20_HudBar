@@ -63,6 +63,15 @@ namespace FS20_HudBar
     A_ETRIM,      // Auto ETrim
 
     MAN,          // MAN Pressure inHg
+
+    GPS_BRGm,  // GPS BRG to Waypoint 000°
+    GPS_DTRK,  // GPS Desired Track to Waypoint 000°
+    GPS_XTK,   // GPS CrossTrack Error nm
+
+    AOA,      // Angle of attack deg
+    TAS,      // true airspeed kt
+    ACFT_ID,  // aircraft ID
+
   }
 
 
@@ -153,6 +162,14 @@ namespace FS20_HudBar
 
     E1_MAN,   // Man Pressure InHg
     E2_MAN,   // Man Pressure InHg
+
+    GPS_BRGm,  // GPS Mag BRG to Waypoint 000°
+    GPS_DTRK,  // GPS Desired Track to Waypoint 000°
+    GPS_XTK,   // GPS CrossTrack Error nm
+
+    AOA,      // Angle of attack deg
+    TAS,      // true airspeed kt
+    ACFT_ID,  // aircraft ID
   }
 
   internal class HudBar
@@ -217,12 +234,12 @@ namespace FS20_HudBar
 
       {LItem.GPS_WYP,"≡GPS≡" },
       {LItem.GPS_DIST,"DIST" },
-      {LItem.GPS_ETE,"ETE" },
-      {LItem.GPS_TRK,"TRK" },
-      {LItem.GPS_GS,"GS" },
-      {LItem.GPS_ALT,"ALTP" },
-      {LItem.EST_VS,"WP-VS" },
-      {LItem.EST_ALT,"WP-ALT" },
+      {LItem.GPS_ETE, "ETE" },
+      {LItem.GPS_TRK, "TRK" },
+      {LItem.GPS_GS, "GS" },
+      {LItem.GPS_ALT, "ALTP" },
+      {LItem.EST_VS, "WP-VS" },
+      {LItem.EST_ALT, "WP-ALT" },
 
       {LItem.HDG,"HDG" },
       {LItem.ALT,"ALT" },
@@ -245,6 +262,15 @@ namespace FS20_HudBar
       {LItem.A_ETRIM,"A-ETrim" },
 
       {LItem.MAN,"MAN" },
+
+      {LItem.GPS_BRGm,"BRG" },
+      {LItem.GPS_DTRK,"DTK" },
+      {LItem.GPS_XTK,"XTK" },
+
+      {LItem.AOA,"AoA" },
+      {LItem.TAS,"TAS" },
+      {LItem.ACFT_ID,"ID" },
+
     };
 
     // Descriptive GUI label names to match the enum above (shown in Config)
@@ -298,13 +324,21 @@ namespace FS20_HudBar
       {LItem.A_ETRIM,"Auto E-Trim" },
 
       {LItem.MAN,"MAN Pressure inHg" },
+
+      {LItem.GPS_BRGm,"Bearing to WYP (mag)" },
+      {LItem.GPS_DTRK,"Desired track to WYP" },
+      {LItem.GPS_XTK,"Cross track distance nm" },
+
+      {LItem.AOA,"Angle of attack deg" },
+      {LItem.TAS,"Aircraft TAS kt" },
+      {LItem.ACFT_ID,"Aircraft ID" },
     };
 
     // Bar value label names to match the enum above
     // Used when the individual value item is meant and the text here is the value 
     //  only used as GPS and GS  for NAV / GPS and APR / GS the rest is for completenes only
     private Dictionary<GItem,string> m_barValueLabels = new Dictionary<GItem, string>(){
-      {GItem.AP_NAVgps,"GPS" }, 
+      {GItem.AP_NAVgps,"GPS" },
       {GItem.AP_GS,"►GS◄" },
     };
 
@@ -318,6 +352,7 @@ namespace FS20_HudBar
       m_lblItems.Add( item, (IValue)ctrl );
       m_lblLabelItems.Add( item, ctrl );
     }
+
     // Value Items (updated from Sim, some may change colors)
     private  Dictionary<GItem, IValue>  m_valItems = new Dictionary<GItem, IValue> ();
     private Dictionary<GItem,Control> m_valLabelItems = new Dictionary<GItem,Control>();
@@ -372,7 +407,7 @@ namespace FS20_HudBar
 
       // The Value Item Background - used when assessing and debugging only
       c_BG = lblProto.BackColor;
-      //c_BG = Color.MidnightBlue; // Debug color to see control outlines
+      //c_BG = Color.DarkBlue; // Debug color to see control outlines
 
       // reload all
       m_lblItems.Clear( );
@@ -667,12 +702,54 @@ namespace FS20_HudBar
       item = GItem.E2_MAN;
       v = new V_PressureInHg( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
+      disp = LItem.GPS_BRGm; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.GPS_BRGm;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Deg( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.GPS_DTRK; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.GPS_DTRK;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Deg( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.GPS_XTK; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.GPS_XTK;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Dist2( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.AOA; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.AOA;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Angle( valueProto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.TAS; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.TAS;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Speed( valueProto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.ACFT_ID; di = new DispItem( ); AddDisp( disp, di );
+      item = GItem.ACFT_ID;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_ICAO( valueProto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
 
       // Apply Unit mod to Values
       foreach ( var lx in m_valItems ) {
         lx.Value.ShowUnit = ShowUnits;
       }
 
+      if ( placement == Placement.Left || placement == Placement.Right ) {
+        // Determine max width and make them aligned
+        int maxLabelWidth = 0;
+        foreach ( var lx in m_dispItems ) {
+          var dix = lx.Value as DispItem;
+          maxLabelWidth = ( dix.Controls[0].Width > maxLabelWidth ) ? dix.Controls[0].Width : maxLabelWidth;
+        }
+        foreach ( var lx in m_dispItems ) {
+          var dix = lx.Value as DispItem;
+          dix.Controls[0].Padding = new Padding( 0, 0, maxLabelWidth - dix.Controls[0].Width, 0 );
+        }
+      }
     }
 
     /// <summary>

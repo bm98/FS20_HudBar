@@ -588,6 +588,8 @@ namespace FS20_HudBar
       HUD.ValueControl( GItem.SimRate ).ForeColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? HUD.c_BG : HUD.c_Info;
       HUD.ValueControl( GItem.SimRate ).BackColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? HUD.c_SRATE : HUD.c_BG;
 
+      HUD.Value( GItem.ACFT_ID ).Text = SC.SimConnectClient.Instance.AircraftModule.AcftID;
+
       // TRIMS
       // Auto ETrim
       HUD.LabelControl( GItem.A_ETRIM ).BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? HUD.c_AP : HUD.c_ActBG;
@@ -602,6 +604,9 @@ namespace FS20_HudBar
 
       HUD.Value( GItem.BARO_HPA ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_mbar;
       HUD.Value( GItem.BARO_InHg ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_inHg;
+
+      // Aoa
+      HUD.Value( GItem.AOA ).Value = SC.SimConnectClient.Instance.AircraftModule.AngleOfAttack_deg;
 
       // Gear, Brakes, Flaps
       if ( SC.SimConnectClient.Instance.AircraftModule.IsGearRetractable ) {
@@ -676,6 +681,9 @@ namespace FS20_HudBar
         HUD.Value( GItem.GPS_DIST ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_dist;
         HUD.Value( GItem.GPS_ETE ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_ete;
         HUD.Value( GItem.GPS_TRK ).Value = SC.SimConnectClient.Instance.GpsModule.GTRK;
+        HUD.Value( GItem.GPS_BRGm ).Value = SC.SimConnectClient.Instance.GpsModule.BRG;
+        HUD.Value( GItem.GPS_DTRK ).Value = SC.SimConnectClient.Instance.GpsModule.DTK;
+        HUD.Value( GItem.GPS_XTK ).Value = SC.SimConnectClient.Instance.GpsModule.GpsWaypointCrossTRK_nm;
         HUD.Value( GItem.GPS_GS ).Value = SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt;
         float tgtAlt = SC.SimConnectClient.Instance.GpsModule.WYP_alt;
         HUD.Value( GItem.GPS_ALT ).Value = tgtAlt;
@@ -704,6 +712,9 @@ namespace FS20_HudBar
         HUD.Value( GItem.GPS_DIST ).Value = null;
         HUD.Value( GItem.GPS_ETE ).Value = null;
         HUD.Value( GItem.GPS_TRK ).Value = null;
+        HUD.Value( GItem.GPS_BRGm ).Value = null;
+        HUD.Value( GItem.GPS_DTRK ).Value = null;
+        HUD.Value( GItem.GPS_XTK ).Value = null;
         HUD.Value( GItem.GPS_GS ).Value = null;
         HUD.Value( GItem.EST_VS ).Value = null; // cannot if we don't have a WYP to aim at
         HUD.Value( GItem.EST_ALT ).Value = null; // cannot if we don't have a WYP to aim at
@@ -739,6 +750,7 @@ namespace FS20_HudBar
         HUD.Value( GItem.RA ).Value = null;
       }
       HUD.Value( GItem.IAS ).Value = SC.SimConnectClient.Instance.AircraftModule.IAS_kt;
+      HUD.Value( GItem.TAS ).Value = SC.SimConnectClient.Instance.AircraftModule.TAS_kt;
       HUD.Value( GItem.VS ).Value = SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin;
 
       // Eval Meters

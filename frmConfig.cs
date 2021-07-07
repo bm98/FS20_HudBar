@@ -37,6 +37,8 @@ namespace FS20_HudBar
       cbxFont.Items.Add( GUI.FontSize.Plus_10 + " Font Size" );
       cbxFont.Items.Add( GUI.FontSize.Minus_2 + " Font Size" );
       cbxFont.Items.Add( GUI.FontSize.Minus_4 + " Font Size" );
+      cbxFont.Items.Add( GUI.FontSize.Plus_12 + " Font Size" );
+      cbxFont.Items.Add( GUI.FontSize.Plus_14 + " Font Size" );
     }
 
     private void PopulatePlacement( ComboBox cbxPlace )

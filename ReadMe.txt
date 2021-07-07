@@ -1,5 +1,5 @@
-FS20_HudBar V 0.22 - Build 16 BETA
-(c) M. Burri - 29-June-2021
+FS20_HudBar V 0.23 - Build 17 BETA
+(c) M. Burri - 07-July-2021
 
 Contains files:
 
@@ -31,6 +31,18 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.23-B17
+- Add mag BRG to waypoint item
+- Add DTK desired track to waypoint item
+- Add XTK Cross track distance item
+- Add AoA Angle of attack item
+- Add TAS True airspeed item
+- Add Acft ID item
+- Add even larger Fonts +12, +14
+- Update Align Left and right value columns to the max size label
+- Update New items are default OFF (was ON before)
+- Update QuickGuide
+
 V 0.22-B16
 - Add 3 independent Chekpoints to track elapsed time and distance from Startpoint (Lat/Lon based)
 - Add MAN Pressure inHg item
