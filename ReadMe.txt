@@ -1,5 +1,5 @@
-FS20_HudBar V 0.23 - Build 17 BETA
-(c) M. Burri - 07-July-2021
+FS20_HudBar V 0.24 - Build 18 BETA
+(c) M. Burri - 08-July-2021
 
 Contains files:
 
@@ -31,6 +31,10 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.24-B18
+- update Scroll Confi items while dragging up or down
+- fix First time run does not show bar
+
 V 0.23-B17
 - Add mag BRG to waypoint item
 - Add DTK desired track to waypoint item

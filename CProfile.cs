@@ -35,7 +35,7 @@ namespace FS20_HudBar
     public GUI.Placement Placement => m_placement;
     public GUI.Kind Kind => m_kind;
     public Point Location => m_location;
-    
+
     /// <summary>
     /// Update the Location of the profile
     /// </summary>
@@ -70,7 +70,7 @@ namespace FS20_HudBar
                      int fontSize, int placement, int kind, Point location )
     {
       m_pNumber = pNum;
-      LoadProfile( profileName, profile, flowBreak, sequence, 
+      LoadProfile( profileName, profile, flowBreak, sequence,
                     (GUI.FontSize)fontSize, (GUI.Placement)placement, (GUI.Kind)kind, location );
     }
 
@@ -84,7 +84,7 @@ namespace FS20_HudBar
       return $"P{m_pNumber}_{item}";
     }
 
-    private bool IsSamePanel( string srcKey , string destKey )
+    private bool IsSamePanel( string srcKey, string destKey )
     {
       return srcKey[1] == destKey[1];
     }
@@ -165,6 +165,7 @@ namespace FS20_HudBar
       }
     }
 
+
     #region Mouse + Drag and Drop Handling
     // DD vars
     private Rectangle dragBoxFromMouseDown;
@@ -180,7 +181,7 @@ namespace FS20_HudBar
       if ( e.Data.GetDataPresent( typeof( CheckBox ) ) ) {
         if ( e.Effect == DragDropEffects.Move ) {
           // only handle moves, ignore when source == dest
-          if ( dragSourceKey!= dropDest.Name ) {
+          if ( dragSourceKey != dropDest.Name ) {
             // Move the item by setting the index of the source to the destination
             m_flp.Controls.SetChildIndex( m_flp.Controls[dragSourceKey], m_flp.Controls.IndexOfKey( dropDest.Name ) );
           }
@@ -207,6 +208,19 @@ namespace FS20_HudBar
       // Finally a valid drop zone..
       dragDropKey = dropDest.Name;
       e.Effect = DragDropEffects.Move;
+
+      // scroll outside items into view
+      var srcIdx = m_flp.Controls.GetChildIndex(  m_flp.Controls[dragSourceKey] );
+      var dstIdx = m_flp.Controls.GetChildIndex(  dropDest );
+      if ( ( dstIdx < srcIdx ) && ( dstIdx > 0 ) ) {
+        // going up and not topmost
+        m_flp.ScrollControlIntoView( m_flp.Controls[dstIdx - 1] );
+      }
+      else if ( ( dstIdx > srcIdx ) && ( dstIdx < ( m_flp.Controls.Count - 1 ) ) ) {
+        // going down and not last
+        m_flp.ScrollControlIntoView( m_flp.Controls[dstIdx + 1] );
+      }
+
     }
 
     private void Cb_GiveFeedback( object sender, GiveFeedbackEventArgs e )
@@ -214,7 +228,7 @@ namespace FS20_HudBar
       var cb = sender as CheckBox;
       if ( cb.Name == dragSourceKey ) {
         e.UseDefaultCursors = false;
-        if ( (e.Effect & DragDropEffects.Move) == DragDropEffects.Move ) {
+        if ( ( e.Effect & DragDropEffects.Move ) == DragDropEffects.Move ) {
           Cursor.Current = Cursors.NoMoveVert;
         }
         else {
@@ -288,7 +302,7 @@ namespace FS20_HudBar
         // If the mouse moves outside the rectangle, start the drag.
         if ( dragBoxFromMouseDown != Rectangle.Empty && !dragBoxFromMouseDown.Contains( e.X, e.Y ) ) {
           // start DD Action for the calling item as Move
-          cb.DoDragDrop( cb , DragDropEffects.Move | DragDropEffects.Scroll );
+          cb.DoDragDrop( cb, DragDropEffects.Move | DragDropEffects.Scroll );
         }
       }
       // moves across other items are handled as DD_Over above
@@ -378,7 +392,7 @@ namespace FS20_HudBar
 
 
     // Load the profile from stored strings (Settings)
-    private void LoadProfile( string profileName, string profile, string flowBreak, string sequence, 
+    private void LoadProfile( string profileName, string profile, string flowBreak, string sequence,
                                 GUI.FontSize fontSize, GUI.Placement placement, GUI.Kind kind, Point location )
     {
       // save props in Profile
@@ -397,7 +411,7 @@ namespace FS20_HudBar
       string[] e = profile.Split(new char[]{ ';' }, StringSplitOptions.RemoveEmptyEntries );
       m_profile.Clear( );
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
-        bool show = false; // default OFF 20210707
+        bool show = (i== LItem.MSFS)?true : false; // default OFF except the first 20210708
         if ( e.Length > (int)i ) {
           show = e[(int)i] == "1"; // found an element in the string
         }
