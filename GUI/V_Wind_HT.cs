@@ -8,28 +8,28 @@ using System.Windows.Forms;
 namespace FS20_HudBar.GUI
 {
   /// <summary>
-  /// Vertical Speed Formatter
+  /// Head/Tail Wind Formatter
   /// </summary>
-  class V_VSpeed : V_Base
+  class V_Wind_HT : V_Base
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_VSpeed( Label proto, bool showUnit )
+    public V_Wind_HT( Label proto, bool showUnit )
     : base( proto, showUnit )
     {
-      m_unit = "fpm";
-      m_default = "____↑"; // NNNN_Direction
+      m_unit = "kt";
+      m_default = "↓___"; // H | T NNN kt
       Text = UnitString( m_default );
     }
 
-    private string c_up = "↑";
-    private string c_do = "↓";
+    private string c_head = "↓";
+    private string c_tail = "↑";
     private string c_flat = " ";
 
     /// <summary>
-    /// Set the value of the Control
+    /// Set the value of the Control - formatted as +NN'NN0ft
     /// </summary>
     override public float? Value {
       set {
@@ -37,14 +37,14 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          if ( value <= -10 ) {
-            this.Text = UnitString( $"{-value,4:###0}{c_do}" );
+          if ( value < 0 ) {
+            this.Text = UnitString( $"{-value,3:##0}{c_head}" );
           }
-          else if ( value >= 10 ) {
-            this.Text = UnitString( $"{value,4:###0}{c_up}" ); 
+          else if ( value > 0 ) {
+            this.Text = UnitString( $"{value,3:##0}{c_tail}" );
           }
           else {
-            this.Text = UnitString( $"{value,4:###0}{c_flat}" );
+            this.Text = UnitString( $"{value,3:##0}{c_flat}" );
           }
         }
       }

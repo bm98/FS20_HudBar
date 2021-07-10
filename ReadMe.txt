@@ -1,5 +1,5 @@
-FS20_HudBar V 0.24 - Build 18 BETA
-(c) M. Burri - 08-July-2021
+FS20_HudBar V 0.25 - Build 19 BETA
+(c) M. Burri - 10-July-2021
 
 Contains files:
 
@@ -31,8 +31,19 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.25-B19
+- Add Wind Dir/Speed + Cross/Head;Tail items
+- Add Lights as B N S T L status item
+- Add Fuel quantities Left/Right item (Gal only)
+- Add Fuel quantity Total item (Gal only)
+- Add MACH number item
+- Add Condensed Font as per profile option
+- Update Add XTK direction indicator
+- Update Vertical alignment of horizontal bar items
+- Update QuickGuide
+
 V 0.24-B18
-- update Scroll Confi items while dragging up or down
+- update Scroll Config items while dragging up or down
 - fix First time run does not show bar
 
 V 0.23-B17

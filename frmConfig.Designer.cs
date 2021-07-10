@@ -64,6 +64,11 @@ namespace FS20_HudBar
       this.cbxKindP3 = new System.Windows.Forms.ComboBox();
       this.cbxKindP4 = new System.Windows.Forms.ComboBox();
       this.cbxKindP5 = new System.Windows.Forms.ComboBox();
+      this.cbxCondP1 = new System.Windows.Forms.ComboBox();
+      this.cbxCondP2 = new System.Windows.Forms.ComboBox();
+      this.cbxCondP3 = new System.Windows.Forms.ComboBox();
+      this.cbxCondP4 = new System.Windows.Forms.ComboBox();
+      this.cbxCondP5 = new System.Windows.Forms.ComboBox();
       this.tableLayoutPanel1.SuspendLayout();
       this.flp1.SuspendLayout();
       this.flp2.SuspendLayout();
@@ -89,15 +94,15 @@ namespace FS20_HudBar
       this.tableLayoutPanel1.Controls.Add(this.txP3, 2, 0);
       this.tableLayoutPanel1.Controls.Add(this.txP2, 1, 0);
       this.tableLayoutPanel1.Controls.Add(this.txP1, 0, 0);
-      this.tableLayoutPanel1.Controls.Add(this.btAccept, 3, 5);
-      this.tableLayoutPanel1.Controls.Add(this.btCancel, 4, 5);
-      this.tableLayoutPanel1.Controls.Add(this.cbxOpaque, 0, 5);
+      this.tableLayoutPanel1.Controls.Add(this.btAccept, 3, 6);
+      this.tableLayoutPanel1.Controls.Add(this.btCancel, 4, 6);
+      this.tableLayoutPanel1.Controls.Add(this.cbxOpaque, 0, 6);
       this.tableLayoutPanel1.Controls.Add(this.cbxFontP1, 0, 2);
       this.tableLayoutPanel1.Controls.Add(this.cbxFontP2, 1, 2);
       this.tableLayoutPanel1.Controls.Add(this.cbxFontP3, 2, 2);
       this.tableLayoutPanel1.Controls.Add(this.cbxFontP4, 3, 2);
       this.tableLayoutPanel1.Controls.Add(this.cbxFontP5, 4, 2);
-      this.tableLayoutPanel1.Controls.Add(this.cbxUnits, 1, 5);
+      this.tableLayoutPanel1.Controls.Add(this.cbxUnits, 1, 6);
       this.tableLayoutPanel1.Controls.Add(this.cbxPlaceP1, 0, 3);
       this.tableLayoutPanel1.Controls.Add(this.cbxPlaceP2, 1, 3);
       this.tableLayoutPanel1.Controls.Add(this.cbxPlaceP3, 2, 3);
@@ -109,12 +114,18 @@ namespace FS20_HudBar
       this.tableLayoutPanel1.Controls.Add(this.cbxKindP3, 2, 4);
       this.tableLayoutPanel1.Controls.Add(this.cbxKindP4, 3, 4);
       this.tableLayoutPanel1.Controls.Add(this.cbxKindP5, 4, 4);
+      this.tableLayoutPanel1.Controls.Add(this.cbxCondP1, 0, 5);
+      this.tableLayoutPanel1.Controls.Add(this.cbxCondP2, 1, 5);
+      this.tableLayoutPanel1.Controls.Add(this.cbxCondP3, 2, 5);
+      this.tableLayoutPanel1.Controls.Add(this.cbxCondP4, 3, 5);
+      this.tableLayoutPanel1.Controls.Add(this.cbxCondP5, 4, 5);
       this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
       this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-      this.tableLayoutPanel1.RowCount = 6;
+      this.tableLayoutPanel1.RowCount = 7;
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
@@ -132,7 +143,7 @@ namespace FS20_HudBar
       this.flp1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
       this.flp1.Location = new System.Drawing.Point(3, 33);
       this.flp1.Name = "flp1";
-      this.flp1.Size = new System.Drawing.Size(188, 659);
+      this.flp1.Size = new System.Drawing.Size(188, 629);
       this.flp1.TabIndex = 22;
       this.flp1.WrapContents = false;
       // 
@@ -158,7 +169,7 @@ namespace FS20_HudBar
       this.flp2.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
       this.flp2.Location = new System.Drawing.Point(197, 33);
       this.flp2.Name = "flp2";
-      this.flp2.Size = new System.Drawing.Size(188, 659);
+      this.flp2.Size = new System.Drawing.Size(188, 629);
       this.flp2.TabIndex = 21;
       this.flp2.WrapContents = false;
       // 
@@ -184,7 +195,7 @@ namespace FS20_HudBar
       this.flp3.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
       this.flp3.Location = new System.Drawing.Point(391, 33);
       this.flp3.Name = "flp3";
-      this.flp3.Size = new System.Drawing.Size(188, 659);
+      this.flp3.Size = new System.Drawing.Size(188, 629);
       this.flp3.TabIndex = 20;
       this.flp3.WrapContents = false;
       // 
@@ -210,7 +221,7 @@ namespace FS20_HudBar
       this.flp4.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
       this.flp4.Location = new System.Drawing.Point(585, 33);
       this.flp4.Name = "flp4";
-      this.flp4.Size = new System.Drawing.Size(188, 659);
+      this.flp4.Size = new System.Drawing.Size(188, 629);
       this.flp4.TabIndex = 19;
       this.flp4.WrapContents = false;
       // 
@@ -323,7 +334,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFontP1.Location = new System.Drawing.Point(3, 698);
+      this.cbxFontP1.Location = new System.Drawing.Point(3, 668);
       this.cbxFontP1.Name = "cbxFontP1";
       this.cbxFontP1.Size = new System.Drawing.Size(188, 23);
       this.cbxFontP1.TabIndex = 17;
@@ -335,7 +346,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFontP2.Location = new System.Drawing.Point(197, 698);
+      this.cbxFontP2.Location = new System.Drawing.Point(197, 668);
       this.cbxFontP2.Name = "cbxFontP2";
       this.cbxFontP2.Size = new System.Drawing.Size(188, 23);
       this.cbxFontP2.TabIndex = 17;
@@ -347,7 +358,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFontP3.Location = new System.Drawing.Point(391, 698);
+      this.cbxFontP3.Location = new System.Drawing.Point(391, 668);
       this.cbxFontP3.Name = "cbxFontP3";
       this.cbxFontP3.Size = new System.Drawing.Size(188, 23);
       this.cbxFontP3.TabIndex = 17;
@@ -359,7 +370,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFontP4.Location = new System.Drawing.Point(585, 698);
+      this.cbxFontP4.Location = new System.Drawing.Point(585, 668);
       this.cbxFontP4.Name = "cbxFontP4";
       this.cbxFontP4.Size = new System.Drawing.Size(188, 23);
       this.cbxFontP4.TabIndex = 17;
@@ -371,7 +382,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFontP5.Location = new System.Drawing.Point(779, 698);
+      this.cbxFontP5.Location = new System.Drawing.Point(779, 668);
       this.cbxFontP5.Name = "cbxFontP5";
       this.cbxFontP5.Size = new System.Drawing.Size(191, 23);
       this.cbxFontP5.TabIndex = 17;
@@ -393,7 +404,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxPlaceP1.Location = new System.Drawing.Point(3, 728);
+      this.cbxPlaceP1.Location = new System.Drawing.Point(3, 698);
       this.cbxPlaceP1.Name = "cbxPlaceP1";
       this.cbxPlaceP1.Size = new System.Drawing.Size(188, 23);
       this.cbxPlaceP1.TabIndex = 16;
@@ -405,7 +416,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxPlaceP2.Location = new System.Drawing.Point(197, 728);
+      this.cbxPlaceP2.Location = new System.Drawing.Point(197, 698);
       this.cbxPlaceP2.Name = "cbxPlaceP2";
       this.cbxPlaceP2.Size = new System.Drawing.Size(188, 23);
       this.cbxPlaceP2.TabIndex = 16;
@@ -417,7 +428,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxPlaceP3.Location = new System.Drawing.Point(391, 728);
+      this.cbxPlaceP3.Location = new System.Drawing.Point(391, 698);
       this.cbxPlaceP3.Name = "cbxPlaceP3";
       this.cbxPlaceP3.Size = new System.Drawing.Size(188, 23);
       this.cbxPlaceP3.TabIndex = 16;
@@ -429,7 +440,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxPlaceP4.Location = new System.Drawing.Point(585, 728);
+      this.cbxPlaceP4.Location = new System.Drawing.Point(585, 698);
       this.cbxPlaceP4.Name = "cbxPlaceP4";
       this.cbxPlaceP4.Size = new System.Drawing.Size(188, 23);
       this.cbxPlaceP4.TabIndex = 16;
@@ -441,7 +452,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxPlaceP5.Location = new System.Drawing.Point(779, 728);
+      this.cbxPlaceP5.Location = new System.Drawing.Point(779, 698);
       this.cbxPlaceP5.Name = "cbxPlaceP5";
       this.cbxPlaceP5.Size = new System.Drawing.Size(191, 23);
       this.cbxPlaceP5.TabIndex = 16;
@@ -456,7 +467,7 @@ namespace FS20_HudBar
       this.flp5.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
       this.flp5.Location = new System.Drawing.Point(779, 33);
       this.flp5.Name = "flp5";
-      this.flp5.Size = new System.Drawing.Size(191, 659);
+      this.flp5.Size = new System.Drawing.Size(191, 629);
       this.flp5.TabIndex = 18;
       this.flp5.WrapContents = false;
       // 
@@ -480,7 +491,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxKindP1.Location = new System.Drawing.Point(3, 758);
+      this.cbxKindP1.Location = new System.Drawing.Point(3, 728);
       this.cbxKindP1.Name = "cbxKindP1";
       this.cbxKindP1.Size = new System.Drawing.Size(188, 23);
       this.cbxKindP1.TabIndex = 23;
@@ -492,7 +503,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxKindP2.Location = new System.Drawing.Point(197, 758);
+      this.cbxKindP2.Location = new System.Drawing.Point(197, 728);
       this.cbxKindP2.Name = "cbxKindP2";
       this.cbxKindP2.Size = new System.Drawing.Size(188, 23);
       this.cbxKindP2.TabIndex = 23;
@@ -504,7 +515,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxKindP3.Location = new System.Drawing.Point(391, 758);
+      this.cbxKindP3.Location = new System.Drawing.Point(391, 728);
       this.cbxKindP3.Name = "cbxKindP3";
       this.cbxKindP3.Size = new System.Drawing.Size(188, 23);
       this.cbxKindP3.TabIndex = 23;
@@ -516,7 +527,7 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxKindP4.Location = new System.Drawing.Point(585, 758);
+      this.cbxKindP4.Location = new System.Drawing.Point(585, 728);
       this.cbxKindP4.Name = "cbxKindP4";
       this.cbxKindP4.Size = new System.Drawing.Size(188, 23);
       this.cbxKindP4.TabIndex = 23;
@@ -528,10 +539,70 @@ namespace FS20_HudBar
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxKindP5.Location = new System.Drawing.Point(779, 758);
+      this.cbxKindP5.Location = new System.Drawing.Point(779, 728);
       this.cbxKindP5.Name = "cbxKindP5";
       this.cbxKindP5.Size = new System.Drawing.Size(191, 23);
       this.cbxKindP5.TabIndex = 23;
+      // 
+      // cbxCondP1
+      // 
+      this.cbxCondP1.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxCondP1.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxCondP1.Location = new System.Drawing.Point(3, 758);
+      this.cbxCondP1.Name = "cbxCondP1";
+      this.cbxCondP1.Size = new System.Drawing.Size(188, 23);
+      this.cbxCondP1.TabIndex = 23;
+      // 
+      // cbxCondP2
+      // 
+      this.cbxCondP2.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxCondP2.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxCondP2.Location = new System.Drawing.Point(197, 758);
+      this.cbxCondP2.Name = "cbxCondP2";
+      this.cbxCondP2.Size = new System.Drawing.Size(188, 23);
+      this.cbxCondP2.TabIndex = 23;
+      // 
+      // cbxCondP3
+      // 
+      this.cbxCondP3.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxCondP3.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxCondP3.Location = new System.Drawing.Point(391, 758);
+      this.cbxCondP3.Name = "cbxCondP3";
+      this.cbxCondP3.Size = new System.Drawing.Size(188, 23);
+      this.cbxCondP3.TabIndex = 23;
+      // 
+      // cbxCondP4
+      // 
+      this.cbxCondP4.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxCondP4.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxCondP4.Location = new System.Drawing.Point(585, 758);
+      this.cbxCondP4.Name = "cbxCondP4";
+      this.cbxCondP4.Size = new System.Drawing.Size(188, 23);
+      this.cbxCondP4.TabIndex = 23;
+      // 
+      // cbxCondP5
+      // 
+      this.cbxCondP5.Dock = System.Windows.Forms.DockStyle.Top;
+      this.cbxCondP5.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxCondP5.Location = new System.Drawing.Point(779, 758);
+      this.cbxCondP5.Name = "cbxCondP5";
+      this.cbxCondP5.Size = new System.Drawing.Size(191, 23);
+      this.cbxCondP5.TabIndex = 23;
       // 
       // frmConfig
       // 
@@ -605,5 +676,10 @@ namespace FS20_HudBar
     private System.Windows.Forms.ComboBox cbxKindP3;
     private System.Windows.Forms.ComboBox cbxKindP4;
     private System.Windows.Forms.ComboBox cbxKindP5;
+    private System.Windows.Forms.ComboBox cbxCondP1;
+    private System.Windows.Forms.ComboBox cbxCondP2;
+    private System.Windows.Forms.ComboBox cbxCondP3;
+    private System.Windows.Forms.ComboBox cbxCondP4;
+    private System.Windows.Forms.ComboBox cbxCondP5;
   }
 }

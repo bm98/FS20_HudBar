@@ -62,14 +62,14 @@ namespace FS20_HudBar
       this.lblProto.Size = new System.Drawing.Size(44, 16);
       this.lblProto.TabIndex = 0;
       this.lblProto.Text = "ETrim:";
-      this.lblProto.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+      this.lblProto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       this.lblProto.Visible = false;
       // 
       // flp
       // 
       this.flp.AutoSize = true;
       this.flp.CausesValidation = false;
-      this.flp.Location = new System.Drawing.Point(12, 12);
+      this.flp.Location = new System.Drawing.Point(12, 15);
       this.flp.Name = "flp";
       this.flp.Size = new System.Drawing.Size(110, 31);
       this.flp.TabIndex = 1;
@@ -83,13 +83,14 @@ namespace FS20_HudBar
       this.valueProto.AutoSize = true;
       this.valueProto.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.valueProto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.valueProto.Location = new System.Drawing.Point(586, 38);
+      this.valueProto.Location = new System.Drawing.Point(586, 35);
       this.valueProto.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.valueProto.Name = "valueProto";
-      this.valueProto.Size = new System.Drawing.Size(57, 19);
+      this.valueProto.Size = new System.Drawing.Size(56, 25);
       this.valueProto.TabIndex = 1;
       this.valueProto.Text = "-20%";
-      this.valueProto.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+      this.valueProto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      this.valueProto.UseCompatibleTextRendering = true;
       this.valueProto.Visible = false;
       // 
       // cMenu
@@ -200,15 +201,16 @@ namespace FS20_HudBar
       // 
       this.value2Proto.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.value2Proto.AutoSize = true;
-      this.value2Proto.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.value2Proto.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Bold);
       this.value2Proto.ForeColor = System.Drawing.Color.WhiteSmoke;
       this.value2Proto.Location = new System.Drawing.Point(677, 38);
       this.value2Proto.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.value2Proto.Name = "value2Proto";
-      this.value2Proto.Size = new System.Drawing.Size(52, 16);
+      this.value2Proto.Size = new System.Drawing.Size(47, 21);
       this.value2Proto.TabIndex = 3;
       this.value2Proto.Text = "-20%";
-      this.value2Proto.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+      this.value2Proto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      this.value2Proto.UseCompatibleTextRendering = true;
       this.value2Proto.Visible = false;
       // 
       // B
@@ -247,6 +249,7 @@ namespace FS20_HudBar
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.Name = "frmMain";
+      this.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
       this.ShowIcon = false;
       this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
       this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;

@@ -50,13 +50,21 @@ namespace FS20_HudBar
       cbxPlace.Items.Add( GUI.Placement.Top + " bound" );
     }
 
-    private void PopulateKind( ComboBox cbxPlace )
+    private void PopulateKind( ComboBox cbxKind )
     {
-      cbxPlace.Items.Clear( );
-      cbxPlace.Items.Add( "Bar" );
-      cbxPlace.Items.Add( "Tile" );
+      cbxKind.Items.Clear( );
+      cbxKind.Items.Add( "Bar" );
+      cbxKind.Items.Add( "Tile" );
     }
 
+     private void PopulateCond( ComboBox cbxCond )
+    {
+      cbxCond.Items.Clear( );
+      cbxCond.Items.Add( "Regular Font" );
+      cbxCond.Items.Add( "Condensed Font" );
+    }
+
+   
 
     private void frmConfig_Load( object sender, EventArgs e )
     {
@@ -77,6 +85,8 @@ namespace FS20_HudBar
       ProfilesRef[0].LoadPlacement( cbxPlaceP1 );
       PopulateKind( cbxKindP1 );
       ProfilesRef[0].LoadKind( cbxKindP1 );
+      PopulateCond( cbxCondP1 );
+      ProfilesRef[0].LoadCond( cbxCondP1 );
 
       txP2.Text = ProfilesRef[1].PName;
       ProfilesRef[1].LoadFlp( flp2, HudBarRef );
@@ -86,6 +96,8 @@ namespace FS20_HudBar
       ProfilesRef[1].LoadPlacement( cbxPlaceP2 );
       PopulateKind( cbxKindP2 );
       ProfilesRef[1].LoadKind( cbxKindP2 );
+      PopulateCond( cbxCondP2 );
+      ProfilesRef[1].LoadCond( cbxCondP2 );
 
       txP3.Text = ProfilesRef[2].PName;
       ProfilesRef[2].LoadFlp( flp3, HudBarRef );
@@ -95,6 +107,8 @@ namespace FS20_HudBar
       ProfilesRef[2].LoadPlacement( cbxPlaceP3 );
       PopulateKind( cbxKindP3 );
       ProfilesRef[2].LoadKind( cbxKindP3 );
+      PopulateCond( cbxCondP3 );
+      ProfilesRef[2].LoadCond( cbxCondP3 );
 
       txP4.Text = ProfilesRef[3].PName;
       ProfilesRef[3].LoadFlp( flp4, HudBarRef );
@@ -104,6 +118,8 @@ namespace FS20_HudBar
       ProfilesRef[3].LoadPlacement( cbxPlaceP4 );
       PopulateKind( cbxKindP4 );
       ProfilesRef[3].LoadKind( cbxKindP4 );
+      PopulateCond( cbxCondP4 );
+      ProfilesRef[3].LoadCond( cbxCondP4 );
 
       txP5.Text = ProfilesRef[4].PName;
       ProfilesRef[4].LoadFlp( flp5, HudBarRef );
@@ -113,6 +129,8 @@ namespace FS20_HudBar
       ProfilesRef[4].LoadPlacement( cbxPlaceP5 );
       PopulateKind( cbxKindP5 );
       ProfilesRef[4].LoadKind( cbxKindP5 );
+      PopulateCond( cbxCondP5 );
+      ProfilesRef[4].LoadCond( cbxCondP5 );
 
       // mark the selected one 
       switch ( SelectedProfile ) {
@@ -153,30 +171,35 @@ namespace FS20_HudBar
       ProfilesRef[0].GetFontSizeFromCombo( cbxFontP1 );
       ProfilesRef[0].GetPlacementFromCombo( cbxPlaceP1 );
       ProfilesRef[0].GetKindFromCombo( cbxKindP1 );
+      ProfilesRef[0].GetCondFromCombo( cbxCondP1 );
 
       ProfilesRef[1].PName = txP2.Text;
       ProfilesRef[1].GetItemsFromFlp( flp2 );
       ProfilesRef[1].GetFontSizeFromCombo( cbxFontP2 );
       ProfilesRef[1].GetPlacementFromCombo( cbxPlaceP2 );
       ProfilesRef[1].GetKindFromCombo( cbxKindP2 );
+      ProfilesRef[1].GetCondFromCombo( cbxCondP2 );
 
       ProfilesRef[2].PName = txP3.Text;
       ProfilesRef[2].GetItemsFromFlp( flp3 );
       ProfilesRef[2].GetFontSizeFromCombo( cbxFontP3 );
       ProfilesRef[2].GetPlacementFromCombo( cbxPlaceP3 );
       ProfilesRef[2].GetKindFromCombo( cbxKindP3 );
+      ProfilesRef[2].GetCondFromCombo( cbxCondP3 );
 
       ProfilesRef[3].PName = txP4.Text;
       ProfilesRef[3].GetItemsFromFlp( flp4 );
       ProfilesRef[3].GetFontSizeFromCombo( cbxFontP4 );
       ProfilesRef[3].GetPlacementFromCombo( cbxPlaceP4 );
       ProfilesRef[3].GetKindFromCombo( cbxKindP4 );
+      ProfilesRef[3].GetCondFromCombo( cbxCondP4 );
 
       ProfilesRef[4].PName = txP5.Text;
       ProfilesRef[4].GetItemsFromFlp( flp5);
       ProfilesRef[4].GetFontSizeFromCombo( cbxFontP5 );
       ProfilesRef[4].GetPlacementFromCombo( cbxPlaceP5 );
       ProfilesRef[4].GetKindFromCombo( cbxKindP5 );
+      ProfilesRef[4].GetCondFromCombo( cbxCondP5 );
 
       this.DialogResult = DialogResult.OK;
       this.Close( );

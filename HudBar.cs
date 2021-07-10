@@ -12,6 +12,7 @@ namespace FS20_HudBar
   /// <summary>
   /// All Labels (Topics etc.) shown in the hudBar 
   /// These items are used to Configure (on / off) 
+  /// ADD NEW ITEMS ONLY AT THE END OF THE LIST (else the existing user config is screwed up)
   /// </summary>
   internal enum LItem
   {
@@ -71,48 +72,57 @@ namespace FS20_HudBar
     AOA,      // Angle of attack deg
     TAS,      // true airspeed kt
     ACFT_ID,  // aircraft ID
+    
+    WIND_SD,  // Wind Speed and Direction
+    WIND_XY,  // Wind X and Y Component
 
+    Lights,   // Lights indication
+    Fuel_LR,    // Fuel quantity Left/Right
+    Fuel_Total, // Fuel quantity Total
+
+    MACH,       // Mach speed indication
   }
 
 
   /// <summary>
-  /// All items shown in the hudBar 
+  /// All item values shown in the hudBar 
   /// These are to access and to the processing
   /// Mainly those include Engine 1/2 details
+  /// ADD NEW ITEMS ONLY AT THE END OF THE LIST (else the existing user config is screwed up)
   /// </summary>
-  internal enum GItem
+  internal enum VItem
   {
-    Ad = 0, // MSFS connection status...
-    SimRate, // simulation rate
+    Ad = 0,   // MSFS connection status...
+    SimRate,  // simulation rate
 
-    ETrim, // Elevator Trim +-N%
-    RTrim, // Rudder Trim +-N%
-    ATrim, // Aileron Trim +-N%
+    ETrim,      // Elevator Trim +-N%, active: set to zero
+    RTrim,      // Rudder Trim +-N%, active: set to zero
+    ATrim,      // Aileron Trim +-N%, active: set to zero
 
-    OAT,   // Outside AirTemp °C
+    OAT,        // Outside AirTemp °C
     BARO_HPA,   // Altimeter Setting HPA
     BARO_InHg,  // Altimeter Setting InHg
 
-    Gear, // Gear Up/Down
-    Brakes, // Brakes On Off
-    Flaps, // Flaps N level 
+    Gear,       // Gear Up/Down
+    Brakes,     // Brakes On Off
+    Flaps,      // Flaps N level 
 
-    E1_TORQP, // Engine1 Torque %
-    E2_TORQP, // Engine2 Torque %
-    E1_TORQ, // Engine1 Torque ft/lb
-    E2_TORQ, // Engine2 Torque ft/lb
+    E1_TORQP,   // Engine1 Torque %
+    E2_TORQP,   // Engine2 Torque %
+    E1_TORQ,    // Engine1 Torque ft/lb
+    E2_TORQ,    // Engine2 Torque ft/lb
 
-    P1_RPM,  // Prop1 RPM
-    P2_RPM,  // Prop2 RPM
-    E1_RPM,  // Engine1 RPM
-    E2_RPM,  // Engine2 RPM
-    E1_N1,   // Engine1 N1 %
-    E2_N1,   // Engine2 N1 %
+    P1_RPM,     // Prop1 RPM
+    P2_RPM,     // Prop2 RPM
+    E1_RPM,     // Engine1 RPM
+    E2_RPM,     // Engine2 RPM
+    E1_N1,      // Engine1 N1 %
+    E2_N1,      // Engine2 N1 %
 
-    E1_ITT,  // ITT 1 Celsius
-    E2_ITT,  // ITT 2 Celsius
-    E1_EGT,  // EGT 1 Celsius
-    E2_EGT,  // EGT 2 Celsius
+    E1_ITT,     // ITT 1 Celsius
+    E2_ITT,     // ITT 2 Celsius
+    E1_EGT,     // EGT 1 Celsius
+    E2_EGT,     // EGT 2 Celsius
 
     E1_FFlow_pph,  // Fuel1 Flow pph
     E2_FFlow_pph,  // Fuel2 Flow pph
@@ -120,58 +130,75 @@ namespace FS20_HudBar
     E1_FFlow_gph,  // Fuel1 Flow gph
     E2_FFlow_gph,  // Fuel2 Flow gph
 
-    GPS_PWYP, // GPS Prev Waypoint
-    GPS_NWYP, // GPS Next Waypoint
-    GPS_DIST,  // GPS Distance to next Waypoint
-    GPS_ETE,  // GPS Time to next Waypoint
-    GPS_TRK,  // GPS Track 000°
-    GPS_GS,  // GPS Groundspeed 000kt
+    GPS_PWYP,     // GPS Prev Waypoint
+    GPS_NWYP,     // GPS Next Waypoint
+    GPS_DIST,     // GPS Distance to next Waypoint
+    GPS_ETE,      // GPS Time to next Waypoint
+    GPS_TRK,      // GPS Track 000°
+    GPS_GS,       // GPS Groundspeed 000kt
 
-    GPS_ALT,  // GPS next Waypoint Altitude
-    EST_VS,   // Estimate VS to reach WYP@Altitude
-    EST_ALT,  // Estimate ALT@WYP
+    GPS_ALT,      // GPS next Waypoint Altitude
+    EST_VS,       // Estimate VS to reach WYP@Altitude
+    EST_ALT,      // Estimate ALT@WYP
 
-    HDG,  // Heading Mag 000°
-    ALT,  // Altitude 00000 ft
-    RA,   // Radio Altitude 000 ft 
-    IAS,  // Ind. Airspeed 000 kt
-    VS,   // Vertical Speed +-0000 fpm
+    HDG,          // Heading Mag 000°
+    ALT,          // Altitude 00000 ft
+    RA,           // Radio Altitude 000 ft 
+    IAS,          // Ind. Airspeed 000 kt
+    VS,           // Vertical Speed +-0000 fpm
 
-    AP,   // Autopilot On/Off
-    AP_HDG,  // AP HDG active
-    AP_HDGset,  // AP HDG set
-    AP_ALT,  // AP ALT hold active
-    AP_ALTset,  // AP ALT set
-    AP_VS,   // AP VS hold active
-    AP_VSset,   // AP VS set
-    AP_FLC,  // AP FLC hold active
-    AP_FLCset,  // AP FLC IAS set
-    AP_NAV,  // AP NAV active
-    AP_NAVgps,  // AP NAV follow GPS
-    AP_APR,  // AP APR hold active
-    AP_GS,   // AP GS  hold active
+    AP,           // Autopilot On/Off
+    AP_HDG,       // AP HDG active
+    AP_HDGset,    // AP HDG set
+    AP_ALT,       // AP ALT hold active
+    AP_ALTset,    // AP ALT set
+    AP_VS,        // AP VS hold active
+    AP_VSset,     // AP VS set
+    AP_FLC,       // AP FLC hold active
+    AP_FLCset,    // AP FLC IAS set
+    AP_NAV,       // AP NAV active
+    AP_NAVgps,    // AP NAV follow GPS
+    AP_APR,       // AP APR hold active
+    AP_GS,        // AP GS  hold active
 
-    M_Elapsed1, // Checkpoint 1
-    M_Dist1, // Checkpoint 1
-    M_Elapsed2, // Checkpoint 2
-    M_Dist2, // Checkpoint 2
-    M_Elapsed3, // Checkpoint 3
-    M_Dist3, // Checkpoint 3
+    M_Elapsed1,   // Time elapsed since start of CP1
+    M_Dist1,      // Distance from CP1
+    M_Elapsed2,   // Time elapsed since start of CP2
+    M_Dist2,      // Distance from CP2
+    M_Elapsed3,   // Time elapsed since start of CP3
+    M_Dist3,      // Distance from CP3
 
-    A_ETRIM,  // Auto ETrim
+    A_ETRIM,      // Auto ETrim, activates ETrim Module, shows ETrim % (same as the standard one)
 
-    E1_MAN,   // Man Pressure InHg
-    E2_MAN,   // Man Pressure InHg
+    E1_MAN,       // Man Pressure InHg
+    E2_MAN,       // Man Pressure InHg
 
-    GPS_BRGm,  // GPS Mag BRG to Waypoint 000°
-    GPS_DTRK,  // GPS Desired Track to Waypoint 000°
-    GPS_XTK,   // GPS CrossTrack Error nm
+    GPS_BRGm,     // GPS Mag BRG to Waypoint 000°
+    GPS_DTRK,     // GPS Desired Track to Waypoint 000°
+    GPS_XTK,      // GPS CrossTrack Error nm
 
-    AOA,      // Angle of attack deg
-    TAS,      // true airspeed kt
-    ACFT_ID,  // aircraft ID
+    AOA,          // Angle of attack deg
+    TAS,          // true airspeed kt
+    ACFT_ID,      // aircraft ID
+
+    WIND_DIR,     // Wind direction °
+    WIND_SPEED,   // Wind speed kt
+    WIND_LAT,     // Wind lateral comp kt
+    WIND_LON,     // Wind longitudinal comp kt
+
+    Lights,       // Lights indication
+
+    Fuel_Left,    // Fuel quantity Left Gallons
+    Fuel_Right,   // Fuel quantity Right Gallons
+    Fuel_Total,   // Fuel quantity Total Gallons
+
+    MACH,         // Mach speed indication
   }
 
+  /// <summary>
+  /// Instance of the current HudBar
+  /// will initialize from profile settings
+  /// </summary>
   internal class HudBar
   {
     // Item Colors Foreground
@@ -180,12 +207,13 @@ namespace FS20_HudBar
     public Color c_Gps = Color.Fuchsia;     // GPS (magenta)
     public Color c_Set = Color.Cyan;        // Set Values (cyan)
     public Color c_RA = Color.Orange;       // Radio Alt
-    public Color c_SubZero = Color.DeepSkyBlue;       // Temp sub zero
     public Color c_Est = Color.Plum;        // Estimates 
-    public Color c_SRATE = Color.Goldenrod;  // SimRate >1
+    // those are set in the data receiver part in Main (here to have all in one place)
+    public Color c_SubZero = Color.DeepSkyBlue;  // Temp sub zero
+    public Color c_SRATE = Color.Goldenrod;  // SimRate != 1
 
     // Background
-    public Color c_ActBG = Color.FromArgb(00,00,75); // Active Background
+    public Color c_ActBG = Color.FromArgb(00,00,75); // Active Items Background (dark blue)
     public Color c_BG = Color.Black;
 
     /// <summary>
@@ -217,12 +245,18 @@ namespace FS20_HudBar
     private Dictionary<LItem,string> m_guiNames = new Dictionary<LItem, string>(){
       {LItem.MSFS,"MSFS" },
       {LItem.SimRate,"SimRate" },
+      {LItem.ACFT_ID,"ID" },
 
       {LItem.ETrim,"E-Trim" }, {LItem.RTrim,"R-Trim" }, {LItem.ATrim,"A-Trim" },
+      {LItem.A_ETRIM,"A-ETrim" },
       {LItem.OAT,"OAT" },
+      {LItem.WIND_SD,"WIND" }, {LItem.WIND_XY,"WIND" },
       {LItem.BARO_HPA,"BARO" }, {LItem.BARO_InHg,"BARO" },
       {LItem.Gear,"Gear" }, {LItem.Brakes,"Brakes" }, {LItem.Flaps,"Flaps" },
+      {LItem.Lights,"Lights" },
+      {LItem.AOA,"AoA" },
 
+      {LItem.MAN,"MAN" },
       {LItem.TORQ,"TORQ" },
       {LItem.TORQP,"TORQ" },
       {LItem.PRPM,"P-RPM" },
@@ -231,11 +265,15 @@ namespace FS20_HudBar
       {LItem.ITT,"ITT" },
       {LItem.EGT,"EGT" },
       {LItem.FFlow_pph,"FFLOW" }, {LItem.FFlow_gph,"FFLOW" },
+      {LItem.Fuel_LR,"F-LR" }, {LItem.Fuel_Total,"F-TOT" },
 
       {LItem.GPS_WYP,"≡GPS≡" },
       {LItem.GPS_DIST,"DIST" },
       {LItem.GPS_ETE, "ETE" },
+      {LItem.GPS_BRGm,"BRG" },
       {LItem.GPS_TRK, "TRK" },
+      {LItem.GPS_DTRK,"DTK" },
+      {LItem.GPS_XTK,"XTK" },
       {LItem.GPS_GS, "GS" },
       {LItem.GPS_ALT, "ALTP" },
       {LItem.EST_VS, "WP-VS" },
@@ -245,6 +283,8 @@ namespace FS20_HudBar
       {LItem.ALT,"ALT" },
       {LItem.RA,"RA" },
       {LItem.IAS,"IAS" },
+      {LItem.TAS,"TAS" },
+      {LItem.MACH,"Mach" },
       {LItem.VS,"VS" },
 
       {LItem.AP,"≡AP≡" },
@@ -258,32 +298,25 @@ namespace FS20_HudBar
       {LItem.M_TIM_DIST1,"CP 1" },
       {LItem.M_TIM_DIST2,"CP 2" },
       {LItem.M_TIM_DIST3,"CP 3" },
-
-      {LItem.A_ETRIM,"A-ETrim" },
-
-      {LItem.MAN,"MAN" },
-
-      {LItem.GPS_BRGm,"BRG" },
-      {LItem.GPS_DTRK,"DTK" },
-      {LItem.GPS_XTK,"XTK" },
-
-      {LItem.AOA,"AoA" },
-      {LItem.TAS,"TAS" },
-      {LItem.ACFT_ID,"ID" },
-
     };
 
     // Descriptive GUI label names to match the enum above (shown in Config)
     private Dictionary<LItem,string> m_cfgNames = new Dictionary<LItem, string>(){
       {LItem.MSFS,"MSFS Status" },
+      {LItem.ACFT_ID,"Aircraft ID" },
       {LItem.SimRate,"Sim Rate" },
 
       {LItem.ETrim,"Elevator Trim" }, {LItem.RTrim,"Rudder Trim" }, {LItem.ATrim,"Aileron Trim" },
+      {LItem.A_ETRIM,"Auto E-Trim" },
       {LItem.OAT,"Outsite Air Temp °C" },
+      {LItem.WIND_SD,"Wind dir° @ speed kt" },
+      {LItem.WIND_XY,"Wind cross / head kt" },
       {LItem.BARO_HPA,"Baro Setting hPa" },
       {LItem.BARO_InHg,"Baro Setting InHg" },
-      {LItem.Gear,"Gear" }, {LItem.Brakes,"Brakes" }, {LItem.Flaps,"Flaps" },
+      {LItem.Gear,"Gear" }, {LItem.Brakes,"Brakes" }, {LItem.Flaps,"Flaps" }, {LItem.Lights,"Lights BNSTL" },
+      {LItem.AOA,"Angle of attack deg" },
 
+      {LItem.MAN,"MAN Pressure inHg" },
       {LItem.TORQ,"Torque ft/lb" },
       {LItem.TORQP,"Torque %" },
       {LItem.PRPM,"Propeller RPM" },
@@ -293,11 +326,16 @@ namespace FS20_HudBar
       {LItem.EGT,"Engine EGT °C" },
       {LItem.FFlow_pph,"Fuel Flow pph" },
       {LItem.FFlow_gph,"Fuel Flow gph" },
+      {LItem.Fuel_LR,"Fuel Left/Right Gal" }, 
+      {LItem.Fuel_Total,"Fuel Total Gal" },
 
       {LItem.GPS_WYP,"≡GPS≡" },
       {LItem.GPS_DIST,"WYP Distance nm" },
       {LItem.GPS_ETE,"WYP ETE h:mm:ss" },
+      {LItem.GPS_BRGm,"Bearing to WYP (mag)" },
       {LItem.GPS_TRK,"Current Track" },
+      {LItem.GPS_DTRK,"Desired track to WYP" },
+      {LItem.GPS_XTK,"Cross track distance nm" },
       {LItem.GPS_GS,"Groundspeed" },
       {LItem.GPS_ALT,"Waypoint ALT ft" },
       {LItem.EST_VS,"Estimate VS to WYP@ALT" },
@@ -307,6 +345,8 @@ namespace FS20_HudBar
       {LItem.ALT,"Aircraft ALT ft" },
       {LItem.RA,"Aircraft RA ft" },
       {LItem.IAS,"Aircraft IAS kt" },
+      {LItem.TAS,"Aircraft TAS kt" },
+      {LItem.MACH,"Aircraft Mach number M" },
       {LItem.VS,"Aircraft VS fpm" },
 
       {LItem.AP,"Autopilot Master" },
@@ -320,50 +360,43 @@ namespace FS20_HudBar
       {LItem.M_TIM_DIST1,"Checkpoint 1" },
       {LItem.M_TIM_DIST2,"Checkpoint 2" },
       {LItem.M_TIM_DIST3,"Checkpoint 3" },
-
-      {LItem.A_ETRIM,"Auto E-Trim" },
-
-      {LItem.MAN,"MAN Pressure inHg" },
-
-      {LItem.GPS_BRGm,"Bearing to WYP (mag)" },
-      {LItem.GPS_DTRK,"Desired track to WYP" },
-      {LItem.GPS_XTK,"Cross track distance nm" },
-
-      {LItem.AOA,"Angle of attack deg" },
-      {LItem.TAS,"Aircraft TAS kt" },
-      {LItem.ACFT_ID,"Aircraft ID" },
     };
 
     // Bar value label names to match the enum above
-    // Used when the individual value item is meant and the text here is the value 
-    //  only used as GPS and GS  for NAV / GPS and APR / GS the rest is for completenes only
-    private Dictionary<GItem,string> m_barValueLabels = new Dictionary<GItem, string>(){
-      {GItem.AP_NAVgps,"GPS" },
-      {GItem.AP_GS,"►GS◄" },
+    // Used when the individual value item is meant and the text here is the value itself (i.e. no numeric value)
+    //  only used as GPS and GS labels for NAV / GPS and APR / GS  for now
+    private Dictionary<VItem,string> m_barValueLabels = new Dictionary<VItem, string>(){
+      {VItem.AP_NAVgps,"GPS" },
+      {VItem.AP_GS,"►GS◄" },
     };
 
     // maintain collections of the created Controls to do the processing
+    // One collection contains the actionable interface
+    // The second collection the WinForm Control itself (to act on the Control interface)
 
-    // Label Items (some are buttons, for some there are color changes
-    private Dictionary<GItem, IValue> m_lblItems = new Dictionary<GItem, IValue>();
-    private Dictionary<GItem,Control> m_lblLabelItems = new Dictionary<GItem, Control>();
-    private void AddLbl( GItem item, Control ctrl )
+    // Labels (some are buttons, for some there are color changes
+    private Dictionary<VItem, IValue> m_lblItems = new Dictionary<VItem, IValue>();
+    private Dictionary<VItem,Control> m_lblLabelItems = new Dictionary<VItem, Control>();
+    // add a label to the list
+    private void AddLbl( VItem item, Control ctrl )
     {
       m_lblItems.Add( item, (IValue)ctrl );
       m_lblLabelItems.Add( item, ctrl );
     }
 
     // Value Items (updated from Sim, some may change colors)
-    private  Dictionary<GItem, IValue>  m_valItems = new Dictionary<GItem, IValue> ();
-    private Dictionary<GItem,Control> m_valLabelItems = new Dictionary<GItem,Control>();
-    private void AddValue( GItem item, Control ctrl )
+    private  Dictionary<VItem, IValue>  m_valItems = new Dictionary<VItem, IValue> ();
+    private Dictionary<VItem,Control> m_valLabelItems = new Dictionary<VItem,Control>();
+    // add a value item to the list
+    private void AddValue( VItem item, Control ctrl )
     {
       m_valItems.Add( item, (IValue)ctrl );
       m_valLabelItems.Add( item, ctrl );
     }
 
-    // The Display Groups (DispItem is essentially a smaller FlowLayoutPanel containing the controls)
+    // The Display Groups (DispItem is essentially a smaller FlowLayoutPanel containing the label and 1 or 2 values)
     private  Dictionary<LItem, DispItem>  m_dispItems = new Dictionary<LItem, DispItem> ();
+    // add a DispItem to the collection
     private void AddDisp( LItem item, DispItem ctrl )
     {
       m_dispItems.Add( item, ctrl );
@@ -372,7 +405,7 @@ namespace FS20_HudBar
     private static GUI_Fonts FONTS = null; // handle fonts as static item to not waste resources
 
     /// <summary>
-    /// Init the Hud Items - providing prototypes for the various label types
+    /// Init the Hud Items - providing prototypes for the various label types and Config strings/values from AppSettings
     /// </summary>
     /// <param name="lblProto">A GUI prototype label, carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="valueProto">A GUI prototype value, carrying fonts, colors etc (set in GUI design mode)</param>
@@ -382,8 +415,9 @@ namespace FS20_HudBar
     /// <param name="opaque">Opaque flag</param>
     /// <param name="fontSize">Used fontsize</param>
     /// <param name="placement">Screen alignment of the bar</param>
-    public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
-                    bool showUnits, bool opaque, FontSize fontSize, Placement placement, Kind kind )
+    /// <param name="condensed">Condensed flag</param>
+    public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,                    
+                    bool showUnits, bool opaque, FontSize fontSize, Placement placement, Kind kind, bool condensed )
     {
       // just save them in the HUD mainly for config purpose
       ShowUnits = showUnits;
@@ -393,23 +427,22 @@ namespace FS20_HudBar
       Placement = placement;
       Kind = kind;
 
-      // init once from the submitted labels
-      if ( FONTS == null ) {
-        FONTS = new GUI_Fonts( lblProto, valueProto, value2Proto, signProto );
-      }
+      // init from the submitted labels
+      FONTS = new GUI_Fonts( condensed ); // get all fonts from built in
+
       // set desired size
       FONTS.SetFontsize( fontSize );
-      // and prepare the prototypes used below - not really clever but ....
+      // and prepare the prototypes used below - not really clever but handier to have all label defaults ....
       lblProto.Font = FONTS.LabelFont;
       valueProto.Font = FONTS.ValueFont;
       value2Proto.Font = FONTS.Value2Font;
       signProto.Font = FONTS.SignFont;
 
       // The Value Item Background - used when assessing and debugging only
-      c_BG = lblProto.BackColor;
+      c_BG = lblProto.BackColor; // default taken from the prototype label
       //c_BG = Color.DarkBlue; // Debug color to see control outlines
 
-      // reload all
+      // reset all dictionaries
       m_lblItems.Clear( );
       m_lblLabelItems.Clear( );
       m_valItems.Clear( );
@@ -417,327 +450,394 @@ namespace FS20_HudBar
       m_dispItems.Clear( );
 
       // we do this one by one..
-      // NOTE: ONLY ONE BUTTON Control per item, One may leave out the Value item e.g. for AP and other non value items
-      // Button Labels need to be added to the label collection else one cannot access them
+      // NOTE: ONLY ONE BUTTON Control (B_ICAO) per item, One may leave out the Value item e.g. for AP and other non value items
 
-      GItem item; LItem disp;
-      Control l, v; DispItem di = null;
+      LItem disp; // the label to add
+      VItem item; // the value item to add (can be defined and added a second time for 2 engines values)
+      Control l, v; DispItem di = null; // l is the label control, v is a value control, di is the Display Group containing label and values for one entity
 
+      // The pattern below repeats, define the label, create the display group and add it to the group list
+      // Define the value item
+      // then use the desired formatter label Control (V_xy) set specifics and add it to the display group and access lists
+      // for 2 engine items define the second value item and control (same procedure as with the first one)
+      // Actionable Labels must be added to the Label List to have them accessable from the outside 
+
+      // Sim Status
       disp = LItem.MSFS; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.Ad;
+      item = VItem.Ad;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l ); AddLbl( item, l ); // access for Error Msg etc
       v = new V_ICAO( lblProto ) { Text = "" }; di.AddItem( v ); AddValue( item, v );
 
       // Sim Rate
       disp = LItem.SimRate; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.SimRate;
+      item = VItem.SimRate;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_SRate( lblProto ) { }; di.AddItem( v ); AddValue( item, v );
 
       // TRIMS - we use value2Proto to get a smaller font for the numbers
       disp = LItem.ETrim; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.ETrim;
+      item = VItem.ETrim;
       // the ERA-Trim label gets a button to activate the 0 Trim action
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.RTrim; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.RTrim;
+      item = VItem.RTrim;
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.ATrim; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.ATrim;
+      item = VItem.ATrim;
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // OAT, BARO
       disp = LItem.OAT; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.OAT;
+      item = VItem.OAT;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Temp( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.BARO_HPA; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.BARO_HPA;
+      item = VItem.BARO_HPA;
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_PressureHPA( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.BARO_InHg; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.BARO_InHg;
+      item = VItem.BARO_InHg;
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_PressureInHg( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // Gear, Brakes, Flaps
       disp = LItem.Gear; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.Gear;
+      item = VItem.Gear;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Steps( signProto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.Brakes; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.Brakes;
+      item = VItem.Brakes;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Steps( signProto ) { ForeColor = c_RA, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.Flaps; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.Flaps;
+      item = VItem.Flaps;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Steps( signProto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      // Lights
+      disp = LItem.Lights; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.Lights;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Lights( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // TORQ, PRPM, ERPM, FFLOW - we use value2Proto to get a smaller font for the numbers
       disp = LItem.TORQP; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.E1_TORQP;
+      item = VItem.E1_TORQP;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.E2_TORQP;
+      item = VItem.E2_TORQP;
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
 
       disp = LItem.TORQ; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.E1_TORQ;
+      item = VItem.E1_TORQ;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Torque( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.E2_TORQ;
+      item = VItem.E2_TORQ;
       v = new V_Torque( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
 
       disp = LItem.PRPM; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.P1_RPM;
+      item = VItem.P1_RPM;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_RPM( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.P2_RPM;
+      item = VItem.P2_RPM;
       v = new V_RPM( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
 
       disp = LItem.ERPM; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.E1_RPM;
+      item = VItem.E1_RPM;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_RPM( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.E2_RPM;
+      item = VItem.E2_RPM;
       v = new V_RPM( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
 
       disp = LItem.N1; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.E1_N1;
+      item = VItem.E1_N1;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.E2_N1;
+      item = VItem.E2_N1;
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
 
       disp = LItem.ITT; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.E1_ITT;
+      item = VItem.E1_ITT;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Temp( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.E2_ITT;
+      item = VItem.E2_ITT;
       v = new V_Temp( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
 
       disp = LItem.EGT; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.E1_EGT;
+      item = VItem.E1_EGT;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Temp( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.E2_EGT;
+      item = VItem.E2_EGT;
       v = new V_Temp( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
 
       disp = LItem.FFlow_pph; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.E1_FFlow_pph;
+      item = VItem.E1_FFlow_pph;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Flow_pph( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.E2_FFlow_pph;
+      item = VItem.E2_FFlow_pph;
       v = new V_Flow_pph( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.FFlow_gph; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.E1_FFlow_gph;
+      item = VItem.E1_FFlow_gph;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Flow_gph( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.E2_FFlow_gph;
+      item = VItem.E2_FFlow_gph;
       v = new V_Flow_gph( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // GPS
       disp = LItem.GPS_WYP; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.GPS_PWYP;
+      item = VItem.GPS_PWYP;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_ICAO( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.GPS_NWYP;
+      item = VItem.GPS_NWYP;
       v = new V_ICAO( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.GPS_DIST; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.GPS_DIST;
+      item = VItem.GPS_DIST;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Dist( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.GPS_ETE; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.GPS_ETE;
+      item = VItem.GPS_ETE;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Time( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.GPS_TRK; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.GPS_TRK;
+      item = VItem.GPS_TRK;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Deg( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.GPS_GS; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.GPS_GS;
+      item = VItem.GPS_GS;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Speed( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.GPS_ALT; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.GPS_ALT;
+      item = VItem.GPS_ALT;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Alt( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.EST_VS; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.EST_VS;
+      item = VItem.EST_VS;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_VSpeed( valueProto, showUnits ) { ForeColor = c_Est, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
       disp = LItem.EST_ALT; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.EST_ALT;
+      item = VItem.EST_ALT;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Alt( valueProto, showUnits ) { ForeColor = c_Est, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // Aircraft Data
       disp = LItem.HDG; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.HDG;
+      item = VItem.HDG;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Deg( valueProto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.ALT; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.ALT;
+      item = VItem.ALT;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Alt( valueProto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.RA; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.RA;
+      item = VItem.RA;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Alt( valueProto, showUnits ) { ForeColor = c_RA, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.IAS; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.IAS;
+      item = VItem.IAS;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Speed( valueProto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.VS; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.VS;
+      item = VItem.VS;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_VSpeed( valueProto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // Autopilot
       disp = LItem.AP; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.AP;
+      item = VItem.AP;
       l = new B_ICAO( item, valueProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
 
       // AP Heading
       disp = LItem.AP_HDGs; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.AP_HDG;
+      item = VItem.AP_HDG;
       l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
-      item = GItem.AP_HDGset;
+      item = VItem.AP_HDGset;
       v = new V_Deg( value2Proto ) { ForeColor = c_Set, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // AP Altitude
       disp = LItem.AP_ALTs; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.AP_ALT;
-      l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
-      item = GItem.AP_ALTset;
+      item = VItem.AP_ALT;
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      item = VItem.AP_ALTset;
       v = new V_Alt( value2Proto, showUnits ) { ForeColor = c_Set, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // AP VSpeed
       disp = LItem.AP_VSs; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.AP_VS;
+      item = VItem.AP_VS;
       l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
-      item = GItem.AP_VSset;
+      item = VItem.AP_VSset;
       v = new V_VSpeed( value2Proto, showUnits ) { ForeColor = c_Set, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // AP FLChange
       disp = LItem.AP_FLCs; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.AP_FLC;
+      item = VItem.AP_FLC;
       l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
-      item = GItem.AP_FLCset;
+      item = VItem.AP_FLCset;
       v = new V_Speed( value2Proto, showUnits ) { ForeColor = c_Set, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // AP Nav, Apr, GS
       disp = LItem.AP_NAVg; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.AP_NAV;
+      item = VItem.AP_NAV;
       l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
-      item = GItem.AP_NAVgps;
+      item = VItem.AP_NAVgps;
       l = new V_ICAO( value2Proto ) { Text = BarValueLabel( item ) }; di.AddItem( l ); AddLbl( item, l );
 
       disp = LItem.AP_APR_GS; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.AP_APR;
+      item = VItem.AP_APR;
       l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
-      item = GItem.AP_GS;
+      item = VItem.AP_GS;
       l = new V_ICAO( value2Proto ) { Text = BarValueLabel( item ) }; di.AddItem( l ); AddLbl( item, l );
 
+      // CP Meter
       disp = LItem.M_TIM_DIST1; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.M_Elapsed1;
+      item = VItem.M_Elapsed1;
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_Time( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.M_Dist1;
+      item = VItem.M_Dist1;
       v = new V_Dist( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.M_TIM_DIST2; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.M_Elapsed2;
+      item = VItem.M_Elapsed2;
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_Time( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.M_Dist2;
+      item = VItem.M_Dist2;
       v = new V_Dist( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.M_TIM_DIST3; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.M_Elapsed3;
+      item = VItem.M_Elapsed3;
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_Time( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.M_Dist3;
+      item = VItem.M_Dist3;
       v = new V_Dist( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.A_ETRIM; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.A_ETRIM;
+      item = VItem.A_ETRIM;
       // the Auto E-Trim label gets a button to activate the AutoTrim Module
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.MAN; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.E1_MAN;
+      item = VItem.E1_MAN;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_PressureInHg( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-      item = GItem.E2_MAN;
+      item = VItem.E2_MAN;
       v = new V_PressureInHg( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.GPS_BRGm; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.GPS_BRGm;
+      item = VItem.GPS_BRGm;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Deg( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.GPS_DTRK; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.GPS_DTRK;
+      item = VItem.GPS_DTRK;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Deg( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.GPS_XTK; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.GPS_XTK;
+      item = VItem.GPS_XTK;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Dist2( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      v = new V_Xtk( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.AOA; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.AOA;
+      item = VItem.AOA;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Angle( valueProto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.TAS; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.TAS;
+      item = VItem.TAS;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Speed( valueProto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.ACFT_ID; di = new DispItem( ); AddDisp( disp, di );
-      item = GItem.ACFT_ID;
+      item = VItem.ACFT_ID;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_ICAO( valueProto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      // Wind
+      disp = LItem.WIND_SD; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.WIND_DIR;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Deg( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = VItem.WIND_SPEED;
+      v = new V_Speed( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.WIND_XY; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.WIND_LAT;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Wind_X( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = VItem.WIND_LON;
+      v = new V_Wind_HT( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      // Fuel quantities
+      disp = LItem.Fuel_LR; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.Fuel_Left;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Gallons( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = VItem.Fuel_Right;
+      v = new V_Gallons( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.Fuel_Total; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.Fuel_Total;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Gallons( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.MACH; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.MACH;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Mach( valueProto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
 
-      // Apply Unit mod to Values
+      // Apply Unit modifier (shown, not shown) to all Values
       foreach ( var lx in m_valItems ) {
         lx.Value.ShowUnit = ShowUnits;
       }
 
+      // Align the Vertical alignment accross the bar
+      if ( placement == Placement.Top || placement == Placement.Bottom ) {
+        // Set min size of the labels in order to have them better aligned
+        // Using arrow chars gets a larger height than regular ASCII chars (odd autosize behavior)
+        // Setting minSize to the Max found height of any at least allows for some hotizontal alignment
+        int mh = 0;
+        foreach ( var lx in m_valLabelItems ) {
+          mh = ( lx.Value.Height > mh ) ? lx.Value.Height : mh;
+        }
+        foreach ( var lx in m_lblLabelItems ) {
+          mh = ( lx.Value.Height > mh ) ? lx.Value.Height : mh;
+        }
+        // define MinHeight for value Labels
+        foreach ( var lx in m_valLabelItems ) {
+          lx.Value.MinimumSize = new Size( 1, mh );
+        }
+        // define MinHeight for text Labels
+        foreach ( var lx in m_lblLabelItems ) {
+          lx.Value.MinimumSize = new Size( 1, mh );
+        }
+      }
+
+      // Align the Value columns on left and right bound bar or tile
       if ( placement == Placement.Left || placement == Placement.Right ) {
         // Determine max width and make them aligned
         int maxLabelWidth = 0;
@@ -745,6 +845,7 @@ namespace FS20_HudBar
           var dix = lx.Value as DispItem;
           maxLabelWidth = ( dix.Controls[0].Width > maxLabelWidth ) ? dix.Controls[0].Width : maxLabelWidth;
         }
+        // pad the label control to the right to have the value columns aligned
         foreach ( var lx in m_dispItems ) {
           var dix = lx.Value as DispItem;
           dix.Controls[0].Padding = new Padding( 0, 0, maxLabelWidth - dix.Controls[0].Width, 0 );
@@ -753,12 +854,12 @@ namespace FS20_HudBar
     }
 
     /// <summary>
-    /// Returns the Value IF for an Item
+    /// Returns the Value Interface for a Value Item
     ///   BEWARE no checks for validity of the item ..
     /// </summary>
-    /// <param name="item">A valid GItem</param>
-    /// <returns>The Value Interface</returns>
-    public IValue Value( GItem item )
+    /// <param name="item">A valid VItem</param>
+    /// <returns>The Value Interface or null if not found</returns>
+    public IValue Value( VItem item )
     {
       try {
         return m_valItems[item];
@@ -769,12 +870,12 @@ namespace FS20_HudBar
     }
 
     /// <summary>
-    /// Returns the ValueLabel for an Item
+    /// Returns the Value Label Control for an Item
     ///   BEWARE no checks for validity of the item ..
     /// </summary>
-    /// <param name="item">A valid GItem</param>
-    /// <returns>The Value Label</returns>
-    public Control ValueControl( GItem item )
+    /// <param name="item">A valid VItem</param>
+    /// <returns>The Value Label or null if not found</returns>
+    public Control ValueControl( VItem item )
     {
       try {
         return m_valLabelItems[item];
@@ -785,12 +886,12 @@ namespace FS20_HudBar
     }
 
     /// <summary>
-    /// Returns the Value IF for an Label Item
+    /// Returns the Value interface for the Label Item
     ///   BEWARE no checks for validity of the item ..
     /// </summary>
-    /// <param name="item">A valid GItem</param>
-    /// <returns>The Value Interface</returns>
-    public IValue LabelValue( GItem item )
+    /// <param name="item">A valid VItem</param>
+    /// <returns>The Value Interface or null if not found</returns>
+    public IValue LabelValue( VItem item )
     {
       try {
         return m_lblItems[item];
@@ -804,9 +905,9 @@ namespace FS20_HudBar
     /// Returns the Label-Label for an Item
     ///   BEWARE no checks for validity of the item ..
     /// </summary>
-    /// <param name="item">A valid GItem</param>
-    /// <returns>The Label Label</returns>
-    public Control LabelControl( GItem item )
+    /// <param name="item">A valid VItem</param>
+    /// <returns>The Label Label or null if not found</returns>
+    public Control LabelControl( VItem item )
     {
       try {
         return m_lblLabelItems[item];
@@ -817,7 +918,7 @@ namespace FS20_HudBar
     }
 
     /// <summary>
-    /// Returns the Display Item
+    /// Returns the Display Item given an LItem enum
     /// </summary>
     /// <param name="item">A valid LItem</param>
     /// <returns>The DispItem or null</returns>
@@ -832,9 +933,9 @@ namespace FS20_HudBar
     }
 
     /// <summary>
-    /// Returns the Config Name of a GItem
+    /// Returns the Config Name given an LItem enum
     /// </summary>
-    /// <param name="item">A GItem</param>
+    /// <param name="item">A LItem</param>
     /// <returns>The Config Name</returns>
     public string CfgName( LItem item )
     {
@@ -847,11 +948,11 @@ namespace FS20_HudBar
     }
 
     /// <summary>
-    /// Returns the Bar Value Label of a GItem
+    /// Returns the Bar Value Label of a VItem
     /// </summary>
-    /// <param name="item">A GItem</param>
+    /// <param name="item">A VItem</param>
     /// <returns>The Bar Value Label</returns>
-    public string BarValueLabel( GItem item )
+    public string BarValueLabel( VItem item )
     {
       try {
         return m_barValueLabels[item];

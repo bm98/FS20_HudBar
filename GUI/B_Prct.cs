@@ -18,7 +18,7 @@ namespace FS20_HudBar.GUI
     /// </summary>
     /// <param name="item">The GITem ID of this one</param>
     /// <param name="proto">A label Prototype to derive from</param>
-    public B_Prct( GItem item, Label proto )
+    public B_Prct( VItem item, Label proto )
       :base(item, proto)
     {
       m_unit = "";

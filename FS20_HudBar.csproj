@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>18</ApplicationRevision>
-    <ApplicationVersion>0.24.0.18</ApplicationVersion>
+    <ApplicationRevision>19</ApplicationRevision>
+    <ApplicationVersion>0.25.0.19</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -142,7 +142,22 @@
     <Compile Include="GUI\V_Dist.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Dist2.cs">
+    <Compile Include="GUI\V_Gallons.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_Lights.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_Mach.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_Wind_HT.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_Wind_X.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_Xtk.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\V_Flow_gph.cs">

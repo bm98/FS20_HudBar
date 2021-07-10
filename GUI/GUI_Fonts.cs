@@ -50,20 +50,25 @@ namespace FS20_HudBar.GUI
   /// </summary>
   class GUI_Fonts
   {
+    // Regular Fonts
+    private Font m_lblRegular =  new Font( "Bahnschrift", 9.75f, FontStyle.Bold);
+    private Font m_valRegular =  new Font( "Lucida Console", 14.25f, FontStyle.Bold);
+    private Font m_valRegular2 =  new Font( "Lucida Console", 12f, FontStyle.Bold);
+    // Condensed Fonts (Lucida Console seems to be one of the least line height creeping fonts, so we just use a smaller one for condensed)
+    // Option would be to use the same as for the labels - gets then really condensed..)
+    private Font m_lblCondensed =  new Font( "Bahnschrift SemiBold Condensed", 9.75f, FontStyle.Bold);
+    //    private Font m_valCondensed =  new Font( "Lucida Console", 12f, FontStyle.Bold);
+    //    private Font m_valCondensed2 =  new Font( "Lucida Console", 11.25f, FontStyle.Bold);
+    private Font m_valCondensed =  new Font( "Bahnschrift SemiCondensed", 14.25f, FontStyle.Bold);
+    private Font m_valCondensed2 =  new Font( "Bahnschrift SemiCondensed", 12f, FontStyle.Bold);
+    // Sign font
+    private Font m_sign =  new Font( "Wingdings", 15.76f, FontStyle.Bold);
 
-    private Font m_labelFont;
-    private Font m_signFont;
-    private Font m_valueFont;
-    private Font m_value2Font;
-
-    private const float m_plus2Inc = 2;  // add this to the regular fontsize
-    private const float m_plus4Inc = 4; // add this to the regular fontsize
-    private const float m_plus6Inc = 6; // add this to the regular fontsize
-    private const float m_plus8Inc = 8; // add this to the regular fontsize
-    private const float m_plus10Inc = 10; // add this to the regular fontsize
-    private const float m_minus2Inc = -2;  // add this to the regular fontsize
-    private const float m_minus4Inc = -4;  // add this to the regular fontsize
-
+    // Assigned and sized fonts
+    private Font m_labelFont = null;
+    private Font m_signFont = null;
+    private Font m_valueFont = null;
+    private Font m_value2Font = null;
 
     private static char c_NSpace =Convert.ToChar(0x2007);  // Number size Space
 
@@ -73,7 +78,7 @@ namespace FS20_HudBar.GUI
     /// <param name="label">The Input string</param>
     /// <param name="fieldSize">The fieldSize</param>
     /// <returns></returns>
-    public static string PadRight(string label, int fieldSize )
+    public static string PadRight( string label, int fieldSize )
     {
       return label.PadRight( fieldSize, c_NSpace );
     }
@@ -85,19 +90,19 @@ namespace FS20_HudBar.GUI
     /// </summary>
     /// <param name="fontSize">The FontSize Enum</param>
     /// <returns>An increment </returns>
-    public static float FontIncrement(FontSize fontSize )
+    public static float FontIncrement( FontSize fontSize )
     {
       switch ( fontSize ) {
-        case FontSize.Regular:return 0;
-        case FontSize.Plus_2:return 2;
-        case FontSize.Plus_4:return 4;
+        case FontSize.Regular: return 0;
+        case FontSize.Plus_2: return 2;
+        case FontSize.Plus_4: return 4;
         case FontSize.Plus_6: return 6;
         case FontSize.Plus_8: return 8;
         case FontSize.Plus_10: return 10;
         case FontSize.Plus_12: return 12;
         case FontSize.Plus_14: return 14;
         case FontSize.Minus_2: return -2;
-        case FontSize.Minus_4:return -4;
+        case FontSize.Minus_4: return -4;
         default: return 0;
       }
     }
@@ -116,6 +121,29 @@ namespace FS20_HudBar.GUI
       m_signFont = signProto.Font;
       m_valueFont = valueProto.Font;
       m_value2Font = value2Proto.Font;
+    }
+    /// <summary>
+    /// cTor: Init default fonts from builtins
+    /// </summary>
+    public GUI_Fonts( bool condensed )
+    {
+      m_labelFont?.Dispose( ); 
+      m_signFont?.Dispose( );
+      m_valueFont?.Dispose( );
+      m_value2Font?.Dispose( );
+
+      if ( condensed ) {
+        m_labelFont = m_lblCondensed;
+        m_signFont = m_sign;
+        m_valueFont = m_valCondensed;
+        m_value2Font = m_valCondensed2;
+      }
+      else {
+        m_labelFont = m_lblRegular;
+        m_signFont = m_sign;
+        m_valueFont = m_valRegular;
+        m_value2Font = m_valRegular2;
+      }
     }
 
     /// <summary>

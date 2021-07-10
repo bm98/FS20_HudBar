@@ -8,24 +8,24 @@ using System.Windows.Forms;
 namespace FS20_HudBar.GUI
 {
   /// <summary>
-  /// Vertical Speed Formatter
+  /// Cross Track Distance Formatter
   /// </summary>
-  class V_VSpeed : V_Base
+  class V_Xtk : V_Base
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_VSpeed( Label proto, bool showUnit )
+    public V_Xtk( Label proto, bool showUnit )
     : base( proto, showUnit )
     {
-      m_unit = "fpm";
-      m_default = "____↑"; // NNNN_Direction
+      m_unit = "nm";
+      m_default = "__.__◄"; // direction sign NN.NN   3.2 format
       Text = UnitString( m_default );
     }
 
-    private string c_up = "↑";
-    private string c_do = "↓";
+    private string c_left="◄";
+    private string c_right="►";
     private string c_flat = " ";
 
     /// <summary>
@@ -37,14 +37,14 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          if ( value <= -10 ) {
-            this.Text = UnitString( $"{-value,4:###0}{c_do}" );
+          if ( value <= -0.01 ) {
+            this.Text = UnitString( $"{-value,5:#0.00}{c_left}" );
           }
-          else if ( value >= 10 ) {
-            this.Text = UnitString( $"{value,4:###0}{c_up}" ); 
+          else if ( value >= 0.01 ) {
+            this.Text = UnitString( $"{value,5:#0.00}{c_right}" );
           }
           else {
-            this.Text = UnitString( $"{value,4:###0}{c_flat}" );
+            this.Text = UnitString( $"{value,5:#0.00}{c_flat}" );
           }
         }
       }

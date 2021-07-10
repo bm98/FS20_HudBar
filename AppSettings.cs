@@ -141,6 +141,13 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "False" )]
+    public bool  Profile_1_Condensed {
+      get { return (bool)this["Profile_1_Condensed"]; }
+      set { this["Profile_1_Condensed"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_1 {
       get { return (string)this["Profile_1"]; }
@@ -195,6 +202,13 @@ namespace FS20_HudBar
     public Point Profile_2_Location {
       get { return (Point)this["Profile_2_Location"]; }
       set { this["Profile_2_Location"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "False" )]
+    public bool Profile_2_Condensed {
+      get { return (bool)this["Profile_2_Condensed"]; }
+      set { this["Profile_2_Condensed"] = value; }
     }
 
     [UserScopedSetting( )]
@@ -255,6 +269,13 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "False" )]
+    public bool Profile_3_Condensed {
+      get { return (bool)this["Profile_3_Condensed"]; }
+      set { this["Profile_3_Condensed"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_3 {
       get { return (string)this["Profile_3"]; }
@@ -312,6 +333,13 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "False" )]
+    public bool Profile_4_Condensed {
+      get { return (bool)this["Profile_4_Condensed"]; }
+      set { this["Profile_4_Condensed"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string Profile_4 {
       get { return (string)this["Profile_4"]; }
@@ -366,6 +394,13 @@ namespace FS20_HudBar
     public Point Profile_5_Location {
       get { return (Point)this["Profile_5_Location"]; }
       set { this["Profile_5_Location"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "False" )]
+    public bool Profile_5_Condensed {
+      get { return (bool)this["Profile_5_Condensed"]; }
+      set { this["Profile_5_Condensed"] = value; }
     }
 
     [UserScopedSetting( )]

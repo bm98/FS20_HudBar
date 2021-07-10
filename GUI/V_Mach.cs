@@ -7,17 +7,17 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
-  class V_Dist2 : V_Base
+  class V_Mach : V_Base
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Dist2( Label proto, bool showUnit )
+    public V_Mach( Label proto, bool showUnit )
     : base( proto, showUnit )
     {
-      m_unit = "nm";
-      m_default = "__.__";
+      m_unit = "M";
+      m_default = "_.__"; // N.NN 
       Text = UnitString( m_default );
     }
 
@@ -30,10 +30,11 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:#0.00}" );
+          this.Text = UnitString( $"{value,4:#.##}" );
         }
       }
     }
 
   }
 }
+

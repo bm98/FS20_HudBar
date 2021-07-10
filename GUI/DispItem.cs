@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,9 @@ namespace FS20_HudBar.GUI
       this.AutoSize = true;
       this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
       this.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+      this.Dock = DockStyle.Bottom;
+      this.Cursor = Cursors.Default; // avoid the movement cross on the item controls
+      //this.BackColor = Color.Pink; // DEBUG color
     }
 
     /// <summary>

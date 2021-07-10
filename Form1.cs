@@ -42,27 +42,32 @@ namespace FS20_HudBar
       m_profiles.Add( new CProfile( 1, AppSettings.Instance.Profile_1_Name,
                                        AppSettings.Instance.Profile_1, AppSettings.Instance.FlowBreak_1, AppSettings.Instance.Sequence_1,
                                        AppSettings.Instance.Profile_1_FontSize, AppSettings.Instance.Profile_1_Placement,
-                                       AppSettings.Instance.Profile_1_Kind, AppSettings.Instance.Profile_1_Location ) );
+                                       AppSettings.Instance.Profile_1_Kind, AppSettings.Instance.Profile_1_Location,
+                                       AppSettings.Instance.Profile_1_Condensed ) );
 
       m_profiles.Add( new CProfile( 2, AppSettings.Instance.Profile_2_Name,
                                        AppSettings.Instance.Profile_2, AppSettings.Instance.FlowBreak_2, AppSettings.Instance.Sequence_3,
                                        AppSettings.Instance.Profile_2_FontSize, AppSettings.Instance.Profile_2_Placement,
-                                       AppSettings.Instance.Profile_2_Kind, AppSettings.Instance.Profile_2_Location ) );
+                                       AppSettings.Instance.Profile_2_Kind, AppSettings.Instance.Profile_2_Location,
+                                       AppSettings.Instance.Profile_2_Condensed ) );
 
       m_profiles.Add( new CProfile( 3, AppSettings.Instance.Profile_3_Name,
                                        AppSettings.Instance.Profile_3, AppSettings.Instance.FlowBreak_3, AppSettings.Instance.Sequence_3,
                                        AppSettings.Instance.Profile_3_FontSize, AppSettings.Instance.Profile_3_Placement,
-                                       AppSettings.Instance.Profile_3_Kind, AppSettings.Instance.Profile_3_Location ) );
+                                       AppSettings.Instance.Profile_3_Kind, AppSettings.Instance.Profile_3_Location,
+                                       AppSettings.Instance.Profile_3_Condensed ) );
 
       m_profiles.Add( new CProfile( 4, AppSettings.Instance.Profile_4_Name,
                                        AppSettings.Instance.Profile_4, AppSettings.Instance.FlowBreak_4, AppSettings.Instance.Sequence_4,
                                        AppSettings.Instance.Profile_4_FontSize, AppSettings.Instance.Profile_4_Placement,
-                                       AppSettings.Instance.Profile_4_Kind, AppSettings.Instance.Profile_4_Location ) );
+                                       AppSettings.Instance.Profile_4_Kind, AppSettings.Instance.Profile_4_Location,
+                                       AppSettings.Instance.Profile_4_Condensed ) );
 
       m_profiles.Add( new CProfile( 5, AppSettings.Instance.Profile_5_Name,
                                        AppSettings.Instance.Profile_5, AppSettings.Instance.FlowBreak_5, AppSettings.Instance.Sequence_5,
                                        AppSettings.Instance.Profile_5_FontSize, AppSettings.Instance.Profile_5_Placement,
-                                       AppSettings.Instance.Profile_5_Kind, AppSettings.Instance.Profile_5_Location ) );
+                                       AppSettings.Instance.Profile_5_Kind, AppSettings.Instance.Profile_5_Location,
+                                       AppSettings.Instance.Profile_5_Condensed ) );
 
       m_selProfile = AppSettings.Instance.SelProfile;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
@@ -141,6 +146,7 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_1_FontSize = (int)m_profiles[0].FontSize;
         AppSettings.Instance.Profile_1_Placement = (int)m_profiles[0].Placement;
         AppSettings.Instance.Profile_1_Kind = (int)m_profiles[0].Kind;
+        AppSettings.Instance.Profile_1_Condensed = m_profiles[0].Condensed;
 
         AppSettings.Instance.Profile_2_Name = m_profiles[1].PName;
         AppSettings.Instance.Profile_2 = m_profiles[1].ProfileString( );
@@ -149,6 +155,7 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_2_FontSize = (int)m_profiles[1].FontSize;
         AppSettings.Instance.Profile_2_Placement = (int)m_profiles[1].Placement;
         AppSettings.Instance.Profile_2_Kind = (int)m_profiles[1].Kind;
+        AppSettings.Instance.Profile_2_Condensed = m_profiles[1].Condensed;
 
         AppSettings.Instance.Profile_3_Name = m_profiles[2].PName;
         AppSettings.Instance.Profile_3 = m_profiles[2].ProfileString( );
@@ -157,6 +164,7 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_3_FontSize = (int)m_profiles[2].FontSize;
         AppSettings.Instance.Profile_3_Placement = (int)m_profiles[2].Placement;
         AppSettings.Instance.Profile_3_Kind = (int)m_profiles[2].Kind;
+        AppSettings.Instance.Profile_3_Condensed = m_profiles[2].Condensed;
 
         AppSettings.Instance.Profile_4_Name = m_profiles[3].PName;
         AppSettings.Instance.Profile_4 = m_profiles[3].ProfileString( );
@@ -165,6 +173,7 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_4_FontSize = (int)m_profiles[3].FontSize;
         AppSettings.Instance.Profile_4_Placement = (int)m_profiles[3].Placement;
         AppSettings.Instance.Profile_4_Kind = (int)m_profiles[3].Kind;
+        AppSettings.Instance.Profile_4_Condensed = m_profiles[3].Condensed;
 
         AppSettings.Instance.Profile_5_Name = m_profiles[4].PName;
         AppSettings.Instance.Profile_5 = m_profiles[4].ProfileString( );
@@ -173,6 +182,7 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_5_FontSize = (int)m_profiles[4].FontSize;
         AppSettings.Instance.Profile_5_Placement = (int)m_profiles[4].Placement;
         AppSettings.Instance.Profile_5_Kind = (int)m_profiles[4].Kind;
+        AppSettings.Instance.Profile_5_Condensed = m_profiles[4].Condensed;
 
         AppSettings.Instance.Save( );
 
@@ -270,18 +280,6 @@ namespace FS20_HudBar
 
     }
 
-
-    private void spc_SplitterMoved( object sender, SplitterEventArgs e )
-    {
-      // When the splitter finished moving we have to reinit the GUI, else it does not rescale
-      if ( !m_initDone ) return; // bail out if in Init - the splitter is moved during some init and resize events on it's own..
-
-      //      AppSettings.Instance.SplitDistance = spc.SplitterDistance;
-      //      AppSettings.Instance.Save( );
-      //      InitGUI( );
-    }
-
-
     #region Callback Handlers
 
     // fired from Sim for new Data
@@ -302,7 +300,6 @@ namespace FS20_HudBar
     */
 
     #endregion
-
 
     #region GUI
 
@@ -333,7 +330,8 @@ namespace FS20_HudBar
                           AppSettings.Instance.Opaque,
                           PROFILE.FontSize,
                           PROFILE.Placement,
-                          PROFILE.Kind );
+                          PROFILE.Kind,
+                          PROFILE.Condensed );
 
       // Prepare FLPanel to load controls
       flp.Controls.Clear( ); // reload
@@ -416,7 +414,7 @@ namespace FS20_HudBar
       }
 
       // attach handlers
-      foreach ( GItem i in Enum.GetValues( typeof( GItem ) ) ) {
+      foreach ( VItem i in Enum.GetValues( typeof( VItem ) ) ) {
         Control l = HUD.LabelControl( i );
         if ( l != null ) {
           if ( l is GUI.B_Base ) {
@@ -448,7 +446,7 @@ namespace FS20_HudBar
         case GUI.Placement.Left:
           this.Width = maxWidth + 5;
           if ( PROFILE.Kind == GUI.Kind.Tile ) {
-            this.Height = flp.Height + 5;
+            this.Height = flp.Height + 10;
             this.Location = new Point( m_mainScreen.Bounds.X, PROFILE.Location.Y );
           }
           else {
@@ -459,7 +457,7 @@ namespace FS20_HudBar
         case GUI.Placement.Right:
           this.Width = maxWidth + 5;
           if ( PROFILE.Kind == GUI.Kind.Tile ) {
-            this.Height = flp.Height + 5;
+            this.Height = flp.Height + 10;
             this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, PROFILE.Location.Y );
           }
           else {
@@ -489,14 +487,14 @@ namespace FS20_HudBar
 
       // Color it if connected
       if ( SC.SimConnectClient.Instance.IsConnected ) {
-        HUD.LabelControl( GItem.Ad ).ForeColor = Color.LimeGreen;
-        HUD.LabelControl( GItem.Ad ).BackColor = flp.BackColor;
-        HUD.Value( GItem.Ad ).Text = "";
+        HUD.LabelControl( VItem.Ad ).ForeColor = Color.LimeGreen;
+        HUD.LabelControl( VItem.Ad ).BackColor = flp.BackColor;
+        HUD.Value( VItem.Ad ).Text = "";
       }
       else {
-        HUD.LabelControl( GItem.Ad ).ForeColor = HUD.c_Info;
-        HUD.LabelControl( GItem.Ad ).BackColor = Color.Red;
-        HUD.Value( GItem.Ad ).Text = "NO SIM";
+        HUD.LabelControl( VItem.Ad ).ForeColor = HUD.c_Info;
+        HUD.LabelControl( VItem.Ad ).BackColor = Color.Red;
+        HUD.Value( VItem.Ad ).Text = "NO SIM";
       }
 
       this.Visible = true; // Unhide when finished
@@ -513,56 +511,56 @@ namespace FS20_HudBar
       if ( !SC.SimConnectClient.Instance.IsConnected ) return; // no action
 
       switch ( e.Item ) {
-        case GItem.AP:
+        case VItem.AP:
           SC.SimConnectClient.Instance.AP_G1000Module.Master_toggle( );
           break;
-        case GItem.AP_ALT:
+        case VItem.AP_ALT:
           SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold = true; // toggles independent of the set value
           break;
-        case GItem.AP_APR:
+        case VItem.AP_APR:
           SC.SimConnectClient.Instance.AP_G1000Module.APR_hold = true; // toggles independent of the set value
           break;
-        case GItem.AP_FLC:
+        case VItem.AP_FLC:
           SC.SimConnectClient.Instance.AP_G1000Module.FLC_active = true; // toggles independent of the set value
           break;
-        case GItem.AP_HDG:
+        case VItem.AP_HDG:
           SC.SimConnectClient.Instance.AP_G1000Module.HDG_hold = true; // toggles independent of the set value
           break;
-        case GItem.AP_NAV:
+        case VItem.AP_NAV:
           SC.SimConnectClient.Instance.AP_G1000Module.NAV_hold = true; // toggles independent of the set value
           break;
-        case GItem.AP_VS:
+        case VItem.AP_VS:
           SC.SimConnectClient.Instance.AP_G1000Module.VS_hold = true; // toggles independent of the set value
           break;
-        case GItem.ETrim:
+        case VItem.ETrim:
           SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct = 0; // Set 0
           break;
-        case GItem.RTrim:
-          SC.SimConnectClient.Instance.AircraftModule.RudderTrim_prct=0; // Set 0
+        case VItem.RTrim:
+          SC.SimConnectClient.Instance.AircraftModule.RudderTrim_prct = 0; // Set 0
           break;
-        case GItem.ATrim:
+        case VItem.ATrim:
           SC.SimConnectClient.Instance.AircraftModule.AileronTrim_prct = 0; // Set 0
           break;
-        case GItem.A_ETRIM:
+        case VItem.A_ETRIM:
           SC.SimConnectClient.Instance.AutoETrimModule.Enabled = !SC.SimConnectClient.Instance.AutoETrimModule.Enabled; // toggles
           m_aETrimTimer = c_aETrimTime;
           break;
-        case GItem.BARO_HPA:
+        case VItem.BARO_HPA:
           SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting = true;
           break;
-        case GItem.BARO_InHg:
+        case VItem.BARO_InHg:
           SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting = true;
           break;
         // Start Meters
-        case GItem.M_Elapsed1:
+        case VItem.M_Elapsed1:
           m_cpMeter1.Start( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon,
                             SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
           break;
-        case GItem.M_Elapsed2:
+        case VItem.M_Elapsed2:
           m_cpMeter2.Start( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon,
                             SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
           break;
-        case GItem.M_Elapsed3:
+        case VItem.M_Elapsed3:
           m_cpMeter3.Start( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon,
                             SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
           break;
@@ -584,109 +582,131 @@ namespace FS20_HudBar
       // we do this one by one..
 
       // SimRate
-      HUD.Value( GItem.SimRate ).Value = SC.SimConnectClient.Instance.AircraftModule.SimRate_rate;
-      HUD.ValueControl( GItem.SimRate ).ForeColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? HUD.c_BG : HUD.c_Info;
-      HUD.ValueControl( GItem.SimRate ).BackColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? HUD.c_SRATE : HUD.c_BG;
+      HUD.Value( VItem.SimRate ).Value = SC.SimConnectClient.Instance.AircraftModule.SimRate_rate;
+      HUD.ValueControl( VItem.SimRate ).ForeColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? HUD.c_BG : HUD.c_Info;
+      HUD.ValueControl( VItem.SimRate ).BackColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? HUD.c_SRATE : HUD.c_BG;
 
-      HUD.Value( GItem.ACFT_ID ).Text = SC.SimConnectClient.Instance.AircraftModule.AcftID;
+      HUD.Value( VItem.ACFT_ID ).Text = SC.SimConnectClient.Instance.AircraftModule.AcftID;
 
       // TRIMS
       // Auto ETrim
-      HUD.LabelControl( GItem.A_ETRIM ).BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? HUD.c_AP : HUD.c_ActBG;
-      HUD.Value( GItem.A_ETRIM ).Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
+      HUD.LabelControl( VItem.A_ETRIM ).BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? HUD.c_AP : HUD.c_ActBG;
+      HUD.Value( VItem.A_ETRIM ).Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
       // Regular Trim
-      HUD.Value( GItem.ETrim ).Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
-      HUD.Value( GItem.RTrim ).Value = SC.SimConnectClient.Instance.AircraftModule.RudderTrim_prct;
-      HUD.Value( GItem.ATrim ).Value = SC.SimConnectClient.Instance.AircraftModule.AileronTrim_prct;
-      // OAT, BARO
-      HUD.Value( GItem.OAT ).Value = SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC;
-      HUD.ValueControl( GItem.OAT ).ForeColor = ( SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC < 0 ) ? HUD.c_SubZero : HUD.c_Info;
-
-      HUD.Value( GItem.BARO_HPA ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_mbar;
-      HUD.Value( GItem.BARO_InHg ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_inHg;
-
+      HUD.Value( VItem.ETrim ).Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
+      HUD.Value( VItem.RTrim ).Value = SC.SimConnectClient.Instance.AircraftModule.RudderTrim_prct;
+      HUD.Value( VItem.ATrim ).Value = SC.SimConnectClient.Instance.AircraftModule.AileronTrim_prct;
+      // OAT
+      HUD.Value( VItem.OAT ).Value = SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC;
+      HUD.ValueControl( VItem.OAT ).ForeColor = ( SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC < 0 ) ? HUD.c_SubZero : HUD.c_Info; // icing conditions
+      // BARO
+      HUD.Value( VItem.BARO_HPA ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_mbar;
+      HUD.Value( VItem.BARO_InHg ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_inHg;
+      // Wind
+      HUD.Value( VItem.WIND_SPEED ).Value = SC.SimConnectClient.Instance.AircraftModule.WindSpeed_kt;
+      HUD.Value( VItem.WIND_DIR ).Value = SC.SimConnectClient.Instance.AircraftModule.WindDirection_deg;
+      HUD.Value( VItem.WIND_LAT ).Value = SC.SimConnectClient.Instance.AircraftModule.Wind_AcftX_kt;
+      HUD.Value( VItem.WIND_LON ).Value = SC.SimConnectClient.Instance.AircraftModule.Wind_AcftZ_kt;
       // Aoa
-      HUD.Value( GItem.AOA ).Value = SC.SimConnectClient.Instance.AircraftModule.AngleOfAttack_deg;
-
+      HUD.Value( VItem.AOA ).Value = SC.SimConnectClient.Instance.AircraftModule.AngleOfAttack_deg;
       // Gear, Brakes, Flaps
       if ( SC.SimConnectClient.Instance.AircraftModule.IsGearRetractable ) {
-        HUD.Value( GItem.Gear ).Step =
+        HUD.Value( VItem.Gear ).Step =
           SC.SimConnectClient.Instance.AircraftModule.GearPosition == FSimClientIF.GearPosition.Down ? GUI.Steps.Down :
           SC.SimConnectClient.Instance.AircraftModule.GearPosition == FSimClientIF.GearPosition.Up ? GUI.Steps.Up : GUI.Steps.Unk;
       }
 
-      HUD.Value( GItem.Brakes ).Step = SC.SimConnectClient.Instance.AircraftModule.Parkbrake_on ? GUI.Steps.On : GUI.Steps.Off;
+      HUD.Value( VItem.Brakes ).Step = SC.SimConnectClient.Instance.AircraftModule.Parkbrake_on ? GUI.Steps.On : GUI.Steps.Off;
 
       if ( SC.SimConnectClient.Instance.AircraftModule.Flaps == FSimClientIF.CmdMode.Up ) {
-        HUD.Value( GItem.Flaps ).Step = GUI.Steps.Up;
+        HUD.Value( VItem.Flaps ).Step = GUI.Steps.Up;
       }
       else if ( SC.SimConnectClient.Instance.AircraftModule.Flaps == FSimClientIF.CmdMode.Down ) {
-        HUD.Value( GItem.Flaps ).Step = GUI.Steps.Down;
+        HUD.Value( VItem.Flaps ).Step = GUI.Steps.Down;
       }
       else if ( SC.SimConnectClient.Instance.AircraftModule.Flaps == FSimClientIF.CmdMode.Pos1 ) {
-        HUD.Value( GItem.Flaps ).Step = GUI.Steps.P1;
+        HUD.Value( VItem.Flaps ).Step = GUI.Steps.P1;
       }
       else if ( SC.SimConnectClient.Instance.AircraftModule.Flaps == FSimClientIF.CmdMode.Pos2 ) {
-        HUD.Value( GItem.Flaps ).Step = GUI.Steps.P2;
+        HUD.Value( VItem.Flaps ).Step = GUI.Steps.P2;
       }
       else if ( SC.SimConnectClient.Instance.AircraftModule.Flaps == FSimClientIF.CmdMode.Pos3 ) {
-        HUD.Value( GItem.Flaps ).Step = GUI.Steps.P3;
+        HUD.Value( VItem.Flaps ).Step = GUI.Steps.P3;
       }
+      // Consolidated lights (RA colored for Taxi and/or Landing lights on)
+      int lightsInt = 0;
+      HUD.ValueControl( VItem.Lights ).ForeColor = HUD.c_Info;
+      if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Beacon ) lightsInt &= (int)GUI.V_Lights.Lights.Beacon;
+      if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Nav ) lightsInt &= (int)GUI.V_Lights.Lights.Nav;
+      if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Strobe ) lightsInt &= (int)GUI.V_Lights.Lights.Strobe;
+      if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Taxi ) {
+        lightsInt &= (int)GUI.V_Lights.Lights.Taxi;
+        HUD.ValueControl( VItem.Lights ).ForeColor = HUD.c_RA;
+      }
+      if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Landing ) {
+        lightsInt &= (int)GUI.V_Lights.Lights.Landing;
+        HUD.ValueControl( VItem.Lights ).ForeColor = HUD.c_RA;
+      }
+      HUD.Value( VItem.Lights ).IntValue = lightsInt;
 
-      // TORQ, PRPM, ERPM, FFLOW
-      HUD.Value( GItem.E1_TORQP ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine1_Torque_prct / 100;  // needs to be 0..1
-      HUD.Value( GItem.E2_TORQP ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine2_Torque_prct / 100;  // needs to be 0..1
-      HUD.ValueControl( GItem.E2_TORQP ).Visible = ( numEngines > 1 );
+      // TORQ, PRPM, ERPM, ITT, EGT, MAN, FFLOW
+      HUD.Value( VItem.E1_TORQP ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine1_Torque_prct / 100;  // needs to be 0..1
+      HUD.Value( VItem.E2_TORQP ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine2_Torque_prct / 100;  // needs to be 0..1
+      HUD.ValueControl( VItem.E2_TORQP ).Visible = ( numEngines > 1 );
 
-      HUD.Value( GItem.E1_TORQ ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_Torque_ft_lbs;
-      HUD.Value( GItem.E2_TORQ ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_Torque_ft_lbs;
-      HUD.ValueControl( GItem.E2_TORQ ).Visible = ( numEngines > 1 );
+      HUD.Value( VItem.E1_TORQ ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_Torque_ft_lbs;
+      HUD.Value( VItem.E2_TORQ ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_Torque_ft_lbs;
+      HUD.ValueControl( VItem.E2_TORQ ).Visible = ( numEngines > 1 );
 
-      HUD.Value( GItem.P1_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Propeller1_rpm;
-      HUD.Value( GItem.P2_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Propeller2_rpm;
-      HUD.ValueControl( GItem.P2_RPM ).Visible = ( numEngines > 1 );
+      HUD.Value( VItem.P1_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Propeller1_rpm;
+      HUD.Value( VItem.P2_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Propeller2_rpm;
+      HUD.ValueControl( VItem.P2_RPM ).Visible = ( numEngines > 1 );
 
-      HUD.Value( GItem.E1_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_rpm;
-      HUD.Value( GItem.E2_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_rpm;
-      HUD.ValueControl( GItem.E2_RPM ).Visible = ( numEngines > 1 );
+      HUD.Value( VItem.E1_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_rpm;
+      HUD.Value( VItem.E2_RPM ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_rpm;
+      HUD.ValueControl( VItem.E2_RPM ).Visible = ( numEngines > 1 );
 
-      HUD.Value( GItem.E1_N1 ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_N1_prct / 100;  // needs to be 0..1
-      HUD.Value( GItem.E2_N1 ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_N1_prct / 100;  // needs to be 0..1
-      HUD.ValueControl( GItem.E2_N1 ).Visible = ( numEngines > 1 );
+      HUD.Value( VItem.E1_N1 ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_N1_prct / 100;  // needs to be 0..1
+      HUD.Value( VItem.E2_N1 ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_N1_prct / 100;  // needs to be 0..1
+      HUD.ValueControl( VItem.E2_N1 ).Visible = ( numEngines > 1 );
 
-      HUD.Value( GItem.E1_ITT ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine1_itt;
-      HUD.Value( GItem.E2_ITT ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine2_itt;
-      HUD.ValueControl( GItem.E2_ITT ).Visible = ( numEngines > 1 );
+      HUD.Value( VItem.E1_ITT ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine1_itt;
+      HUD.Value( VItem.E2_ITT ).Value = SC.SimConnectClient.Instance.EngineModule.Turbine2_itt;
+      HUD.ValueControl( VItem.E2_ITT ).Visible = ( numEngines > 1 );
 
-      HUD.Value( GItem.E1_EGT ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_egt;
-      HUD.Value( GItem.E2_EGT ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_egt;
-      HUD.ValueControl( GItem.E2_EGT ).Visible = ( numEngines > 1 );
+      HUD.Value( VItem.E1_EGT ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_egt;
+      HUD.Value( VItem.E2_EGT ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_egt;
+      HUD.ValueControl( VItem.E2_EGT ).Visible = ( numEngines > 1 );
 
-      HUD.Value( GItem.E1_MAN ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1MAN_inhg;
-      HUD.Value( GItem.E2_MAN ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2MAN_inhg;
-      HUD.ValueControl( GItem.E2_MAN ).Visible = ( numEngines > 1 );
+      HUD.Value( VItem.E1_MAN ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1MAN_inhg;
+      HUD.Value( VItem.E2_MAN ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2MAN_inhg;
+      HUD.ValueControl( VItem.E2_MAN ).Visible = ( numEngines > 1 );
 
-      HUD.Value( GItem.E1_FFlow_pph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_FuelFlow_lbPh;
-      HUD.Value( GItem.E2_FFlow_pph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_FuelFlow_lbPh;
-      HUD.ValueControl( GItem.E2_FFlow_pph ).Visible = ( numEngines > 1 );
+      HUD.Value( VItem.E1_FFlow_pph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_FuelFlow_lbPh;
+      HUD.Value( VItem.E2_FFlow_pph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_FuelFlow_lbPh;
+      HUD.ValueControl( VItem.E2_FFlow_pph ).Visible = ( numEngines > 1 );
 
-      HUD.Value( GItem.E1_FFlow_gph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_FuelFlow_galPh;
-      HUD.Value( GItem.E2_FFlow_gph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_FuelFlow_galPh;
-      HUD.ValueControl( GItem.E2_FFlow_gph ).Visible = ( numEngines > 1 );
+      HUD.Value( VItem.E1_FFlow_gph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine1_FuelFlow_galPh;
+      HUD.Value( VItem.E2_FFlow_gph ).Value = SC.SimConnectClient.Instance.EngineModule.Engine2_FuelFlow_galPh;
+      HUD.ValueControl( VItem.E2_FFlow_gph ).Visible = ( numEngines > 1 );
 
-      // GPS
+      HUD.Value( VItem.Fuel_Left ).Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityLeft_gal;
+      HUD.Value( VItem.Fuel_Right ).Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityRight_gal;
+      HUD.Value( VItem.Fuel_Total ).Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityTotal_gal;
+
+      // GPS (nulled when no flightplan is active)
       if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
-        HUD.Value( GItem.GPS_PWYP ).Text = SC.SimConnectClient.Instance.GpsModule.WYP_prev;
-        HUD.Value( GItem.GPS_NWYP ).Text = SC.SimConnectClient.Instance.GpsModule.WYP_next;
-        HUD.Value( GItem.GPS_DIST ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_dist;
-        HUD.Value( GItem.GPS_ETE ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_ete;
-        HUD.Value( GItem.GPS_TRK ).Value = SC.SimConnectClient.Instance.GpsModule.GTRK;
-        HUD.Value( GItem.GPS_BRGm ).Value = SC.SimConnectClient.Instance.GpsModule.BRG;
-        HUD.Value( GItem.GPS_DTRK ).Value = SC.SimConnectClient.Instance.GpsModule.DTK;
-        HUD.Value( GItem.GPS_XTK ).Value = SC.SimConnectClient.Instance.GpsModule.GpsWaypointCrossTRK_nm;
-        HUD.Value( GItem.GPS_GS ).Value = SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt;
+        HUD.Value( VItem.GPS_PWYP ).Text = SC.SimConnectClient.Instance.GpsModule.WYP_prev;
+        HUD.Value( VItem.GPS_NWYP ).Text = SC.SimConnectClient.Instance.GpsModule.WYP_next;
+        HUD.Value( VItem.GPS_DIST ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_dist;
+        HUD.Value( VItem.GPS_ETE ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_ete;
+        HUD.Value( VItem.GPS_TRK ).Value = SC.SimConnectClient.Instance.GpsModule.GTRK;
+        HUD.Value( VItem.GPS_BRGm ).Value = SC.SimConnectClient.Instance.GpsModule.BRG;
+        HUD.Value( VItem.GPS_DTRK ).Value = SC.SimConnectClient.Instance.GpsModule.DTK;
+        HUD.Value( VItem.GPS_XTK ).Value = SC.SimConnectClient.Instance.GpsModule.GpsWaypointCrossTRK_nm;
+        HUD.Value( VItem.GPS_GS ).Value = SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt;
         float tgtAlt = SC.SimConnectClient.Instance.GpsModule.WYP_alt;
-        HUD.Value( GItem.GPS_ALT ).Value = tgtAlt;
+        HUD.Value( VItem.GPS_ALT ).Value = tgtAlt;
         // Estimates use WYP ALT if >0 (there is no distinction if a WYP ALT is given - it is 0 if not)
         Color estCol = HUD.c_Est;
         if ( tgtAlt == 0 ) {
@@ -701,57 +721,58 @@ namespace FS20_HudBar
           SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin
         );
 
-        HUD.Value( GItem.EST_VS ).Value = Estimates.VSToTgt_AtAltitude( tgtAlt, SC.SimConnectClient.Instance.GpsModule.WYP_dist );
-        HUD.ValueControl( GItem.EST_VS ).ForeColor = estCol;
-        HUD.Value( GItem.EST_ALT ).Value = Estimates.AltitudeAtTgt( SC.SimConnectClient.Instance.GpsModule.WYP_dist );
-        HUD.ValueControl( GItem.EST_ALT ).ForeColor = estCol;
+        HUD.Value( VItem.EST_VS ).Value = Estimates.VSToTgt_AtAltitude( tgtAlt, SC.SimConnectClient.Instance.GpsModule.WYP_dist );
+        HUD.ValueControl( VItem.EST_VS ).ForeColor = estCol;
+        HUD.Value( VItem.EST_ALT ).Value = Estimates.AltitudeAtTgt( SC.SimConnectClient.Instance.GpsModule.WYP_dist );
+        HUD.ValueControl( VItem.EST_ALT ).ForeColor = estCol;
       }
       else {
-        HUD.Value( GItem.GPS_PWYP ).Text = "_____";
-        HUD.Value( GItem.GPS_NWYP ).Text = "_____";
-        HUD.Value( GItem.GPS_DIST ).Value = null;
-        HUD.Value( GItem.GPS_ETE ).Value = null;
-        HUD.Value( GItem.GPS_TRK ).Value = null;
-        HUD.Value( GItem.GPS_BRGm ).Value = null;
-        HUD.Value( GItem.GPS_DTRK ).Value = null;
-        HUD.Value( GItem.GPS_XTK ).Value = null;
-        HUD.Value( GItem.GPS_GS ).Value = null;
-        HUD.Value( GItem.EST_VS ).Value = null; // cannot if we don't have a WYP to aim at
-        HUD.Value( GItem.EST_ALT ).Value = null; // cannot if we don't have a WYP to aim at
+        HUD.Value( VItem.GPS_PWYP ).Text = "_____";
+        HUD.Value( VItem.GPS_NWYP ).Text = "_____";
+        HUD.Value( VItem.GPS_DIST ).Value = null;
+        HUD.Value( VItem.GPS_ETE ).Value = null;
+        HUD.Value( VItem.GPS_TRK ).Value = null;
+        HUD.Value( VItem.GPS_BRGm ).Value = null;
+        HUD.Value( VItem.GPS_DTRK ).Value = null;
+        HUD.Value( VItem.GPS_XTK ).Value = null;
+        HUD.Value( VItem.GPS_GS ).Value = null;
+        HUD.Value( VItem.EST_VS ).Value = null; // cannot if we don't have a WYP to aim at
+        HUD.Value( VItem.EST_ALT ).Value = null; // cannot if we don't have a WYP to aim at
       }
 
       // Autopilot
-      HUD.LabelControl( GItem.AP ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.AP_mode == FSimClientIF.APMode.On ? HUD.c_AP : HUD.c_Info;
+      HUD.LabelControl( VItem.AP ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.AP_mode == FSimClientIF.APMode.On ? HUD.c_AP : HUD.c_Info;
 
-      HUD.LabelControl( GItem.AP_HDG ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.HDG_hold ? HUD.c_Set : HUD.c_Info;
-      HUD.Value( GItem.AP_HDGset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting_degm;
+      HUD.LabelControl( VItem.AP_HDG ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.HDG_hold ? HUD.c_Set : HUD.c_Info;
+      HUD.Value( VItem.AP_HDGset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting_degm;
 
-      HUD.LabelControl( GItem.AP_ALT ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold ? HUD.c_Set : HUD.c_Info;
-      HUD.Value( GItem.AP_ALTset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
+      HUD.LabelControl( VItem.AP_ALT ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold ? HUD.c_Set : HUD.c_Info;
+      HUD.Value( VItem.AP_ALTset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
 
-      HUD.LabelControl( GItem.AP_VS ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.VS_hold ? HUD.c_Set : HUD.c_Info;
-      HUD.Value( GItem.AP_VSset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.VS_setting_fpm;
+      HUD.LabelControl( VItem.AP_VS ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.VS_hold ? HUD.c_Set : HUD.c_Info;
+      HUD.Value( VItem.AP_VSset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.VS_setting_fpm;
 
-      HUD.LabelControl( GItem.AP_FLC ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.FLC_active ? HUD.c_Set : HUD.c_Info;
-      HUD.Value( GItem.AP_FLCset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt;
+      HUD.LabelControl( VItem.AP_FLC ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.FLC_active ? HUD.c_Set : HUD.c_Info;
+      HUD.Value( VItem.AP_FLCset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt;
 
-      HUD.LabelControl( GItem.AP_NAV ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.NAV_hold ? HUD.c_AP : HUD.c_Info;
-      HUD.LabelControl( GItem.AP_NAVgps ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? HUD.c_Gps : HUD.c_Info;
-      HUD.LabelControl( GItem.AP_APR ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.APR_hold ? HUD.c_AP : HUD.c_Info;
-      HUD.LabelControl( GItem.AP_GS ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GS_active ? HUD.c_AP : HUD.c_Info;
+      HUD.LabelControl( VItem.AP_NAV ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.NAV_hold ? HUD.c_AP : HUD.c_Info;
+      HUD.LabelControl( VItem.AP_NAVgps ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? HUD.c_Gps : HUD.c_Info;
+      HUD.LabelControl( VItem.AP_APR ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.APR_hold ? HUD.c_AP : HUD.c_Info;
+      HUD.LabelControl( VItem.AP_GS ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GS_active ? HUD.c_AP : HUD.c_Info;
 
       // Aircraft Data
-      HUD.Value( GItem.HDG ).Value = SC.SimConnectClient.Instance.AircraftModule.HDG_mag_degm;
-      HUD.Value( GItem.ALT ).Value = SC.SimConnectClient.Instance.AircraftModule.AltMsl_ft;
+      HUD.Value( VItem.HDG ).Value = SC.SimConnectClient.Instance.AircraftModule.HDG_mag_degm;
+      HUD.Value( VItem.ALT ).Value = SC.SimConnectClient.Instance.AircraftModule.AltMsl_ft;
       if ( SC.SimConnectClient.Instance.AircraftModule.AltAoG_ft < 1000 ) {
-        HUD.Value( GItem.RA ).Value = SC.SimConnectClient.Instance.AircraftModule.AltAoG_ft;
+        HUD.Value( VItem.RA ).Value = SC.SimConnectClient.Instance.AircraftModule.AltAoG_ft;
       }
       else {
-        HUD.Value( GItem.RA ).Value = null;
+        HUD.Value( VItem.RA ).Value = null;
       }
-      HUD.Value( GItem.IAS ).Value = SC.SimConnectClient.Instance.AircraftModule.IAS_kt;
-      HUD.Value( GItem.TAS ).Value = SC.SimConnectClient.Instance.AircraftModule.TAS_kt;
-      HUD.Value( GItem.VS ).Value = SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin;
+      HUD.Value( VItem.IAS ).Value = SC.SimConnectClient.Instance.AircraftModule.IAS_kt;
+      HUD.Value( VItem.TAS ).Value = SC.SimConnectClient.Instance.AircraftModule.TAS_kt;
+      HUD.Value( VItem.MACH ).Value = SC.SimConnectClient.Instance.AircraftModule.Machspeed_mach;
+      HUD.Value( VItem.VS ).Value = SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin;
 
       // Eval Meters
       m_cpMeter1.Lapse( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon,
@@ -760,15 +781,15 @@ namespace FS20_HudBar
                             SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
       m_cpMeter3.Lapse( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon,
                             SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
-      HUD.Value( GItem.M_Elapsed1 ).Value = m_cpMeter1.Duration;
-      HUD.Value( GItem.M_Dist1 ).Value = (float)m_cpMeter1.Distance;
-      HUD.Value( GItem.M_Elapsed2 ).Value = m_cpMeter2.Duration;
-      HUD.Value( GItem.M_Dist2 ).Value = (float)m_cpMeter2.Distance;
-      HUD.Value( GItem.M_Elapsed3 ).Value = m_cpMeter3.Duration;
-      HUD.Value( GItem.M_Dist3 ).Value = (float)m_cpMeter3.Distance;
-      HUD.LabelControl( GItem.M_Elapsed1 ).BackColor = m_cpMeter1.Started ? HUD.c_AP : HUD.c_ActBG;
-      HUD.LabelControl( GItem.M_Elapsed2 ).BackColor = m_cpMeter2.Started ? HUD.c_AP : HUD.c_ActBG;
-      HUD.LabelControl( GItem.M_Elapsed3 ).BackColor = m_cpMeter3.Started ? HUD.c_AP : HUD.c_ActBG;
+      HUD.Value( VItem.M_Elapsed1 ).Value = m_cpMeter1.Duration;
+      HUD.Value( VItem.M_Dist1 ).Value = (float)m_cpMeter1.Distance;
+      HUD.Value( VItem.M_Elapsed2 ).Value = m_cpMeter2.Duration;
+      HUD.Value( VItem.M_Dist2 ).Value = (float)m_cpMeter2.Distance;
+      HUD.Value( VItem.M_Elapsed3 ).Value = m_cpMeter3.Duration;
+      HUD.Value( VItem.M_Dist3 ).Value = (float)m_cpMeter3.Distance;
+      HUD.LabelControl( VItem.M_Elapsed1 ).BackColor = m_cpMeter1.Started ? HUD.c_AP : HUD.c_ActBG;
+      HUD.LabelControl( VItem.M_Elapsed2 ).BackColor = m_cpMeter2.Started ? HUD.c_AP : HUD.c_ActBG;
+      HUD.LabelControl( VItem.M_Elapsed3 ).BackColor = m_cpMeter3.Started ? HUD.c_AP : HUD.c_ActBG;
     }
 
 
@@ -779,9 +800,9 @@ namespace FS20_HudBar
     /// </summary>
     private void SimConnect( )
     {
-      HUD.Value( GItem.Ad ).Text = ""; // reset in case it had an error message
-      HUD.LabelControl( GItem.Ad ).ForeColor = HUD.c_Info;
-      HUD.LabelControl( GItem.Ad ).BackColor = HUD.c_BG;
+      HUD.Value( VItem.Ad ).Text = ""; // reset in case it had an error message
+      HUD.LabelControl( VItem.Ad ).ForeColor = HUD.c_Info;
+      HUD.LabelControl( VItem.Ad ).BackColor = HUD.c_BG;
 
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         // Disconnect from Input and SimConnect
@@ -791,7 +812,7 @@ namespace FS20_HudBar
       else {
         // try to connect
         if ( SC.SimConnectClient.Instance.Connect( ) ) {
-          HUD.LabelControl( GItem.Ad ).ForeColor = Color.LimeGreen;
+          HUD.LabelControl( VItem.Ad ).ForeColor = Color.LimeGreen;
           // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
           _ = SC.SimConnectClient.Instance.AircraftModule.AcftConfigFile;
           // Receive commands from FSim -  not yet used
@@ -801,9 +822,9 @@ namespace FS20_HudBar
           */
         }
         else {
-          HUD.LabelControl( GItem.Ad ).BackColor = Color.Red;
+          HUD.LabelControl( VItem.Ad ).BackColor = Color.Red;
           //HUD.Value( GItem.Ad ).Text = SC.SimConnectClient.Instance.ErrorList.FirstOrDefault( ); // error message
-          HUD.Value( GItem.Ad ).Text = "NO SIM";
+          HUD.Value( VItem.Ad ).Text = "NO SIM";
         }
       }
 
@@ -811,7 +832,7 @@ namespace FS20_HudBar
 
 
     /// <summary>
-    /// Try every intervall to connect - and if connected.. do in Sim chores
+    /// Try every interval to connect - and if connected.. do in Sim chores
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>

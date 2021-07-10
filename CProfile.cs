@@ -29,12 +29,14 @@ namespace FS20_HudBar
     private GUI.Placement m_placement = GUI.Placement.Bottom;
     private GUI.Kind m_kind = GUI.Kind.Bar;
     private Point m_location = new Point(0,0);
+    private bool m_condensed = false;
 
     public string PName { get; set; } = "Profile";
     public GUI.FontSize FontSize => m_fontSize;
     public GUI.Placement Placement => m_placement;
     public GUI.Kind Kind => m_kind;
     public Point Location => m_location;
+    public bool Condensed => m_condensed;
 
     /// <summary>
     /// Update the Location of the profile
@@ -65,13 +67,14 @@ namespace FS20_HudBar
     /// <param name="sequence">A semicolon separated string of numbers (display position) </param>
     /// <param name="fontSize">The FontSize Number (matches the enum)</param>
     /// <param name="placement">The Placement Number (matches the enum)</param>
+    /// <param name="condensed">The Condensed Font Flag</param>
     public CProfile( int pNum, string profileName,
                      string profile, string flowBreak, string sequence,
-                     int fontSize, int placement, int kind, Point location )
+                     int fontSize, int placement, int kind, Point location, bool condensed )
     {
       m_pNumber = pNum;
       LoadProfile( profileName, profile, flowBreak, sequence,
-                    (GUI.FontSize)fontSize, (GUI.Placement)placement, (GUI.Kind)kind, location );
+                    (GUI.FontSize)fontSize, (GUI.Placement)placement, (GUI.Kind)kind, location, condensed );
     }
 
     /// <summary>
@@ -373,6 +376,15 @@ namespace FS20_HudBar
     }
 
     /// <summary>
+    /// Make the current Condensed the selected one
+    /// </summary>
+    /// <param name="box">The ComboBox</param>
+    public void LoadCond( ComboBox box )
+    {
+      box.SelectedIndex = m_condensed ? 1 : 0;
+    }
+
+    /// <summary>
     /// Update this profile from the Placement ComboBox
     /// </summary>
     /// <param name="box">The ComboBox</param>
@@ -390,10 +402,19 @@ namespace FS20_HudBar
       m_kind = (GUI.Kind)box.SelectedIndex;
     }
 
+    /// <summary>
+    /// Update this profile from the Condensed ComboBox
+    /// </summary>
+    /// <param name="box">The ComboBox</param>
+    public void GetCondFromCombo( ComboBox box )
+    {
+      m_condensed = box.SelectedIndex == 1;
+    }
+
 
     // Load the profile from stored strings (Settings)
     private void LoadProfile( string profileName, string profile, string flowBreak, string sequence,
-                                GUI.FontSize fontSize, GUI.Placement placement, GUI.Kind kind, Point location )
+                                GUI.FontSize fontSize, GUI.Placement placement, GUI.Kind kind, Point location, bool condensed )
     {
       // save props in Profile
       PName = profileName;
@@ -401,6 +422,7 @@ namespace FS20_HudBar
       m_placement = placement;
       m_kind = kind;
       m_location = location;
+      m_condensed = condensed;
 
       // The Dictionaries and stored strings of it maintain the Enum Sequence
       //   even if items are relocated for display

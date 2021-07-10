@@ -8,8 +8,8 @@ namespace FS20_HudBar.GUI
 {
   internal class ClickedEventArgs : EventArgs
   {
-    public GItem Item { get; } // readonly
-    public ClickedEventArgs( GItem item ) { Item = item; }
+    public VItem Item { get; } // readonly
+    public ClickedEventArgs( VItem item ) { Item = item; }
   }
 
 }

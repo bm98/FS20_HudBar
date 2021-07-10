@@ -17,6 +17,7 @@ namespace FS20_HudBar.GUI
     protected bool m_showUnit = false;
 
     virtual public float? Value { set => throw new NotImplementedException( ); }
+    virtual public int? IntValue { set => throw new NotImplementedException( ); }
     virtual public Steps Step { set => throw new NotImplementedException( ); }
 
     /// <summary>

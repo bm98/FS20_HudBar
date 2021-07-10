@@ -26,6 +26,11 @@ namespace FS20_HudBar.GUI
     float? Value { set; }
 
     /// <summary>
+    /// Set the integer Value
+    /// </summary>
+    int? IntValue { set; }
+
+    /// <summary>
     /// Set the Step Value
     /// </summary>
     Steps Step { set; }
