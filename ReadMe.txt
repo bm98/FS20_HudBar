@@ -1,5 +1,5 @@
-FS20_HudBar V 0.25 - Build 19 BETA
-(c) M. Burri - 10-July-2021
+FS20_HudBar V 0.26 - Build 20 BETA
+(c) M. Burri - 11-July-2021
 
 Contains files:
 
@@ -31,6 +31,10 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.26-B20
+- fix Display of Lights
+
+
 V 0.25-B19
 - Add Wind Dir/Speed + Cross/Head;Tail items
 - Add Lights as B N S T L status item

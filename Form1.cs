@@ -444,7 +444,7 @@ namespace FS20_HudBar
           break;
 
         case GUI.Placement.Left:
-          this.Width = maxWidth + 5;
+          this.Width = maxWidth + 10;
           if ( PROFILE.Kind == GUI.Kind.Tile ) {
             this.Height = flp.Height + 10;
             this.Location = new Point( m_mainScreen.Bounds.X, PROFILE.Location.Y );
@@ -455,7 +455,7 @@ namespace FS20_HudBar
           break;
 
         case GUI.Placement.Right:
-          this.Width = maxWidth + 5;
+          this.Width = maxWidth + 10;
           if ( PROFILE.Kind == GUI.Kind.Tile ) {
             this.Height = flp.Height + 10;
             this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, PROFILE.Location.Y );
@@ -636,15 +636,15 @@ namespace FS20_HudBar
       // Consolidated lights (RA colored for Taxi and/or Landing lights on)
       int lightsInt = 0;
       HUD.ValueControl( VItem.Lights ).ForeColor = HUD.c_Info;
-      if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Beacon ) lightsInt &= (int)GUI.V_Lights.Lights.Beacon;
-      if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Nav ) lightsInt &= (int)GUI.V_Lights.Lights.Nav;
-      if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Strobe ) lightsInt &= (int)GUI.V_Lights.Lights.Strobe;
+      if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Beacon ) lightsInt |= (int)GUI.V_Lights.Lights.Beacon;
+      if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Nav ) lightsInt |= (int)GUI.V_Lights.Lights.Nav;
+      if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Strobe ) lightsInt |= (int)GUI.V_Lights.Lights.Strobe;
       if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Taxi ) {
-        lightsInt &= (int)GUI.V_Lights.Lights.Taxi;
+        lightsInt |= (int)GUI.V_Lights.Lights.Taxi;
         HUD.ValueControl( VItem.Lights ).ForeColor = HUD.c_RA;
       }
       if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Landing ) {
-        lightsInt &= (int)GUI.V_Lights.Lights.Landing;
+        lightsInt |= (int)GUI.V_Lights.Lights.Landing;
         HUD.ValueControl( VItem.Lights ).ForeColor = HUD.c_RA;
       }
       HUD.Value( VItem.Lights ).IntValue = lightsInt;

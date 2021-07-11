@@ -27,7 +27,7 @@ namespace FS20_HudBar.GUI
     : base( proto, false )
     {
       m_unit = "";
-      m_default = "_ _ _ _ _"; // Number of lights as Space
+      m_default = "_ _ _  _ _"; // note 2 Spaces after to separate T & L _ is Off
       Text = UnitString( m_default );
     }
 
@@ -44,7 +44,7 @@ namespace FS20_HudBar.GUI
         retVal = "";
         if ( ( value & (int)Lights.Beacon ) == (int)Lights.Beacon ) { retVal += "B "; } else { retVal += "_ "; }
         if ( ( value & (int)Lights.Nav ) == (int)Lights.Nav ) { retVal += "N "; } else { retVal += "_ "; }
-        if ( ( value & (int)Lights.Strobe ) == (int)Lights.Strobe ) { retVal += "S "; } else { retVal += "_ "; }
+        if ( ( value & (int)Lights.Strobe ) == (int)Lights.Strobe ) { retVal += "S  "; } else { retVal += "_  "; } // note 2 Spaces after to separate T & L
         if ( ( value & (int)Lights.Taxi ) == (int)Lights.Taxi ) { retVal += "T "; } else { retVal += "_ "; }
         if ( ( value & (int)Lights.Landing ) == (int)Lights.Landing ) { retVal += "L "; } else { retVal += "_ "; }
         Text = retVal;
