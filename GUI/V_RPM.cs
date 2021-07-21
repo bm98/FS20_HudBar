@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "rpm";
-      m_default = "_____";
+      m_default = DefaultString( "_____" );
       Text = UnitString( m_default );
     }
 

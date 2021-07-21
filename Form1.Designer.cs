@@ -47,6 +47,7 @@ namespace FS20_HudBar
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
+      this.label1 = new System.Windows.Forms.Label();
       this.cMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -229,6 +230,22 @@ namespace FS20_HudBar
       this.B.UseVisualStyleBackColor = true;
       this.B.Visible = false;
       // 
+      // label1
+      // 
+      this.label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.label1.AutoSize = true;
+      this.label1.Font = new System.Drawing.Font("Share Tech Mono", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label1.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label1.Location = new System.Drawing.Point(681, 3);
+      this.label1.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+      this.label1.Name = "label1";
+      this.label1.Size = new System.Drawing.Size(43, 24);
+      this.label1.TabIndex = 5;
+      this.label1.Text = "-20%";
+      this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      this.label1.UseCompatibleTextRendering = true;
+      this.label1.Visible = false;
+      // 
       // frmMain
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -236,6 +253,7 @@ namespace FS20_HudBar
       this.CausesValidation = false;
       this.ClientSize = new System.Drawing.Size(872, 72);
       this.ContextMenuStrip = this.cMenu;
+      this.Controls.Add(this.label1);
       this.Controls.Add(this.flp);
       this.Controls.Add(this.B);
       this.Controls.Add(this.value2Proto);
@@ -253,10 +271,11 @@ namespace FS20_HudBar
       this.ShowIcon = false;
       this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
       this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-      this.Text = "HudBar by bm98";
+      this.Text = "HudBar by bm98ch";
       this.TopMost = true;
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
       this.Load += new System.EventHandler(this.frmMain_Load);
+      this.LocationChanged += new System.EventHandler(this.frmMain_LocationChanged);
       this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseDown);
       this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseMove);
       this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseUp);
@@ -287,6 +306,7 @@ namespace FS20_HudBar
     private System.Windows.Forms.Button B;
     private System.Windows.Forms.ToolStripTextBox mSelProfile;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+    private System.Windows.Forms.Label label1;
   }
 }
 

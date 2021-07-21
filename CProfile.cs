@@ -128,7 +128,7 @@ namespace FS20_HudBar
     {
       m_flp = flp;
       flp.Controls.Clear( );
-      List<CheckBox> tmp = new  List<CheckBox>();
+      List<CheckBox> tmp = new  List<CheckBox>(); // temp list of checkboxes in native sequence (not yet user ordered)
       // Fill a temp panel
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         var cb = new CheckBox(){
@@ -152,13 +152,16 @@ namespace FS20_HudBar
         cb.GiveFeedback += Cb_GiveFeedback;
         tmp.Add( cb );
       }
+
       // now load the real panel accordingly from display position 0...
+      flp.SuspendLayout( ); // avoid performance issued while loading all checkboxes
+
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         // we use the Enum only as position index 0... max here
         int idx = (int)i;
         // find the item to be shown at this position (find the pos value in m_sequence and get the item with it's Key)
         if ( m_sequence.ContainsValue( idx ) ) {
-          // the item to put as next one
+          // the item to put as next one / Add sequentially to the layout panel
           flp.Controls.Add( tmp.ElementAt( (int)ItemKeyFromPos( idx ) ) );
         }
         else {
@@ -166,6 +169,8 @@ namespace FS20_HudBar
           ;
         }
       }
+      // only now layout the FLPanel
+      flp.ResumeLayout( );
     }
 
 

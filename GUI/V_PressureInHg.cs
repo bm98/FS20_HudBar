@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "InHg";
-      m_default = "__.__";
+      m_default = DefaultString( "__.__" );
       Text = UnitString( m_default );
     }
 

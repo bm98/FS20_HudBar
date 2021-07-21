@@ -81,6 +81,13 @@ namespace FS20_HudBar
     Fuel_Total, // Fuel quantity Total
 
     MACH,       // Mach speed indication
+
+    VIS,        // Visibility
+    TIME,       // Time of Day
+    HDGt,       // True heading
+    AP_BC,      // AP BC signal
+    AP_YD,      // Yaw Damper
+    AP_LVL,     // Wing Leveler
   }
 
 
@@ -193,6 +200,14 @@ namespace FS20_HudBar
     Fuel_Total,   // Fuel quantity Total Gallons
 
     MACH,         // Mach speed indication
+
+    VIS,          // Visibility nm
+    TIME,         // Time of Day
+    HDGt,         // True heading deg
+    AP_BC,           // AP BC signal
+    AP_YD,           // Yaw Damper signal
+    AP_LVL,          // Wing Leveler signal
+
   }
 
   /// <summary>
@@ -246,10 +261,12 @@ namespace FS20_HudBar
       {LItem.MSFS,"MSFS" },
       {LItem.SimRate,"SimRate" },
       {LItem.ACFT_ID,"ID" },
+      {LItem.TIME,"Time" },
 
       {LItem.ETrim,"E-Trim" }, {LItem.RTrim,"R-Trim" }, {LItem.ATrim,"A-Trim" },
       {LItem.A_ETRIM,"A-ETrim" },
       {LItem.OAT,"OAT" },
+      {LItem.VIS,"VIS" },
       {LItem.WIND_SD,"WIND" }, {LItem.WIND_XY,"WIND" },
       {LItem.BARO_HPA,"BARO" }, {LItem.BARO_InHg,"BARO" },
       {LItem.Gear,"Gear" }, {LItem.Brakes,"Brakes" }, {LItem.Flaps,"Flaps" },
@@ -280,6 +297,7 @@ namespace FS20_HudBar
       {LItem.EST_ALT, "WP-ALT" },
 
       {LItem.HDG,"HDG" },
+      {LItem.HDGt,"HDGt" },
       {LItem.ALT,"ALT" },
       {LItem.RA,"RA" },
       {LItem.IAS,"IAS" },
@@ -292,8 +310,11 @@ namespace FS20_HudBar
       {LItem.AP_ALTs,"ALT" },
       {LItem.AP_VSs,"VS" },
       {LItem.AP_FLCs,"FLC" },
+      {LItem.AP_BC,"BC" },
       {LItem.AP_NAVg,"NAV" },
       {LItem.AP_APR_GS,"APR" },
+      {LItem.AP_YD,"YD" },
+      {LItem.AP_LVL,"LVL" },
 
       {LItem.M_TIM_DIST1,"CP 1" },
       {LItem.M_TIM_DIST2,"CP 2" },
@@ -303,12 +324,14 @@ namespace FS20_HudBar
     // Descriptive GUI label names to match the enum above (shown in Config)
     private Dictionary<LItem,string> m_cfgNames = new Dictionary<LItem, string>(){
       {LItem.MSFS,"MSFS Status" },
-      {LItem.ACFT_ID,"Aircraft ID" },
       {LItem.SimRate,"Sim Rate" },
+      {LItem.ACFT_ID,"Aircraft ID" },
+      {LItem.TIME,"Time of day (Sim)" },
 
       {LItem.ETrim,"Elevator Trim" }, {LItem.RTrim,"Rudder Trim" }, {LItem.ATrim,"Aileron Trim" },
       {LItem.A_ETRIM,"Auto E-Trim" },
       {LItem.OAT,"Outsite Air Temp °C" },
+      {LItem.VIS,"Visibility nm" },
       {LItem.WIND_SD,"Wind dir° @ speed kt" },
       {LItem.WIND_XY,"Wind cross / head kt" },
       {LItem.BARO_HPA,"Baro Setting hPa" },
@@ -342,6 +365,7 @@ namespace FS20_HudBar
       {LItem.EST_ALT,"Estimated ALT @WYP" },
 
       {LItem.HDG,"Aircraft HDG" },
+      {LItem.HDGt,"Aircraft True HDG" },
       {LItem.ALT,"Aircraft ALT ft" },
       {LItem.RA,"Aircraft RA ft" },
       {LItem.IAS,"Aircraft IAS kt" },
@@ -354,8 +378,11 @@ namespace FS20_HudBar
       {LItem.AP_ALTs,"AP ALT / Set" },
       {LItem.AP_VSs,"AP VS / Set" },
       {LItem.AP_FLCs,"AP FLC / Set" },
+      {LItem.AP_BC, "AP BC" },
       {LItem.AP_NAVg,"AP NAV and GPS" },
       {LItem.AP_APR_GS,"AP APR and GS" },
+      {LItem.AP_YD,"AP Yaw Damper" },
+      {LItem.AP_LVL,"AP Wing Leveler" },
 
       {LItem.M_TIM_DIST1,"Checkpoint 1" },
       {LItem.M_TIM_DIST2,"Checkpoint 2" },
@@ -472,7 +499,12 @@ namespace FS20_HudBar
       disp = LItem.SimRate; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.SimRate;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_SRate( lblProto ) { }; di.AddItem( v ); AddValue( item, v );
+      v = new V_SRate( value2Proto ) { }; di.AddItem( v ); AddValue( item, v );
+      // Time of day
+      disp = LItem.TIME; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.TIME;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Time( value2Proto ) { }; di.AddItem( v ); AddValue( item, v );
 
       // TRIMS - we use value2Proto to get a smaller font for the numbers
       disp = LItem.ETrim; di = new DispItem( ); AddDisp( disp, di );
@@ -491,12 +523,19 @@ namespace FS20_HudBar
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       v = new V_Prct( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
-      // OAT, BARO
+      // OAT
       disp = LItem.OAT; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.OAT;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Temp( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
+      // VIS
+      disp = LItem.VIS; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.VIS;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Dist( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      // BARO
       disp = LItem.BARO_HPA; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.BARO_HPA;
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
@@ -647,6 +686,11 @@ namespace FS20_HudBar
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Deg( valueProto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
+      disp = LItem.HDGt; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.HDGt;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Deg( valueProto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
       disp = LItem.ALT; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.ALT;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
@@ -670,12 +714,12 @@ namespace FS20_HudBar
       // Autopilot
       disp = LItem.AP; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.AP;
-      l = new B_ICAO( item, valueProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
 
       // AP Heading
       disp = LItem.AP_HDGs; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.AP_HDG;
-      l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       item = VItem.AP_HDGset;
       v = new V_Deg( value2Proto ) { ForeColor = c_Set, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
@@ -689,29 +733,45 @@ namespace FS20_HudBar
       // AP VSpeed
       disp = LItem.AP_VSs; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.AP_VS;
-      l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       item = VItem.AP_VSset;
       v = new V_VSpeed( value2Proto, showUnits ) { ForeColor = c_Set, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // AP FLChange
       disp = LItem.AP_FLCs; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.AP_FLC;
-      l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       item = VItem.AP_FLCset;
       v = new V_Speed( value2Proto, showUnits ) { ForeColor = c_Set, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      // AP BC
+      disp = LItem.AP_BC; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.AP_BC;
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
 
       // AP Nav, Apr, GS
       disp = LItem.AP_NAVg; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.AP_NAV;
-      l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       item = VItem.AP_NAVgps;
-      l = new V_ICAO( value2Proto ) { Text = BarValueLabel( item ) }; di.AddItem( l ); AddLbl( item, l );
+      l = new V_ICAO( lblProto ) { Text = BarValueLabel( item ) }; di.AddItem( l ); AddLbl( item, l );
 
       disp = LItem.AP_APR_GS; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.AP_APR;
-      l = new B_ICAO( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
       item = VItem.AP_GS;
-      l = new V_ICAO( value2Proto ) { Text = BarValueLabel( item ) }; di.AddItem( l ); AddLbl( item, l );
+      l = new V_ICAO( lblProto ) { Text = BarValueLabel( item ) }; di.AddItem( l ); AddLbl( item, l );
+
+      // AP YD
+      disp = LItem.AP_YD; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.AP_YD;
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+
+      // AP LVL
+      disp = LItem.AP_LVL; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.AP_LVL;
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+
 
       // CP Meter
       disp = LItem.M_TIM_DIST1; di = new DispItem( ); AddDisp( disp, di );

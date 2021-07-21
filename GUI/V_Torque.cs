@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "ft/lb";
-      m_default = "____";
+      m_default = DefaultString( "____" );
       Text = UnitString( m_default );
     }
 

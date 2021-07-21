@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Text;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,6 +45,7 @@ namespace FS20_HudBar.GUI
   {
     Bar=0,
     Tile,
+    Window, //20210718
   }
 
   /// <summary>
@@ -50,25 +53,89 @@ namespace FS20_HudBar.GUI
   /// </summary>
   class GUI_Fonts
   {
-    // Regular Fonts
-    private Font m_lblRegular =  new Font( "Bahnschrift", 9.75f, FontStyle.Bold);
-    private Font m_valRegular =  new Font( "Lucida Console", 14.25f, FontStyle.Bold);
-    private Font m_valRegular2 =  new Font( "Lucida Console", 12f, FontStyle.Bold);
-    // Condensed Fonts (Lucida Console seems to be one of the least line height creeping fonts, so we just use a smaller one for condensed)
-    // Option would be to use the same as for the labels - gets then really condensed..)
-    private Font m_lblCondensed =  new Font( "Bahnschrift SemiBold Condensed", 9.75f, FontStyle.Bold);
-    //    private Font m_valCondensed =  new Font( "Lucida Console", 12f, FontStyle.Bold);
-    //    private Font m_valCondensed2 =  new Font( "Lucida Console", 11.25f, FontStyle.Bold);
-    private Font m_valCondensed =  new Font( "Bahnschrift SemiCondensed", 14.25f, FontStyle.Bold);
-    private Font m_valCondensed2 =  new Font( "Bahnschrift SemiCondensed", 12f, FontStyle.Bold);
-    // Sign font
-    private Font m_sign =  new Font( "Wingdings", 15.76f, FontStyle.Bold);
+    /// <summary>
+    /// Embedded Fonts
+    /// </summary>
+    private enum EFonts
+    {
+      ShareTechMono = 0,
+    }
 
-    // Assigned and sized fonts
-    private Font m_labelFont = null;
-    private Font m_signFont = null;
-    private Font m_valueFont = null;
-    private Font m_value2Font = null;
+    /// <summary>
+    /// The kind of Fonts we maintain here
+    /// </summary>
+    private enum FKinds
+    {
+      Lbl=0,
+      Value,
+      Value2,
+      Sign,
+    }
+
+    /// <summary>
+    /// Local Font repository
+    /// </summary>
+    private class FontDescriptor
+    {
+      // Regular Descriptor
+      public FontFamily RegFamily { get; set; }
+      public float RegSize { get; set; } // Base Size
+      public FontStyle RegStyle { get; set; }
+
+      // Condensed Descriptor
+      public FontFamily CondFamily { get; set; }
+      public float CondSize { get; set; } // Base Size
+      public FontStyle CondStyle { get; set; }
+
+      private Font m_font = null;
+      /// <summary>
+      /// The current font to use
+      /// </summary>
+      public Font Font { get => m_font; set { m_font?.Dispose( ); m_font = value; } }  // maintain memory and dispose prev one
+
+      /// <summary>
+      /// Create the applicable font 
+      /// </summary>
+      /// <param name="fontSize">The Size to create</param>
+      /// <param name="condensed">Condensed Fonts or Regular ones</param>
+      public void CreateFont( FontSize fontSize, bool condensed )
+      {
+        if ( condensed ) 
+          Font = new Font( CondFamily, CondSize + FontIncrement( fontSize ), CondStyle );
+        else
+          Font = new Font( RegFamily, RegSize + FontIncrement( fontSize ), RegStyle );
+      }
+    }
+
+
+    // Font repo - initialize on create
+    private Dictionary<FKinds, FontDescriptor> m_fontStorage = new Dictionary<FKinds, FontDescriptor>() {
+      { FKinds.Lbl, new FontDescriptor()
+        {
+          RegFamily = new FontFamily("Bahnschrift"), RegSize = 9.75f, RegStyle = FontStyle.Regular,
+          CondFamily = new FontFamily("Bahnschrift SemiBold Condensed"), CondSize = 9.75f, CondStyle = FontStyle.Regular,
+        } },
+      { FKinds.Value, new FontDescriptor()
+        {
+          RegFamily = new FontFamily("Lucida Console"), RegSize = 14.25f, RegStyle = FontStyle.Regular,
+          CondFamily = new FontFamily("Lucida Console"), CondSize = 12f, CondStyle = FontStyle.Regular, // later rewritten for the embedded one
+      } },
+      { FKinds.Value2, new FontDescriptor()
+        {
+          RegFamily = new FontFamily("Lucida Console"), RegSize = 12f, RegStyle = FontStyle.Regular,
+          CondFamily = new FontFamily("Lucida Console"), CondSize = 11.25f, CondStyle = FontStyle.Regular, // later rewritten for the embedded one
+      } },
+      { FKinds.Sign, new FontDescriptor()
+        {
+          RegFamily = new FontFamily("Wingdings"), RegSize = 15.76f, RegStyle = FontStyle.Regular,
+          CondFamily = new FontFamily("Wingdings"), CondSize = 15.76f, CondStyle = FontStyle.Regular, // same as regular
+      } },
+    };
+
+    // saved currents
+    private FontSize m_fontSize = FontSize.Regular;
+    private bool m_condensed = false;
+
 
     private static char c_NSpace =Convert.ToChar(0x2007);  // Number size Space
 
@@ -90,7 +157,7 @@ namespace FS20_HudBar.GUI
     /// </summary>
     /// <param name="fontSize">The FontSize Enum</param>
     /// <returns>An increment </returns>
-    public static float FontIncrement( FontSize fontSize )
+    private static float FontIncrement( FontSize fontSize )
     {
       switch ( fontSize ) {
         case FontSize.Regular: return 0;
@@ -107,43 +174,58 @@ namespace FS20_HudBar.GUI
       }
     }
 
-    public Font LabelFont { get; private set; }
-    public Font SignFont { get; private set; }
-    public Font ValueFont { get; private set; }
-    public Font Value2Font { get; private set; }
+    // Store embedded Fonts here
+    PrivateFontCollection m_privateFonts = new PrivateFontCollection( );
 
     /// <summary>
-    /// cTor: Init default fonts
+    /// The Label Font
     /// </summary>
-    public GUI_Fonts( Label lblProto, Label valueProto, Label value2Proto, Label signProto )
-    {
-      m_labelFont = lblProto.Font;
-      m_signFont = signProto.Font;
-      m_valueFont = valueProto.Font;
-      m_value2Font = value2Proto.Font;
-    }
+    public Font LabelFont => m_fontStorage[FKinds.Lbl].Font;
+    /// <summary>
+    /// The Value Item Font
+    /// </summary>
+    public Font ValueFont => m_fontStorage[FKinds.Value].Font;
+    /// <summary>
+    /// A smaller Value Item Font
+    /// </summary>
+    public Font Value2Font => m_fontStorage[FKinds.Value2].Font;
+    /// <summary>
+    /// The Sign Font
+    /// </summary>
+    public Font SignFont => m_fontStorage[FKinds.Sign].Font;
+
+
     /// <summary>
     /// cTor: Init default fonts from builtins
     /// </summary>
     public GUI_Fonts( bool condensed )
     {
-      m_labelFont?.Dispose( ); 
-      m_signFont?.Dispose( );
-      m_valueFont?.Dispose( );
-      m_value2Font?.Dispose( );
+      m_condensed = condensed;
+      try {
+        //  Font embedding Ref: https://web.archive.org/web/20141224204810/http://bobpowell.net/embedfonts.aspx
+        // Load a rather condensed embedded font 
+        Stream fontStream = GetType().Assembly.GetManifestResourceStream(@"FS20_HudBar.Fonts.ShareTechMono-Regular.ttf");
+        byte[] fontdata = new byte[fontStream.Length];
+        fontStream.Read( fontdata, 0, (int)fontStream.Length );
+        fontStream.Close( );
+        unsafe {
+          fixed ( byte* pFontData = fontdata ) {
+            m_privateFonts.AddMemoryFont( (IntPtr)pFontData, fontdata.Length );
+          }
+        }
+        // set new condensed if we were successful
+        m_fontStorage[FKinds.Value].CondFamily?.Dispose( );
+        m_fontStorage[FKinds.Value].CondFamily = m_privateFonts.Families[(int)EFonts.ShareTechMono];
 
-      if ( condensed ) {
-        m_labelFont = m_lblCondensed;
-        m_signFont = m_sign;
-        m_valueFont = m_valCondensed;
-        m_value2Font = m_valCondensed2;
+        m_fontStorage[FKinds.Value2].CondFamily?.Dispose( );
+        m_fontStorage[FKinds.Value2].CondFamily = m_privateFonts.Families[(int)EFonts.ShareTechMono];
       }
-      else {
-        m_labelFont = m_lblRegular;
-        m_signFont = m_sign;
-        m_valueFont = m_valRegular;
-        m_value2Font = m_valRegular2;
+      catch {
+        ; // DEBUG STOP ONLY
       }
+
+      // loading actual fonts for the first time
+      SetFontsize( m_fontSize );
     }
 
     /// <summary>
@@ -152,18 +234,11 @@ namespace FS20_HudBar.GUI
     /// <param name="fontSize"></param>
     public void SetFontsize( FontSize fontSize )
     {
-      // maintain memory 
-      if ( m_labelFont != null ) m_labelFont.Dispose( );
-      if ( m_signFont != null ) m_signFont.Dispose( );
-      if ( m_valueFont != null ) m_valueFont.Dispose( );
-      if ( m_value2Font != null ) m_value2Font.Dispose( );
-
-      // alloc each font only once and use it as ref
-      float fontInc = FontIncrement(fontSize);
-      LabelFont = new Font( m_labelFont.FontFamily, m_labelFont.Size + fontInc );
-      SignFont = new Font( m_signFont.FontFamily, m_signFont.Size + fontInc );
-      ValueFont = new Font( m_valueFont.FontFamily, m_valueFont.Size + fontInc );
-      Value2Font = new Font( m_value2Font.FontFamily, m_value2Font.Size + fontInc );
+      m_fontSize = fontSize;
+      // alloc each font only once and use it as ref later on
+      foreach ( var fd in m_fontStorage ) {
+        fd.Value.CreateFont( m_fontSize, m_condensed );
+      }
     }
 
   }

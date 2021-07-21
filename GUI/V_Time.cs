@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, false )
     {
       m_unit = "";
-      m_default = $"{"__:__",8}";
+      m_default = DefaultString( $"{"__:__",8}" );
       Text = UnitString( m_default );
     }
 
@@ -44,7 +44,7 @@ namespace FS20_HudBar.GUI
       try {
         if ( number > 3600 ) {
           // with hours
-          return $"{new TimeSpan( 0, 0, 0, number ),8:H\\:mm\\:ss}";
+          return $"{new TimeSpan( 0, 0, 0, number ),8:hh\\:mm\\:ss}";
         }
 
         else if ( number >= 0 ) {

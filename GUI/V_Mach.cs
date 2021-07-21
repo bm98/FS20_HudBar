@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "M";
-      m_default = "_.__"; // N.NN 
+      m_default = DefaultString( "_.__" ); // N.NN 
       Text = UnitString( m_default );
     }
 

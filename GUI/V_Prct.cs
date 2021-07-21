@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, false )
     {
       m_unit = "";
-      m_default = "____%";
+      m_default = DefaultString( "+___%" );
       Text = UnitString( m_default );
     }
 

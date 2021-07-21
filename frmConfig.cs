@@ -55,9 +55,10 @@ namespace FS20_HudBar
       cbxKind.Items.Clear( );
       cbxKind.Items.Add( "Bar" );
       cbxKind.Items.Add( "Tile" );
+      cbxKind.Items.Add( "Window" ); // 20210718
     }
 
-     private void PopulateCond( ComboBox cbxCond )
+    private void PopulateCond( ComboBox cbxCond )
     {
       cbxCond.Items.Clear( );
       cbxCond.Items.Add( "Regular Font" );

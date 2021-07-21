@@ -20,7 +20,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "kt";
-      m_default = "↓___"; // H | T NNN kt
+      m_default = DefaultString( "___↓" ); // H | T NNN kt
       Text = UnitString( m_default );
     }
 

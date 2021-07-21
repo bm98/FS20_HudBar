@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "nm";
-      m_default = "___._";
+      m_default = DefaultString( "___._" );
       Text = UnitString( m_default );
     }
 
@@ -30,7 +30,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:##0.0}" ); // sign 5 digits, 1000 separator
+          this.Text = UnitString( $"{value,5:##0.0}" );
         }
       }
     }

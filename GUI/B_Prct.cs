@@ -22,7 +22,7 @@ namespace FS20_HudBar.GUI
       :base(item, proto)
     {
       m_unit = "";
-      m_default = "___%";
+      m_default = DefaultString( "+___%" );
       Text = UnitString( m_default );
     }
 

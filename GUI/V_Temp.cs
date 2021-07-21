@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "°C";
-      m_default = "_____";
+      m_default = DefaultString( "+____" );
       Text = UnitString( m_default );
     }
 

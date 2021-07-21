@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "pph";
-      m_default = "___._";
+      m_default = DefaultString( "___._" );
       Text = UnitString( m_default );
     }
 

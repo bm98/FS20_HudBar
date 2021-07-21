@@ -104,6 +104,7 @@ namespace FS20_HudBar
       set { this["SelProfile"] = value; }
     }
 
+    // PROFILE 1
 
     [UserScopedSetting( )]
     [DefaultSettingValue( "Profile 1" )]
@@ -168,6 +169,7 @@ namespace FS20_HudBar
       set { this["Sequence_1"] = value; }
     }
 
+    // PROFILE 2
 
     [UserScopedSetting( )]
     [DefaultSettingValue( "Profile 2" )]
@@ -232,6 +234,7 @@ namespace FS20_HudBar
       set { this["Sequence_2"] = value; }
     }
 
+    // PROFILE 3
 
     [UserScopedSetting( )]
     [DefaultSettingValue( "Profile 3" )]
@@ -296,6 +299,7 @@ namespace FS20_HudBar
       set { this["Sequence_3"] = value; }
     }
 
+    // PROFILE 4
 
     [UserScopedSetting( )]
     [DefaultSettingValue( "Profile 4" )]
@@ -360,6 +364,7 @@ namespace FS20_HudBar
       set { this["Sequence_4"] = value; }
     }
 
+    // PROFILE 5
 
     [UserScopedSetting( )]
     [DefaultSettingValue( "Profile 5" )]

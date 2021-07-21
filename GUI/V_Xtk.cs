@@ -20,7 +20,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "nm";
-      m_default = "__.__◄"; // direction sign NN.NN   3.2 format
+      m_default = DefaultString( "__.__◄" ); // direction sign NN.NN   3.2 format
       Text = UnitString( m_default );
     }
 

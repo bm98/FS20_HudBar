@@ -1,5 +1,5 @@
-FS20_HudBar V 0.26 - Build 20 BETA
-(c) M. Burri - 11-July-2021
+FS20_HudBar V 0.27 - Build 21 BETA
+(c) M. Burri - 21-July-2021
 
 Contains files:
 
@@ -14,7 +14,8 @@ From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg
   Microsoft.FlightSimulator.SimConnect.dll 
   SimConnect.dll
-
+From Google Fonts Library embedded:
+  Share_Tech_Mono			(Used as condensed font)
 
 ReadMe.txt                   This file
 
@@ -31,9 +32,20 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.27-B21
+- Add Window Kind - behaves like a Tile but as a Border and can be moved anywhere
+- Add Time of Day item (Sim Time)
+- Add Visibility item
+- Add True HDG item
+- Add Autopilot BC action item
+- Add Autopilot YD action item
+- Add Autopilot LVL action item
+- Update Condensed font - using Share Tech Mono (smallest mono font found so far)
+- Refacture Font Management
+- Update QuickGuide
+
 V 0.26-B20
 - fix Display of Lights
-
 
 V 0.25-B19
 - Add Wind Dir/Speed + Cross/Head;Tail items

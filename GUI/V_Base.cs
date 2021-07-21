@@ -16,6 +16,9 @@ namespace FS20_HudBar.GUI
     protected string m_unit = "";
     protected bool m_showUnit = false;
 
+    private const string c_numbers="0123456789";
+    private Random random = new Random();
+
     virtual public float? Value { set => throw new NotImplementedException( ); }
     virtual public int? IntValue { set => throw new NotImplementedException( ); }
     virtual public Steps Step { set => throw new NotImplementedException( ); }
@@ -28,11 +31,34 @@ namespace FS20_HudBar.GUI
     /// <summary>
     /// Add a Unit if ShowUnit is true
     /// </summary>
-    /// <param name="valueString">The formatted Value string</param>
+    /// <param name="defaultString">The formatted Value string</param>
     /// <returns>A formatted string</returns>
-    protected string UnitString( string valueString )
+    protected string UnitString( string defaultString )
     {
-      return valueString + ( m_showUnit ? m_unit : "" );
+      return defaultString + ( m_showUnit ? m_unit : "" );
+    }
+
+    /// <summary>
+    /// Debugging, provide the default string with some numbers
+    /// </summary>
+    /// <param name="defaultString">The formatted Value string</param>
+    /// <returns>A formatted string</returns>
+    protected string DefaultString( string defaultString )
+    {
+      string ret = defaultString;
+#if DEBUG
+      ret = "";
+      
+      for (int i=0;i<defaultString.Length; i++ ) {
+        if ( defaultString[i] == '_' ) {
+          ret+= c_numbers[ random.Next( 10 )];
+        }
+        else {
+          ret += defaultString[i];
+        }
+      }
+#endif
+      return ret;
     }
 
 

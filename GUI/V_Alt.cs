@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "ft";
-      m_default = "_______";
+      m_default = DefaultString( "+__'___" );
       Text = UnitString( m_default );
     }
 

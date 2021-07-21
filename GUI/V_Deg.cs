@@ -20,7 +20,7 @@ namespace FS20_HudBar.GUI
     : base( proto, false )
     {
       m_unit = ""; // Deg always shows °
-      m_default = "___°";
+      m_default = DefaultString( "___°" );
       Text = UnitString( m_default );
     }
 

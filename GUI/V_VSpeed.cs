@@ -20,7 +20,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "fpm";
-      m_default = "____↑"; // NNNN_Direction
+      m_default = DefaultString( "____↑" ); // NNNN_Direction
       Text = UnitString( m_default );
     }
 
