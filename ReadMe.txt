@@ -1,5 +1,5 @@
-FS20_HudBar V 0.27 - Build 21 BETA
-(c) M. Burri - 21-July-2021
+FS20_HudBar V 0.28 - Build 22 BETA
+(c) M. Burri - 22-July-2021
 
 Contains files:
 
@@ -32,8 +32,16 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.28-B22
+- Add Time Enroute (WYP, Total) items
+- Add Destination ETE items
+- Add Flightplan destination APT ICAO code item
+- Add ATC assigned Runway deviations Dist, Track, Alt items
+- Update RA shows at or below 1500 ft now
+- Fix Item Sequence for 2nd profile was not loaded correctly
+
 V 0.27-B21
-- Add Window Kind - behaves like a Tile but as a Border and can be moved anywhere
+- Add Window Kind - behaves like a Tile but has a Border and can be moved anywhere
 - Add Time of Day item (Sim Time)
 - Add Visibility item
 - Add True HDG item

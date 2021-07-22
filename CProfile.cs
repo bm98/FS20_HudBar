@@ -330,11 +330,13 @@ namespace FS20_HudBar
         // find the item with its Key in the layout panel - no checks - may break if not consistent
         try {
           var cb = flp.Controls[Key(i)] as CheckBox;
-          int pos = flp.Controls.IndexOf(cb);
-          // store along the Enum sequence
-          m_sequence[i] = pos;
-          m_profile[i] = cb.Checked;
-          m_flowBreak[i] = (string)cb.Tag == "1";
+          int pos = flp.Controls.IndexOf(cb); // can be -1 if not found
+          if ( pos >= 0 ) {
+            // store along the Enum sequence
+            m_sequence[i] = pos;
+            m_profile[i] = cb.Checked;
+            m_flowBreak[i] = (string)cb.Tag == "1";
+          }
         }
         catch {
           m_sequence[i] = (int)i; m_profile[i] = true; m_flowBreak[i] = false; // dummys anyway - DEBUG STOP
@@ -463,7 +465,10 @@ namespace FS20_HudBar
         int idx = (int)i; // default Enum Sequence
         if ( e.Length > idx ) {
           if ( int.TryParse( e[idx], out int iPos ) ) {
-            m_sequence.Add( i, iPos ); // found an integer
+            if ( iPos < m_profile.Count )
+              m_sequence.Add( i, iPos ); // found an integer
+            else
+              m_sequence.Add( i, m_profile.Count-1 ); // found an integer - was out of the range ??
           }
           else {
             m_sequence.Add( i, idx ); // default
@@ -483,7 +488,12 @@ namespace FS20_HudBar
     /// <returns>True if it is shown</returns>
     public bool ShowItem( LItem item )
     {
-      return m_profile[item];
+      try {
+        return m_profile[item];
+      }
+      catch {
+        return false;
+      }
     }
 
     /// <summary>
@@ -493,7 +503,12 @@ namespace FS20_HudBar
     /// <returns>True if it breaks</returns>
     public bool BreakItem( LItem item )
     {
-      return m_flowBreak[item];
+      try {
+        return m_flowBreak[item];
+      }
+      catch {
+        return false;
+      }
     }
 
     /// <summary>
@@ -503,7 +518,12 @@ namespace FS20_HudBar
     /// <returns>The display position 0..</returns>
     public int ItemPos( LItem item )
     {
-      return m_sequence[item];
+      try {
+        return m_sequence[item];
+      }
+      catch {
+        return 999;
+      }
     }
 
     /// <summary>
@@ -519,7 +539,7 @@ namespace FS20_HudBar
       }
       else {
         // no such item ????
-        return 0;
+        return (LItem)999;
       }
     }
 

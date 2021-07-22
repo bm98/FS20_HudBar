@@ -68,7 +68,7 @@ namespace FS20_HudBar
                                        AppSettings.Instance.Profile_1_Condensed ) );
 
       m_profiles.Add( new CProfile( 2, AppSettings.Instance.Profile_2_Name,
-                                       AppSettings.Instance.Profile_2, AppSettings.Instance.FlowBreak_2, AppSettings.Instance.Sequence_3,
+                                       AppSettings.Instance.Profile_2, AppSettings.Instance.FlowBreak_2, AppSettings.Instance.Sequence_2,
                                        AppSettings.Instance.Profile_2_FontSize, AppSettings.Instance.Profile_2_Placement,
                                        AppSettings.Instance.Profile_2_Kind, AppSettings.Instance.Profile_2_Location,
                                        AppSettings.Instance.Profile_2_Condensed ) );
@@ -448,8 +448,8 @@ namespace FS20_HudBar
         // using the enum index only to count from 0..max items
         var key = PROFILE.ItemKeyFromPos( (int)i);
         var di = HUD.DispItem( key );
-        if ( PROFILE.ShowItem( key ) ) {
-          if ( di != null && di.Controls.Count > 0 ) {
+        if ( di!= null && PROFILE.ShowItem( key ) ) {
+          if ( di.Controls.Count > 0 ) {
             // add when we have to show something
             flp.Controls.Add( di );
 
@@ -609,10 +609,10 @@ namespace FS20_HudBar
           SC.SimConnectClient.Instance.AP_G1000Module.BC_hold = true; // toggles independent of the set value
           break;
         case VItem.AP_YD:
-          SC.SimConnectClient.Instance.AP_G1000Module.YD_toggle(); // toggles
+          SC.SimConnectClient.Instance.AP_G1000Module.YD_toggle( ); // toggles
           break;
         case VItem.AP_LVL:
-          SC.SimConnectClient.Instance.AP_G1000Module.LVL_toggle(); // toggles
+          SC.SimConnectClient.Instance.AP_G1000Module.LVL_toggle( ); // toggles
           break;
         case VItem.ETrim:
           SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct = 0; // Set 0
@@ -632,6 +632,10 @@ namespace FS20_HudBar
           break;
         case VItem.BARO_InHg:
           SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting = true;
+          break;
+        // Enroute Reset
+        case VItem.ENR_WP:
+          WPTracker.InitFlight( );
           break;
         // Start Meters
         case VItem.M_Elapsed1:
@@ -824,8 +828,15 @@ namespace FS20_HudBar
           HUD.Value( VItem.GPS_PWYP ).Text = SC.SimConnectClient.Instance.GpsModule.WYP_prev;
           HUD.Value( VItem.GPS_NWYP ).Text = SC.SimConnectClient.Instance.GpsModule.WYP_next;
         }
-        if ( PROFILE.ShowItem( LItem.GPS_DIST ) ) HUD.Value( VItem.GPS_DIST ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_dist;
-        if ( PROFILE.ShowItem( LItem.GPS_ETE ) ) HUD.Value( VItem.GPS_ETE ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_ete;
+        /*
+        if ( PROFILE.ShowItem( LItem.GPS_APT_APR ) ) {
+          HUD.Value( VItem.GPS_APT ).Text = SC.SimConnectClient.Instance.GpsModule.ApproachAptID;
+          HUD.Value( VItem.GPS_APR ).Text = SC.SimConnectClient.Instance.GpsModule.ApproachApproachID;
+        }
+        */
+        if ( PROFILE.ShowItem( LItem.GPS_WP_DIST ) ) HUD.Value( VItem.GPS_WP_DIST ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_dist;
+        if ( PROFILE.ShowItem( LItem.GPS_WP_ETE ) ) HUD.Value( VItem.GPS_WP_ETE ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_ete;
+        if ( PROFILE.ShowItem( LItem.GPS_ETE ) ) HUD.Value( VItem.GPS_ETE ).Value = SC.SimConnectClient.Instance.GpsModule.DEST_ete;
         if ( PROFILE.ShowItem( LItem.GPS_TRK ) ) HUD.Value( VItem.GPS_TRK ).Value = SC.SimConnectClient.Instance.GpsModule.GTRK;
         if ( PROFILE.ShowItem( LItem.GPS_BRGm ) ) HUD.Value( VItem.GPS_BRGm ).Value = SC.SimConnectClient.Instance.GpsModule.BRG;
         if ( PROFILE.ShowItem( LItem.GPS_DTRK ) ) HUD.Value( VItem.GPS_DTRK ).Value = SC.SimConnectClient.Instance.GpsModule.DTK;
@@ -846,7 +857,7 @@ namespace FS20_HudBar
           SC.SimConnectClient.Instance.AircraftModule.AltMsl_ft,
           SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin
         );
-
+        // Show Estimates
         if ( PROFILE.ShowItem( LItem.EST_VS ) ) {
           HUD.Value( VItem.EST_VS ).Value = Estimates.VSToTgt_AtAltitude( tgtAlt, SC.SimConnectClient.Instance.GpsModule.WYP_dist );
           HUD.ValueControl( VItem.EST_VS ).ForeColor = estCol;
@@ -855,6 +866,17 @@ namespace FS20_HudBar
           HUD.Value( VItem.EST_ALT ).Value = Estimates.AltitudeAtTgt( SC.SimConnectClient.Instance.GpsModule.WYP_dist );
           HUD.ValueControl( VItem.EST_ALT ).ForeColor = estCol;
         }
+        // WP Enroute Tracker
+        WPTracker.Track(
+          SC.SimConnectClient.Instance.GpsModule.WYP_prev,
+          SC.SimConnectClient.Instance.GpsModule.WYP_next,
+          SC.SimConnectClient.Instance.AircraftModule.SimTime_loc_sec,
+          SC.SimConnectClient.Instance.AircraftModule.Sim_OnGround
+        );
+        if ( PROFILE.ShowItem( LItem.ENROUTE ) ) {
+          HUD.Value( VItem.ENR_WP ).Value = WPTracker.WPTimeEnroute_sec;
+          HUD.Value( VItem.ENR_TOTAL ).Value = WPTracker.TimeEnroute_sec;
+        }
       }
       else {
         // No Flightplan
@@ -862,7 +884,14 @@ namespace FS20_HudBar
           HUD.Value( VItem.GPS_PWYP ).Text = "_____";
           HUD.Value( VItem.GPS_NWYP ).Text = "_____";
         }
-        if ( PROFILE.ShowItem( LItem.GPS_DIST ) ) HUD.Value( VItem.GPS_DIST ).Value = null;
+        /*
+        if ( PROFILE.ShowItem( LItem.GPS_APT_APR ) ) {
+          HUD.Value( VItem.GPS_APT ).Text = "_____";
+          HUD.Value( VItem.GPS_APR ).Text = "_____";
+        }
+        */
+        if ( PROFILE.ShowItem( LItem.GPS_WP_DIST ) ) HUD.Value( VItem.GPS_WP_DIST ).Value = null;
+        if ( PROFILE.ShowItem( LItem.GPS_WP_ETE ) ) HUD.Value( VItem.GPS_WP_ETE ).Value = null;
         if ( PROFILE.ShowItem( LItem.GPS_ETE ) ) HUD.Value( VItem.GPS_ETE ).Value = null;
         if ( PROFILE.ShowItem( LItem.GPS_TRK ) ) HUD.Value( VItem.GPS_TRK ).Value = null;
         if ( PROFILE.ShowItem( LItem.GPS_BRGm ) ) HUD.Value( VItem.GPS_BRGm ).Value = null;
@@ -872,6 +901,10 @@ namespace FS20_HudBar
         if ( PROFILE.ShowItem( LItem.GPS_ALT ) ) HUD.Value( VItem.GPS_ALT ).Value = null;
         if ( PROFILE.ShowItem( LItem.EST_VS ) ) HUD.Value( VItem.EST_VS ).Value = null; // cannot if we don't have a WYP to aim at
         if ( PROFILE.ShowItem( LItem.EST_ALT ) ) HUD.Value( VItem.EST_ALT ).Value = null; // cannot if we don't have a WYP to aim at
+        if ( PROFILE.ShowItem( LItem.ENROUTE ) ) {
+          HUD.Value( VItem.ENR_WP ).Value = null;
+          HUD.Value( VItem.ENR_TOTAL ).Value = null;
+        }
       }
 
       // Autopilot
@@ -917,17 +950,32 @@ namespace FS20_HudBar
       if ( PROFILE.ShowItem( LItem.HDGt ) ) HUD.Value( VItem.HDGt ).Value = SC.SimConnectClient.Instance.AircraftModule.HDG_true_deg;
       if ( PROFILE.ShowItem( LItem.ALT ) ) HUD.Value( VItem.ALT ).Value = SC.SimConnectClient.Instance.AircraftModule.AltMsl_ft;
       if ( PROFILE.ShowItem( LItem.RA ) ) {
-        if ( SC.SimConnectClient.Instance.AircraftModule.AltAoG_ft < 1000 ) {
+        if ( SC.SimConnectClient.Instance.AircraftModule.AltAoG_ft <= 1500 ) {
           HUD.Value( VItem.RA ).Value = SC.SimConnectClient.Instance.AircraftModule.AltAoG_ft;
         }
         else {
-          HUD.Value( VItem.RA ).Value = null;
+          HUD.Value( VItem.RA ).Text = " .....";
         }
       }
       if ( PROFILE.ShowItem( LItem.IAS ) ) HUD.Value( VItem.IAS ).Value = SC.SimConnectClient.Instance.AircraftModule.IAS_kt;
       if ( PROFILE.ShowItem( LItem.TAS ) ) HUD.Value( VItem.TAS ).Value = SC.SimConnectClient.Instance.AircraftModule.TAS_kt;
       if ( PROFILE.ShowItem( LItem.MACH ) ) HUD.Value( VItem.MACH ).Value = SC.SimConnectClient.Instance.AircraftModule.Machspeed_mach;
       if ( PROFILE.ShowItem( LItem.VS ) ) HUD.Value( VItem.VS ).Value = SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin;
+
+      // ATC Airport
+      if ( PROFILE.ShowItem( LItem.ATC_APT ) ) HUD.Value( VItem.ATC_APT ).Text = Tooling.AptFromATCApt( SC.SimConnectClient.Instance.AircraftModule.AtcRunwayAirport );
+      if ( PROFILE.ShowItem( LItem.ATC_RWY ) ) {
+        if ( SC.SimConnectClient.Instance.AircraftModule.AtcRunwaySelected ) {
+          HUD.Value( VItem.ATC_RWY_LON ).Value = SC.SimConnectClient.Instance.AircraftModule.AtcRunway_Distance_nm;
+          HUD.Value( VItem.ATC_RWY_LAT ).Value = SC.SimConnectClient.Instance.AircraftModule.AtcRunway_Displacement_ft;
+          HUD.Value( VItem.ATC_RWY_ALT ).Value = SC.SimConnectClient.Instance.AircraftModule.AtcRunway_HeightAbove_ft;
+        }
+        else {
+          HUD.Value( VItem.ATC_RWY_LON ).Value = null;
+          HUD.Value( VItem.ATC_RWY_LAT ).Value = null;
+          HUD.Value( VItem.ATC_RWY_ALT ).Value = null;
+        }
+      }
 
       // Eval Meters
       if ( PROFILE.ShowItem( LItem.M_TIM_DIST1 ) ) {

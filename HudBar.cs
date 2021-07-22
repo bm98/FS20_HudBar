@@ -37,8 +37,8 @@ namespace FS20_HudBar
     FFlow_pph,    // pounds ph
     FFlow_gph,    // gallons ph
     GPS_WYP,    // prev-next WYP
-    GPS_DIST,  // GPS Distance to next Waypoint
-    GPS_ETE,   // GPS Time to next Waypoint
+    GPS_WP_DIST,  // GPS Distance to next Waypoint
+    GPS_WP_ETE,   // GPS Time to next Waypoint
     GPS_TRK,
     GPS_GS,
     GPS_ALT,    // Next WYP Alt
@@ -88,6 +88,12 @@ namespace FS20_HudBar
     AP_BC,      // AP BC signal
     AP_YD,      // Yaw Damper
     AP_LVL,     // Wing Leveler
+
+    ENROUTE,    // Enroute Times
+    ATC_APT,    // ATC assigned Apt arrives as TT.AIRPORTLR.ICAO.name
+    ATC_RWY,    // ATC assigned RWY displacement
+    GPS_ETE,  // GPS Time to Destination
+    //    GPS_APT_APR,// GPS Airport & Approach - SIM PROVIDES EMPTY STRINGS ...
   }
 
 
@@ -139,8 +145,8 @@ namespace FS20_HudBar
 
     GPS_PWYP,     // GPS Prev Waypoint
     GPS_NWYP,     // GPS Next Waypoint
-    GPS_DIST,     // GPS Distance to next Waypoint
-    GPS_ETE,      // GPS Time to next Waypoint
+    GPS_WP_DIST,  // GPS Distance to next Waypoint
+    GPS_WP_ETE,   // GPS Time to next Waypoint
     GPS_TRK,      // GPS Track 000°
     GPS_GS,       // GPS Groundspeed 000kt
 
@@ -204,10 +210,20 @@ namespace FS20_HudBar
     VIS,          // Visibility nm
     TIME,         // Time of Day
     HDGt,         // True heading deg
-    AP_BC,           // AP BC signal
-    AP_YD,           // Yaw Damper signal
-    AP_LVL,          // Wing Leveler signal
+    AP_BC,        // AP BC signal
+    AP_YD,        // Yaw Damper signal
+    AP_LVL,       // Wing Leveler signal
 
+    ENR_WP,       // Enroute time for this WP sec
+    ENR_TOTAL,    // Enroute time for this flight sec
+    ATC_APT,      // ATC assigned Airport
+    ATC_RWY_LAT,  // Lateral displacement ft
+    ATC_RWY_ALT,  // Height displacement ft
+    ATC_RWY_LON,  // Longitudinal displacement nm
+    GPS_ETE,      // GPS Time to Destination
+
+    //GPS_APT,      // GPS Airport ID - SIM PROVIDES EMPTY STRINGS ...
+    //GPS_APR,      // GPS Approach ID - SIM PROVIDES EMPTY STRINGS ...
   }
 
   /// <summary>
@@ -285,8 +301,10 @@ namespace FS20_HudBar
       {LItem.Fuel_LR,"F-LR" }, {LItem.Fuel_Total,"F-TOT" },
 
       {LItem.GPS_WYP,"≡GPS≡" },
-      {LItem.GPS_DIST,"DIST" },
-      {LItem.GPS_ETE, "ETE" },
+      //{LItem.GPS_APT_APR,"APT" },  - SIM PROVIDES EMPTY STRINGS ...
+      {LItem.GPS_WP_DIST,"DIST" },
+      {LItem.GPS_WP_ETE, "ETE" },
+      {LItem.GPS_ETE,"D-ETE" },
       {LItem.GPS_BRGm,"BRG" },
       {LItem.GPS_TRK, "TRK" },
       {LItem.GPS_DTRK,"DTK" },
@@ -295,6 +313,7 @@ namespace FS20_HudBar
       {LItem.GPS_ALT, "ALTP" },
       {LItem.EST_VS, "WP-VS" },
       {LItem.EST_ALT, "WP-ALT" },
+      {LItem.ENROUTE, "Enroute" },
 
       {LItem.HDG,"HDG" },
       {LItem.HDGt,"HDGt" },
@@ -315,6 +334,9 @@ namespace FS20_HudBar
       {LItem.AP_APR_GS,"APR" },
       {LItem.AP_YD,"YD" },
       {LItem.AP_LVL,"LVL" },
+
+      {LItem.ATC_APT,"APT" },
+      {LItem.ATC_RWY,"RWY" },
 
       {LItem.M_TIM_DIST1,"CP 1" },
       {LItem.M_TIM_DIST2,"CP 2" },
@@ -353,8 +375,10 @@ namespace FS20_HudBar
       {LItem.Fuel_Total,"Fuel Total Gal" },
 
       {LItem.GPS_WYP,"≡GPS≡" },
-      {LItem.GPS_DIST,"WYP Distance nm" },
-      {LItem.GPS_ETE,"WYP ETE h:mm:ss" },
+      //{LItem.GPS_APT_APR,"Airport/Approach" },  - SIM PROVIDES EMPTY STRINGS ...
+      {LItem.GPS_WP_DIST,"WYP Distance nm" },
+      {LItem.GPS_WP_ETE,"WYP ETE h:mm:ss" },
+      {LItem.GPS_ETE,"Destination ETE" },
       {LItem.GPS_BRGm,"Bearing to WYP (mag)" },
       {LItem.GPS_TRK,"Current Track" },
       {LItem.GPS_DTRK,"Desired track to WYP" },
@@ -363,6 +387,7 @@ namespace FS20_HudBar
       {LItem.GPS_ALT,"Waypoint ALT ft" },
       {LItem.EST_VS,"Estimate VS to WYP@ALT" },
       {LItem.EST_ALT,"Estimated ALT @WYP" },
+      {LItem.ENROUTE, "Enroute Times (WP/Tot)" },
 
       {LItem.HDG,"Aircraft HDG" },
       {LItem.HDGt,"Aircraft True HDG" },
@@ -383,6 +408,9 @@ namespace FS20_HudBar
       {LItem.AP_APR_GS,"AP APR and GS" },
       {LItem.AP_YD,"AP Yaw Damper" },
       {LItem.AP_LVL,"AP Wing Leveler" },
+
+      {LItem.ATC_APT,"ATC Airport" },
+      {LItem.ATC_RWY,"ATC Rwy (Dist, Track, Alt)" },
 
       {LItem.M_TIM_DIST1,"Checkpoint 1" },
       {LItem.M_TIM_DIST2,"Checkpoint 2" },
@@ -645,11 +673,23 @@ namespace FS20_HudBar
       v = new V_ICAO( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
       item = VItem.GPS_NWYP;
       v = new V_ICAO( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-
-      disp = LItem.GPS_DIST; di = new DispItem( ); AddDisp( disp, di );
-      item = VItem.GPS_DIST;
+      /* - SIM PROVIDES EMPTY STRINGS ...
+      disp = LItem.GPS_APT_APR; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.GPS_APT;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_ICAO( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = VItem.GPS_APR;
+      v = new V_ICAO( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      */
+      disp = LItem.GPS_WP_DIST; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.GPS_WP_DIST;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Dist( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      disp = LItem.GPS_WP_ETE; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.GPS_WP_ETE;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Time( valueProto ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       disp = LItem.GPS_ETE; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.GPS_ETE;
@@ -670,7 +710,7 @@ namespace FS20_HudBar
       item = VItem.GPS_ALT;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Alt( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
-
+      // Estimates
       disp = LItem.EST_VS; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.EST_VS;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
@@ -679,6 +719,13 @@ namespace FS20_HudBar
       item = VItem.EST_ALT;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Alt( valueProto, showUnits ) { ForeColor = c_Est, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      // Enroute times
+      disp = LItem.ENROUTE; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.ENR_WP;
+      l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+      v = new V_Time( valueProto ) { ForeColor = c_Info, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = VItem.ENR_TOTAL;
+      v = new V_Time( valueProto ) { ForeColor = c_Info, BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
       // Aircraft Data
       disp = LItem.HDG; di = new DispItem( ); AddDisp( disp, di );
@@ -771,6 +818,22 @@ namespace FS20_HudBar
       disp = LItem.AP_LVL; di = new DispItem( ); AddDisp( disp, di );
       item = VItem.AP_LVL;
       l = new B_ICAO( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l ); AddLbl( item, l ); // Action item
+
+      // ATC Airport
+      disp = LItem.ATC_APT; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.ATC_APT;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_ICAO( value2Proto ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+
+      // ATC Runway aiming
+      disp = LItem.ATC_RWY; di = new DispItem( ); AddDisp( disp, di );
+      item = VItem.ATC_RWY_LON;
+      l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_AptDist( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = VItem.ATC_RWY_LAT;
+      v = new V_LatDist( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
+      item = VItem.ATC_RWY_ALT;
+      v = new V_Alt( value2Proto, showUnits ) { BackColor = c_BG }; di.AddItem( v ); AddValue( item, v );
 
 
       // CP Meter
