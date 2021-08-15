@@ -7,16 +7,13 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
-  /// <summary>
-  /// An ICAO label (up to 5 chars padded, RIGHT aligned)
-  /// </summary>
-  class V_ICAO : V_Base
+  class V_Text : V_Base
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_ICAO( Label proto )
+    public V_Text( Label proto )
     : base( proto, false )
     {
       m_unit = "";
@@ -24,12 +21,6 @@ namespace FS20_HudBar.GUI
       Text = UnitString( m_default );
     }
 
-    public override string Text {
-      get => base.Text;
-      set {
-        base.Text = $"{value,5}";
-      }
-    }
   }
 }
 

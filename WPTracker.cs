@@ -54,6 +54,31 @@ namespace FS20_HudBar
     }
 
     /// <summary>
+    /// True if the Waypoint has changed 
+    /// (Use Read() to commit)
+    /// </summary>
+    public static bool HasChanged { get; private set; } = false;
+
+    /// <summary>
+    /// Reset the Manager to be read again
+    /// </summary>
+    public static void Reset( )
+    {
+      HasChanged = true;
+    }
+
+    /// <summary>
+    /// Commit reading the new Waypoint (NEXT)
+    /// </summary>
+    /// <returns>The current NEXT Waypoint</returns>
+    public static string Read( )
+    {
+      HasChanged = false;
+      return m_nextWP;
+    }
+
+
+    /// <summary>
     /// Tracks the enroute time
     /// </summary>
     /// <param name="prev">Prev WP ID</param>
@@ -72,6 +97,7 @@ namespace FS20_HudBar
 
       if ( next != m_nextWP ) {
         // WP has changed 
+        HasChanged = true;
         m_nextWP = next;
         m_prevWP = prev;
         m_wpSimTime = simSeconds; // new WP reference time

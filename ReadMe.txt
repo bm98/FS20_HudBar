@@ -1,19 +1,24 @@
-FS20_HudBar V 0.28 - Build 22 BETA
-(c) M. Burri - 22-July-2021
+FS20_HudBar V 0.29 - Build 23 BETA
+(c) M. Burri - 15-Aug-2021
 
 Contains files:
 
 FS20_HudBar.exe               The program
 
 - All libraries below MUST be in the same folder as the Exe file
-FSimClientIF.dll            Generic FSim Client interface definition
-FSimIF.dll                  Generic FSim interface definition
-SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
+FSimClientIF.dll            Generic FSim Client interface definition (updated)
+FSimIF.dll                  Generic FSim interface definition (updated)
+SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
+MetarLib.dll				A METAR access library (new V0.29)
+CoordLib.dll				A coord. handling library (new V0.29)
+FS20_FltLib.dll	            MSFS2020 FLT File decoder and flight plan library (new V0.29)
+FS20_AptLib.dll             MSFS2020 Airport DB (new V0.29)
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg
   Microsoft.FlightSimulator.SimConnect.dll 
   SimConnect.dll
+
 From Google Fonts Library embedded:
   Share_Tech_Mono			(Used as condensed font)
 
@@ -32,6 +37,19 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.29-B23
+- Add Instrument Altitude (ALT) item
+- Update Effective Altitude (ALTeff) - was ALT before
+- Add Lat Lon aircraft position item
+- Add METAR action item for the current aircraft location (nearest station)
+- Add Tooltip on METAR (displays the received message)
+- Add Metar for the destination Apt (APT action item)
+- Add Tooltip on APT (displays the received message)
+- Add Collect actual Flightplan Data from FLT file every 30 sec
+- Add Tooltip on Waypoints (Detailed WYP from FLT file)
+- Add Tooltip on -GPS- (Remaining Flightplan)
+- Add Remaining Distance on APT (nm)
+
 V 0.28-B22
 - Add Time Enroute (WYP, Total) items
 - Add Destination ETE items

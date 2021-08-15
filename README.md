@@ -1,4 +1,4 @@
-# MSFS HudBar V 0.28.0.22
+# MSFS HudBar V 0.29.0.23
 
 ### Display essential Information as Bar or Tile at any side of the primary screen or as Window anywhere you like  
 
@@ -79,7 +79,14 @@ My FlightSim Libraries (included in the release package)
 * SimConnectClient.dll        -- FlightSim interface to MSFS2020 SimConnect
 * FSimClientIF.dll            -- Generic FSim Client interface definition
 * FSimIF.dll                  -- Generic FSim interface definition
-
+* FS20_FltLib                 -- A FLT file interpreter library 
+* FS20_AptLib                 -- An MSFS Airport Database 
+* MetarLib                    -- A METAR access library 
+* CoordLib                    -- A coord. handling library (https://github.com/bm98/CoordLib)
+<br>
+From Google Fonts Library embedded:
+  Share_Tech_Mono			(Used as condensed font)
+<br>
 From MSFS2020 Developer Kit for convenience included:
 * SimConnect.cfg
 * Microsoft.FlightSimulator.SimConnect.dll 

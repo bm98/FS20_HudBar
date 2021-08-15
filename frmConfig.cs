@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using FS20_HudBar.Bar;
+
 namespace FS20_HudBar
 {
   public partial class frmConfig : Form
@@ -65,7 +67,7 @@ namespace FS20_HudBar
       cbxCond.Items.Add( "Condensed Font" );
     }
 
-   
+
 
     private void frmConfig_Load( object sender, EventArgs e )
     {
@@ -140,7 +142,7 @@ namespace FS20_HudBar
         case 2: txP3.BackColor = Color.LimeGreen; break;
         case 3: txP4.BackColor = Color.LimeGreen; break;
         case 4: txP5.BackColor = Color.LimeGreen; break;
-        default:  break;
+        default: break;
       }
     }
 
@@ -164,9 +166,10 @@ namespace FS20_HudBar
     private void btAccept_Click( object sender, EventArgs e )
     {
       // update from edits
-      HudBarRef.ShowUnits = cbxUnits.Checked;
-      HudBarRef.OpaqueBackground = cbxOpaque.Checked;
-
+      // live update to HUD
+      HudBarRef.SetShowUnits( cbxUnits.Checked );
+      HudBarRef.SetOpacity( cbxOpaque.Checked );
+      // profile Updates
       ProfilesRef[0].PName = txP1.Text;
       ProfilesRef[0].GetItemsFromFlp( flp1 );
       ProfilesRef[0].GetFontSizeFromCombo( cbxFontP1 );
@@ -196,7 +199,7 @@ namespace FS20_HudBar
       ProfilesRef[3].GetCondFromCombo( cbxCondP4 );
 
       ProfilesRef[4].PName = txP5.Text;
-      ProfilesRef[4].GetItemsFromFlp( flp5);
+      ProfilesRef[4].GetItemsFromFlp( flp5 );
       ProfilesRef[4].GetFontSizeFromCombo( cbxFontP5 );
       ProfilesRef[4].GetPlacementFromCombo( cbxPlaceP5 );
       ProfilesRef[4].GetKindFromCombo( cbxKindP5 );

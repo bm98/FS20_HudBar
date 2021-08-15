@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using FS20_HudBar.Bar;
+
 namespace FS20_HudBar.GUI
 {
   /// <summary>

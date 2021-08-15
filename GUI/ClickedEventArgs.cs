@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using FS20_HudBar.Bar;
+
 namespace FS20_HudBar.GUI
 {
   internal class ClickedEventArgs : EventArgs
