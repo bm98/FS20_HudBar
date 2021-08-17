@@ -1,5 +1,5 @@
-FS20_HudBar V 0.29 - Build 23 BETA
-(c) M. Burri - 15-Aug-2021
+FS20_HudBar V 0.30 - Build 24 BETA
+(c) M. Burri - 17-Aug-2021
 
 Contains files:
 
@@ -37,6 +37,10 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.30-B24
+- Update flight plan formatting
+- Update QuickGuide
+
 V 0.29-B23
 - Add Instrument Altitude (ALT) item
 - Update Effective Altitude (ALTeff) - was ALT before

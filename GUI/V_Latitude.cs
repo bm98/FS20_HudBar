@@ -34,7 +34,7 @@ namespace FS20_HudBar.GUI
         }
         else {
           string l = CoordLib.Dms.ToLat( (double)value, "dm", 0 );
-          this.Text = UnitString( $"{l,7}" );
+          this.Text = UnitString( $"{l,8}" );
         }
       }
     }
