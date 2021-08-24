@@ -51,7 +51,6 @@ namespace FS20_HudBar
       this.cbxFontP3 = new System.Windows.Forms.ComboBox();
       this.cbxFontP4 = new System.Windows.Forms.ComboBox();
       this.cbxFontP5 = new System.Windows.Forms.ComboBox();
-      this.cbxUnits = new System.Windows.Forms.CheckBox();
       this.cbxPlaceP1 = new System.Windows.Forms.ComboBox();
       this.cbxPlaceP2 = new System.Windows.Forms.ComboBox();
       this.cbxPlaceP3 = new System.Windows.Forms.ComboBox();
@@ -69,6 +68,8 @@ namespace FS20_HudBar
       this.cbxCondP3 = new System.Windows.Forms.ComboBox();
       this.cbxCondP4 = new System.Windows.Forms.ComboBox();
       this.cbxCondP5 = new System.Windows.Forms.ComboBox();
+      this.cbxFltSave = new System.Windows.Forms.CheckBox();
+      this.cbxUnits = new System.Windows.Forms.CheckBox();
       this.tableLayoutPanel1.SuspendLayout();
       this.flp1.SuspendLayout();
       this.flp2.SuspendLayout();
@@ -102,7 +103,6 @@ namespace FS20_HudBar
       this.tableLayoutPanel1.Controls.Add(this.cbxFontP3, 2, 2);
       this.tableLayoutPanel1.Controls.Add(this.cbxFontP4, 3, 2);
       this.tableLayoutPanel1.Controls.Add(this.cbxFontP5, 4, 2);
-      this.tableLayoutPanel1.Controls.Add(this.cbxUnits, 1, 6);
       this.tableLayoutPanel1.Controls.Add(this.cbxPlaceP1, 0, 3);
       this.tableLayoutPanel1.Controls.Add(this.cbxPlaceP2, 1, 3);
       this.tableLayoutPanel1.Controls.Add(this.cbxPlaceP3, 2, 3);
@@ -119,6 +119,8 @@ namespace FS20_HudBar
       this.tableLayoutPanel1.Controls.Add(this.cbxCondP3, 2, 5);
       this.tableLayoutPanel1.Controls.Add(this.cbxCondP4, 3, 5);
       this.tableLayoutPanel1.Controls.Add(this.cbxCondP5, 4, 5);
+      this.tableLayoutPanel1.Controls.Add(this.cbxFltSave, 2, 6);
+      this.tableLayoutPanel1.Controls.Add(this.cbxUnits, 0, 6);
       this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
       this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -320,7 +322,7 @@ namespace FS20_HudBar
       // cbxOpaque
       // 
       this.cbxOpaque.AutoSize = true;
-      this.cbxOpaque.Location = new System.Drawing.Point(3, 788);
+      this.cbxOpaque.Location = new System.Drawing.Point(197, 788);
       this.cbxOpaque.Name = "cbxOpaque";
       this.cbxOpaque.Size = new System.Drawing.Size(135, 19);
       this.cbxOpaque.TabIndex = 14;
@@ -386,16 +388,6 @@ namespace FS20_HudBar
       this.cbxFontP5.Name = "cbxFontP5";
       this.cbxFontP5.Size = new System.Drawing.Size(191, 23);
       this.cbxFontP5.TabIndex = 17;
-      // 
-      // cbxUnits
-      // 
-      this.cbxUnits.AutoSize = true;
-      this.cbxUnits.Location = new System.Drawing.Point(197, 788);
-      this.cbxUnits.Name = "cbxUnits";
-      this.cbxUnits.Size = new System.Drawing.Size(85, 19);
-      this.cbxUnits.TabIndex = 8;
-      this.cbxUnits.Text = "Show Units";
-      this.cbxUnits.UseVisualStyleBackColor = true;
       // 
       // cbxPlaceP1
       // 
@@ -604,6 +596,26 @@ namespace FS20_HudBar
       this.cbxCondP5.Size = new System.Drawing.Size(191, 23);
       this.cbxCondP5.TabIndex = 23;
       // 
+      // cbxFltSave
+      // 
+      this.cbxFltSave.AutoSize = true;
+      this.cbxFltSave.Location = new System.Drawing.Point(391, 788);
+      this.cbxFltSave.Name = "cbxFltSave";
+      this.cbxFltSave.Size = new System.Drawing.Size(129, 19);
+      this.cbxFltSave.TabIndex = 24;
+      this.cbxFltSave.Text = "Allow FLT AutoSave";
+      this.cbxFltSave.UseVisualStyleBackColor = true;
+      // 
+      // cbxUnits
+      // 
+      this.cbxUnits.AutoSize = true;
+      this.cbxUnits.Location = new System.Drawing.Point(3, 788);
+      this.cbxUnits.Name = "cbxUnits";
+      this.cbxUnits.Size = new System.Drawing.Size(85, 19);
+      this.cbxUnits.TabIndex = 8;
+      this.cbxUnits.Text = "Show Units";
+      this.cbxUnits.UseVisualStyleBackColor = true;
+      // 
       // frmConfig
       // 
       this.AcceptButton = this.btAccept;
@@ -681,5 +693,6 @@ namespace FS20_HudBar
     private System.Windows.Forms.ComboBox cbxCondP3;
     private System.Windows.Forms.ComboBox cbxCondP4;
     private System.Windows.Forms.ComboBox cbxCondP5;
+    private System.Windows.Forms.CheckBox cbxFltSave;
   }
 }

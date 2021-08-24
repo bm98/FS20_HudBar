@@ -32,6 +32,9 @@ namespace FS20_HudBar.GUI
         if ( value == null ) {
           this.Text = UnitString( m_default );
         }
+        else if ( float.IsNaN( (float)value ) ) {
+          this.Text = UnitString( m_default );
+        }
         else {
           string l = CoordLib.Dms.ToLat( (double)value, "dm", 0 );
           this.Text = UnitString( $"{l,8}" );

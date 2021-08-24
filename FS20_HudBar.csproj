@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>24</ApplicationRevision>
-    <ApplicationVersion>0.30.0.24</ApplicationVersion>
+    <ApplicationRevision>25</ApplicationRevision>
+    <ApplicationVersion>0.31.0.25</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -80,9 +80,6 @@
     <Reference Include="FS20_AptLib">
       <HintPath>..\Redist\FS20_AptLib.dll</HintPath>
     </Reference>
-    <Reference Include="FS20_FltLib">
-      <HintPath>..\Redist\FS20_FltLib.dll</HintPath>
-    </Reference>
     <Reference Include="FSimClientIF">
       <HintPath>..\..\Redist\FSimClientIF.dll</HintPath>
     </Reference>
@@ -113,6 +110,11 @@
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
     <Compile Include="Bar\DispItemCat.cs" />
+    <Compile Include="Bar\FltLib\FlightPlan.cs" />
+    <Compile Include="Bar\FltLib\FltReader.cs" />
+    <Compile Include="Bar\FltLib\FS20FltFile.cs" />
+    <Compile Include="Bar\FltLib\Tooling.cs" />
+    <Compile Include="Bar\FltLib\Waypoint.cs" />
     <Compile Include="Bar\ValueItemCat.cs" />
     <Compile Include="CPointMeter.cs" />
     <Compile Include="CProfile.cs" />

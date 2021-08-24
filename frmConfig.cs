@@ -78,6 +78,7 @@ namespace FS20_HudBar
 
       cbxUnits.Checked = HudBarRef.ShowUnits;
       cbxOpaque.Checked = HudBarRef.OpaqueBackground;
+      cbxFltSave.Checked = HudBarRef.FltAutoSave; // 20210821
 
       // Per profile
       txP1.Text = ProfilesRef[0].PName;
@@ -169,6 +170,8 @@ namespace FS20_HudBar
       // live update to HUD
       HudBarRef.SetShowUnits( cbxUnits.Checked );
       HudBarRef.SetOpacity( cbxOpaque.Checked );
+      HudBarRef.SetFltAutoSave( cbxFltSave.Checked );
+
       // profile Updates
       ProfilesRef[0].PName = txP1.Text;
       ProfilesRef[0].GetItemsFromFlp( flp1 );

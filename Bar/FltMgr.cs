@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SC = SimConnectClient;
-using FS20_FltLib;
+using FS20_HudBar.Bar.FltLib;
 
 namespace FS20_HudBar.Bar
 {
@@ -16,19 +16,12 @@ namespace FS20_HudBar.Bar
   /// </summary>
   internal static class FltMgr
   {
-    private static bool m_ready = false;
-    private static readonly TimeSpan c_callInterval = new TimeSpan(0,0,30); // 
-    private static DateTime m_lastCall;
-
-    private static readonly string c_fltDir = "";
-    private static readonly string c_fltName = "MostCurrent.FLT";
     private static FS20FltFile m_fltFile = null;
     private static int m_currentHash = 0;
 
-    private static FileSystemWatcher m_fsWatch = null;
-
     private static object m_lock = new object();
 
+    private static FlightPlan m_dummyFP = new FlightPlan(); // an empty one to return when needed
 
     /// <summary>
     /// Event triggered when a new FlightPlan is available
@@ -39,13 +32,17 @@ namespace FS20_HudBar.Bar
       NewFlightPlan?.Invoke( null, new EventArgs( ) );
     }
 
+
     /// <summary>
-    /// The most current FlightPlan (or null)
+    /// The most current FlightPlan (can be an empty one)
     /// </summary>
     public static FlightPlan FlightPlan {
       get {
         lock ( m_lock ) {
-          return m_fltFile?.FlightPlan;
+          if ( m_fltFile != null )
+            return m_fltFile.FlightPlan;
+          else
+            return m_dummyFP; // the empty one
         }
       }
     }
@@ -80,49 +77,36 @@ namespace FS20_HudBar.Bar
     /// </summary>
     static FltMgr( )
     {
-      m_lastCall = DateTime.Now - c_callInterval; // make sure we call the first time
-
-      // we shall not fail
-      try {
-        var tmpDir = Directory.CreateDirectory( Path.Combine(Path.GetTempPath( ), "HudBar" ) );
-        c_fltDir = tmpDir.FullName;
-      }
-      catch { }
-
+      // receive FLT updates
+      SC.SimConnectClient.Instance.FltSave += Instance_FltSave;
     }
 
-    // triggered by the FS Watcher
-    private static void M_fsWatch_Changed( object sender, FileSystemEventArgs e )
+    // Handle new FLT files comming in
+    private static void Instance_FltSave( object sender, SC.State.FltSaveEventArgs e )
     {
-      // created AND changed
-      if ( e.ChangeType == WatcherChangeTypes.Changed ) {
-        lock ( m_lock ) {
-          m_fltFile = new FS20FltFile( e.FullPath ); // recreate
-        }
+      lock ( m_lock ) {
+        // MSFS BUG sends path with  xy\\xy 
+        var fName = e.Filename.Replace (@"\\", @"\");
+        m_fltFile = new FS20FltFile( fName ); // recreate
         // decide if something has changed for this update
         HasChanged = ( m_currentHash != m_fltFile.FlightPlan.Hash );
         m_currentHash = m_fltFile.FlightPlan.Hash;
         // call the owner
         if ( HasChanged )
-          OnNewFlightPlan( );
+          OnNewFlightPlan( ); // inform the Bar
       }
     }
+
 
     /// <summary>
     /// Enable the FLT processing
     /// </summary>
     public static void Enable( )
     {
-      if ( Directory.Exists( c_fltDir ) ) {
-        m_fsWatch = new FileSystemWatcher( c_fltDir, c_fltName ) { NotifyFilter = NotifyFilters.Size | NotifyFilters.LastWrite };
-        m_fsWatch.Changed += M_fsWatch_Changed;
-        // reset state
-        m_currentHash = 0;
-        HasChanged = false;
-        m_ready = true;
-        // start watching
-        m_fsWatch.EnableRaisingEvents = true;
-      }
+      SC.SimConnectClient.Instance.FltSaveModule.Enabled = true;
+      // reset state
+      m_currentHash = FlightPlan.Hash;
+      HasChanged = true;
     }
 
 
@@ -131,34 +115,12 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static void Disable( )
     {
-      m_ready = false;
-
-      if ( m_fsWatch != null ) {
-        m_fsWatch.EnableRaisingEvents = false;
-        m_fsWatch.Changed -= M_fsWatch_Changed;
-        m_fsWatch.Dispose( );
-        m_fsWatch = null;
-        lock ( m_lock ) {
-          m_fltFile = null;
-        }
-      }
+      SC.SimConnectClient.Instance.FltSaveModule.Enabled = false;
       HasChanged = false;
-    }
-
-    /// <summary>
-    /// Pings the Handler to may be update from the FLT file
-    /// </summary>
-    /// <returns>True if a FLT retrieval was triggered</returns>
-    public static bool Ping( )
-    {
-      if ( !m_ready ) return false; // not enabled or otherwise broken
-      if ( ( m_lastCall + c_callInterval ) > DateTime.Now ) return false; // not yet time
-
-      SC.SimConnectClient.Instance.SaveFlight( Path.Combine( c_fltDir, c_fltName ) ); // trigger a FLT file
-      m_lastCall = DateTime.Now;
-
-      return true;
-      // the filewatcher should report the file created
+      m_currentHash = 0;
+      lock ( m_lock ) {
+        m_fltFile = null; // Note: The FlightPlan property returns an empty one now
+      }
     }
 
 

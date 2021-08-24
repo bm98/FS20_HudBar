@@ -91,6 +91,13 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "False" )]
+    public bool FltAutoSave {
+      get { return (bool)this["FltAutoSave"]; }
+      set { this["FltAutoSave"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "10" )]
     public int SplitDistance {
       get { return (int)this["SplitDistance"]; }

@@ -32,21 +32,23 @@ namespace FS20_HudBar.GUI
       set {
         if ( value == null ) {
           this.Text = UnitString( m_default );
-          return;
         }
-        if ( Math.Abs( (float)value ) >= 100.0f ) {
+        else if ( float.IsNaN( (float)value ) ) {
           this.Text = UnitString( m_default );
-          return;
         }
-
-        if ( value < 0 ) {
-          this.Text = UnitString( $"{-value,4:#0.0}{c_to}" );
-        }
-        else if ( value > 0 ) {
-          this.Text = UnitString( $"{value,4:#0.0}{c_from}" );
+        else if ( Math.Abs( (float)value ) >= 100.0f ) {
+          this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,4:#0.0}{c_flat}" );
+          if ( value < 0 ) {
+            this.Text = UnitString( $"{-value,4:#0.0}{c_to}" );
+          }
+          else if ( value > 0 ) {
+            this.Text = UnitString( $"{value,4:#0.0}{c_from}" );
+          }
+          else {
+            this.Text = UnitString( $"{value,4:#0.0}{c_flat}" );
+          }
         }
       }
     }

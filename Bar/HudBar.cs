@@ -6,10 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using CoordLib;
-using FS20_HudBar.GUI;
-using MetarLib;
 using SC = SimConnectClient;
+
+using CoordLib;
+using MetarLib;
+
+using FS20_HudBar.GUI;
+using FS20_HudBar.Bar.FltLib;
 
 namespace FS20_HudBar.Bar
 {
@@ -102,6 +105,8 @@ namespace FS20_HudBar.Bar
     GPS_LAT_LON,// Lat and Lon from GPS
     METAR,      // METAR close to Lat and Lon
     ALT_INST,   // Instrument Altitude
+
+    ATC_ALT_HDG, // ATC assigned ALT and HDG
     //    GPS_APT_APR,// GPS Airport & Approach - SIM PROVIDES EMPTY STRINGS ...
   }
 
@@ -237,6 +242,10 @@ namespace FS20_HudBar.Bar
     METAR,        // METAR close to LAT,LON
     ALT_INST,     // Instrument Altitude ft
 
+    ATC_ALT,      // ATC assigned ALT ft
+    ATC_HDG,      // ATC assigned HDG °
+    ATC_WYP,      // ATC next Wyp
+
     //GPS_APT,      // GPS Airport ID - SIM PROVIDES EMPTY STRINGS ...
     //GPS_APR,      // GPS Approach ID - SIM PROVIDES EMPTY STRINGS ...
   }
@@ -248,6 +257,8 @@ namespace FS20_HudBar.Bar
   internal class HudBar
   {
     #region STATIC PART
+
+    // this part is maintaned only once for all HudBar Instances (there is only One at a given time)
 
     /// <summary>
     /// cTor: Static init
@@ -290,13 +301,15 @@ namespace FS20_HudBar.Bar
     public static HudMetar MetarLoc => m_metarLoc;
 
     // FLT Flightplan
-    private static FS20_FltLib.FlightPlan m_flightPlan = new FS20_FltLib.FlightPlan(); // empty one
+    private static FlightPlan m_flightPlan = new FlightPlan(); // empty one
 
 
-    // save flightPlan if it arrives avoiding concurrency issues when pulling a new FP
+    // save flightPlan Ref if it arrives avoiding concurrency issues when pulling a new FP
     private static void FLT_NewFlightPlan( object sender, EventArgs e )
     {
-      m_flightPlan = FltMgr.FlightPlan;
+      lock ( m_flightPlan ) {
+        m_flightPlan = FltMgr.FlightPlan;
+      }
     }
 
 
@@ -341,11 +354,11 @@ namespace FS20_HudBar.Bar
     public static readonly Color c_MetM = Color.DarkViolet;   // METAR Magenta
     public static readonly Color c_MetK = Color.DarkOrange;   // METAR Black (SUB ILS)
 
-    #endregion
+    #endregion  // STATIC
 
 
     // Mono TT for the Flight path
-    private ToolTip m_toolTipFP = new X_ToolTip(){
+    private X_ToolTip m_toolTipFP = new X_ToolTip(){
       // Set up the delays for the ToolTip.
       AutoPopDelay = 30_000, // looong
       InitialDelay = 800,
@@ -378,6 +391,10 @@ namespace FS20_HudBar.Bar
     /// Fully Opaque Form Background if true
     /// </summary>
     public bool OpaqueBackground { get; private set; } = false;
+    /// <summary>
+    /// FLT File AutoSave and FlightPlan Handler Enabled
+    /// </summary>
+    public bool FltAutoSave { get; private set; } = false;
 
     /// <summary>
     /// Returns the Show state of an item
@@ -409,7 +426,7 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// The Tooltip control for the FP
     /// </summary>
-    public ToolTip ToolTipFP => m_toolTipFP;
+    public X_ToolTip ToolTipFP => m_toolTipFP;
 
     // Hud Bar label names to match the enum above (as short as possible)
     private Dictionary<LItem,string> m_guiNames = new Dictionary<LItem, string>(){
@@ -478,6 +495,7 @@ namespace FS20_HudBar.Bar
 
       {LItem.ATC_APT,"APT" },
       {LItem.ATC_RWY,"RWY" },
+      {LItem.ATC_ALT_HDG,"ATC" },
       {LItem.METAR,"METAR" },
 
       {LItem.M_TIM_DIST1,"CP 1" },
@@ -555,6 +573,7 @@ namespace FS20_HudBar.Bar
 
       {LItem.ATC_APT,"ATC Airport and distance nm" },
       {LItem.ATC_RWY,"ATC Rwy (Dist, Track, Alt)" },
+      {LItem.ATC_ALT_HDG,"ATC assigned Alt/Hdg" },
       {LItem.METAR,"METAR Close to location" },
 
       {LItem.M_TIM_DIST1,"Checkpoint 1" },
@@ -584,6 +603,8 @@ namespace FS20_HudBar.Bar
     private static GUI_Fonts FONTS = null; // handle fonts as static item to not waste resources
 
     /// <summary>
+    /// cTor: Of a completely new HudBar
+    /// 
     /// Init the Hud Items - providing prototypes for the various label types and Config strings/values from AppSettings
     /// </summary>
     /// <param name="lblProto">A GUI prototype label, carrying fonts, colors etc (set in GUI design mode)</param>
@@ -593,12 +614,16 @@ namespace FS20_HudBar.Bar
     /// <param name="showUnits">Showing units flag</param>
     /// <param name="opaque">Opaque flag</param>
     /// <param name="cProfile">The current Profile</param>
-    public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits, bool opaque, CProfile cProfile )
+    public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits, bool opaque, bool autoSave, CProfile cProfile )
     {
       // just save them in the HUD mainly for config purpose
       m_profile = cProfile;
       ShowUnits = showUnits;
       OpaqueBackground = opaque;
+      FltAutoSave = autoSave;
+
+      // Reset our own ToolTip control
+      ToolTipFP.ResetDrawList( );
 
       // init from the submitted labels
       FONTS = new GUI_Fonts( m_profile.Condensed ); // get all fonts from built in
@@ -861,9 +886,9 @@ namespace FS20_HudBar.Bar
       disp = LItem.ENROUTE; di = m_dispItems.CreateDisp( disp );
       item = VItem.ENR_WP;
       l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_Time( valueProto ) { ForeColor = c_Info, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Time( value2Proto ) { ForeColor = c_Info, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.ENR_TOTAL;
-      v = new V_Time( valueProto ) { ForeColor = c_Info, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Time( value2Proto ) { ForeColor = c_Info, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // Aircraft Data
       disp = LItem.HDG; di = m_dispItems.CreateDisp( disp );
@@ -1062,6 +1087,15 @@ namespace FS20_HudBar.Bar
       l = new V_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Mach( valueProto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
+      // ATC Alt / HDG
+      disp = LItem.ATC_ALT_HDG; di = m_dispItems.CreateDisp( disp );
+      item = VItem.ATC_ALT;
+      l = new V_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Alt( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      item = VItem.ATC_HDG;
+      v = new V_Deg( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      item = VItem.ATC_WYP;
+      v = new V_ICAO( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // METAR
       disp = LItem.METAR; di = m_dispItems.CreateDisp( disp );
       item = VItem.METAR;
@@ -1121,9 +1155,6 @@ namespace FS20_HudBar.Bar
     ///  In general GUI elements are only updated when checked and visible
     ///  Trackers and Meters are maintained independent of the View state (another profile may use them..)
     /// </summary>
-    /// <param name="flightPlan">The current Flightplan</param>
-    /// <param name="metarApt">Metar Handler for the destination apt</param>
-    /// <param name="metarLoc">Metar Handler for the current location</param>
     public void UpdateGUI( )
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity..
@@ -1292,7 +1323,7 @@ namespace FS20_HudBar.Bar
       // Fuel Tot
       if ( this.ShowItem( LItem.Fuel_Total ) ) this.Value( VItem.Fuel_Total ).Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityTotal_gal;
 
-      // GPS (nulled when no flightplan is active)
+      // GPS (is nulled when no flightplan is active)
       if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
         // WP Enroute Tracker
         WPTracker.Track(
@@ -1301,13 +1332,6 @@ namespace FS20_HudBar.Bar
           SC.SimConnectClient.Instance.AircraftModule.SimTime_loc_sec,
           SC.SimConnectClient.Instance.AircraftModule.Sim_OnGround
         );
-        // Load Remaining Plan if the WYP or Flightplan has changed
-        if ( WPTracker.HasChanged || FltMgr.HasChanged ) {
-          FltMgr.Read( ); // commit
-          this.ToolTipFP.SetToolTip( this.DispItem( LItem.GPS_WYP ).Label, m_flightPlan.RemainingPlan( WPTracker.Read( ) ) );
-          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_PWYP ), m_flightPlan.WaypointByName( WPTracker.PrevWP ).PrettyDetailed );
-          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_NWYP ), m_flightPlan.WaypointByName( WPTracker.NextWP ).PrettyDetailed );
-        }
 
         if ( this.ShowItem( LItem.GPS_WYP ) ) {
           // cut waypoints at 5 chars
@@ -1392,11 +1416,56 @@ namespace FS20_HudBar.Bar
           this.Value( VItem.ENR_TOTAL ).Value = null;
         }
       }
+
+      // LOCK the flightplan while using it, else the Asynch Update may change it ..
+      lock ( m_flightPlan ) {
+        // Load Remaining Plan if the WYP or Flightplan has changed
+        if ( WPTracker.HasChanged || FltMgr.HasChanged ) {
+          FltMgr.Read( ); // commit that we read the changes of the Flight Plan
+          this.ToolTipFP.SetToolTip( this.DispItem( LItem.GPS_WYP ).Label, m_flightPlan.RemainingPlan( WPTracker.Read( ) ) );
+          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_PWYP ), m_flightPlan.WaypointByName( WPTracker.PrevWP ).PrettyDetailed );
+          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_NWYP ), m_flightPlan.WaypointByName( WPTracker.NextWP ).PrettyDetailed );
+          this.ToolTipFP.SetToolTip( this.DispItem( LItem.ATC_ALT_HDG ).Label, m_flightPlan.Pretty );
+        }
+
+        if ( m_flightPlan.HasFlightPlan ) {
+          // ATC Airport
+          AirportMgr.Update( m_flightPlan.Destination ); // maintain APT
+          if ( this.ShowItem( LItem.ATC_APT ) ) {
+            if ( AirportMgr.HasChanged ) this.Value( VItem.ATC_APT ).Text = AirportMgr.Read( ); // update only when changed
+            if ( MetarApt.HasNewData ) {
+              // avoiding redraw for every cycle
+              this.ToolTip.SetToolTip( this.DispItem( LItem.ATC_APT ).Label, MetarApt.Read( ) );
+              this.DispItem( LItem.ATC_APT ).Label.BackColor = MetarApt.ConditionColor;
+            }
+            this.Value( VItem.ATC_DIST ).Value = m_flightPlan.RemainingDist_nm(
+              SC.SimConnectClient.Instance.GpsModule.WYP_next,
+              SC.SimConnectClient.Instance.GpsModule.WYP_dist );
+          }
+          // ATC Alt Hdg NextWYP
+          if ( this.ShowItem( LItem.ATC_ALT_HDG ) ) {
+            this.Value( VItem.ATC_ALT ).Value = m_flightPlan.AssignedAlt;
+            this.Value( VItem.ATC_HDG ).Value = m_flightPlan.AssignedHdg;
+            this.Value( VItem.ATC_WYP ).Text = m_flightPlan.NextWypIdent;
+          }
+        }
+        else {
+          // no flightplan
+          this.Value( VItem.ATC_APT ).Text = "";
+          this.Value( VItem.ATC_DIST ).Value = null;
+          // ATC Alt Hdg
+          this.Value( VItem.ATC_ALT ).Value = null;
+          this.Value( VItem.ATC_HDG ).Value = null;
+          this.Value( VItem.ATC_WYP ).Text = "";
+        }
+      }// end m_flightPlan LOCK
+
+
+      // LAT LON Position
       if ( this.ShowItem( LItem.GPS_LAT_LON ) ) {
         this.Value( VItem.GPS_LAT ).Value = (float)latLon.Lat;
         this.Value( VItem.GPS_LON ).Value = (float)latLon.Lon;
       }
-
 
       // Autopilot
       if ( this.ShowItem( LItem.AP ) )
@@ -1455,21 +1524,6 @@ namespace FS20_HudBar.Bar
       if ( this.ShowItem( LItem.MACH ) ) this.Value( VItem.MACH ).Value = SC.SimConnectClient.Instance.AircraftModule.Machspeed_mach;
       if ( this.ShowItem( LItem.VS ) ) this.Value( VItem.VS ).Value = SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin;
 
-      // ATC Airport
-      if ( m_flightPlan != null && m_flightPlan.HasFlightPlan ) {
-        AirportMgr.Update( m_flightPlan.Destination ); // maintain APT
-        if ( this.ShowItem( LItem.ATC_APT ) ) {
-          if ( AirportMgr.HasChanged ) this.Value( VItem.ATC_APT ).Text = AirportMgr.Read( ); // update only when changed
-          if ( MetarApt.HasNewData ) {
-            // avoiding redraw for every cycle
-            this.ToolTip.SetToolTip( this.DispItem( LItem.ATC_APT ).Label, MetarApt.Read( ) );
-            this.DispItem( LItem.ATC_APT ).Label.BackColor = MetarApt.ConditionColor;
-          }
-          this.Value( VItem.ATC_DIST ).Value = FltMgr.FlightPlan.RemainingDist_nm(
-            SC.SimConnectClient.Instance.GpsModule.WYP_next,
-            SC.SimConnectClient.Instance.GpsModule.WYP_dist );
-        }
-      }
       // ATC Runway
       if ( this.ShowItem( LItem.ATC_RWY ) ) {
         if ( SC.SimConnectClient.Instance.AircraftModule.AtcRunwaySelected ) {
@@ -1537,6 +1591,15 @@ namespace FS20_HudBar.Bar
     public void SetOpacity( bool opacity )
     {
       OpaqueBackground = opacity;
+    }
+
+    /// <summary>
+    /// Set the current FltAutoSave communicated by the HUD
+    /// </summary>
+    /// <param name="opacity"></param>
+    public void SetFltAutoSave( bool autoSave )
+    {
+      FltAutoSave = autoSave;
     }
 
     #endregion

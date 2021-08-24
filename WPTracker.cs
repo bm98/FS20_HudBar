@@ -87,19 +87,23 @@ namespace FS20_HudBar
     /// <param name="onGround">OnGround Flag</param>
     public static void Track( string prev, string next, int simSeconds, bool onGround )
     {
+      if ( next != m_nextWP ) {
+        m_nextWP = next;
+        m_prevWP = prev;
+        // WP has changed 
+        HasChanged = true;
+      }
+
       // check if the flight has started
       if ( onGround && !m_started ) return; // not yet
 
-      // we have started..
+      // we have started.. keep timers
       m_started = true;
       if ( m_simTime < 0 ) m_simTime = simSeconds;
       if ( m_wpSimTime < 0 ) m_wpSimTime = simSeconds;
 
       if ( next != m_nextWP ) {
         // WP has changed 
-        HasChanged = true;
-        m_nextWP = next;
-        m_prevWP = prev;
         m_wpSimTime = simSeconds; // new WP reference time
         m_wpTimeElapsed = 0;
       }
@@ -107,7 +111,6 @@ namespace FS20_HudBar
         // same WP next as before - cal time Enroute
         m_timeElapsed = simSeconds - m_simTime;
         m_wpTimeElapsed = simSeconds - m_wpSimTime;
-
       }
     }
 

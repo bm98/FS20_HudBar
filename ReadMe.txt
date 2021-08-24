@@ -1,5 +1,5 @@
-FS20_HudBar V 0.30 - Build 24 BETA
-(c) M. Burri - 17-Aug-2021
+FS20_HudBar V 0.31 - Build 25 BETA
+(c) M. Burri - 24-Aug-2021
 
 Contains files:
 
@@ -11,7 +11,6 @@ FSimIF.dll                  Generic FSim interface definition (updated)
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
 MetarLib.dll				A METAR access library (new V0.29)
 CoordLib.dll				A coord. handling library (new V0.29)
-FS20_FltLib.dll	            MSFS2020 FLT File decoder and flight plan library (new V0.29)
 FS20_AptLib.dll             MSFS2020 Airport DB (new V0.29)
 
 From MSFS2020 Developer Kit for convenience included:
@@ -37,6 +36,16 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.31-B25
+- Add Config Switch to enable FLT handling/save (default off)
+- Add ATC assigned/expected ALT, HDG and next WYP item
+- Add Complete flightplan as tooltip on ATC item (the ATC assumed FP)
+- Add FLT AutoSave if FLT handling is enabled (5Min interval, 12 saves max)
+- Update Add FltLib as part of this project
+- Update Complete rework of FLT File handling, should no longer interfere with SIM AutoSave in missions
+- Fix Issues re. FLT file decoding causing exceptions due to unexpected states/contents
+- Update QuickGuide
+
 V 0.30-B24
 - Update flight plan formatting
 - Update QuickGuide

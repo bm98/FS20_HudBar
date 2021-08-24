@@ -29,6 +29,9 @@ namespace FS20_HudBar.GUI
         if ( value == null ) {
           this.Text = UnitString( m_default );
         }
+        else if ( float.IsNaN( (float)value ) ) {
+          this.Text = UnitString( m_default );
+        }
         else {
           this.Text = FmtTimeFromSec( (int)value ); // H:MM:SS
         }

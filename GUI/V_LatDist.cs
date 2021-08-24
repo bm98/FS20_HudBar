@@ -35,22 +35,25 @@ namespace FS20_HudBar.GUI
       set {
         if ( value == null ) {
           this.Text = UnitString( m_default );
-          return;
         }
-        if ( Math.Abs((float)value) >=1000.0f ) {
+        else if ( float.IsNaN( (float)value ) ) {
           this.Text = UnitString( m_default );
-          return;
         }
-
-        if ( value <= -0.01 ) {
-          this.Text = UnitString( $"{-value,3:##0}{c_right}" );
-        }
-        else if ( value >= 0.01 ) {
-          this.Text = UnitString( $"{value,3:##0}{c_left}" );
+        else if ( Math.Abs((float)value) >=1000.0f ) {
+          this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,3:##0}{c_flat}" );
+          if ( value <= -0.01 ) {
+            this.Text = UnitString( $"{-value,3:##0}{c_right}" );
+          }
+          else if ( value >= 0.01 ) {
+            this.Text = UnitString( $"{value,3:##0}{c_left}" );
+          }
+          else {
+            this.Text = UnitString( $"{value,3:##0}{c_flat}" );
+          }
         }
+
       }
     }
 

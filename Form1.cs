@@ -191,6 +191,7 @@ namespace FS20_HudBar
         // Save all configuration properties
         AppSettings.Instance.ShowUnits = HUD.ShowUnits;
         AppSettings.Instance.Opaque = HUD.OpaqueBackground;
+        AppSettings.Instance.FltAutoSave = HUD.FltAutoSave;
 
         AppSettings.Instance.SelProfile = m_selProfile;
 
@@ -351,6 +352,7 @@ namespace FS20_HudBar
     // fired from Sim for new Data
     private void Instance_DataArrived( object sender, FSimClientIF.ClientDataArrivedEventArgs e )
     {
+      m_awaitingEvent = false; // confirm we've got events
       UpdateGUI( );
     }
 
@@ -482,8 +484,14 @@ namespace FS20_HudBar
       this.Visible = false; // hide, else we see all kind of shaping
 
       // reread after config change
+      if ( AppSettings.Instance.FltAutoSave)
+        FltMgr.Enable( );
+      else
+        FltMgr.Disable( );
+
       AirportMgr.Reset( );
       WPTracker.Reset( );
+
 
       // Update profile selection items
       mP1.Text = m_profiles[0].PName;
@@ -495,7 +503,7 @@ namespace FS20_HudBar
 
       // start from scratch
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
-                          AppSettings.Instance.ShowUnits, AppSettings.Instance.Opaque,
+                          AppSettings.Instance.ShowUnits, AppSettings.Instance.Opaque, AppSettings.Instance.FltAutoSave,
                           m_profiles[m_selProfile] );
 
       // prepare to create the content as bar or tile (may be switch to Window later if needed)
@@ -694,6 +702,10 @@ namespace FS20_HudBar
 
     #endregion
 
+    // Monitor the Sim Event Handler after Connection
+    private bool m_awaitingEvent = true; // cleared in the Sim Event Handler
+    private int m_scGracePeriod = -1;    // grace period count down
+
     /// <summary>
     /// Toggle the connection
     /// </summary>
@@ -710,6 +722,9 @@ namespace FS20_HudBar
         SC.SimConnectClient.Instance.Disconnect( );
       }
       else {
+        // setup the event monitor before connecting (will be handled in the Timer Event)
+        m_awaitingEvent = true;
+        m_scGracePeriod = 3; // about 3*5 secs to get an event
         // try to connect
         if ( SC.SimConnectClient.Instance.Connect( ) ) {
           HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
@@ -740,9 +755,6 @@ namespace FS20_HudBar
     private void timer1_Tick( object sender, EventArgs e )
     {
       if ( SC.SimConnectClient.Instance.IsConnected ) {
-        // Pace the FLT loader
-        FltMgr.Ping( );
-
         // Kick AutoEtrim Module if needed
         if ( m_aETrimTimer <= 0 ) {
           // stop module
@@ -751,6 +763,21 @@ namespace FS20_HudBar
         else {
           m_aETrimTimer -= timer1.Interval; // dec timer for the AutoTrim lifetime
         }
+
+        // handle the situation where Sim is connected but could not hookup to events
+        // Happens when HudBar is running when the Sim is starting only.
+        // Sometimes the Connection is made but was not hooking up to the event handling
+        // Disconnect and try to reconnect 
+        if ( m_awaitingEvent ) {
+          // No events seen so far
+          if ( m_scGracePeriod <= 0 ) {
+            // grace period is expired !
+            Console.WriteLine( "HudBar: Did not receive an Event - Restarting Connection" );
+            SimConnect( ); // Disconnect if we don't receive Events even the Sim is connected
+          }
+          m_scGracePeriod--;
+        }
+
       }
       else {
         // If not connected try again

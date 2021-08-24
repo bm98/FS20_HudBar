@@ -36,6 +36,9 @@ namespace FS20_HudBar.GUI
         if ( value == null ) {
           this.Text = UnitString( m_default );
         }
+        else if ( float.IsNaN( (float)value ) ) {
+          this.Text = UnitString( m_default );
+        }
         else {
           if ( value <= -0.01 ) {
             this.Text = UnitString( $"{-value,5:#0.00}{c_left}" );
