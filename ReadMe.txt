@@ -1,5 +1,5 @@
-FS20_HudBar V 0.31 - Build 25 BETA
-(c) M. Burri - 24-Aug-2021
+FS20_HudBar V 0.32 - Build 26 BETA
+(c) M. Burri - 17-Sep-2021
 
 Contains files:
 
