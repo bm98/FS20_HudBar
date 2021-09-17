@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "M";
-      m_default = DefaultString( "_.__" ); // N.NN 
+      m_default = DefaultString( "_.__ " ); // N.NN 
       Text = UnitString( m_default );
     }
 
@@ -33,7 +33,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,4:#.##}" );
+          this.Text = UnitString( $"{value,4:#.##} " ); //1.2 digits positive only, add a blank for alignment
         }
       }
     }

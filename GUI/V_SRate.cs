@@ -7,6 +7,9 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
+  /// <summary>
+  /// Sim Rate Formatting
+  /// </summary>
   class V_SRate : V_Base
   {
     /// <summary>
@@ -17,7 +20,7 @@ namespace FS20_HudBar.GUI
     : base( proto, false )
     {
       m_unit = "";
-      m_default = DefaultString( "x__.__" );
+      m_default = DefaultString( "x__.__ " );
       Text = UnitString( m_default );
     }
 
@@ -30,7 +33,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,3:x#0.##}" ); // x 2.2 digits
+          this.Text = UnitString( $"{value,3:x#0.##} " ); // x 2.2 digits
         }
       }
     }

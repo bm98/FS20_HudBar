@@ -40,14 +40,14 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          if ( value <= -10 ) {
+          if ( value <= -5 ) {
             this.Text = UnitString( $"{-value,4:###0}{c_do}" );
           }
-          else if ( value >= 10 ) {
+          else if ( value >= 5 ) {
             this.Text = UnitString( $"{value,4:###0}{c_up}" ); 
           }
           else {
-            this.Text = UnitString( $"{value,4:###0}{c_flat}" );
+            this.Text = UnitString( $"{0,4:###0}{c_flat}" );
           }
         }
       }

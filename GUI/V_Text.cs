@@ -7,6 +7,9 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
+  /// <summary>
+  /// A Value Item for Text
+  /// </summary>
   class V_Text : V_Base
   {
     /// <summary>

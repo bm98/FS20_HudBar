@@ -7,22 +7,25 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
-  class V_Angle : V_Base
+  /// <summary>
+  /// Vertical Speed Formatter with +- signs
+  /// </summary>
+  class V_VSpeedPM : V_Base
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Angle( Label proto, bool showUnit )
+    public V_VSpeedPM( Label proto, bool showUnit )
     : base( proto, showUnit )
     {
-      m_unit = ""; // Deg always shows °
-      m_default = DefaultString( "+__._°" );
+      m_unit = "fpm";
+      m_default = DefaultString( "±____ " ); // ±NNNN
       Text = UnitString( m_default );
     }
 
     /// <summary>
-    /// Set the value of the Control - formatted as +-NN.N°
+    /// Set the value of the Control
     /// </summary>
     override public float? Value {
       set {
@@ -33,7 +36,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:#0.0}°" ); // sign 2.1 digits
+          this.Text = UnitString( $"{value,5:+###0;-###0} " ); // show + and - signs, add a blank for alignment
         }
       }
     }

@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "gal";
-      m_default = DefaultString( "____" ); //NNNN
+      m_default = DefaultString( "____ " ); //NNNN
       Text = UnitString( m_default );
     }
 
@@ -33,7 +33,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,4:###0}" );
+          this.Text = UnitString( $"{value,4:###0} " ); // 4 digits positive only, add a blank to aling better
         }
       }
     }

@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "nm";
-      m_default = DefaultString( "___._" );
+      m_default = DefaultString( "___._ " );
       Text = UnitString( m_default );
     }
 
@@ -33,7 +33,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:##0.0}" );
+          this.Text = UnitString( $"{value,5:##0.0}" ); // 3.1 digits no sign expected, add a blank to aling better
         }
       }
     }

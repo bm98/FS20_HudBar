@@ -86,7 +86,8 @@ namespace FS20_HudBar.GUI
       m_mID = item;
       // Label props
       Font = proto.Font;
-      ForeColor = proto.ForeColor;
+      //ForeColor = proto.ForeColor;
+      ForeColor = HudBar.c_Info; // BUTTONS get a cInfo Foreground
       BackColor = proto.BackColor;
       AutoSize = true;
       TextAlign = proto.TextAlign;

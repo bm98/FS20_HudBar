@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>25</ApplicationRevision>
-    <ApplicationVersion>0.31.0.25</ApplicationVersion>
+    <ApplicationRevision>26</ApplicationRevision>
+    <ApplicationVersion>0.32.0.26</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -191,6 +191,12 @@
     <Compile Include="GUI\V_Mach.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GUI\V_Text.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_VSpeedPM.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\V_Wind_HT.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -206,7 +212,7 @@
     <Compile Include="GUI\V_Flow_pph.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Text.cs">
+    <Compile Include="GUI\L_Text.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\V_PressureHPA.cs">

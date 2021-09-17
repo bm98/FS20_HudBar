@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "°C";
-      m_default = DefaultString( "+____" );
+      m_default = DefaultString( "+____ " );
       Text = UnitString( m_default );
     }
 
@@ -33,7 +33,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:###0}" ); // signed only 4 digits
+          this.Text = UnitString( $"{value,5:###0} " ); // signed only 4 digits, add a blank for alignment
         }
       }
     }

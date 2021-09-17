@@ -56,7 +56,7 @@ namespace FS20_HudBar
       this.lblProto.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.lblProto.AutoSize = true;
       this.lblProto.Font = new System.Drawing.Font("Bahnschrift", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblProto.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblProto.ForeColor = System.Drawing.Color.Silver;
       this.lblProto.Location = new System.Drawing.Point(510, 38);
       this.lblProto.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
       this.lblProto.Name = "lblProto";

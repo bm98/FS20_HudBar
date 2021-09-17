@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace FS20_HudBar.GUI
 {
   /// <summary>
-  /// An ICAO label (up to 5 chars padded, RIGHT aligned)
+  /// An ICAO label (up to 6 chars padded, RIGHT aligned)
   /// </summary>
   class V_ICAO : V_Base
   {
@@ -20,14 +20,19 @@ namespace FS20_HudBar.GUI
     : base( proto, false )
     {
       m_unit = "";
-      m_default = "_____";
+      m_default = "______";
       Text = UnitString( m_default );
     }
 
     public override string Text {
       get => base.Text;
       set {
-        base.Text = $"{value,5}";
+        if ( value.Length > 6 ) {
+          base.Text = $"{value.Substring(0,6)}";
+        }
+        else {
+          base.Text = $"{value,6}";
+        }
       }
     }
   }

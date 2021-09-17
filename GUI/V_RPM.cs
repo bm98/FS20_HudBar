@@ -17,7 +17,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "rpm";
-      m_default = DefaultString( "_____" );
+      m_default = DefaultString( "_____ " );
       Text = UnitString( m_default );
     }
 
@@ -33,7 +33,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:####0}" ); // positive only 5 digits
+          this.Text = UnitString( $"{value,5:####0} " ); // positive only 5 digits, add a blank for alignment
         }
       }
     }

@@ -36,6 +36,15 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.32-B26
+- Add VS Item with +- signs
+- Update Flight Plan handling (still the Sim ATC acts sometimes not as expected..)
+- Update Alignment of value columns in vertical oriented bars
+- Update some colors for easier reading
+- Update SimConnect procedure - should connect in any situation now
+- Fix some bugs encountered on the way
+- Update QuickGuide
+
 V 0.31-B25
 - Add Config Switch to enable FLT handling/save (default off)
 - Add ATC assigned/expected ALT, HDG and next WYP item

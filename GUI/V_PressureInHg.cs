@@ -16,8 +16,8 @@ namespace FS20_HudBar.GUI
     public V_PressureInHg( Label proto, bool showUnit )
     : base( proto, showUnit )
     {
-      m_unit = "InHg";
-      m_default = DefaultString( "__.__" );
+      m_unit = "iHg";
+      m_default = DefaultString( "__.__ " );
       Text = UnitString( m_default );
     }
 
@@ -33,7 +33,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:#0.00}" ); // positive 2.2 digits
+          this.Text = UnitString( $"{value,5:#0.00} " ); // positive 2.2 digits, add a blank for alignment
         }
       }
     }

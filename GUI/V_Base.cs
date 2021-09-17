@@ -35,7 +35,11 @@ namespace FS20_HudBar.GUI
     /// <returns>A formatted string</returns>
     protected string UnitString( string defaultString )
     {
-      return defaultString + ( m_showUnit ? m_unit : "" );
+      // bail out where there is no unit anyway
+      if ( string.IsNullOrEmpty( m_unit ) ) 
+        return defaultString;
+
+      return defaultString + ( m_showUnit ?$"{m_unit,-3}"  : "" ); // right aling the unit with 3 chars
     }
 
     /// <summary>

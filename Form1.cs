@@ -98,6 +98,7 @@ namespace FS20_HudBar
       m_selProfile = AppSettings.Instance.SelProfile;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
 
+
       // ShowUnits and Opacity are set via HUD in InitGUI
 
       // Find and hold the Primary Screen
@@ -129,6 +130,7 @@ namespace FS20_HudBar
 
       // attach a Callback for the SimClient
       SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
+      SC.SimConnectClient.Instance.FlightPlanModule.Enabled = false; // start disabled, will be re-checked in InitGUI
 
       // Pacer to connect and may be other chores
       timer1.Interval = 5000; // try to connect in 5 sec intervals
@@ -353,7 +355,7 @@ namespace FS20_HudBar
     private void Instance_DataArrived( object sender, FSimClientIF.ClientDataArrivedEventArgs e )
     {
       m_awaitingEvent = false; // confirm we've got events
-      UpdateGUI( );
+      UpdateGUI( e.DataRefName );
     }
 
     // Receive commands from FSim -  not yet used
@@ -484,10 +486,7 @@ namespace FS20_HudBar
       this.Visible = false; // hide, else we see all kind of shaping
 
       // reread after config change
-      if ( AppSettings.Instance.FltAutoSave)
-        FltMgr.Enable( );
-      else
-        FltMgr.Disable( );
+      SC.SimConnectClient.Instance.FlightPlanModule.Enabled = AppSettings.Instance.FltAutoSave;
 
       AirportMgr.Reset( );
       WPTracker.Reset( );
@@ -556,17 +555,19 @@ namespace FS20_HudBar
       //      this.Opacity = 0.1;
       flp.BackColor = Color.FromArgb( 255, 0, 0, 1 );
 
-      // load flowLayout 
+      // Walk all DispItems and add the ones to be shown
       int maxHeight = 0;
       int maxWidth = 0;
       GUI.DispItem prevDi = null;
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         // using the enum index only to count from 0..max items
         var key = HUD.Profile.ItemKeyFromPos( (int)i);
-        var di = HUD.DispItem( key );
+        // The DispItem is a FlowPanel containing the Label and maybe some Values
+        var di = HUD.DispItem( key ); 
         if ( di != null && HUD.ShowItem( key ) ) {
+          // if the item is checked, i.e. to be shown only
           if ( di.Controls.Count > 0 ) {
-            // add when we have to show something
+            // add it to the Main FlowPanel when we have to show something
             flp.Controls.Add( di );
 
             // the flowbreak causes the tagged item to be on the same line and then to break for the next one
@@ -575,7 +576,7 @@ namespace FS20_HudBar
               // We set the FlowBreak to the item before the marked one
               flp.SetFlowBreak( prevDi, true );
             }
-            // collect max dimensions while loading the panel (loading also layouts them)
+            // collect max dimensions derived from each DispItem while loading the panel (loading also layouts them)
             int h = di.Top+di.Height;
             maxHeight = ( h > maxHeight ) ? h : maxHeight;
             int w = di.Left+di.Width;
@@ -589,7 +590,7 @@ namespace FS20_HudBar
         }
       }
 
-      // attach mouse click handlers
+      // attach mouse click handlers to Button Type Labels
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         var di = HUD.DispItem( i );
         if ( di != null ) {
@@ -610,7 +611,7 @@ namespace FS20_HudBar
             this.Width = flp.Width + 5;
             this.Location = new Point( HUD.Profile.Location.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
           }
-          else {
+          else { // Bar
             this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
           }
           break;
@@ -621,7 +622,7 @@ namespace FS20_HudBar
             this.Height = flp.Height + 10;
             this.Location = new Point( m_mainScreen.Bounds.X, HUD.Profile.Location.Y );
           }
-          else {
+          else { // Bar
             this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
           }
           break;
@@ -632,7 +633,7 @@ namespace FS20_HudBar
             this.Height = flp.Height + 10;
             this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, HUD.Profile.Location.Y );
           }
-          else {
+          else { // Bar
             this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, m_mainScreen.Bounds.Y );
           }
           break;
@@ -643,7 +644,7 @@ namespace FS20_HudBar
             this.Width = flp.Width + 5;
             this.Location = new Point( HUD.Profile.Location.X, m_mainScreen.Bounds.Y );
           }
-          else {
+          else { // Bar
             this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
           }
           break;
@@ -668,7 +669,7 @@ namespace FS20_HudBar
         // A Window is still TopMost - don't know if this is a good idea, we shall see...
       }
 
-      // Color it if connected
+      // Color the MSFS Label it if connected
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
         HUD.DispItem( LItem.MSFS ).Label.BackColor = flp.BackColor;
@@ -677,8 +678,7 @@ namespace FS20_HudBar
       else {
         HUD.DispItem( LItem.MSFS ).Label.ForeColor = HudBar.c_Info;
         HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Red;
-        //HUD.Value( VItem.Ad ).Text = "NO SIM";
-        HUD.Value( VItem.Ad ).Text = ""; // don't add a text - it makes the bars jumping due to this change in layout
+        HUD.Value( VItem.Ad ).Text = ""; // = "NO SIM" - don't add a text - it makes the bars jumping due to this change in layout
       }
 
       this.Visible = true; // Unhide when finished
@@ -692,12 +692,12 @@ namespace FS20_HudBar
     ///  In general GUI elements are only updated when checked and visible
     ///  Trackers and Meters are maintained independent of the View state (another profile may use them..)
     /// </summary>
-    private void UpdateGUI( )
+    private void UpdateGUI( string dataRefName )
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity..
       if ( !m_initDone ) return; // cannot access items at this time
 
-      HUD.UpdateGUI( );
+      HUD.UpdateGUI( dataRefName );
     }
 
     #endregion
@@ -718,7 +718,8 @@ namespace FS20_HudBar
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         // Disconnect from Input and SimConnect
         // FSInput.InputArrived -= FSInput_InputArrived; // Receive commands from FSim -  not yet used
-        FltMgr.Disable( );
+        //FltMgr.Disable( );
+        SC.SimConnectClient.Instance.FlightPlanModule.Enabled = false;
         SC.SimConnectClient.Instance.Disconnect( );
       }
       else {
@@ -735,7 +736,8 @@ namespace FS20_HudBar
           FSInput = SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_01 ); // use first input
           FSInput.InputArrived += FSInput_InputArrived;
           */
-          FltMgr.Enable( );
+          SC.SimConnectClient.Instance.FlightPlanModule.Enabled = AppSettings.Instance.FltAutoSave;
+          //FltMgr.Enable( );
         }
         else {
           HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Red;

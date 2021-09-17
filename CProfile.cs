@@ -587,6 +587,31 @@ namespace FS20_HudBar
       return ret;
     }
 
+    /// <summary>
+    /// Returns a list orderd along the item Pos, the list contains the LItem Key to be shown at this pos (0 based)
+    /// Kind of Transposing the sequence list
+    /// </summary>
+    /// <returns></returns>
+    public List<LItem> ItemPosList( )
+    {
+      var ret = new List<LItem>();
+
+      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
+        // we use the Enum only as position index 0... max here
+        int idx = (int)i;
+        // find the item to be shown at this position (find the pos value in m_sequence and get the item with it's Key)
+        if ( m_sequence.ContainsValue( idx ) ) {
+          // the item to put as next one / Add sequentially to the layout panel
+          ret.Add( ItemKeyFromPos( idx ) );
+        }
+        else {
+          // no such item ????
+          ;
+        }
+      }
+      return ret;
+    }
+
 
   }
 }

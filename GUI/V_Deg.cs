@@ -16,10 +16,10 @@ namespace FS20_HudBar.GUI
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Deg( Label proto)
-    : base( proto, false )
+    public V_Deg( Label proto, bool showUnit )
+    : base( proto, showUnit )
     {
-      m_unit = ""; // Deg always shows °
+      m_unit = " "; // Deg always shows °
       m_default = DefaultString( "___°" );
       Text = UnitString( m_default );
     }
