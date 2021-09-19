@@ -13,6 +13,12 @@ namespace FS20_HudBar.GUI
   class V_ICAO : V_Base
   {
     /// <summary>
+    /// Max Length of an ICAO ID (Waypoints etc.)
+    /// </summary>
+    protected const int MaxLen = 6;
+
+
+    /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
@@ -20,21 +26,26 @@ namespace FS20_HudBar.GUI
     : base( proto, false )
     {
       m_unit = "";
-      m_default = "______";
-      Text = UnitString( m_default );
+      m_default = new string( '_', MaxLen );
+      // don't use UnitString here as we don't have units
+      Text = m_default;
     }
 
+    /// <summary>
+    /// Label Text property (overwritten)
+    /// </summary>
     public override string Text {
       get => base.Text;
       set {
-        if ( value.Length > 6 ) {
-          base.Text = $"{value.Substring(0,6)}";
+        if ( value == null ) {
+          base.Text = m_default;
         }
         else {
-          base.Text = $"{value,6}";
+          base.Text = ( value.Length > MaxLen ) ? $"{value.Substring( 0, MaxLen ),MaxLen}" : base.Text = $"{value,MaxLen}";
         }
       }
     }
+
   }
 }
 

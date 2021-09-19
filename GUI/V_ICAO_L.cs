@@ -8,33 +8,34 @@ using System.Windows.Forms;
 namespace FS20_HudBar.GUI
 {
   /// <summary>
-  /// An ICAO label (up to 6 chars padded, LEFT aligned)
+  /// An ICAO label (LEFT aligned)
   /// </summary>
-  class V_ICAO_L : V_Base
+  class V_ICAO_L : V_ICAO
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
     public V_ICAO_L( Label proto )
-    : base( proto, false )
+    : base( proto )
     {
-      m_unit = "";
-      m_default = "______";
-      Text = UnitString( m_default );
     }
 
+    /// <summary>
+    /// Label Text property (overwritten)
+    /// </summary>
     public override string Text {
       get => base.Text;
       set {
-        if ( value.Length > 6 ) {
-          base.Text = $"{value.Substring( 0, 6 )}";
+        if ( value == null ) {
+          base.Text = m_default;
         }
         else {
-          base.Text = $"{value,-6}";
+          base.Text = ( value.Length > MaxLen ) ? $"{value.Substring( 0, MaxLen ),MaxLen}" : base.Text = $"{value,-MaxLen}"; // Left aligned
         }
       }
     }
+
   }
 }
 

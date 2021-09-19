@@ -39,5 +39,16 @@ namespace FS20_HudBar
 
       return AirportMgr.AirportNA_Icao;
     }
+
+    /// <summary>
+    /// Round the number in Quants given
+    /// </summary>
+    /// <param name="number">The number</param>
+    /// <param name="quant">Quantities to round to</param>
+    /// <returns></returns>
+    public static float Round(float number, int quant )
+    {
+      return (float)( Math.Round( number / quant ) * quant );
+    }
   }
 }

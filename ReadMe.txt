@@ -1,5 +1,5 @@
-FS20_HudBar V 0.32 - Build 26 BETA
-(c) M. Burri - 17-Sep-2021
+FS20_HudBar V 0.33 - Build 27 BETA
+(c) M. Burri - 19-Sep-2021
 
 Contains files:
 
@@ -36,6 +36,13 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.33-B27
+- Update ATC Airport handling in case no ATC flightplan is given
+- Update step VS items in 20 fpm steps (G1000 would be 50)
+- Update FuelQuantities get Amber readings if unbalanced more than 15% of total Capacity
+- Fix some more inconsistencies
+- Update QuickGuide
+
 V 0.32-B26
 - Add VS Item with +- signs
 - Update Flight Plan handling (still the Sim ATC acts sometimes not as expected..)

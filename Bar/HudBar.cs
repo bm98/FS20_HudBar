@@ -306,19 +306,8 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static HudMetar MetarLoc => m_metarLoc;
 
-    // FLT Flightplan
-    private static FlightPlan m_flightPlan = new FlightPlan(); // empty one
-
-    /*
-
-    // save flightPlan Ref if it arrives avoiding concurrency issues when pulling a new FP
-    private static void FLT_NewFlightPlan( object sender, EventArgs e )
-    {
-      lock ( m_flightPlan ) {
-        m_flightPlan = FltMgr.FlightPlan;
-      }
-    }
-    */
+    // FLT ATC Flightplan
+    private static FlightPlan m_atcFlightPlan = new FlightPlan(); // empty one
 
     // 3 Checkpoint Meters
     private static readonly CPointMeter m_cpMeter1 = new CPointMeter();
@@ -1202,8 +1191,10 @@ namespace FS20_HudBar.Bar
 
       // check for an update of the Flightplan
       if ( dataRefName == SC.SimConnectClient.Instance.FlightPlanModule.ModuleName ) {
-        m_flightPlan = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan;
-        return;
+        lock ( m_atcFlightPlan ) {
+          m_atcFlightPlan = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan;
+        }
+        return; // only update the flightplan, the values are updated during the SimData cycle
       }
 
       int numEngines = SC.SimConnectClient.Instance.EngineModule.NumEngines;
@@ -1259,7 +1250,7 @@ namespace FS20_HudBar.Bar
         if ( SC.SimConnectClient.Instance.AircraftModule.IsGearRetractable ) {
           this.Value( VItem.Gear ).Step =
             SC.SimConnectClient.Instance.AircraftModule.GearPosition == FSimClientIF.GearPosition.Down ? Steps.Down :
-            SC.SimConnectClient.Instance.AircraftModule.GearPosition == FSimClientIF.GearPosition.Up ? Steps.Up : GUI.Steps.Unk;
+            SC.SimConnectClient.Instance.AircraftModule.GearPosition == FSimClientIF.GearPosition.Up ? Steps.Up : Steps.Unk;
         }
         else {
           this.Value( VItem.Gear ).Step = Steps.Down;
@@ -1366,6 +1357,18 @@ namespace FS20_HudBar.Bar
       if ( this.ShowItem( LItem.Fuel_LR ) ) {
         this.Value( VItem.Fuel_Left ).Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityLeft_gal;
         this.Value( VItem.Fuel_Right ).Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityRight_gal;
+        // Color when there is a substantial unbalance
+        var imbalanceGal
+          =  Math.Abs( SC.SimConnectClient.Instance.AircraftModule.FuelQuantityLeft_gal -SC.SimConnectClient.Instance.AircraftModule.FuelQuantityRight_gal);
+        if ( imbalanceGal < ( SC.SimConnectClient.Instance.AircraftModule.FuelCapacityTotal_gal * 0.15 ) ) {
+          this.ValueControl( VItem.Fuel_Left ).ForeColor = c_Info;
+          this.ValueControl( VItem.Fuel_Right ).ForeColor = c_Info;
+        }
+        else {
+          //Imbalance >= 15% Total Fuel
+          this.ValueControl( VItem.Fuel_Left ).ForeColor = c_RA;
+          this.ValueControl( VItem.Fuel_Right ).ForeColor = c_RA;
+        }
       }
       // Fuel Tot
       if ( this.ShowItem( LItem.Fuel_Total ) ) this.Value( VItem.Fuel_Total ).Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityTotal_gal;
@@ -1381,13 +1384,8 @@ namespace FS20_HudBar.Bar
         );
 
         if ( this.ShowItem( LItem.GPS_WYP ) ) {
-          // cut waypoints at 5 chars
-          string t = SC.SimConnectClient.Instance.GpsModule.WYP_prev;
-          t = ( t.Length > 5 ) ? t.Substring( 0, 5 ) : t;
-          this.Value( VItem.GPS_PWYP ).Text = t;
-          t = SC.SimConnectClient.Instance.GpsModule.WYP_next;
-          t = ( t.Length > 5 ) ? t.Substring( 0, 5 ) : t;
-          this.Value( VItem.GPS_NWYP ).Text = t;
+          this.Value( VItem.GPS_PWYP ).Text = SC.SimConnectClient.Instance.GpsModule.WYP_prev;
+          this.Value( VItem.GPS_NWYP ).Text = SC.SimConnectClient.Instance.GpsModule.WYP_next;
         }
         /*
         if ( this.ShowItem( LItem.GPS_APT_APR ) ) {
@@ -1436,10 +1434,10 @@ namespace FS20_HudBar.Bar
         }
       }
       else {
-        // No Flightplan
+        // No SIM GPS - Flightplan active
         if ( this.ShowItem( LItem.GPS_WYP ) ) {
-          this.Value( VItem.GPS_PWYP ).Text = "_____";
-          this.Value( VItem.GPS_NWYP ).Text = "_____";
+          this.Value( VItem.GPS_PWYP ).Text = null;
+          this.Value( VItem.GPS_NWYP ).Text = null;
         }
         /*
         if ( PROFILE.ShowItem( LItem.GPS_APT_APR ) ) {
@@ -1465,43 +1463,47 @@ namespace FS20_HudBar.Bar
       }
 
       // LOCK the flightplan while using it, else the Asynch Update may change it ..
-      lock ( m_flightPlan ) {
+      lock ( m_atcFlightPlan ) {
         // Load Remaining Plan if the WYP or Flightplan has changed
         if ( WPTracker.HasChanged || FltMgr.HasChanged ) {
           FltMgr.Read( ); // commit that we read the changes of the Flight Plan
-          this.ToolTipFP.SetToolTip( this.DispItem( LItem.GPS_WYP ).Label, m_flightPlan.RemainingPlan( WPTracker.Read( ) ) );
-          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_PWYP ), m_flightPlan.WaypointByName( WPTracker.PrevWP ).PrettyDetailed );
-          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_NWYP ), m_flightPlan.WaypointByName( WPTracker.NextWP ).PrettyDetailed );
-          this.ToolTipFP.SetToolTip( this.DispItem( LItem.ATC_ALT_HDG ).Label, m_flightPlan.Pretty );
+          this.ToolTipFP.SetToolTip( this.DispItem( LItem.GPS_WYP ).Label, m_atcFlightPlan.RemainingPlan( WPTracker.Read( ) ) );
+          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_PWYP ), m_atcFlightPlan.WaypointByName( WPTracker.PrevWP ).PrettyDetailed );
+          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_NWYP ), m_atcFlightPlan.WaypointByName( WPTracker.NextWP ).PrettyDetailed );
+          this.ToolTipFP.SetToolTip( this.DispItem( LItem.ATC_ALT_HDG ).Label, m_atcFlightPlan.Pretty );
         }
 
-        if ( m_flightPlan.HasFlightPlan ) {
-          // ATC Airport
-          AirportMgr.Update( m_flightPlan.Destination ); // maintain APT
-          if ( this.ShowItem( LItem.ATC_APT ) ) {
-            if ( AirportMgr.HasChanged ) this.Value( VItem.ATC_APT ).Text = AirportMgr.Read( ); // update only when changed
-            if ( MetarApt.HasNewData ) {
-              // avoiding redraw for every cycle
-              this.ToolTip.SetToolTip( this.DispItem( LItem.ATC_APT ).Label, MetarApt.Read( ) );
-              this.DispItem( LItem.ATC_APT ).Label.BackColor = MetarApt.ConditionColor;
-            }
-            this.Value( VItem.ATC_DIST ).Value = m_flightPlan.RemainingDist_nm(
-              SC.SimConnectClient.Instance.GpsModule.WYP_next,
-              SC.SimConnectClient.Instance.GpsModule.WYP_dist );
+        // ATC Airport
+        AirportMgr.Update( m_atcFlightPlan.Destination ); // maintain APT (we should always have a Destination here)
+        if ( this.ShowItem( LItem.ATC_APT ) ) {
+          if ( AirportMgr.HasChanged ) this.Value( VItem.ATC_APT ).Text = AirportMgr.Read( ); // update only when changed
+          if ( MetarApt.HasNewData ) {
+            // avoiding redraw and flicker for every cycle
+            this.ToolTip.SetToolTip( this.DispItem( LItem.ATC_APT ).Label, MetarApt.Read( ) );
+            this.DispItem( LItem.ATC_APT ).Label.BackColor = MetarApt.ConditionColor;
           }
+          // Distance to Destination
+          if ( m_atcFlightPlan.HasFlightPlan ) {
+            this.Value( VItem.ATC_DIST ).Value = m_atcFlightPlan.RemainingDist_nm(
+            SC.SimConnectClient.Instance.GpsModule.WYP_next,
+            SC.SimConnectClient.Instance.GpsModule.WYP_dist );
+          }
+          else {
+            // calc straight distance if we don't have an ATC flightplan with waypoints
+            this.Value( VItem.ATC_DIST ).Value = AirportMgr.Distance_nm( latLon );
+          }
+        }
+
+        // if we have an ATC FlightPlan show ATC assignments
+        if ( m_atcFlightPlan.HasFlightPlan ) {
           // ATC Alt Hdg NextWYP
           if ( this.ShowItem( LItem.ATC_ALT_HDG ) ) {
-            this.Value( VItem.ATC_ALT ).Value = m_flightPlan.AssignedAlt;
-            this.Value( VItem.ATC_HDG ).Value = m_flightPlan.AssignedHdg;
-            this.Value( VItem.ATC_WYP ).Text = m_flightPlan.NextWypIdent;
+            this.Value( VItem.ATC_ALT ).Value = m_atcFlightPlan.AssignedAlt;
+            this.Value( VItem.ATC_HDG ).Value = m_atcFlightPlan.AssignedHdg;
+            this.Value( VItem.ATC_WYP ).Text = m_atcFlightPlan.NextWypIdent;
           }
         }
         else {
-          // no flightplan
-          if ( this.ShowItem( LItem.ATC_APT ) ) {
-            this.Value( VItem.ATC_APT ).Text = m_flightPlan.Destination;
-            this.Value( VItem.ATC_DIST ).Value = null;
-          }
           // ATC Alt Hdg
           if ( this.ShowItem( LItem.ATC_ALT_HDG ) ) {
             this.Value( VItem.ATC_ALT ).Value = null;
@@ -1518,7 +1520,7 @@ namespace FS20_HudBar.Bar
         this.Value( VItem.GPS_LON ).Value = (float)latLon.Lon;
       }
 
-      // Autopilot
+      // Autopilot Items to show
       if ( this.ShowItem( LItem.AP ) )
         this.DispItem( LItem.AP ).Label.ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.AP_mode == FSimClientIF.APMode.On ? c_AP : c_Info;
 
@@ -1573,8 +1575,8 @@ namespace FS20_HudBar.Bar
       if ( this.ShowItem( LItem.IAS ) ) this.Value( VItem.IAS ).Value = SC.SimConnectClient.Instance.AircraftModule.IAS_kt;
       if ( this.ShowItem( LItem.TAS ) ) this.Value( VItem.TAS ).Value = SC.SimConnectClient.Instance.AircraftModule.TAS_kt;
       if ( this.ShowItem( LItem.MACH ) ) this.Value( VItem.MACH ).Value = SC.SimConnectClient.Instance.AircraftModule.Machspeed_mach;
-      if ( this.ShowItem( LItem.VS ) ) this.Value( VItem.VS ).Value = SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin;
-      if ( this.ShowItem( LItem.VS_PM ) ) this.Value( VItem.VS_PM ).Value = SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin;
+      if ( this.ShowItem( LItem.VS ) ) this.Value( VItem.VS ).Value = Tooling.Round( SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin, 20 ); // steps 20
+      if ( this.ShowItem( LItem.VS_PM ) ) this.Value( VItem.VS_PM ).Value = Tooling.Round( SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin, 20 ); // steps 20
 
       // ATC Runway
       if ( this.ShowItem( LItem.ATC_RWY ) ) {

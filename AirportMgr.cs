@@ -95,5 +95,20 @@ namespace FS20_HudBar
       return AirportICAO;
     }
 
+    /// <summary>
+    /// Calculated the straight distance from current to the Airport
+    /// returns NaN if the Airport or current location is not valid
+    /// </summary>
+    /// <param name="currentLocation">LatLon of the current location</param>
+    /// <returns>A distance [nm] or NaN</returns>
+    public static float Distance_nm( LatLon currentLocation )
+    {
+      // Sanity
+      if ( currentLocation == null ) return float.NaN;
+      if ( Location == null ) return float.NaN;
+
+      return (float)currentLocation.DistanceTo( Location, CoordLib.ConvConsts.EarthRadiusNm );
+    }
+
   }
 }
