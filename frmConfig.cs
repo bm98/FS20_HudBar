@@ -28,45 +28,79 @@ namespace FS20_HudBar
     }
 
 
-    private void PopulateFonts( ComboBox cbxFont )
+    private void PopulateFonts( ComboBox cbx )
     {
-      cbxFont.Items.Clear( );
-      cbxFont.Items.Add( GUI.FontSize.Regular + " Font Size" );
-      cbxFont.Items.Add( GUI.FontSize.Plus_2 + " Font Size" );
-      cbxFont.Items.Add( GUI.FontSize.Plus_4 + " Font Size" );
-      cbxFont.Items.Add( GUI.FontSize.Plus_6 + " Font Size" );
-      cbxFont.Items.Add( GUI.FontSize.Plus_8 + " Font Size" );
-      cbxFont.Items.Add( GUI.FontSize.Plus_10 + " Font Size" );
-      cbxFont.Items.Add( GUI.FontSize.Minus_2 + " Font Size" );
-      cbxFont.Items.Add( GUI.FontSize.Minus_4 + " Font Size" );
-      cbxFont.Items.Add( GUI.FontSize.Plus_12 + " Font Size" );
-      cbxFont.Items.Add( GUI.FontSize.Plus_14 + " Font Size" );
+      cbx.Items.Clear( );
+      cbx.Items.Add( GUI.FontSize.Regular + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Plus_2 + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Plus_4 + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Plus_6 + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Plus_8 + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Plus_10 + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Minus_2 + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Minus_4 + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Plus_12 + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Plus_14 + " Font Size" );
     }
 
-    private void PopulatePlacement( ComboBox cbxPlace )
+    private void PopulatePlacement( ComboBox cbx )
     {
-      cbxPlace.Items.Clear( );
-      cbxPlace.Items.Add( GUI.Placement.Bottom + " bound" );
-      cbxPlace.Items.Add( GUI.Placement.Left + " bound" );
-      cbxPlace.Items.Add( GUI.Placement.Right + " bound" );
-      cbxPlace.Items.Add( GUI.Placement.Top + " bound" );
+      cbx.Items.Clear( );
+      cbx.Items.Add( GUI.Placement.Bottom + " bound" );
+      cbx.Items.Add( GUI.Placement.Left + " bound" );
+      cbx.Items.Add( GUI.Placement.Right + " bound" );
+      cbx.Items.Add( GUI.Placement.Top + " bound" );
     }
 
-    private void PopulateKind( ComboBox cbxKind )
+    private void PopulateKind( ComboBox cbx )
     {
-      cbxKind.Items.Clear( );
-      cbxKind.Items.Add( "Bar" );
-      cbxKind.Items.Add( "Tile" );
-      cbxKind.Items.Add( "Window" ); // 20210718
+      cbx.Items.Clear( );
+      cbx.Items.Add( "Bar" );
+      cbx.Items.Add( "Tile" );
+      cbx.Items.Add( "Window" ); // 20210718
     }
 
-    private void PopulateCond( ComboBox cbxCond )
+    private void PopulateCond( ComboBox cbx )
     {
-      cbxCond.Items.Clear( );
-      cbxCond.Items.Add( "Regular Font" );
-      cbxCond.Items.Add( "Condensed Font" );
+      cbx.Items.Clear( );
+      cbx.Items.Add( "Regular Font" );
+      cbx.Items.Add( "Condensed Font" );
     }
 
+    private void PopulateTrans( ComboBox cbx )
+    {
+      cbx.Items.Clear( );
+      cbx.Items.Add( "Opaque" ); // GUI.Transparent.T0
+      cbx.Items.Add( $"{(int)GUI.Transparent.T10 * 10}%  Transparent" );
+      cbx.Items.Add( $"{(int)GUI.Transparent.T20 * 10}%  Transparent" );
+      cbx.Items.Add( $"{(int)GUI.Transparent.T30 * 10}%  Transparent" );
+      cbx.Items.Add( $"{(int)GUI.Transparent.T40 * 10}%  Transparent" );
+      cbx.Items.Add( $"{(int)GUI.Transparent.T50 * 10}%  Transparent" );
+      cbx.Items.Add( $"{(int)GUI.Transparent.T60 * 10}%  Transparent" );
+      cbx.Items.Add( $"{(int)GUI.Transparent.T70 * 10}%  Transparent" );
+      cbx.Items.Add( $"{(int)GUI.Transparent.T80 * 10}%  Transparent" );
+      cbx.Items.Add( $"{(int)GUI.Transparent.T90 * 10}%  Transparent" );
+    }
+
+    private void PopulateVoice(ComboBox cbx)
+    {
+      cbx.Items.Clear( );
+      foreach(var vn in GUI.GUI_Speech.AvailableVoices ) {
+        cbx.Items.Add( vn );
+      }
+    }
+
+    public void LoadVoice( ComboBox cbx )
+    {
+      if ( cbx.Items.Contains(HudBarRef.VoiceName))
+        cbx.SelectedItem = HudBarRef.VoiceName;
+      else if ( cbx.Items.Count>0) {
+        cbx.SelectedIndex = 0;
+      }
+      else {
+        // no voices installed...
+      }
+    }
 
 
     private void frmConfig_Load( object sender, EventArgs e )
@@ -77,8 +111,9 @@ namespace FS20_HudBar
       if ( ProfilesRef?.Count < 5 ) return;// sanity ..
 
       cbxUnits.Checked = HudBarRef.ShowUnits;
-      cbxOpaque.Checked = HudBarRef.OpaqueBackground;
       cbxFltSave.Checked = HudBarRef.FltAutoSave; // 20210821
+      PopulateVoice( cbxVoice );// 20211006
+      LoadVoice( cbxVoice );
 
       // Per profile
       txP1.Text = ProfilesRef[0].PName;
@@ -91,6 +126,8 @@ namespace FS20_HudBar
       ProfilesRef[0].LoadKind( cbxKindP1 );
       PopulateCond( cbxCondP1 );
       ProfilesRef[0].LoadCond( cbxCondP1 );
+      PopulateTrans( cbxTrans1 );
+      ProfilesRef[0].LoadTrans( cbxTrans1 );
 
       txP2.Text = ProfilesRef[1].PName;
       ProfilesRef[1].LoadFlp( flp2, HudBarRef );
@@ -102,6 +139,8 @@ namespace FS20_HudBar
       ProfilesRef[1].LoadKind( cbxKindP2 );
       PopulateCond( cbxCondP2 );
       ProfilesRef[1].LoadCond( cbxCondP2 );
+      PopulateTrans( cbxTrans2 );
+      ProfilesRef[1].LoadTrans( cbxTrans2 );
 
       txP3.Text = ProfilesRef[2].PName;
       ProfilesRef[2].LoadFlp( flp3, HudBarRef );
@@ -113,6 +152,8 @@ namespace FS20_HudBar
       ProfilesRef[2].LoadKind( cbxKindP3 );
       PopulateCond( cbxCondP3 );
       ProfilesRef[2].LoadCond( cbxCondP3 );
+      PopulateTrans( cbxTrans3 );
+      ProfilesRef[2].LoadTrans( cbxTrans3 );
 
       txP4.Text = ProfilesRef[3].PName;
       ProfilesRef[3].LoadFlp( flp4, HudBarRef );
@@ -124,6 +165,8 @@ namespace FS20_HudBar
       ProfilesRef[3].LoadKind( cbxKindP4 );
       PopulateCond( cbxCondP4 );
       ProfilesRef[3].LoadCond( cbxCondP4 );
+      PopulateTrans( cbxTrans4 );
+      ProfilesRef[3].LoadTrans( cbxTrans4 );
 
       txP5.Text = ProfilesRef[4].PName;
       ProfilesRef[4].LoadFlp( flp5, HudBarRef );
@@ -135,6 +178,8 @@ namespace FS20_HudBar
       ProfilesRef[4].LoadKind( cbxKindP5 );
       PopulateCond( cbxCondP5 );
       ProfilesRef[4].LoadCond( cbxCondP5 );
+      PopulateTrans( cbxTrans5 );
+      ProfilesRef[4].LoadTrans( cbxTrans5 );
 
       // mark the selected one 
       switch ( SelectedProfile ) {
@@ -169,8 +214,8 @@ namespace FS20_HudBar
       // update from edits
       // live update to HUD
       HudBarRef.SetShowUnits( cbxUnits.Checked );
-      HudBarRef.SetOpacity( cbxOpaque.Checked );
       HudBarRef.SetFltAutoSave( cbxFltSave.Checked );
+      HudBarRef.SetVoiceName( cbxVoice.SelectedItem.ToString() );
 
       // profile Updates
       ProfilesRef[0].PName = txP1.Text;
@@ -179,6 +224,7 @@ namespace FS20_HudBar
       ProfilesRef[0].GetPlacementFromCombo( cbxPlaceP1 );
       ProfilesRef[0].GetKindFromCombo( cbxKindP1 );
       ProfilesRef[0].GetCondFromCombo( cbxCondP1 );
+      ProfilesRef[0].GetTramsFromCombo( cbxTrans1 );
 
       ProfilesRef[1].PName = txP2.Text;
       ProfilesRef[1].GetItemsFromFlp( flp2 );
@@ -186,6 +232,7 @@ namespace FS20_HudBar
       ProfilesRef[1].GetPlacementFromCombo( cbxPlaceP2 );
       ProfilesRef[1].GetKindFromCombo( cbxKindP2 );
       ProfilesRef[1].GetCondFromCombo( cbxCondP2 );
+      ProfilesRef[1].GetTramsFromCombo( cbxTrans2 );
 
       ProfilesRef[2].PName = txP3.Text;
       ProfilesRef[2].GetItemsFromFlp( flp3 );
@@ -193,6 +240,7 @@ namespace FS20_HudBar
       ProfilesRef[2].GetPlacementFromCombo( cbxPlaceP3 );
       ProfilesRef[2].GetKindFromCombo( cbxKindP3 );
       ProfilesRef[2].GetCondFromCombo( cbxCondP3 );
+      ProfilesRef[2].GetTramsFromCombo( cbxTrans3 );
 
       ProfilesRef[3].PName = txP4.Text;
       ProfilesRef[3].GetItemsFromFlp( flp4 );
@@ -200,6 +248,7 @@ namespace FS20_HudBar
       ProfilesRef[3].GetPlacementFromCombo( cbxPlaceP4 );
       ProfilesRef[3].GetKindFromCombo( cbxKindP4 );
       ProfilesRef[3].GetCondFromCombo( cbxCondP4 );
+      ProfilesRef[3].GetTramsFromCombo( cbxTrans4 );
 
       ProfilesRef[4].PName = txP5.Text;
       ProfilesRef[4].GetItemsFromFlp( flp5 );
@@ -207,11 +256,20 @@ namespace FS20_HudBar
       ProfilesRef[4].GetPlacementFromCombo( cbxPlaceP5 );
       ProfilesRef[4].GetKindFromCombo( cbxKindP5 );
       ProfilesRef[4].GetCondFromCombo( cbxCondP5 );
+      ProfilesRef[4].GetTramsFromCombo( cbxTrans5 );
 
       this.DialogResult = DialogResult.OK;
       this.Close( );
     }
 
+    private GUI.GUI_Speech speech = new GUI.GUI_Speech();
+
+    private void cbxVoice_MouseClick( object sender, MouseEventArgs e )
+    {
+      if ( cbxVoice.DroppedDown ) return;
+      speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
+      speech.SaySynched( 100 );
+    }
 
   }
 }

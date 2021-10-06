@@ -10,19 +10,38 @@ using System.Windows.Forms;
 
 using CoordLib;
 using MetarLib;
+using static FS20_HudBar.GUI.GUI_Colors;
 using FS20_HudBar.Bar;
 
 using SC = SimConnectClient;
 
 namespace FS20_HudBar
 {
+  /// <summary>
+  /// As for the WinForms environment there is no way to have a Form to be translucent but maintain
+  /// the GUI elements in full brightness
+  /// 
+  /// As a workaround we use 2 synched forms where one carries the GUI elements
+  /// and the other acts as Main form and has opacity set to whatever is choosen.
+  /// 
+  /// This Form is the Owner of the GUI Form.
+  /// It will not have any elements shown 
+  /// The Opacity property will get as a translucent background of both.
+  /// This Form needs to manage the Movement and Sizing of the GUI form.
+  /// 
+  /// The Form is the one managed by the user (moved) and set top of Z-Order
+  /// It will Own the GUI Form and as per doc the Owned Form will never be behind the Owner and therefore
+  /// the Translucent background should stay second to the GUI
+  /// 
+  /// </summary>
   public partial class frmMain : Form
   {
     // Handle of the Primary Screen to attach bar and tile
     private readonly Screen m_mainScreen;
 
-    // Form opacity when not Fully opaque (slightly transparent)
-    private const float c_opacity = 0.85f;
+    // This will be the GUI form
+    private frmGui m_frmGui;
+    private FlowLayoutPanel flp;
 
     // The profiles
     private List<CProfile> m_profiles = new List<CProfile>();
@@ -55,6 +74,30 @@ namespace FS20_HudBar
       return false;
     }
 
+    private void SynchGUISize( )
+    {
+      // synch size
+      m_frmGui.Size = this.ClientSize;
+    }
+    private void SynchGUILocation( )
+    {
+      // synch location
+      m_frmGui.Location = this.PointToScreen( this.ClientRectangle.Location ); // in Windowed mode we need to get it from the client rect
+    }
+
+    private void SynchGUI( )
+    {
+      SynchGUISize( );
+      SynchGUILocation( );
+    }
+
+    private void SynchGUIVisible( bool visible )
+    {
+      this.Visible = visible;
+      m_frmGui.Visible = visible;
+    }
+
+
     /// <summary>
     /// Main Form Init
     /// </summary>
@@ -69,37 +112,47 @@ namespace FS20_HudBar
                                        AppSettings.Instance.Profile_1, AppSettings.Instance.FlowBreak_1, AppSettings.Instance.Sequence_1,
                                        AppSettings.Instance.Profile_1_FontSize, AppSettings.Instance.Profile_1_Placement,
                                        AppSettings.Instance.Profile_1_Kind, AppSettings.Instance.Profile_1_Location,
-                                       AppSettings.Instance.Profile_1_Condensed ) );
+                                       AppSettings.Instance.Profile_1_Condensed,
+                                       AppSettings.Instance.Profile_1_Trans ) );
 
       m_profiles.Add( new CProfile( 2, AppSettings.Instance.Profile_2_Name,
                                        AppSettings.Instance.Profile_2, AppSettings.Instance.FlowBreak_2, AppSettings.Instance.Sequence_2,
                                        AppSettings.Instance.Profile_2_FontSize, AppSettings.Instance.Profile_2_Placement,
                                        AppSettings.Instance.Profile_2_Kind, AppSettings.Instance.Profile_2_Location,
-                                       AppSettings.Instance.Profile_2_Condensed ) );
+                                       AppSettings.Instance.Profile_2_Condensed,
+                                       AppSettings.Instance.Profile_2_Trans ) );
 
       m_profiles.Add( new CProfile( 3, AppSettings.Instance.Profile_3_Name,
                                        AppSettings.Instance.Profile_3, AppSettings.Instance.FlowBreak_3, AppSettings.Instance.Sequence_3,
                                        AppSettings.Instance.Profile_3_FontSize, AppSettings.Instance.Profile_3_Placement,
                                        AppSettings.Instance.Profile_3_Kind, AppSettings.Instance.Profile_3_Location,
-                                       AppSettings.Instance.Profile_3_Condensed ) );
+                                       AppSettings.Instance.Profile_3_Condensed,
+                                       AppSettings.Instance.Profile_3_Trans ) );
 
       m_profiles.Add( new CProfile( 4, AppSettings.Instance.Profile_4_Name,
                                        AppSettings.Instance.Profile_4, AppSettings.Instance.FlowBreak_4, AppSettings.Instance.Sequence_4,
                                        AppSettings.Instance.Profile_4_FontSize, AppSettings.Instance.Profile_4_Placement,
                                        AppSettings.Instance.Profile_4_Kind, AppSettings.Instance.Profile_4_Location,
-                                       AppSettings.Instance.Profile_4_Condensed ) );
+                                       AppSettings.Instance.Profile_4_Condensed,
+                                       AppSettings.Instance.Profile_4_Trans ) );
 
       m_profiles.Add( new CProfile( 5, AppSettings.Instance.Profile_5_Name,
                                        AppSettings.Instance.Profile_5, AppSettings.Instance.FlowBreak_5, AppSettings.Instance.Sequence_5,
                                        AppSettings.Instance.Profile_5_FontSize, AppSettings.Instance.Profile_5_Placement,
                                        AppSettings.Instance.Profile_5_Kind, AppSettings.Instance.Profile_5_Location,
-                                       AppSettings.Instance.Profile_5_Condensed ) );
+                                       AppSettings.Instance.Profile_5_Condensed,
+                                       AppSettings.Instance.Profile_5_Trans ) );
 
       m_selProfile = AppSettings.Instance.SelProfile;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
 
 
       // ShowUnits and Opacity are set via HUD in InitGUI
+      m_frmGui = new frmGui( );
+      this.AddOwnedForm( m_frmGui );
+      m_frmGui.Show( );
+      SynchGUI( );
+      flp = m_frmGui.flp;
 
       // Find and hold the Primary Screen
       Screen[] screens = Screen.AllScreens;
@@ -121,9 +174,14 @@ namespace FS20_HudBar
       flp.Dock = DockStyle.Fill;
       // flp.BorderStyle = BorderStyle.FixedSingle; // DEBUG to see where the FLPanel is
       flp.WrapContents = true; // Needs to wrap around
+      flp.MouseDown += frmMain_MouseDown;
+      flp.MouseUp += frmMain_MouseUp;
+      flp.MouseMove += frmMain_MouseMove ;
+
       // Window Props
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc. to begin with
       this.TopMost = true; // make sure we float on top
+      this.BackColor = c_WinBG;
 
       // Get the controls
       InitGUI( );
@@ -136,6 +194,7 @@ namespace FS20_HudBar
       timer1.Interval = 5000; // try to connect in 5 sec intervals
       timer1.Enabled = true;
     }
+
 
     // fired when the Window Location has changed; also when starting the prog
     // Take care to capture only real user relocations
@@ -155,6 +214,18 @@ namespace FS20_HudBar
         default: AppSettings.Instance.Profile_1_Location = this.Location; break;
       }
       AppSettings.Instance.Save( );
+    }
+
+    // Get the GUI form resized too
+    private void frmMain_Resize( object sender, EventArgs e )
+    {
+      SynchGUISize( );
+    }
+
+    // Get the GUI form moved too
+    private void frmMain_Move( object sender, EventArgs e )
+    {
+      SynchGUILocation( );
     }
 
     // Fired when about to Close
@@ -192,8 +263,8 @@ namespace FS20_HudBar
       if ( CFG.ShowDialog( this ) == DialogResult.OK ) {
         // Save all configuration properties
         AppSettings.Instance.ShowUnits = HUD.ShowUnits;
-        AppSettings.Instance.Opaque = HUD.OpaqueBackground;
         AppSettings.Instance.FltAutoSave = HUD.FltAutoSave;
+        AppSettings.Instance.VoiceName = HUD.VoiceName;
 
         AppSettings.Instance.SelProfile = m_selProfile;
 
@@ -205,6 +276,7 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_1_Placement = (int)m_profiles[0].Placement;
         AppSettings.Instance.Profile_1_Kind = (int)m_profiles[0].Kind;
         AppSettings.Instance.Profile_1_Condensed = m_profiles[0].Condensed;
+        AppSettings.Instance.Profile_1_Trans = (int)m_profiles[0].Transparency;
 
         AppSettings.Instance.Profile_2_Name = m_profiles[1].PName;
         AppSettings.Instance.Profile_2 = m_profiles[1].ProfileString( );
@@ -214,6 +286,7 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_2_Placement = (int)m_profiles[1].Placement;
         AppSettings.Instance.Profile_2_Kind = (int)m_profiles[1].Kind;
         AppSettings.Instance.Profile_2_Condensed = m_profiles[1].Condensed;
+        AppSettings.Instance.Profile_2_Trans = (int)m_profiles[1].Transparency;
 
         AppSettings.Instance.Profile_3_Name = m_profiles[2].PName;
         AppSettings.Instance.Profile_3 = m_profiles[2].ProfileString( );
@@ -223,6 +296,7 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_3_Placement = (int)m_profiles[2].Placement;
         AppSettings.Instance.Profile_3_Kind = (int)m_profiles[2].Kind;
         AppSettings.Instance.Profile_3_Condensed = m_profiles[2].Condensed;
+        AppSettings.Instance.Profile_3_Trans = (int)m_profiles[2].Transparency;
 
         AppSettings.Instance.Profile_4_Name = m_profiles[3].PName;
         AppSettings.Instance.Profile_4 = m_profiles[3].ProfileString( );
@@ -232,6 +306,7 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_4_Placement = (int)m_profiles[3].Placement;
         AppSettings.Instance.Profile_4_Kind = (int)m_profiles[3].Kind;
         AppSettings.Instance.Profile_4_Condensed = m_profiles[3].Condensed;
+        AppSettings.Instance.Profile_4_Trans = (int)m_profiles[3].Transparency;
 
         AppSettings.Instance.Profile_5_Name = m_profiles[4].PName;
         AppSettings.Instance.Profile_5 = m_profiles[4].ProfileString( );
@@ -241,6 +316,7 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_5_Placement = (int)m_profiles[4].Placement;
         AppSettings.Instance.Profile_5_Kind = (int)m_profiles[4].Kind;
         AppSettings.Instance.Profile_5_Condensed = m_profiles[4].Condensed;
+        AppSettings.Instance.Profile_5_Trans = (int)m_profiles[4].Transparency;
 
         AppSettings.Instance.Save( );
 
@@ -483,7 +559,8 @@ namespace FS20_HudBar
     {
       timer1.Enabled = false; // stop asynch events
       m_initDone = false; // stop updating values while reconfiguring
-      this.Visible = false; // hide, else we see all kind of shaping
+      //this.Visible = false; 
+      SynchGUIVisible( false ); // hide, else we see all kind of shaping
 
       // reread after config change
       SC.SimConnectClient.Instance.FlightPlanModule.Enabled = AppSettings.Instance.FltAutoSave;
@@ -502,8 +579,8 @@ namespace FS20_HudBar
 
       // start from scratch
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
-                          AppSettings.Instance.ShowUnits, AppSettings.Instance.Opaque, AppSettings.Instance.FltAutoSave,
-                          m_profiles[m_selProfile] );
+                          AppSettings.Instance.ShowUnits, AppSettings.Instance.FltAutoSave,
+                          m_profiles[m_selProfile], AppSettings.Instance.VoiceName );
 
       // prepare to create the content as bar or tile (may be switch to Window later if needed)
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc.
@@ -512,9 +589,8 @@ namespace FS20_HudBar
       // release dock to allow the bar to autosize
       flp.Dock = DockStyle.None;
       flp.AutoSize = true;
-      // can move a tile kind profile (but not a bar)
-      flp.Cursor = HUD.Profile.Kind == GUI.Kind.Tile ? Cursors.SizeAll : this.Cursor;
-
+      // can move a tile kind profile (but not a bar or window - has it's own window border anyway)
+      this.Cursor = HUD.Profile.Kind == GUI.Kind.Tile ? Cursors.SizeAll : Cursors.Default;
       // attach it to the PRIMARY screen (we assume the FS is run on the primary anyway...)
       // preliminary  windows full width/height
       switch ( HUD.Placement ) {
@@ -550,10 +626,6 @@ namespace FS20_HudBar
           flp.FlowDirection = FlowDirection.LeftToRight;
           break;
       }
-      // set form opacity from settings (use the const value for slight transparency)
-      this.Opacity = HUD.OpaqueBackground ? 1 : c_opacity;
-      //      this.Opacity = 0.1;
-      flp.BackColor = Color.FromArgb( 255, 0, 0, 1 );
 
       // Walk all DispItems and add the ones to be shown
       int maxHeight = 0;
@@ -563,7 +635,7 @@ namespace FS20_HudBar
         // using the enum index only to count from 0..max items
         var key = HUD.Profile.ItemKeyFromPos( (int)i);
         // The DispItem is a FlowPanel containing the Label and maybe some Values
-        var di = HUD.DispItem( key ); 
+        var di = HUD.DispItem( key );
         if ( di != null && HUD.ShowItem( key ) ) {
           // if the item is checked, i.e. to be shown only
           if ( di.Controls.Count > 0 ) {
@@ -669,19 +741,25 @@ namespace FS20_HudBar
         // A Window is still TopMost - don't know if this is a good idea, we shall see...
       }
 
+      // set form opacity from Profile
+      this.Opacity = HUD.Profile.Opacity;
+
       // Color the MSFS Label it if connected
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
-        HUD.DispItem( LItem.MSFS ).Label.BackColor = flp.BackColor;
+        HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Black; // not c_BG so we still can select it in Transp. Mode
         HUD.Value( VItem.Ad ).Text = "";
       }
       else {
-        HUD.DispItem( LItem.MSFS ).Label.ForeColor = HudBar.c_Info;
+        HUD.DispItem( LItem.MSFS ).Label.ForeColor = c_Info;
         HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Red;
         HUD.Value( VItem.Ad ).Text = ""; // = "NO SIM" - don't add a text - it makes the bars jumping due to this change in layout
       }
 
-      this.Visible = true; // Unhide when finished
+      // this.Visible = true; // Unhide when finished
+      SynchGUIVisible( true ); // Unhide when finished
+      SynchGUI( );
+
       m_initDone = true;
       timer1.Enabled = true; // and enable pacer
     }
@@ -712,8 +790,8 @@ namespace FS20_HudBar
     private void SimConnect( )
     {
       HUD.Value( VItem.Ad ).Text = ""; // reset in case it had an error message
-      HUD.DispItem( LItem.MSFS ).Label.ForeColor = HudBar.c_Info;
-      HUD.DispItem( LItem.MSFS ).Label.BackColor = HudBar.c_BG;
+      HUD.DispItem( LItem.MSFS ).Label.ForeColor = c_Info;
+      HUD.DispItem( LItem.MSFS ).Label.BackColor = c_BG;
 
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         // Disconnect from Input and SimConnect

@@ -36,6 +36,7 @@ namespace FS20_HudBar.GUI
       this.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
       this.Dock = DockStyle.Bottom;
       this.Cursor = Cursors.Default; // avoid the movement cross on the item controls
+      this.BackColor = GUI.GUI_Colors.c_BG;
       //this.BackColor = Color.Pink; // DEBUG color
     }
 

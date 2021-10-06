@@ -11,7 +11,8 @@ using FS20_HudBar.Bar;
 namespace FS20_HudBar.GUI
 {
   /// <summary>
-  /// A User Button Base Class
+  /// Base class to implement Clickable Buttons with labels
+  /// Mostly derived from the V_Base Class
   /// </summary>
   abstract class B_Base : Button, IValue
   {
@@ -30,6 +31,7 @@ namespace FS20_HudBar.GUI
 
     /// <summary>
     /// Event triggered when the push button was clicked
+    /// Sends the VItem ID set in the cTor
     /// </summary>
     public event EventHandler<ClickedEventArgs> ButtonClicked;
     private void OnButtonClicked( )
@@ -53,7 +55,7 @@ namespace FS20_HudBar.GUI
     }
 
     /// <summary>
-    /// Debugging, provide the default string with some numbers
+    /// Debugging support, provide the default string with some numbers replacing _ (placeholder) chars
     /// </summary>
     /// <param name="defaultString">The formatted Value string</param>
     /// <returns>A formatted string</returns>
@@ -79,21 +81,21 @@ namespace FS20_HudBar.GUI
     /// <summary>
     /// cTor: Create a UserControl..
     /// </summary>
-    /// <param name="item">The GITem ID of this one</param>
+    /// <param name="item">The VITem ID of this new Control</param>
     /// <param name="proto">A label Prototype to derive from</param>
     public B_Base( VItem item, Label proto )
     {
       m_mID = item;
       // Label props
       Font = proto.Font;
-      //ForeColor = proto.ForeColor;
-      ForeColor = HudBar.c_Info; // BUTTONS get a cInfo Foreground
-      BackColor = proto.BackColor;
-      AutoSize = true;
+      ForeColor = GUI_Colors.c_Info;  // forced BUTTONS get a c_Info Foreground
+      BackColor = GUI_Colors.c_ActBG; // forced BUTTONS get a c_ActBG Background
+      AutoSize = true;                // force AutoSize
       TextAlign = proto.TextAlign;
       Anchor = proto.Anchor;
       Dock = proto.Dock;
       Margin = proto.Margin;
+      Padding = proto.Padding;
       Text = m_default;
       UseCompatibleTextRendering = true; // make sure the WingDings an other font special chars display properly
       // Button props
@@ -101,9 +103,9 @@ namespace FS20_HudBar.GUI
       FlatStyle = FlatStyle.Flat;
       FlatAppearance.BorderSize = 0;
       FlatAppearance.BorderColor = BackColor;
-      FlatAppearance.MouseDownBackColor = Color.Indigo;
-      Cursor = Cursors.Hand; // actionable
-      TabStop = false;
+      FlatAppearance.MouseDownBackColor = GUI_Colors.c_ActPressed;  // forced 
+      Cursor = Cursors.Hand; // forced: actionable
+      TabStop = false; // forced, no TabStop
       base.Click += B_Prct_Click; // capture Click Event
     }
 

@@ -10,6 +10,8 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
+  // Mapped into the Namespace 
+
   /// <summary>
   /// HUD GUI FontSize
   /// </summary>
@@ -46,6 +48,25 @@ namespace FS20_HudBar.GUI
     Bar=0,
     Tile,
     Window, //20210718
+  }
+
+  /// <summary>
+  /// Display Transparency of the Bar
+  /// </summary>
+  public enum Transparent  //20211003
+  {
+    // Note: this is set to be the enum*10 => % Values and /10 => Opacity setting for the Main Form (lazy..)
+    // 100% does not work with WinForms and the current implementation
+    T0=0,
+    T10,
+    T20,
+    T30,
+    T40,
+    T50,
+    T60,
+    T70,
+    T80,
+    T90,
   }
 
   /// <summary>

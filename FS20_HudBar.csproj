@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>27</ApplicationRevision>
-    <ApplicationVersion>0.33.0.27</ApplicationVersion>
+    <ApplicationRevision>28</ApplicationRevision>
+    <ApplicationVersion>0.34.0.28</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -97,6 +97,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Speech" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -133,6 +134,12 @@
     <Compile Include="frmConfig.Designer.cs">
       <DependentUpon>frmConfig.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmGui.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmGui.Designer.cs">
+      <DependentUpon>frmGui.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\B_Base.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -146,7 +153,9 @@
     <Compile Include="GUI\DispItem.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GUI\GUI_Colors.cs" />
     <Compile Include="GUI\GUI_Fonts.cs" />
+    <Compile Include="GUI\GUI_Speech.cs" />
     <Compile Include="GUI\ValueItem.cs" />
     <Compile Include="GUI\V_Alt.cs">
       <SubType>Component</SubType>
@@ -189,6 +198,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\V_Mach.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_RAaudio.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\V_Text.cs">
@@ -262,6 +274,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmConfig.resx">
       <DependentUpon>frmConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmGui.resx">
+      <DependentUpon>frmGui.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

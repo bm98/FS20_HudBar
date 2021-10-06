@@ -10,18 +10,15 @@ using FS20_HudBar.Bar;
 
 namespace FS20_HudBar
 {
-
-
   /// <summary>
   /// A settings profile
-  /// the checkbox values of the user settings
+  /// the checkbox, dropdown values of the user settings per profile
   /// </summary>
   class CProfile
   {
     private int m_pNumber = 0;
 
     private FlowLayoutPanel m_flp = null;
-    private Color c_FBCol = Color.PaleGreen;
 
     private Dictionary<LItem, bool> m_profile = new Dictionary<LItem, bool>();   // true to show the item
     private Dictionary<LItem, bool> m_flowBreak = new Dictionary<LItem, bool>(); // true to break the flow
@@ -32,6 +29,7 @@ namespace FS20_HudBar
     private GUI.Kind m_kind = GUI.Kind.Bar;
     private Point m_location = new Point(0,0);
     private bool m_condensed = false;
+    private GUI.Transparent m_transparent = GUI.Transparent.T0;
 
     public string PName { get; set; } = "Profile";
     public GUI.FontSize FontSize => m_fontSize;
@@ -39,6 +37,9 @@ namespace FS20_HudBar
     public GUI.Kind Kind => m_kind;
     public Point Location => m_location;
     public bool Condensed => m_condensed;
+    public GUI.Transparent Transparency => m_transparent;
+    public float Opacity =>1.0f - (int)m_transparent/10f; // inverse of transparency
+
 
     /// <summary>
     /// Update the Location of the profile
@@ -70,13 +71,15 @@ namespace FS20_HudBar
     /// <param name="fontSize">The FontSize Number (matches the enum)</param>
     /// <param name="placement">The Placement Number (matches the enum)</param>
     /// <param name="condensed">The Condensed Font Flag</param>
+    /// <param name="transparent">The Transparency value</param>
     public CProfile( int pNum, string profileName,
                      string profile, string flowBreak, string sequence,
-                     int fontSize, int placement, int kind, Point location, bool condensed )
+                     int fontSize, int placement, int kind, Point location, bool condensed, int transparent )
     {
       m_pNumber = pNum;
       LoadProfile( profileName, profile, flowBreak, sequence,
-                    (GUI.FontSize)fontSize, (GUI.Placement)placement, (GUI.Kind)kind, location, condensed );
+                    (GUI.FontSize)fontSize, (GUI.Placement)placement, (GUI.Kind)kind, 
+                    location, condensed, (GUI.Transparent)transparent );
     }
 
     /// <summary>
@@ -145,7 +148,8 @@ namespace FS20_HudBar
          // Cursor = Cursors.NoMoveVert,
         };
         cb.Checked = m_profile[i];
-        cb.BackColor = m_flowBreak[i] ? c_FBCol : flp.BackColor; // FBs have a different BGCol
+        cb.BackColor = m_flowBreak[i] ? GUI.GUI_Colors.c_FBCol : flp.BackColor; // FBs have a different BGCol
+        // Mouse Handlers
         cb.MouseDown += Cb_MouseDown;
         cb.MouseUp += Cb_MouseUp;
         cb.MouseMove += Cb_MouseMove;
@@ -177,6 +181,7 @@ namespace FS20_HudBar
 
 
     #region Mouse + Drag and Drop Handling
+
     // DD vars
     private Rectangle dragBoxFromMouseDown;
     private string dragSourceKey = "";
@@ -394,6 +399,15 @@ namespace FS20_HudBar
     }
 
     /// <summary>
+    /// Make the current Transparency the selected one
+    /// </summary>
+    /// <param name="box">The ComboBox</param>
+    public void LoadTrans( ComboBox box )
+    {
+      box.SelectedIndex = (int)m_transparent;
+    }
+
+    /// <summary>
     /// Update this profile from the Placement ComboBox
     /// </summary>
     /// <param name="box">The ComboBox</param>
@@ -420,10 +434,20 @@ namespace FS20_HudBar
       m_condensed = box.SelectedIndex == 1;
     }
 
+    /// <summary>
+    /// Update this profile from the Transparent ComboBox
+    /// </summary>
+    /// <param name="box">The ComboBox</param>
+    public void GetTramsFromCombo( ComboBox box )
+    {
+      m_transparent = (GUI.Transparent)box.SelectedIndex;
+    }
+
 
     // Load the profile from stored strings (Settings)
     private void LoadProfile( string profileName, string profile, string flowBreak, string sequence,
-                                GUI.FontSize fontSize, GUI.Placement placement, GUI.Kind kind, Point location, bool condensed )
+                                GUI.FontSize fontSize, GUI.Placement placement, GUI.Kind kind, 
+                                Point location, bool condensed, GUI.Transparent transparent )
     {
       // save props in Profile
       PName = profileName;
@@ -432,6 +456,7 @@ namespace FS20_HudBar
       m_kind = kind;
       m_location = location;
       m_condensed = condensed;
+      m_transparent = transparent;
 
       // The Dictionaries and stored strings of it maintain the Enum Sequence
       //   even if items are relocated for display

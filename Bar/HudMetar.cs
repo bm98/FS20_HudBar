@@ -40,7 +40,7 @@ namespace FS20_HudBar.Bar
     public void Clear( )
     {
       MText = "";
-      ConditionColor = HudBar.c_ActBG;
+      ConditionColor = GUI.GUI_Colors.c_ActBG;
       HasNewData = true; // clear current
     }
 
@@ -59,18 +59,18 @@ namespace FS20_HudBar.Bar
 
         HasNewData = true;
         ConditionColor =
-          ( closest.Data.FlightCategory.FlightCategoryColor == "green" ) ? HudBar.c_MetG :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "blue" ) ? HudBar.c_MetB :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "red" ) ? HudBar.c_MetR :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "magenta" ) ? HudBar.c_MetM :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "black" ) ? HudBar.c_MetK :  // SUB ILS
-          ( closest.Data.FlightCategory.FlightCategoryColor == "white" ) ? HudBar.c_MetR : HudBar.c_ActBG; // unknown
+          ( closest.Data.FlightCategory.FlightCategoryColor == "green" ) ? GUI.GUI_Colors.c_MetG :
+          ( closest.Data.FlightCategory.FlightCategoryColor == "blue" ) ? GUI.GUI_Colors.c_MetB :
+          ( closest.Data.FlightCategory.FlightCategoryColor == "red" ) ? GUI.GUI_Colors.c_MetR :
+          ( closest.Data.FlightCategory.FlightCategoryColor == "magenta" ) ? GUI.GUI_Colors.c_MetM :
+          ( closest.Data.FlightCategory.FlightCategoryColor == "black" ) ? GUI.GUI_Colors.c_MetK :  // SUB ILS
+          ( closest.Data.FlightCategory.FlightCategoryColor == "white" ) ? GUI.GUI_Colors.c_MetR : GUI.GUI_Colors.c_ActBG; // unknown
       }
       else {
         MText = "";
         StationText = "n.a.";
         HasNewData = true;
-        ConditionColor = HudBar.c_ActBG;
+        ConditionColor = GUI.GUI_Colors.c_ActBG;
       }
 
     }

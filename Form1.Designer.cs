@@ -30,7 +30,7 @@ namespace FS20_HudBar
     {
       this.components = new System.ComponentModel.Container();
       this.lblProto = new System.Windows.Forms.Label();
-      this.flp = new System.Windows.Forms.FlowLayoutPanel();
+      this.flpMAIN = new System.Windows.Forms.FlowLayoutPanel();
       this.valueProto = new System.Windows.Forms.Label();
       this.cMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.mSelProfile = new System.Windows.Forms.ToolStripTextBox();
@@ -55,6 +55,7 @@ namespace FS20_HudBar
       // 
       this.lblProto.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.lblProto.AutoSize = true;
+      this.lblProto.BackColor = System.Drawing.Color.Transparent;
       this.lblProto.Font = new System.Drawing.Font("Bahnschrift", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.lblProto.ForeColor = System.Drawing.Color.Silver;
       this.lblProto.Location = new System.Drawing.Point(510, 38);
@@ -66,22 +67,24 @@ namespace FS20_HudBar
       this.lblProto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       this.lblProto.Visible = false;
       // 
-      // flp
+      // flpMAIN
       // 
-      this.flp.AutoSize = true;
-      this.flp.CausesValidation = false;
-      this.flp.Location = new System.Drawing.Point(12, 15);
-      this.flp.Name = "flp";
-      this.flp.Size = new System.Drawing.Size(110, 31);
-      this.flp.TabIndex = 1;
-      this.flp.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseDown);
-      this.flp.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseMove);
-      this.flp.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseUp);
+      this.flpMAIN.AutoSize = true;
+      this.flpMAIN.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(1)))));
+      this.flpMAIN.CausesValidation = false;
+      this.flpMAIN.Location = new System.Drawing.Point(12, 12);
+      this.flpMAIN.Name = "flpMAIN";
+      this.flpMAIN.Size = new System.Drawing.Size(110, 31);
+      this.flpMAIN.TabIndex = 1;
+      this.flpMAIN.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseDown);
+      this.flpMAIN.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseMove);
+      this.flpMAIN.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseUp);
       // 
       // valueProto
       // 
       this.valueProto.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.valueProto.AutoSize = true;
+      this.valueProto.BackColor = System.Drawing.Color.Transparent;
       this.valueProto.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.valueProto.ForeColor = System.Drawing.Color.WhiteSmoke;
       this.valueProto.Location = new System.Drawing.Point(586, 35);
@@ -103,12 +106,13 @@ namespace FS20_HudBar
             this.mConfig,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(161, 101);
+      this.cMenu.Size = new System.Drawing.Size(181, 123);
       // 
       // mSelProfile
       // 
       this.mSelProfile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.mSelProfile.Name = "mSelProfile";
+      this.mSelProfile.ReadOnly = true;
       this.mSelProfile.Size = new System.Drawing.Size(100, 23);
       // 
       // toolStripSeparator1
@@ -202,6 +206,7 @@ namespace FS20_HudBar
       // 
       this.value2Proto.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.value2Proto.AutoSize = true;
+      this.value2Proto.BackColor = System.Drawing.Color.Transparent;
       this.value2Proto.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Bold);
       this.value2Proto.ForeColor = System.Drawing.Color.WhiteSmoke;
       this.value2Proto.Location = new System.Drawing.Point(677, 38);
@@ -234,6 +239,7 @@ namespace FS20_HudBar
       // 
       this.label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.label1.AutoSize = true;
+      this.label1.BackColor = System.Drawing.Color.Transparent;
       this.label1.Font = new System.Drawing.Font("Share Tech Mono", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label1.ForeColor = System.Drawing.Color.WhiteSmoke;
       this.label1.Location = new System.Drawing.Point(681, 3);
@@ -254,7 +260,7 @@ namespace FS20_HudBar
       this.ClientSize = new System.Drawing.Size(872, 72);
       this.ContextMenuStrip = this.cMenu;
       this.Controls.Add(this.label1);
-      this.Controls.Add(this.flp);
+      this.Controls.Add(this.flpMAIN);
       this.Controls.Add(this.B);
       this.Controls.Add(this.value2Proto);
       this.Controls.Add(this.signProto);
@@ -279,6 +285,8 @@ namespace FS20_HudBar
       this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseDown);
       this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseMove);
       this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseUp);
+      this.Move += new System.EventHandler(this.frmMain_Move);
+      this.Resize += new System.EventHandler(this.frmMain_Resize);
       this.cMenu.ResumeLayout(false);
       this.cMenu.PerformLayout();
       this.ResumeLayout(false);
@@ -289,7 +297,7 @@ namespace FS20_HudBar
     #endregion
 
     private System.Windows.Forms.Label lblProto;
-    private System.Windows.Forms.FlowLayoutPanel flp;
+    private System.Windows.Forms.FlowLayoutPanel flpMAIN;
     private System.Windows.Forms.Label valueProto;
     private System.Windows.Forms.ContextMenuStrip cMenu;
     private System.Windows.Forms.ToolStripMenuItem mExit;

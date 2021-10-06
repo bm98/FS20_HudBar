@@ -12,6 +12,7 @@ using SC = SimConnectClient;
 using CoordLib;
 using MetarLib;
 
+using static FS20_HudBar.GUI.GUI_Colors;
 using FS20_HudBar.GUI;
 
 //using FS20_HudBar.Bar.FltLib;
@@ -111,6 +112,9 @@ namespace FS20_HudBar.Bar
     ATC_ALT_HDG, // ATC assigned ALT and HDG
 
     VS_PM,      // Vertical Speed with +-
+
+    RA_VOICE,     // Radio Altitude with voice output
+
     //    GPS_APT_APR,// GPS Airport & Approach - SIM PROVIDES EMPTY STRINGS ...
   }
 
@@ -252,6 +256,8 @@ namespace FS20_HudBar.Bar
 
     VS_PM,        // Vertical Speed with +- fpm
 
+    RA_VOICE,     // Radio Altitude with voice output
+
     //GPS_APT,      // GPS Airport ID - SIM PROVIDES EMPTY STRINGS ...
     //GPS_APR,      // GPS Approach ID - SIM PROVIDES EMPTY STRINGS ...
   }
@@ -314,6 +320,9 @@ namespace FS20_HudBar.Bar
     private static readonly CPointMeter m_cpMeter2 = new CPointMeter();
     private static readonly CPointMeter m_cpMeter3 = new CPointMeter();
 
+    // Speech
+    private static readonly GUI_Speech m_speech = new GUI_Speech();
+
     /// <summary>
     /// The Checkpoint Meter 1
     /// </summary>
@@ -327,33 +336,11 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static CPointMeter CPMeter3 => m_cpMeter3;
 
-    // Item Colors Foreground
-    public static readonly Color c_Info = Color.WhiteSmoke;   // Info Text (basically white)
-    public static readonly Color c_OK = Color.LimeGreen;      // OK Text
-    public static readonly Color c_AP = Color.LimeGreen;      // Autopilot, NAV (green)
-    public static readonly Color c_Gps = Color.Fuchsia;       // GPS (magenta)
-    public static readonly Color c_Set = Color.Cyan;          // Set Values (cyan)
-    public static readonly Color c_RA = Color.Orange;         // Radio Alt
-    public static readonly Color c_Est = Color.Plum;          // Estimates 
-    // those are set in the data receiver part in Main (here to have all in one place)
-    public static readonly Color c_SubZero = Color.DeepSkyBlue;  // Temp sub zero
-    public static readonly Color c_SRATE = Color.Goldenrod;   // SimRate != 1
-
-    // Background
-    public static readonly Color c_ActBG = Color.FromArgb(00,00,75); // Actionable Items Background (dark blue)
-    public static readonly Color c_LiveBG = Color.DarkGreen;  // Live Items Background
-    public static readonly Color c_BG = Color.Black;          // regular background
-
-    public static readonly Color c_MetG = Color.ForestGreen;  // METAR Green
-    public static readonly Color c_MetB = Color.Blue;         // METAR Blue
-    public static readonly Color c_MetR = Color.Crimson;      // METAR Red
-    public static readonly Color c_MetM = Color.DarkViolet;   // METAR Magenta
-    public static readonly Color c_MetK = Color.DarkOrange;   // METAR Black (SUB ILS)
 
     #endregion  // STATIC
 
 
-    // Mono TT for the Flight path
+    // Our Custom Mono ToolTip for the Flight path
     private X_ToolTip m_toolTipFP = new X_ToolTip(){
       // Set up the delays for the ToolTip.
       AutoPopDelay = 30_000, // looong
@@ -362,6 +349,8 @@ namespace FS20_HudBar.Bar
       // Force the ToolTip text to be displayed whether or not the form is active.
       ShowAlways = true
     };
+
+    // A standard ToolTip for the Metar Display
     private ToolTip m_toolTip = new ToolTip(){
       // Set up the delays for the ToolTip.
       AutoPopDelay = 10_000,
@@ -383,14 +372,17 @@ namespace FS20_HudBar.Bar
     /// Show Units if true
     /// </summary>
     public bool ShowUnits { get; private set; } = false;
-    /// <summary>
-    /// Fully Opaque Form Background if true
-    /// </summary>
-    public bool OpaqueBackground { get; private set; } = false;
+
     /// <summary>
     /// FLT File AutoSave and FlightPlan Handler Enabled
     /// </summary>
     public bool FltAutoSave { get; private set; } = false;
+
+    /// <summary>
+    /// The used VoiceName
+    /// </summary>
+    public string VoiceName { get; private set; } = "";
+
 
     /// <summary>
     /// Returns the Show state of an item
@@ -424,7 +416,7 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public X_ToolTip ToolTipFP => m_toolTipFP;
 
-    // Hud Bar label names to match the enum above (as short as possible)
+    // Hud Bar Label names to match the enum above (as short as possible)
     private Dictionary<LItem,string> m_guiNames = new Dictionary<LItem, string>(){
       {LItem.MSFS,"MSFS" },
       {LItem.SimRate,"SimRate" },
@@ -472,6 +464,7 @@ namespace FS20_HudBar.Bar
       {LItem.ALT,"ALTeff" },
       {LItem.ALT_INST,"ALT" },
       {LItem.RA,"RA" },
+      {LItem.RA_VOICE,"RAv" },
       {LItem.IAS,"IAS" },
       {LItem.TAS,"TAS" },
       {LItem.MACH,"Mach" },
@@ -500,7 +493,7 @@ namespace FS20_HudBar.Bar
       {LItem.M_TIM_DIST3,"CP 3" },
     };
 
-    // Descriptive GUI label names to match the enum above (shown in Config)
+    // Descriptive Configuration GUI label names to match the enum above
     private Dictionary<LItem,string> m_cfgNames = new Dictionary<LItem, string>(){
       {LItem.MSFS,"MSFS Status" },
       {LItem.SimRate,"Sim Rate" },
@@ -552,6 +545,7 @@ namespace FS20_HudBar.Bar
       {LItem.ALT,"Aircraft effective ALT ft" },
       {LItem.ALT_INST,"Aircraft ALT ft" },
       {LItem.RA,"Aircraft RA ft" },
+      {LItem.RA_VOICE,"Aircraft RA ft audible" },
       {LItem.IAS,"Aircraft IAS kt" },
       {LItem.TAS,"Aircraft TAS kt" },
       {LItem.MACH,"Aircraft Mach number M" },
@@ -591,13 +585,13 @@ namespace FS20_HudBar.Bar
     // One collection contains the actionable interface
     // The second collection the WinForm Control itself (to act on the Control interface)
 
-    // The Display Groups (DispItem is essentially a smaller FlowLayoutPanel containing the label and 1 or 2 values)
+    // The Display Groups (DispItem is essentially a smaller FlowLayoutPanel containing the Label and 0, 1 or more Value Items)
     private DispItemCat  m_dispItems = new DispItemCat();
 
-    // Value Items (updated from Sim, some may change colors)
+    // Value Items (updated from Sim, some may change colors based on conditions)
     private ValueItemCat m_valueItems = new ValueItemCat();
 
-
+    // The Font provider
     private static GUI_Fonts FONTS = null; // handle fonts as static item to not waste resources
 
     /// <summary>
@@ -610,32 +604,34 @@ namespace FS20_HudBar.Bar
     /// <param name="value2Proto">A GUI prototype value type 2, carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="signProto">A GUI prototype icon(Wingdings), carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="showUnits">Showing units flag</param>
-    /// <param name="opaque">Opaque flag</param>
     /// <param name="cProfile">The current Profile</param>
-    public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits, bool opaque, bool autoSave, CProfile cProfile )
+    /// <param name="voiceName">The current VoiceName</param>
+    public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto, 
+                      bool showUnits, bool autoSave, CProfile cProfile, string voiceName )
     {
       // just save them in the HUD mainly for config purpose
       m_profile = cProfile;
       ShowUnits = showUnits;
-      OpaqueBackground = opaque;
       FltAutoSave = autoSave;
+      VoiceName = voiceName;
+      var voiceOK = m_speech.SetVoice( VoiceName );
 
       // Reset our own ToolTip control
       ToolTipFP.ResetDrawList( );
 
-      // init from the submitted labels
+      // init the Fontprovider from the submitted labels
       FONTS = new GUI_Fonts( m_profile.Condensed ); // get all fonts from built in
-
       // set desired size
       FONTS.SetFontsize( m_profile.FontSize );
-      // and prepare the prototypes used below - not really clever but handier to have all label defaults ....
+
+      // and prepare the prototype Controls used below - not really clever but handier to have all label defaults ....
       lblProto.Font = FONTS.LabelFont;
       valueProto.Font = FONTS.ValueFont;
       value2Proto.Font = FONTS.Value2Font;
       signProto.Font = FONTS.SignFont;
 
-      // The Value Item Background - used when assessing and debugging only
-      var x_BG = lblProto.BackColor; // default taken from the prototype label
+      // The Value Item Background - changed when assessing and debugging only
+      var x_BG = c_BG; // default
       //x_BG = Color.DarkBlue; // DEBUG color to see control outlines
 
       // reset all dictionaries
@@ -645,15 +641,16 @@ namespace FS20_HudBar.Bar
       // we do this one by one..
       // NOTE: ONLY ONE BUTTON Control (B_ICAO) per item, One may leave out the Value item e.g. for AP and other non value items
 
-      LItem disp; // the label to add
-      VItem item; // the value item to add (can be defined and added a second time for 2 engines values)
-      Control l, v; DispItem di = null; // l is the label control, v is a value control, di is the Display Group containing label and values for one entity
+      LItem disp; // the Label to add
+      VItem item; // the Value item to add (can be defined and added multiple times for e.g. 2 engines values)
+      // l is the Label control, v is a Value control, di is the Display Group containing Label and Values for one entity
+      Control l, v; DispItem di = null; 
 
-      // The pattern below repeats, define the label, create the display group and add it to the group list
-      // Define the value item and add it to the Value Label list to later change properties when data arrives
+      // The pattern below repeats, define the Label, create the display group and add it to the group list
+      // Define the Value item and add it to the Value Label list to later change properties when data arrives
       // then use the desired formatter label Control (V_xy) set specifics and add it to the display group and access lists
       // for 2 engine items define the second value item and control (same procedure as with the first one)
-      //  - we use value2Proto to get a smaller font for the numbers
+      //  - we use value2Proto to get a smaller font usually for 2+ values are to be shown for an item
 
       // Sim Status
       disp = LItem.MSFS; di = m_dispItems.CreateDisp( disp );
@@ -673,19 +670,27 @@ namespace FS20_HudBar.Bar
       v = new V_Time( value2Proto ) { }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // TRIMS
+      // Elevator (plain)
       disp = LItem.ETrim; di = m_dispItems.CreateDisp( disp );
       item = VItem.ETrim;
-      // the ERA-Trim label gets a button to activate the 0 Trim action
+      // All ERA-Trim label get a button to activate the 0 Trim action
       l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
       v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
-
+      // Rudder
       disp = LItem.RTrim; di = m_dispItems.CreateDisp( disp );
       item = VItem.RTrim;
       l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
       v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
-
+      // Aileron
       disp = LItem.ATrim; di = m_dispItems.CreateDisp( disp );
       item = VItem.ATrim;
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
+      v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+
+      // AutoElevator Trim Version
+      disp = LItem.A_ETRIM; di = m_dispItems.CreateDisp( disp );
+      item = VItem.A_ETRIM;
+      // the Auto E-Trim label gets a button to activate the AutoTrim Module
       l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
       v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
@@ -694,7 +699,6 @@ namespace FS20_HudBar.Bar
       item = VItem.OAT;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Temp( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
-
       // VIS
       disp = LItem.VIS; di = m_dispItems.CreateDisp( disp );
       item = VItem.VIS;
@@ -914,6 +918,11 @@ namespace FS20_HudBar.Bar
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Alt( valueProto, showUnits ) { ForeColor = c_RA, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
+      disp = LItem.RA_VOICE; di = m_dispItems.CreateDisp( disp );
+      item = VItem.RA_VOICE;
+      l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_RAaudio( valueProto, showUnits, m_speech ) { ForeColor = c_RA, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+
       disp = LItem.IAS; di = m_dispItems.CreateDisp( disp );
       item = VItem.IAS;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
@@ -1047,12 +1056,6 @@ namespace FS20_HudBar.Bar
       item = VItem.M_Dist3;
       v = new V_Dist( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
-      disp = LItem.A_ETRIM; di = m_dispItems.CreateDisp( disp );
-      item = VItem.A_ETRIM;
-      // the Auto E-Trim label gets a button to activate the AutoTrim Module
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
-
       disp = LItem.MAN; di = m_dispItems.CreateDisp( disp );
       item = VItem.E1_MAN;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
@@ -1106,8 +1109,7 @@ namespace FS20_HudBar.Bar
       l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
       v = new L_Text( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
-
-      // post processing
+      // **** post processing
 
       // Apply Unit modifier (shown, not shown) to all Values
       foreach ( var lx in m_valueItems ) {
@@ -1181,7 +1183,7 @@ namespace FS20_HudBar.Bar
     #region Update Content and Settings
 
     /// <summary>
-    /// Update the GUI values from Sim
+    /// Update the GUI values from Sim (one Big Value Converter for all Value Items supported)
     ///  In general GUI elements are only updated when checked and visible
     ///  Trackers and Meters are maintained independent of the View state (another profile may use them..)
     /// </summary>
@@ -1572,6 +1574,14 @@ namespace FS20_HudBar.Bar
           this.Value( VItem.RA ).Text = " .....";
         }
       }
+      if ( this.ShowItem( LItem.RA_VOICE ) ) {
+        if ( SC.SimConnectClient.Instance.AircraftModule.AltAoG_ft <= 1500 ) {
+          this.Value( VItem.RA_VOICE ).Value = SC.SimConnectClient.Instance.AircraftModule.AltAoG_ft;
+        }
+        else {
+          this.Value( VItem.RA_VOICE ).Text = " .....";
+        }
+      }
       if ( this.ShowItem( LItem.IAS ) ) this.Value( VItem.IAS ).Value = SC.SimConnectClient.Instance.AircraftModule.IAS_kt;
       if ( this.ShowItem( LItem.TAS ) ) this.Value( VItem.TAS ).Value = SC.SimConnectClient.Instance.AircraftModule.TAS_kt;
       if ( this.ShowItem( LItem.MACH ) ) this.Value( VItem.MACH ).Value = SC.SimConnectClient.Instance.AircraftModule.Machspeed_mach;
@@ -1639,21 +1649,21 @@ namespace FS20_HudBar.Bar
     }
 
     /// <summary>
-    /// Set the current opacity communicated by the HUD
-    /// </summary>
-    /// <param name="opacity"></param>
-    public void SetOpacity( bool opacity )
-    {
-      OpaqueBackground = opacity;
-    }
-
-    /// <summary>
     /// Set the current FltAutoSave communicated by the HUD
     /// </summary>
     /// <param name="opacity"></param>
     public void SetFltAutoSave( bool autoSave )
     {
       FltAutoSave = autoSave;
+    }
+
+    /// <summary>
+    /// Set the current VoiceName communicated by the HUD
+    /// </summary>
+    /// <param name="voiceName"></param>
+    public void SetVoiceName( string voiceName )
+    {
+      VoiceName = voiceName;
     }
 
     #endregion

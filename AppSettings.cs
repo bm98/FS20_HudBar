@@ -83,6 +83,7 @@ namespace FS20_HudBar
       set { this["ShowUnits"] = value; }
     }
 
+    // Obsolete - no longer used
     [UserScopedSetting( )]
     [DefaultSettingValue( "False" )]
     public bool Opaque {
@@ -110,6 +111,14 @@ namespace FS20_HudBar
       get { return (int)this["SelProfile"]; }
       set { this["SelProfile"] = value; }
     }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string VoiceName {
+      get { return (string)this["VoiceName"]; }
+      set { this["VoiceName"] = value; }
+    }
+
 
     // PROFILE 1
 
@@ -139,6 +148,13 @@ namespace FS20_HudBar
     public int Profile_1_Kind {
       get { return (int)this["Profile_1_Kind"]; }
       set { this["Profile_1_Kind"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_1_Trans {
+      get { return (int)this["Profile_1_Trans"]; }
+      set { this["Profile_1_Trans"] = value; }
     }
 
     [UserScopedSetting( )]
@@ -207,6 +223,13 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_2_Trans {
+      get { return (int)this["Profile_2_Trans"]; }
+      set { this["Profile_2_Trans"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "0, 0" )]
     public Point Profile_2_Location {
       get { return (Point)this["Profile_2_Location"]; }
@@ -269,6 +292,13 @@ namespace FS20_HudBar
     public int Profile_3_Kind {
       get { return (int)this["Profile_3_Kind"]; }
       set { this["Profile_3_Kind"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_3_Trans {
+      get { return (int)this["Profile_3_Trans"]; }
+      set { this["Profile_3_Trans"] = value; }
     }
 
     [UserScopedSetting( )]
@@ -337,6 +367,13 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_4_Trans {
+      get { return (int)this["Profile_4_Trans"]; }
+      set { this["Profile_4_Trans"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "0, 0" )]
     public Point Profile_4_Location {
       get { return (Point)this["Profile_4_Location"]; }
@@ -399,6 +436,13 @@ namespace FS20_HudBar
     public int Profile_5_Kind {
       get { return (int)this["Profile_5_Kind"]; }
       set { this["Profile_5_Kind"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "0" )]
+    public int Profile_5_Trans {
+      get { return (int)this["Profile_5_Trans"]; }
+      set { this["Profile_5_Trans"] = value; }
     }
 
     [UserScopedSetting( )]
