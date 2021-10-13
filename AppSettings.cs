@@ -106,6 +106,13 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string VoiceName {
+      get { return (string)this["VoiceName"]; }
+      set { this["VoiceName"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "0" )]
     public int SelProfile {
       get { return (int)this["SelProfile"]; }
@@ -113,10 +120,10 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
-    [DefaultSettingValue( "" )]
-    public string VoiceName {
-      get { return (string)this["VoiceName"]; }
-      set { this["VoiceName"] = value; }
+    [DefaultSettingValue( "0" )]
+    public int Appearance {
+      get { return (int)this["Appearance"]; }
+      set { this["Appearance"] = value; }
     }
 
 

@@ -22,6 +22,7 @@ namespace FS20_HudBar.GUI
       m_unit = "";
       m_default = "_____";
       Text = UnitString( m_default );
+      ItemForeColor = GUI_Colors.ColorType.cLabel; // default color for Labels
     }
 
   }

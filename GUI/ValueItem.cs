@@ -22,6 +22,11 @@ namespace FS20_HudBar.GUI
     public IValue Value => (IValue)m_ctrl;
 
     /// <summary>
+    /// The IColorType Interface
+    /// </summary>
+    public IColorType ColorType => (IColorType)m_ctrl;
+
+    /// <summary>
     /// The associated Control
     /// </summary>
     public Control Ctrl => (Control)m_ctrl;

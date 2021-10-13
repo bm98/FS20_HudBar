@@ -17,12 +17,16 @@ namespace FS20_HudBar.GUI
   class DispItem : FlowLayoutPanel
   {
     // The Label (first item)
-    private Control m_label = null;
+    private object m_label = null;
 
     /// <summary>
     /// Returns the Label of this group (first added control)
     /// </summary>
-    public Control Label => m_label;
+    public Control Label => (Control)m_label;
+    /// <summary>
+    /// Returns the Label of this group (first added control)
+    /// </summary>
+    public IColorType ColorType => (IColorType)m_label;
 
     /// <summary>
     /// cTor: Create an item
@@ -36,20 +40,24 @@ namespace FS20_HudBar.GUI
       this.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
       this.Dock = DockStyle.Bottom;
       this.Cursor = Cursors.Default; // avoid the movement cross on the item controls
-      this.BackColor = GUI.GUI_Colors.c_BG;
+      this.BackColor = GUI_Colors.ItemColor(GUI_Colors.ColorType.cBG); // default (should be transparent - ex. for debugging)
       //this.BackColor = Color.Pink; // DEBUG color
     }
 
     /// <summary>
-    /// Add a Control from Left to Right
+    /// Add an Item from Left to Right
     /// </summary>
     /// <param name="control"></param>
-    public void AddItem( Control control )
+    public void AddItem( object control )
     {
-      if ( this.Controls.Count == 0 )
-        m_label = control;
+      if ( !( control is Control ) ) return; // sanity
+      if ( !( control is IColorType ) ) return; // sanity
 
-      this.Controls.Add( control );
+      if ( this.Controls.Count == 0 ) {
+        m_label = control as Control;
+      }
+
+      this.Controls.Add( control as Control );
     }
 
   }

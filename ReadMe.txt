@@ -1,5 +1,5 @@
-FS20_HudBar V 0.34 - Build 28 BETA
-(c) M. Burri - 05-Oct-2021
+FS20_HudBar V 0.35 - Build 29 BETA
+(c) M. Burri - 13-Oct-2021
 
 Contains files:
 
@@ -12,6 +12,7 @@ SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
 MetarLib.dll				A METAR access library (new V0.29)
 CoordLib.dll				A coord. handling library (new V0.29)
 FS20_AptLib.dll             MSFS2020 Airport DB (new V0.29)
+SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new V0.35)
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg
@@ -36,6 +37,11 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.35-B29
+- Add Appearance selection for the value items (3 levels Bright, Dimmed, Dark)
+- Update to own SpeechLib allowing to use all Win10 installed voices
+- Update QuickGuide
+
 V 0.34-B28
 - Add Audible RA item (RAv) - announces 400,300,200,100,50,40,30,20,10 ft RA
 - Update Transparency setting, Opaque to 90% independent per profile

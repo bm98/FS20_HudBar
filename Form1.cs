@@ -47,6 +47,9 @@ namespace FS20_HudBar
     private List<CProfile> m_profiles = new List<CProfile>();
     private int m_selProfile = 0;
 
+    // The Appearance setting
+    private ColorSet m_appearance = ColorSet.BrightSet;
+
     //private SC.Input.InputHandler FSInput;  // Receive commands from FSim -  not yet used
     private readonly frmConfig CFG = new frmConfig( ); // Configuration Dialog
     // need to stop processing while reconfiguring the bar
@@ -145,7 +148,8 @@ namespace FS20_HudBar
 
       m_selProfile = AppSettings.Instance.SelProfile;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
-
+      m_appearance = ToColorSet(AppSettings.Instance.Appearance);
+      Colorset = m_appearance;
 
       // ShowUnits and Opacity are set via HUD in InitGUI
       m_frmGui = new frmGui( );
@@ -365,6 +369,37 @@ namespace FS20_HudBar
 
     #endregion
 
+    #region Appearance Selectors
+
+    private void maBright_Click( object sender, EventArgs e )
+    {
+      m_appearance = ColorSet.BrightSet;
+      GUI.GUI_Colors.Colorset = m_appearance;
+      // save as setting
+      AppSettings.Instance.Appearance = (int)Colorset;
+      AppSettings.Instance.Save( );
+    }
+
+    private void maDimm_Click( object sender, EventArgs e )
+    {
+      m_appearance = ColorSet.DimmedSet;
+      GUI.GUI_Colors.Colorset = m_appearance;
+      // save as setting
+      AppSettings.Instance.Appearance = (int)Colorset;
+      AppSettings.Instance.Save( );
+    }
+
+    private void maDark_Click( object sender, EventArgs e )
+    {
+      m_appearance = ColorSet.DarkSet;
+      GUI.GUI_Colors.Colorset = m_appearance;
+      // save as setting
+      AppSettings.Instance.Appearance = (int)Colorset;
+      AppSettings.Instance.Save( );
+    }
+
+    #endregion
+
     #region Mouse handlers for moving the Tile around
 
     private bool m_moving = false;
@@ -454,9 +489,26 @@ namespace FS20_HudBar
     /// </summary>
     private void FrmMain_ButtonClicked( object sender, GUI.ClickedEventArgs e )
     {
-      if ( !SC.SimConnectClient.Instance.IsConnected ) return; // no action when not connected
+      if ( !SC.SimConnectClient.Instance.IsConnected ) {
+        // no action related to simConnect when not connected
+        if ( e.Item== VItem.Ad ) {
+          NextColorset( ); // MSFS, rotate colorset
+          // save as setting
+          AppSettings.Instance.Appearance = (int)Colorset;
+          AppSettings.Instance.Save( );
 
+        }
+        return; 
+      }
+
+      // we are connected.. 
       switch ( e.Item ) {
+        case VItem.Ad:
+          NextColorset(); // MSFS, rotate colorset
+          // save as setting
+          AppSettings.Instance.Appearance = (int)Colorset;
+          AppSettings.Instance.Save( );
+          break;
         case VItem.AP:
           SC.SimConnectClient.Instance.AP_G1000Module.Master_toggle( );
           break;
@@ -746,14 +798,12 @@ namespace FS20_HudBar
 
       // Color the MSFS Label it if connected
       if ( SC.SimConnectClient.Instance.IsConnected ) {
-        HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
-        HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Black; // not c_BG so we still can select it in Transp. Mode
-        HUD.Value( VItem.Ad ).Text = "";
+        HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cOK;
+        HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse; // not cBG so we still can select it in Transp. Mode
       }
       else {
-        HUD.DispItem( LItem.MSFS ).Label.ForeColor = c_Info;
-        HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Red;
-        HUD.Value( VItem.Ad ).Text = ""; // = "NO SIM" - don't add a text - it makes the bars jumping due to this change in layout
+        HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cInfo;
+        HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cAlert;
       }
 
       // this.Visible = true; // Unhide when finished
@@ -789,9 +839,8 @@ namespace FS20_HudBar
     /// </summary>
     private void SimConnect( )
     {
-      HUD.Value( VItem.Ad ).Text = ""; // reset in case it had an error message
-      HUD.DispItem( LItem.MSFS ).Label.ForeColor = c_Info;
-      HUD.DispItem( LItem.MSFS ).Label.BackColor = c_BG;
+      HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor= ColorType.cInfo;
+      HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor= ColorType.cInverse;
 
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         // Disconnect from Input and SimConnect

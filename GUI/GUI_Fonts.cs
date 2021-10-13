@@ -121,10 +121,12 @@ namespace FS20_HudBar.GUI
       /// <param name="condensed">Condensed Fonts or Regular ones</param>
       public void CreateFont( FontSize fontSize, bool condensed )
       {
-        if ( condensed ) 
+        if ( condensed ) { 
           Font = new Font( CondFamily, CondSize + FontIncrement( fontSize ), CondStyle );
-        else
+        }
+        else { 
           Font = new Font( RegFamily, RegSize + FontIncrement( fontSize ), RegStyle );
+        }
       }
     }
 

@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>28</ApplicationRevision>
-    <ApplicationVersion>0.34.0.28</ApplicationVersion>
+    <ApplicationRevision>29</ApplicationRevision>
+    <ApplicationVersion>0.35.0.29</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -95,9 +95,11 @@
     <Reference Include="SimConnectClient">
       <HintPath>..\..\Redist\SimConnectClient.dll</HintPath>
     </Reference>
+    <Reference Include="SpeechLib">
+      <HintPath>..\..\Redist\SpeechLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Speech" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -156,6 +158,7 @@
     <Compile Include="GUI\GUI_Colors.cs" />
     <Compile Include="GUI\GUI_Fonts.cs" />
     <Compile Include="GUI\GUI_Speech.cs" />
+    <Compile Include="GUI\IColorType.cs" />
     <Compile Include="GUI\ValueItem.cs" />
     <Compile Include="GUI\V_Alt.cs">
       <SubType>Component</SubType>

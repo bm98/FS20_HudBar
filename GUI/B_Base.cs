@@ -14,19 +14,63 @@ namespace FS20_HudBar.GUI
   /// Base class to implement Clickable Buttons with labels
   /// Mostly derived from the V_Base Class
   /// </summary>
-  abstract class B_Base : Button, IValue
+  abstract class B_Base : Button, IValue, IColorType
   {
     protected VItem m_mID = VItem.Ad;
     protected string m_default = "";
     protected string m_unit = "";
     protected bool m_showUnit = false;
+    protected GUI_Colors.ColorType m_foreColorType = GUI_Colors.ColorType.cInfo;
+    protected GUI_Colors.ColorType m_backColorType = GUI_Colors.ColorType.cBG;
 
     private const string c_numbers="0123456789";
     private Random random = new Random();
 
+    /// <summary>
+    /// Set the numeric Value
+    /// </summary>
     virtual public float? Value { set => throw new NotImplementedException( ); }
-    virtual public Steps Step { set => throw new NotImplementedException( ); }
+
+    /// <summary>
+    /// Set the integer Value
+    /// </summary>
     virtual public int? IntValue { set => throw new NotImplementedException( ); }
+
+    /// <summary>
+    /// Set the Step Value
+    /// </summary>
+    virtual public Steps Step { set => throw new NotImplementedException( ); }
+
+    /// <summary>
+    /// Get; Set the items Foreground Color by the type of the Item
+    /// </summary>
+    virtual public GUI_Colors.ColorType ItemForeColor {
+      get => m_foreColorType;
+      set {
+        m_foreColorType = value;
+        base.ForeColor = GUI_Colors.ItemColor( m_foreColorType );
+      }
+    }
+
+    /// <summary>
+    /// Get; Set the items Foreground Color by the type of the Item
+    /// </summary>
+    virtual public GUI_Colors.ColorType ItemBackColor {
+      get => m_backColorType;
+      set {
+        m_backColorType = value;
+        base.BackColor = GUI_Colors.ItemColor( m_backColorType );
+      }
+    }
+
+    /// <summary>
+    /// Asks the Object to update it's colors
+    /// </summary>
+    virtual public void UpdateColor( )
+    {
+      base.ForeColor = GUI_Colors.ItemColor( m_foreColorType );
+      base.BackColor = GUI_Colors.ItemColor( m_backColorType );
+    }
 
 
     /// <summary>
@@ -88,8 +132,8 @@ namespace FS20_HudBar.GUI
       m_mID = item;
       // Label props
       Font = proto.Font;
-      ForeColor = GUI_Colors.c_Info;  // forced BUTTONS get a c_Info Foreground
-      BackColor = GUI_Colors.c_ActBG; // forced BUTTONS get a c_ActBG Background
+      ItemForeColor = GUI_Colors.ColorType.cInfo; // forced BUTTONS get a c_Info Foreground
+      ItemBackColor = GUI_Colors.ColorType.cActBG; // forced BUTTONS get a c_ActBG Background
       AutoSize = true;                // force AutoSize
       TextAlign = proto.TextAlign;
       Anchor = proto.Anchor;
@@ -106,6 +150,9 @@ namespace FS20_HudBar.GUI
       FlatAppearance.MouseDownBackColor = GUI_Colors.c_ActPressed;  // forced 
       Cursor = Cursors.Hand; // forced: actionable
       TabStop = false; // forced, no TabStop
+
+      GUI_Colors.Register( this );
+
       base.Click += B_Prct_Click; // capture Click Event
     }
 

@@ -13,6 +13,8 @@ using CoordLib;
 using MetarLib;
 
 using static FS20_HudBar.GUI.GUI_Colors;
+using static FS20_HudBar.GUI.GUI_Colors.ColorType;
+
 using FS20_HudBar.GUI;
 
 //using FS20_HudBar.Bar.FltLib;
@@ -616,6 +618,9 @@ namespace FS20_HudBar.Bar
       VoiceName = voiceName;
       var voiceOK = m_speech.SetVoice( VoiceName );
 
+      // Reset the registered items for color handling - we create all new here
+      GUI_Colors.ClearRegistry( );
+
       // Reset our own ToolTip control
       ToolTipFP.ResetDrawList( );
 
@@ -629,10 +634,6 @@ namespace FS20_HudBar.Bar
       valueProto.Font = FONTS.ValueFont;
       value2Proto.Font = FONTS.Value2Font;
       signProto.Font = FONTS.SignFont;
-
-      // The Value Item Background - changed when assessing and debugging only
-      var x_BG = c_BG; // default
-      //x_BG = Color.DarkBlue; // DEBUG color to see control outlines
 
       // reset all dictionaries
       m_valueItems.Clear( );
@@ -651,12 +652,12 @@ namespace FS20_HudBar.Bar
       // then use the desired formatter label Control (V_xy) set specifics and add it to the display group and access lists
       // for 2 engine items define the second value item and control (same procedure as with the first one)
       //  - we use value2Proto to get a smaller font usually for 2+ values are to be shown for an item
+      // Colors are used from default or set here explicitely 
 
       // Sim Status
       disp = LItem.MSFS; di = m_dispItems.CreateDisp( disp );
       item = VItem.Ad;
-      l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Text( lblProto ) { Text = "" }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), ItemBackColor = cInverse }; di.AddItem( l );
 
       // Sim Rate
       disp = LItem.SimRate; di = m_dispItems.CreateDisp( disp );
@@ -674,440 +675,440 @@ namespace FS20_HudBar.Bar
       disp = LItem.ETrim; di = m_dispItems.CreateDisp( disp );
       item = VItem.ETrim;
       // All ERA-Trim label get a button to activate the 0 Trim action
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Prct( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // Rudder
       disp = LItem.RTrim; di = m_dispItems.CreateDisp( disp );
       item = VItem.RTrim;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Prct( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // Aileron
       disp = LItem.ATrim; di = m_dispItems.CreateDisp( disp );
       item = VItem.ATrim;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Prct( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // AutoElevator Trim Version
       disp = LItem.A_ETRIM; di = m_dispItems.CreateDisp( disp );
       item = VItem.A_ETRIM;
       // the Auto E-Trim label gets a button to activate the AutoTrim Module
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Prct( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // OAT
       disp = LItem.OAT; di = m_dispItems.CreateDisp( disp );
       item = VItem.OAT;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Temp( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Temp( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // VIS
       disp = LItem.VIS; di = m_dispItems.CreateDisp( disp );
       item = VItem.VIS;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Dist( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Dist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // BARO
       disp = LItem.BARO_HPA; di = m_dispItems.CreateDisp( disp );
       item = VItem.BARO_HPA;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_PressureHPA( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_PressureHPA( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.BARO_InHg; di = m_dispItems.CreateDisp( disp );
       item = VItem.BARO_InHg;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_PressureInHg( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_PressureInHg( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // Gear, Brakes, Flaps
       disp = LItem.Gear; di = m_dispItems.CreateDisp( disp );
       item = VItem.Gear;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Steps( signProto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Steps( signProto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.Brakes; di = m_dispItems.CreateDisp( disp );
       item = VItem.Brakes;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Steps( signProto ) { ForeColor = c_RA, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Steps( signProto ) { ItemForeColor= cRA }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.Flaps; di = m_dispItems.CreateDisp( disp );
       item = VItem.Flaps;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Steps( signProto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Steps( signProto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // Lights
       disp = LItem.Lights; di = m_dispItems.CreateDisp( disp );
       item = VItem.Lights;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Lights( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Lights( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // TORQ, PRPM, ERPM, FFLOW - we use value2Proto to get a smaller font for the numbers
       disp = LItem.TORQP; di = m_dispItems.CreateDisp( disp );
       item = VItem.E1_TORQP;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Prct( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.E2_TORQP;
-      v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Prct( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
 
       disp = LItem.TORQ; di = m_dispItems.CreateDisp( disp );
       item = VItem.E1_TORQ;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Torque( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Torque( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.E2_TORQ;
-      v = new V_Torque( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Torque( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
 
       disp = LItem.PRPM; di = m_dispItems.CreateDisp( disp );
       item = VItem.P1_RPM;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_RPM( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_RPM( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.P2_RPM;
-      v = new V_RPM( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_RPM( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
 
       disp = LItem.ERPM; di = m_dispItems.CreateDisp( disp );
       item = VItem.E1_RPM;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_RPM( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_RPM( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.E2_RPM;
-      v = new V_RPM( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_RPM( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
 
       disp = LItem.N1; di = m_dispItems.CreateDisp( disp );
       item = VItem.E1_N1;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Prct( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.E2_N1;
-      v = new V_Prct( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Prct( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
 
       disp = LItem.ITT; di = m_dispItems.CreateDisp( disp );
       item = VItem.E1_ITT;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Temp( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Temp( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.E2_ITT;
-      v = new V_Temp( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Temp( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
 
       disp = LItem.EGT; di = m_dispItems.CreateDisp( disp );
       item = VItem.E1_EGT;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Temp( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Temp( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.E2_EGT;
-      v = new V_Temp( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Temp( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
 
       disp = LItem.FFlow_pph; di = m_dispItems.CreateDisp( disp );
       item = VItem.E1_FFlow_pph;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Flow_pph( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Flow_pph( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.E2_FFlow_pph;
-      v = new V_Flow_pph( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Flow_pph( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.FFlow_gph; di = m_dispItems.CreateDisp( disp );
       item = VItem.E1_FFlow_gph;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Flow_gph( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Flow_gph( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.E2_FFlow_gph;
-      v = new V_Flow_gph( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Flow_gph( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // GPS
       disp = LItem.GPS_WYP; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_PWYP;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_ICAO( valueProto ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_ICAO( valueProto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.GPS_NWYP;
-      v = new V_ICAO_L( valueProto ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_ICAO_L( valueProto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
       /* - SIM PROVIDES EMPTY STRINGS ...
       disp = LItem.GPS_APT_APR; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_APT;
       l = new V_ICAO( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_ICAO( valueProto ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_ICAO( valueProto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.GPS_APR;
-      v = new V_ICAO( valueProto ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_ICAO( valueProto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
       */
       disp = LItem.GPS_WP_DIST; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_WP_DIST;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Dist( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Dist( valueProto, showUnits ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.GPS_WP_ETE; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_WP_ETE;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Time( valueProto ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Time( valueProto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.GPS_ETE; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_ETE;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Time( valueProto ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Time( valueProto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.GPS_TRK; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_TRK;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Deg( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Deg( valueProto, showUnits ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.GPS_GS; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_GS;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Speed( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Speed( valueProto, showUnits ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.GPS_ALT; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_ALT;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Alt( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Alt( valueProto, showUnits ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.GPS_BRGm; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_BRGm;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Deg( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Deg( valueProto, showUnits ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.GPS_DTRK; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_DTRK;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Deg( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Deg( valueProto, showUnits ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.GPS_XTK; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_XTK;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Xtk( valueProto, showUnits ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Xtk( valueProto, showUnits ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.GPS_LAT_LON; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_LAT;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Latitude( value2Proto ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Latitude( value2Proto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.GPS_LON;
-      v = new V_Longitude( value2Proto ) { ForeColor = c_Gps, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Longitude( value2Proto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // Estimates
       disp = LItem.EST_VS; di = m_dispItems.CreateDisp( disp );
       item = VItem.EST_VS;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_VSpeed( valueProto, showUnits ) { ForeColor = c_Est, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_VSpeed( valueProto, showUnits ) { ItemForeColor = cEst }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
       disp = LItem.EST_ALT; di = m_dispItems.CreateDisp( disp );
       item = VItem.EST_ALT;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Alt( valueProto, showUnits ) { ForeColor = c_Est, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Alt( valueProto, showUnits ) { ItemForeColor = cEst }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // Enroute times
       disp = LItem.ENROUTE; di = m_dispItems.CreateDisp( disp );
       item = VItem.ENR_WP;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_Time( value2Proto ) { ForeColor = c_Info, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Time( value2Proto ) { ItemForeColor = cInfo }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.ENR_TOTAL;
-      v = new V_Time( value2Proto ) { ForeColor = c_Info, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Time( value2Proto ) { ItemForeColor = cInfo }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // Aircraft Data
       disp = LItem.HDG; di = m_dispItems.CreateDisp( disp );
       item = VItem.HDG;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Deg( valueProto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Deg( valueProto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.HDGt; di = m_dispItems.CreateDisp( disp );
       item = VItem.HDGt;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Deg( valueProto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Deg( valueProto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.ALT; di = m_dispItems.CreateDisp( disp );
       item = VItem.ALT;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Alt( valueProto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Alt( valueProto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.ALT_INST; di = m_dispItems.CreateDisp( disp );
       item = VItem.ALT_INST;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Alt( valueProto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Alt( valueProto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.RA; di = m_dispItems.CreateDisp( disp );
       item = VItem.RA;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Alt( valueProto, showUnits ) { ForeColor = c_RA, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Alt( valueProto, showUnits ) { ItemForeColor = cRA }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.RA_VOICE; di = m_dispItems.CreateDisp( disp );
       item = VItem.RA_VOICE;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_RAaudio( valueProto, showUnits, m_speech ) { ForeColor = c_RA, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_RAaudio( valueProto, showUnits, m_speech ) { ItemForeColor = cRA }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.IAS; di = m_dispItems.CreateDisp( disp );
       item = VItem.IAS;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Speed( valueProto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Speed( valueProto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // TAS
       disp = LItem.TAS; di = m_dispItems.CreateDisp( disp );
       item = VItem.TAS;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Speed( valueProto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Speed( valueProto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // MACH
       disp = LItem.MACH; di = m_dispItems.CreateDisp( disp );
       item = VItem.MACH;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Mach( valueProto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Mach( valueProto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // VS Arrows
       disp = LItem.VS; di = m_dispItems.CreateDisp( disp );
       item = VItem.VS;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_VSpeed( valueProto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_VSpeed( valueProto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // VS +-
       disp = LItem.VS_PM; di = m_dispItems.CreateDisp( disp );
       item = VItem.VS_PM;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_VSpeedPM( valueProto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_VSpeedPM( valueProto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // AoA
       disp = LItem.AOA; di = m_dispItems.CreateDisp( disp );
       item = VItem.AOA;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Angle( valueProto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Angle( valueProto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // Autopilot
       disp = LItem.AP; di = m_dispItems.CreateDisp( disp );
       item = VItem.AP;
-      l = new B_Text( item, value2Proto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
+      l = new B_Text( item, value2Proto ) { Text = GuiName( disp ) }; di.AddItem( l );
 
       // AP Heading
       disp = LItem.AP_HDGs; di = m_dispItems.CreateDisp( disp );
       item = VItem.AP_HDG;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       item = VItem.AP_HDGset;
-      v = new V_Deg( value2Proto, showUnits ) { ForeColor = c_Set, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Deg( value2Proto, showUnits ) { ItemForeColor = cSet }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // AP Altitude
       disp = LItem.AP_ALTs; di = m_dispItems.CreateDisp( disp );
       item = VItem.AP_ALT;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       item = VItem.AP_ALTset;
-      v = new V_Alt( value2Proto, showUnits ) { ForeColor = c_Set, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Alt( value2Proto, showUnits ) { ItemForeColor = cSet }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // AP VSpeed
       disp = LItem.AP_VSs; di = m_dispItems.CreateDisp( disp );
       item = VItem.AP_VS;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       item = VItem.AP_VSset;
-      v = new V_VSpeed( value2Proto, showUnits ) { ForeColor = c_Set, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_VSpeed( value2Proto, showUnits ) { ItemForeColor = cSet }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // AP FLChange
       disp = LItem.AP_FLCs; di = m_dispItems.CreateDisp( disp );
       item = VItem.AP_FLC;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       item = VItem.AP_FLCset;
-      v = new V_Speed( value2Proto, showUnits ) { ForeColor = c_Set, BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Speed( value2Proto, showUnits ) { ItemForeColor = cSet }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // AP BC
       disp = LItem.AP_BC; di = m_dispItems.CreateDisp( disp );
       item = VItem.AP_BC;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
 
       // AP Nav, Apr, GS
       disp = LItem.AP_NAVg; di = m_dispItems.CreateDisp( disp );
       item = VItem.AP_NAV;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       item = VItem.AP_NAVgps;
       v = new V_Text( value2Proto ) { Text = BarValueLabel( item ) }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.AP_APR_GS; di = m_dispItems.CreateDisp( disp );
       item = VItem.AP_APR;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       item = VItem.AP_GS;
       v = new V_Text( value2Proto ) { Text = BarValueLabel( item ) }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // AP YD
       disp = LItem.AP_YD; di = m_dispItems.CreateDisp( disp );
       item = VItem.AP_YD;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
 
       // AP LVL
       disp = LItem.AP_LVL; di = m_dispItems.CreateDisp( disp );
       item = VItem.AP_LVL;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
 
       // ATC Airport
       disp = LItem.ATC_APT; di = m_dispItems.CreateDisp( disp );
       item = VItem.ATC_APT;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_ICAO_L( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_ICAO_L( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.ATC_DIST;
-      v = new V_Dist( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Dist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // ATC Runway aiming
       disp = LItem.ATC_RWY; di = m_dispItems.CreateDisp( disp );
       item = VItem.ATC_RWY_LON;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_AptDist( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_AptDist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.ATC_RWY_LAT;
-      v = new V_LatDist( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_LatDist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.ATC_RWY_ALT;
-      v = new V_Alt( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Alt( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
 
       // CP Meter
       disp = LItem.M_TIM_DIST1; di = m_dispItems.CreateDisp( disp );
       item = VItem.M_Elapsed1;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_Time( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Time( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.M_Dist1;
-      v = new V_Dist( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Dist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.M_TIM_DIST2; di = m_dispItems.CreateDisp( disp );
       item = VItem.M_Elapsed2;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_Time( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Time( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.M_Dist2;
-      v = new V_Dist( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Dist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.M_TIM_DIST3; di = m_dispItems.CreateDisp( disp );
       item = VItem.M_Elapsed3;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new V_Time( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_Time( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.M_Dist3;
-      v = new V_Dist( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Dist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.MAN; di = m_dispItems.CreateDisp( disp );
       item = VItem.E1_MAN;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_PressureInHg( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_PressureInHg( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.E2_MAN;
-      v = new V_PressureInHg( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_PressureInHg( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.ACFT_ID; di = m_dispItems.CreateDisp( disp );
       item = VItem.ACFT_ID;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Text( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Text( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // Wind Speed @ Direction
       disp = LItem.WIND_SD; di = m_dispItems.CreateDisp( disp );
       item = VItem.WIND_DIR;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Deg( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Deg( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.WIND_SPEED;
-      v = new V_Speed( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Speed( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // Wind XY
       disp = LItem.WIND_XY; di = m_dispItems.CreateDisp( disp );
       item = VItem.WIND_LAT;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Wind_X( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Wind_X( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.WIND_LON;
-      v = new V_Wind_HT( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Wind_HT( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // Fuel quantities
       disp = LItem.Fuel_LR; di = m_dispItems.CreateDisp( disp );
       item = VItem.Fuel_Left;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Gallons( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Gallons( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.Fuel_Right;
-      v = new V_Gallons( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Gallons( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // Total Fuel
       disp = LItem.Fuel_Total; di = m_dispItems.CreateDisp( disp );
       item = VItem.Fuel_Total;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Gallons( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Gallons( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // ATC Alt / HDG
       disp = LItem.ATC_ALT_HDG; di = m_dispItems.CreateDisp( disp );
       item = VItem.ATC_ALT;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Alt( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Alt( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.ATC_HDG;
-      v = new V_Deg( value2Proto, showUnits ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Deg( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.ATC_WYP;
-      v = new V_ICAO( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_ICAO( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       // METAR
       disp = LItem.METAR; di = m_dispItems.CreateDisp( disp );
       item = VItem.METAR;
-      l = new B_Text( item, lblProto ) { Text = GuiName( disp ), BackColor = c_ActBG }; di.AddItem( l );
-      v = new L_Text( value2Proto ) { BackColor = x_BG }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new L_Text( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // **** post processing
 
@@ -1207,8 +1208,8 @@ namespace FS20_HudBar.Bar
       // SimRate
       if ( this.ShowItem( LItem.SimRate ) ) {
         this.Value( VItem.SimRate ).Value = SC.SimConnectClient.Instance.AircraftModule.SimRate_rate;
-        this.ValueControl( VItem.SimRate ).ForeColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? c_BG : c_Info;
-        this.ValueControl( VItem.SimRate ).BackColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? c_SRATE : c_BG;
+        this.ColorType( VItem.SimRate ).ItemForeColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? cInverse : cInfo;
+        this.ColorType( VItem.SimRate ).ItemBackColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? cSRATE : cBG;
       }
       // Acft ID
       if ( this.ShowItem( LItem.ACFT_ID ) ) this.Value( VItem.ACFT_ID ).Text = SC.SimConnectClient.Instance.AircraftModule.AcftID;
@@ -1218,8 +1219,7 @@ namespace FS20_HudBar.Bar
       // TRIMS
       // Auto ETrim
       if ( this.ShowItem( LItem.A_ETRIM ) ) {
-        //        this.LabelControl( VItem.A_ETRIM ).BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? c_LiveBG : c_ActBG;
-        this.DispItem( LItem.A_ETRIM ).Label.BackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? c_LiveBG : c_ActBG;
+        this.DispItem( LItem.A_ETRIM ).ColorType.ItemBackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? cLiveBG : cActBG;
         this.Value( VItem.A_ETRIM ).Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
       }
       // Regular Trim
@@ -1229,7 +1229,7 @@ namespace FS20_HudBar.Bar
       // OAT
       if ( this.ShowItem( LItem.OAT ) ) {
         this.Value( VItem.OAT ).Value = SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC;
-        this.ValueControl( VItem.OAT ).ForeColor = ( SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC < 0 ) ? c_SubZero : c_Info; // icing conditions
+        this.ColorType( VItem.OAT ).ItemForeColor = ( SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC < 0 ) ? cSubZero : cInfo; // icing conditions
       }
       // BARO
       if ( this.ShowItem( LItem.BARO_HPA ) ) this.Value( VItem.BARO_HPA ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_mbar;
@@ -1281,17 +1281,17 @@ namespace FS20_HudBar.Bar
       // Consolidated lights (RA colored for Taxi and/or Landing lights on)
       if ( this.ShowItem( LItem.Lights ) ) {
         int lightsInt = 0;
-        this.ValueControl( VItem.Lights ).ForeColor = c_Info;
+        this.ColorType( VItem.Lights ).ItemForeColor = cInfo;
         if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Beacon ) lightsInt |= (int)V_Lights.Lights.Beacon;
         if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Nav ) lightsInt |= (int)V_Lights.Lights.Nav;
         if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Strobe ) lightsInt |= (int)V_Lights.Lights.Strobe;
         if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Taxi ) {
           lightsInt |= (int)V_Lights.Lights.Taxi;
-          this.ValueControl( VItem.Lights ).ForeColor = c_RA;
+          this.ColorType( VItem.Lights ).ItemForeColor = cWarn;
         }
         if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Landing ) {
           lightsInt |= (int)V_Lights.Lights.Landing;
-          this.ValueControl( VItem.Lights ).ForeColor = c_RA;
+          this.ColorType( VItem.Lights ).ItemForeColor = cWarn;
         }
         this.Value( VItem.Lights ).IntValue = lightsInt;
       }
@@ -1363,13 +1363,13 @@ namespace FS20_HudBar.Bar
         var imbalanceGal
           =  Math.Abs( SC.SimConnectClient.Instance.AircraftModule.FuelQuantityLeft_gal -SC.SimConnectClient.Instance.AircraftModule.FuelQuantityRight_gal);
         if ( imbalanceGal < ( SC.SimConnectClient.Instance.AircraftModule.FuelCapacityTotal_gal * 0.15 ) ) {
-          this.ValueControl( VItem.Fuel_Left ).ForeColor = c_Info;
-          this.ValueControl( VItem.Fuel_Right ).ForeColor = c_Info;
+          this.ColorType( VItem.Fuel_Left ).ItemForeColor = cInfo;
+          this.ColorType( VItem.Fuel_Right ).ItemForeColor = cInfo;
         }
         else {
           //Imbalance >= 15% Total Fuel
-          this.ValueControl( VItem.Fuel_Left ).ForeColor = c_RA;
-          this.ValueControl( VItem.Fuel_Right ).ForeColor = c_RA;
+          this.ColorType( VItem.Fuel_Left ).ItemForeColor = cWarn;
+          this.ColorType( VItem.Fuel_Right ).ItemForeColor = cWarn;
         }
       }
       // Fuel Tot
@@ -1408,11 +1408,11 @@ namespace FS20_HudBar.Bar
         float tgtAlt = SC.SimConnectClient.Instance.GpsModule.WYP_alt;
         if ( this.ShowItem( LItem.GPS_ALT ) ) this.Value( VItem.GPS_ALT ).Value = tgtAlt;
         // Estimates use WYP ALT if >0 (there is no distinction if a WYP ALT is given - it is 0 if not)
-        Color estCol = c_Est;
+        ColorType estCol = cEst;
         if ( tgtAlt == 0 ) {
           // use Set Alt if WYP ALT is zero (see comment above)
           tgtAlt = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
-          estCol = c_Set;
+          estCol = cSet;
         }
         // Update Estimate Calculation with Acf data
         Estimates.UpdateValues(
@@ -1423,11 +1423,11 @@ namespace FS20_HudBar.Bar
         // Show Estimates
         if ( this.ShowItem( LItem.EST_VS ) ) {
           this.Value( VItem.EST_VS ).Value = Estimates.VSToTgt_AtAltitude( tgtAlt, SC.SimConnectClient.Instance.GpsModule.WYP_dist );
-          this.ValueControl( VItem.EST_VS ).ForeColor = estCol;
+          this.ColorType( VItem.EST_VS ).ItemForeColor = estCol;
         }
         if ( this.ShowItem( LItem.EST_ALT ) ) {
           this.Value( VItem.EST_ALT ).Value = Estimates.AltitudeAtTgt( SC.SimConnectClient.Instance.GpsModule.WYP_dist );
-          this.ValueControl( VItem.EST_ALT ).ForeColor = estCol;
+          this.ColorType( VItem.EST_ALT ).ItemForeColor = estCol;
         }
 
         if ( this.ShowItem( LItem.ENROUTE ) ) {
@@ -1482,7 +1482,7 @@ namespace FS20_HudBar.Bar
           if ( MetarApt.HasNewData ) {
             // avoiding redraw and flicker for every cycle
             this.ToolTip.SetToolTip( this.DispItem( LItem.ATC_APT ).Label, MetarApt.Read( ) );
-            this.DispItem( LItem.ATC_APT ).Label.BackColor = MetarApt.ConditionColor;
+            this.DispItem( LItem.ATC_APT ).ColorType.ItemBackColor = MetarApt.ConditionColor;
           }
           // Distance to Destination
           if ( m_atcFlightPlan.HasFlightPlan ) {
@@ -1524,42 +1524,42 @@ namespace FS20_HudBar.Bar
 
       // Autopilot Items to show
       if ( this.ShowItem( LItem.AP ) )
-        this.DispItem( LItem.AP ).Label.ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.AP_mode == FSimClientIF.APMode.On ? c_AP : c_Info;
+        this.DispItem( LItem.AP ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.AP_mode == FSimClientIF.APMode.On ? cAP : cInfo;
 
       if ( this.ShowItem( LItem.AP_HDGs ) ) {
-        this.DispItem( LItem.AP_HDGs ).Label.ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.HDG_hold ? c_Set : c_Info;
+        this.DispItem( LItem.AP_HDGs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.HDG_hold ? cSet : cInfo;
         this.Value( VItem.AP_HDGset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting_degm;
       }
 
       if ( this.ShowItem( LItem.AP_ALTs ) ) {
-        this.DispItem( LItem.AP_ALTs ).Label.ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold ? c_Set : c_Info;
+        this.DispItem( LItem.AP_ALTs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold ? cSet : cInfo;
         this.Value( VItem.AP_ALTset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
       }
 
       if ( this.ShowItem( LItem.AP_VSs ) ) {
-        this.DispItem( LItem.AP_VSs ).Label.ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.VS_hold ? c_Set : c_Info;
+        this.DispItem( LItem.AP_VSs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.VS_hold ? cSet : cInfo;
         this.Value( VItem.AP_VSset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.VS_setting_fpm;
       }
 
       if ( this.ShowItem( LItem.AP_FLCs ) ) {
-        this.DispItem( LItem.AP_FLCs ).Label.ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.FLC_active ? c_Set : c_Info;
+        this.DispItem( LItem.AP_FLCs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.FLC_active ? cSet : cInfo;
         this.Value( VItem.AP_FLCset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt;
       }
 
       if ( this.ShowItem( LItem.AP_BC ) )
-        this.DispItem( LItem.AP_BC ).Label.ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.BC_hold ? c_AP : c_Info;
+        this.DispItem( LItem.AP_BC ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.BC_hold ? cAP : cInfo;
 
       if ( this.ShowItem( LItem.AP_NAVg ) ) {
-        this.DispItem( LItem.AP_NAVg ).Label.ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.NAV_hold ? c_AP : c_Info;
-        this.ValueControl( VItem.AP_NAVgps ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? c_Gps : c_Info;
+        this.DispItem( LItem.AP_NAVg ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.NAV_hold ? cAP : cInfo;
+        this.ColorType( VItem.AP_NAVgps ).ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? cGps : cInfo;
       }
 
       if ( this.ShowItem( LItem.AP_APR_GS ) ) {
-        this.DispItem( LItem.AP_APR_GS ).Label.ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.APR_hold ? c_AP : c_Info;
-        this.ValueControl( VItem.AP_GS ).ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GS_active ? c_AP : c_Info;
+        this.DispItem( LItem.AP_APR_GS ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.APR_hold ? cAP : cInfo;
+        this.ColorType( VItem.AP_GS ).ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GS_active ? cAP : cInfo;
       }
-      if ( this.ShowItem( LItem.AP_YD ) ) this.DispItem( LItem.AP_YD ).Label.ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.YD ? c_AP : c_Info;
-      if ( this.ShowItem( LItem.AP_LVL ) ) this.DispItem( LItem.AP_LVL ).Label.ForeColor = SC.SimConnectClient.Instance.AP_G1000Module.LVL ? c_AP : c_Info;
+      if ( this.ShowItem( LItem.AP_YD ) ) this.DispItem( LItem.AP_YD ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.YD ? cAP : cInfo;
+      if ( this.ShowItem( LItem.AP_LVL ) ) this.DispItem( LItem.AP_LVL ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.LVL ? cAP : cInfo;
 
       // Aircraft Data
       if ( this.ShowItem( LItem.HDG ) ) this.Value( VItem.HDG ).Value = SC.SimConnectClient.Instance.AircraftModule.HDG_mag_degm;
@@ -1594,10 +1594,10 @@ namespace FS20_HudBar.Bar
           this.Value( VItem.ATC_RWY_LON ).Value = SC.SimConnectClient.Instance.AircraftModule.AtcRunway_Distance_nm;
           float f = SC.SimConnectClient.Instance.AircraftModule.AtcRunway_Displacement_ft;
           this.Value( VItem.ATC_RWY_LAT ).Value = f;
-          this.ValueControl( VItem.ATC_RWY_LAT ).ForeColor = ( Math.Abs( f ) <= 3 ) ? c_OK : c_Info; // green if within +- 3ft
+          this.ColorType( VItem.ATC_RWY_LAT ).ItemForeColor = ( Math.Abs( f ) <= 3 ) ? cOK : cInfo; // green if within +- 3ft
           f = SC.SimConnectClient.Instance.AircraftModule.AtcRunway_HeightAbove_ft;
           this.Value( VItem.ATC_RWY_ALT ).Value = f;
-          this.ValueControl( VItem.ATC_RWY_ALT ).ForeColor = ( f <= 500 ) ? c_RA : c_Info;  // RA yellow if below 500ft
+          this.ColorType( VItem.ATC_RWY_ALT ).ItemForeColor = ( f <= 500 ) ? cRA : cInfo;  // RA yellow if below 500ft
 
         }
         else {
@@ -1612,7 +1612,7 @@ namespace FS20_HudBar.Bar
           // avoiding redraw for every cycle
           this.Value( VItem.METAR ).Text = MetarLoc.StationText;
           this.ToolTip.SetToolTip( this.DispItem( LItem.METAR ).Label, MetarLoc.Read( ) );
-          this.DispItem( LItem.METAR ).Label.BackColor = MetarLoc.ConditionColor;
+          this.DispItem( LItem.METAR ).ColorType.ItemBackColor = MetarLoc.ConditionColor;
         }
       }
 
@@ -1621,19 +1621,19 @@ namespace FS20_HudBar.Bar
         CPMeter1.Lapse( latLon, SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
         this.Value( VItem.M_Elapsed1 ).Value = CPMeter1.Duration;
         this.Value( VItem.M_Dist1 ).Value = (float)CPMeter1.Distance;
-        this.DispItem( LItem.M_TIM_DIST1 ).Label.BackColor = CPMeter1.Started ? c_LiveBG : c_ActBG;
+        this.DispItem( LItem.M_TIM_DIST1 ).ColorType.ItemBackColor = CPMeter1.Started ? cLiveBG : cActBG;
       }
       if ( this.ShowItem( LItem.M_TIM_DIST2 ) ) {
         CPMeter2.Lapse( latLon, SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
         this.Value( VItem.M_Elapsed2 ).Value = CPMeter2.Duration;
         this.Value( VItem.M_Dist2 ).Value = (float)CPMeter2.Distance;
-        this.DispItem( LItem.M_TIM_DIST2 ).Label.BackColor = CPMeter2.Started ? c_LiveBG : c_ActBG;
+        this.DispItem( LItem.M_TIM_DIST2 ).ColorType.ItemBackColor = CPMeter2.Started ? cLiveBG : cActBG;
       }
       if ( this.ShowItem( LItem.M_TIM_DIST3 ) ) {
         CPMeter3.Lapse( latLon, SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
         this.Value( VItem.M_Elapsed3 ).Value = CPMeter3.Duration;
         this.Value( VItem.M_Dist3 ).Value = (float)CPMeter3.Distance;
-        this.DispItem( LItem.M_TIM_DIST3 ).Label.BackColor = CPMeter3.Started ? c_LiveBG : c_ActBG;
+        this.DispItem( LItem.M_TIM_DIST3 ).ColorType.ItemBackColor = CPMeter3.Started ? cLiveBG : cActBG;
       }
 
     }
@@ -1680,6 +1680,22 @@ namespace FS20_HudBar.Bar
     {
       try {
         return m_valueItems[item].Value;
+      }
+      catch {
+        return null;
+      }
+    }
+
+    /// <summary>
+    /// Returns the ColorType Interface for a Value Item
+    ///   BEWARE no checks for validity of the item ..
+    /// </summary>
+    /// <param name="item">A valid VItem</param>
+    /// <returns>The ColorType Interface or null if not found</returns>
+    public IColorType ColorType( VItem item )
+    {
+      try {
+        return m_valueItems[item].ColorType;
       }
       catch {
         return null;

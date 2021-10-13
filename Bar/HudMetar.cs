@@ -22,7 +22,7 @@ namespace FS20_HudBar.Bar
     public string StationText { get; private set; } = "";
 
     public bool HasNewData { get; private set; } = false;
-    public Color ConditionColor { get; private set; } = Color.White;
+    public GUI.GUI_Colors.ColorType ConditionColor { get; private set; } = GUI.GUI_Colors.ColorType.cActBG;
 
     /// <summary>
     /// Returns the text and set it as read
@@ -40,7 +40,7 @@ namespace FS20_HudBar.Bar
     public void Clear( )
     {
       MText = "";
-      ConditionColor = GUI.GUI_Colors.c_ActBG;
+      ConditionColor = GUI.GUI_Colors.ColorType.cActBG;
       HasNewData = true; // clear current
     }
 
@@ -59,18 +59,18 @@ namespace FS20_HudBar.Bar
 
         HasNewData = true;
         ConditionColor =
-          ( closest.Data.FlightCategory.FlightCategoryColor == "green" ) ? GUI.GUI_Colors.c_MetG :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "blue" ) ? GUI.GUI_Colors.c_MetB :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "red" ) ? GUI.GUI_Colors.c_MetR :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "magenta" ) ? GUI.GUI_Colors.c_MetM :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "black" ) ? GUI.GUI_Colors.c_MetK :  // SUB ILS
-          ( closest.Data.FlightCategory.FlightCategoryColor == "white" ) ? GUI.GUI_Colors.c_MetR : GUI.GUI_Colors.c_ActBG; // unknown
+          ( closest.Data.FlightCategory.FlightCategoryColor == "green" ) ? GUI.GUI_Colors.ColorType.cMetG :
+          ( closest.Data.FlightCategory.FlightCategoryColor == "blue" ) ? GUI.GUI_Colors.ColorType.cMetB :
+          ( closest.Data.FlightCategory.FlightCategoryColor == "red" ) ? GUI.GUI_Colors.ColorType.cMetR :
+          ( closest.Data.FlightCategory.FlightCategoryColor == "magenta" ) ? GUI.GUI_Colors.ColorType.cMetM :
+          ( closest.Data.FlightCategory.FlightCategoryColor == "black" ) ? GUI.GUI_Colors.ColorType.cMetK :  // SUB ILS
+          ( closest.Data.FlightCategory.FlightCategoryColor == "white" ) ? GUI.GUI_Colors.ColorType.cMetR : GUI.GUI_Colors.ColorType.cActBG; // unknown
       }
       else {
         MText = "";
         StationText = "n.a.";
         HasNewData = true;
-        ConditionColor = GUI.GUI_Colors.c_ActBG;
+        ConditionColor = GUI.GUI_Colors.ColorType.cActBG;
       }
 
     }
