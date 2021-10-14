@@ -11,7 +11,40 @@ namespace FS20_HudBar.GUI
   /// </summary>
   public enum Steps
   {
-    Unk = 0, Up, Down, P1,P2,P3,P4,P5, On, Off
+    /// <summary>
+    /// Unknown
+    /// </summary>
+    Unk = 0, 
+    /// <summary>
+    /// Up and OK (Gear, Flaps)
+    /// </summary>
+    Up, 
+    /// <summary>
+    /// Down and OK (Gear, Flaps)
+    /// </summary>
+    Down, 
+    /// <summary>
+    /// Positional Levels (Flaps)
+    /// </summary>
+    P1,P2,P3,P4,P5, 
+
+    /// <summary>
+    /// On and OK - counter part is OffWarn
+    /// </summary>
+    OnOK,
+    /// <summary>
+    /// Off and needs attention- counter part is OnOK
+    /// </summary>
+    OffWarn,
+
+    /// <summary>
+    /// On and needs attention - counter part is OffOK
+    /// </summary>
+    OnWarn,
+    /// <summary>
+    /// Off and OK- counter part is OnWarn
+    /// </summary>
+    OffOK,
   }
 
 

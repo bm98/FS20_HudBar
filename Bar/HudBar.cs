@@ -1259,7 +1259,7 @@ namespace FS20_HudBar.Bar
         }
       }
       // Brakes
-      if ( this.ShowItem( LItem.Brakes ) ) this.Value( VItem.Brakes ).Step = SC.SimConnectClient.Instance.AircraftModule.Parkbrake_on ? Steps.On : Steps.Off;
+      if ( this.ShowItem( LItem.Brakes ) ) this.Value( VItem.Brakes ).Step = SC.SimConnectClient.Instance.AircraftModule.Parkbrake_on ? Steps.OnWarn : Steps.OffOK;
       // Flaps
       if ( this.ShowItem( LItem.Flaps ) ) {
         if ( SC.SimConnectClient.Instance.AircraftModule.Flaps == FSimClientIF.CmdMode.Up ) {

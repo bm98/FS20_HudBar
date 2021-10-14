@@ -67,6 +67,10 @@ namespace FS20_HudBar.GUI
       /// </summary>
       cSRATE,
       /// <summary>
+      /// Stepping color (Flaps etc)
+      /// </summary>
+      cStep,
+      /// <summary>
       /// Inverse readout color (black)
       /// </summary>
       cInverse,
@@ -142,6 +146,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cEst, Color.Plum },
       { ColorType.cSubZero, Color.DeepSkyBlue },
       { ColorType.cSRATE, Color.Goldenrod },
+      { ColorType.cStep, Color.LightBlue },
       { ColorType.cInverse, Color.Black },
 
       { ColorType.cBG, Color.Transparent },
@@ -170,6 +175,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cEst, Dimm( c_brightColors[ColorType.cEst] )},
       { ColorType.cSubZero, Dimm( c_brightColors[ColorType.cSubZero] )},
       { ColorType.cSRATE, Dimm( c_brightColors[ColorType.cSRATE] )},
+      { ColorType.cStep, Color.LightBlue },
       { ColorType.cInverse, Color.Black },
 
       { ColorType.cBG, Color.Transparent },
@@ -198,6 +204,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cEst, Color.DarkOrchid },
       { ColorType.cSubZero, Color.DarkBlue },
       { ColorType.cSRATE, Color.Orange },
+      { ColorType.cStep, Color.DeepSkyBlue },
       { ColorType.cInverse, Color.WhiteSmoke },
 
       { ColorType.cBG, Color.Transparent },

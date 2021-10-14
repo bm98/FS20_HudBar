@@ -63,7 +63,7 @@ namespace FS20_HudBar.GUI
       get => m_foreColorType;
       set {
         m_foreColorType = value;
-        base.ForeColor = GUI_Colors.ItemColor( m_foreColorType );
+        this.ForeColor = GUI_Colors.ItemColor( m_foreColorType );
       }
     }
 
@@ -74,7 +74,7 @@ namespace FS20_HudBar.GUI
       get => m_backColorType;
       set {
         m_backColorType = value;
-        base.BackColor = GUI_Colors.ItemColor( m_backColorType );
+        this.BackColor = GUI_Colors.ItemColor( m_backColorType );
       }
     }
 
@@ -83,8 +83,8 @@ namespace FS20_HudBar.GUI
     /// </summary>
     virtual public void UpdateColor( )
     {
-      base.ForeColor = GUI_Colors.ItemColor( m_foreColorType );
-      base.BackColor = GUI_Colors.ItemColor( m_backColorType );
+      this.ForeColor = GUI_Colors.ItemColor( m_foreColorType );
+      this.BackColor = GUI_Colors.ItemColor( m_backColorType );
     }
 
 

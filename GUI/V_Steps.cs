@@ -10,10 +10,16 @@ namespace FS20_HudBar.GUI
 {
   class V_Steps : V_Base
   {
-    private string c_On =Convert.ToChar(0x75).ToString();  // Wingdings char  Filled Diamond
+    //private string c_On =Convert.ToChar(0x6E).ToString();  // Wingdings char  Filled Square
+
     //private string c_Off =Convert.ToChar(0xA8).ToString();  // Wingdings char Outline Square
     //private string c_Off =Convert.ToChar(0xA1).ToString();  // Wingdings char Outline Circle
-    private string c_Off =Convert.ToChar(0x9F).ToString();  // Wingdings char Outline Circle
+
+    private string c_OnOK =Convert.ToChar(0xA4).ToString();  // Wingdings char  Circle with Dot
+    private string c_OffWarn =Convert.ToChar(0x6F).ToString();  // Wingdings char Outline Square
+
+    private string c_OnWarn =Convert.ToChar(0x75).ToString();  // Wingdings char  Filled Diamond
+    private string c_OffOK =Convert.ToChar(0x9F).ToString();  // Wingdings char Outline Circle
 
     private string c_Up = Convert.ToChar(0xDD).ToString();  // Wingdings char Circled Arrow UP
     private string c_Unk =Convert.ToChar(0xDC).ToString();  // Wingdings char Circled Arrow Right
@@ -60,7 +66,6 @@ namespace FS20_HudBar.GUI
       }
     }
 
-
     /// <summary>
     /// Set the value of the Control - formatted as NN0kt
     /// </summary>
@@ -69,27 +74,36 @@ namespace FS20_HudBar.GUI
 
         switch ( value ) {
           case Steps.Unk:
-            this.Text = c_Unk; base.ForeColor = Color.Gold; break;
+            this.Text = c_Unk; this.ItemForeColor = GUI_Colors.ColorType.cWarn; break;
+
           case Steps.Up:
-            this.Text = c_Up; base.ForeColor = Color.LimeGreen; break;
+            this.Text = c_Up; this.ItemForeColor = GUI_Colors.ColorType.cOK;  break;
           case Steps.Down:
-            this.Text = c_Dn; base.ForeColor = Color.LimeGreen; break;
+            this.Text = c_Dn; this.ItemForeColor = GUI_Colors.ColorType.cOK;  break;
+
           case Steps.P1:
-            this.Text = c_1; base.ForeColor = Color.LightBlue; break;
+            this.Text = c_1; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
           case Steps.P2:
-            this.Text = c_2; base.ForeColor = Color.LightBlue; break;
+            this.Text = c_2; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
           case Steps.P3:
-            this.Text = c_3; base.ForeColor = Color.LightBlue; break;
+            this.Text = c_3; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
           case Steps.P4:
-            this.Text = c_4; base.ForeColor = Color.LightBlue; break;
+            this.Text = c_4; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
           case Steps.P5:
-            this.Text = c_5; base.ForeColor = Color.LightBlue; break;
-          case Steps.On:
-            this.Text = c_On; base.ForeColor = m_fColor; break;
-          case Steps.Off:
-            this.Text = c_Off; base.ForeColor = Color.WhiteSmoke; break;
+            this.Text = c_5; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
+
+          case Steps.OnOK:
+            this.Text = c_OnOK; this.ItemForeColor = GUI_Colors.ColorType.cOK; break;
+          case Steps.OffWarn:
+            this.Text = c_OffWarn; this.ItemForeColor = GUI_Colors.ColorType.cWarn; break;
+
+          case Steps.OnWarn:
+            this.Text = c_OnWarn; this.ItemForeColor = GUI_Colors.ColorType.cWarn; break;
+          case Steps.OffOK:
+            this.Text = c_OffOK; this.ItemForeColor = GUI_Colors.ColorType.cOK; break;
+
           default:
-            this.Text = m_default; base.ForeColor = Color.WhiteSmoke; break;
+            this.Text = m_default; this.ItemForeColor = GUI_Colors.ColorType.cInfo; break;
         }
       }
     }
