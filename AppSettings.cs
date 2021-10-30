@@ -10,13 +10,31 @@ namespace FS20_HudBar
 {
   sealed class AppSettings : ApplicationSettingsBase
   {
-
     // Singleton
-    private static readonly Lazy<AppSettings> m_lazy = new Lazy<AppSettings>( () => new AppSettings( ) );
+    private static Lazy<AppSettings> m_lazy = new Lazy<AppSettings>( () => new AppSettings( ) );
     public static AppSettings Instance { get => m_lazy.Value; }
 
-    private AppSettings( )
+    /// <summary>
+    /// Init a new instance to use
+    /// </summary>
+    /// <param name="instance">An Instance String -> distinct for each instance used</param>
+    public static void InitInstance( string instance )
     {
+      m_lazy = new Lazy<AppSettings>( ( ) => new AppSettings( instance ) );
+    }
+
+    /// <summary>
+    /// cTor: create an instance if such a name is given, else use the default one
+    /// </summary>
+    /// <param name="instance">An Instance String (defaults to empty = default instance)</param>
+    private AppSettings( string instance = "" )
+    {
+      // init an instance if given, else use the default instance
+      if ( !string.IsNullOrEmpty( instance ) ) {
+        base.SettingsKey = instance;
+      }
+
+      // start processing here 
       if ( this.FirstRun ) {
         // migrate the settings to the new version if the app runs the first time
         try {
@@ -98,6 +116,7 @@ namespace FS20_HudBar
       set { this["FltAutoSave"] = value; }
     }
 
+    // Obsolete - no longer used
     [UserScopedSetting( )]
     [DefaultSettingValue( "10" )]
     public int SplitDistance {
@@ -110,6 +129,13 @@ namespace FS20_HudBar
     public string VoiceName {
       get { return (string)this["VoiceName"]; }
       set { this["VoiceName"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string VoiceCalloutProfile {
+      get { return (string)this["VoiceCalloutProfile"]; }
+      set { this["VoiceCalloutProfile"] = value; }
     }
 
     [UserScopedSetting( )]
@@ -173,7 +199,7 @@ namespace FS20_HudBar
 
     [UserScopedSetting( )]
     [DefaultSettingValue( "False" )]
-    public bool  Profile_1_Condensed {
+    public bool Profile_1_Condensed {
       get { return (bool)this["Profile_1_Condensed"]; }
       set { this["Profile_1_Condensed"] = value; }
     }

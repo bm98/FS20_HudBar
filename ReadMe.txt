@@ -1,5 +1,5 @@
-FS20_HudBar V 0.35 - Build 29 BETA
-(c) M. Burri - 15-Oct-2021
+FS20_HudBar V 0.36 - Build 30 BETA
+(c) M. Burri - 30-Oct-2021
 
 Contains files:
 
@@ -37,6 +37,16 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.36-B30
+- Add NAV1/2 with ID, Bearing To, and DME distance item
+- Add Fuel Time value to Fuel Total (based on the most current consumption)
+- Add VoicePack for various Readouts other than RAv (selectable - default OFF)
+- Add 'Voice disabled' as option for the Voice selection
+- Add new Display Kind - 'Window no border'  looks and behaves like a freely movable Tile
+- Add optional command line string to create multiple Configuration instances (any string will do)
+- Fix RAv readout should capture steps better now
+- Update QuickGuide
+
 V 0.35-B29
 - Add Appearance selection for the value items (3 levels Bright, Dimmed, Dark)
 - Update to own SpeechLib allowing to use all Win10 installed voices

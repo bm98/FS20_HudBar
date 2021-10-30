@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using CoordLib;
 
-namespace FS20_HudBar
+namespace FS20_HudBar.Bar
 {
   /// <summary>
   /// A Meter Class for Checkpoints

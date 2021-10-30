@@ -43,6 +43,10 @@ namespace FS20_HudBar.GUI
       /// </summary>
       cAP,
       /// <summary>
+      /// NAV Active color
+      /// </summary>
+      cNav,
+      /// <summary>
       /// GPS items color
       /// </summary>
       cGps,
@@ -140,6 +144,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cWarn, Color.Gold },
       { ColorType.cAlert, Color.OrangeRed },
       { ColorType.cAP, Color.LimeGreen },
+      { ColorType.cNav, Color.LimeGreen },
       { ColorType.cGps, Color.Fuchsia },
       { ColorType.cSet, Color.Cyan },
       { ColorType.cRA, Color.Orange },
@@ -169,6 +174,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cWarn, Dimm( c_brightColors[ColorType.cWarn] )},
       { ColorType.cAlert, Dimm( c_brightColors[ColorType.cAlert] )},
       { ColorType.cAP, Dimm( c_brightColors[ColorType.cAP] )},
+      { ColorType.cNav, Dimm( c_brightColors[ColorType.cAP] )},
       { ColorType.cGps, Dimm( c_brightColors[ColorType.cGps] )},
       { ColorType.cSet, Dimm( c_brightColors[ColorType.cSet] )},
       { ColorType.cRA, Dimm( c_brightColors[ColorType.cRA] )},
@@ -198,6 +204,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cWarn, Color.FromArgb(214, 181, 17) }, // orange/yellow
       { ColorType.cAlert,Color.FromArgb(214, 17, 17) }, // red
       { ColorType.cAP, Color.FromArgb(17, 184, 64) }, // green
+      { ColorType.cNav, Color.FromArgb(17, 184, 64) }, // green
       { ColorType.cGps, Color.FromArgb(143, 26, 135) },// Color.DarkMagenta
       { ColorType.cSet, Color.DarkBlue },
       { ColorType.cRA, Color.FromArgb(156, 88, 0) }, // orange
@@ -208,7 +215,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cInverse, Color.WhiteSmoke },
 
       { ColorType.cBG, Color.Transparent },
-      { ColorType.cActBG, Color.FromArgb(94, 115, 235) }, // mid blue
+      { ColorType.cActBG, Color.FromArgb(124, 214, 252) }, // mid blue
       { ColorType.cLiveBG, Color.DarkGreen },
 
       { ColorType.cMetG, Color.ForestGreen }, // METAR Green

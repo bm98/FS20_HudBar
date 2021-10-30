@@ -115,7 +115,7 @@ namespace FS20_HudBar.GUI
     protected string DefaultString( string defaultString )
     {
       string ret = defaultString;
-#if DEBUG
+#if DEBUG_NOT_ENABLED
       ret = "";
 
       for ( int i = 0; i < defaultString.Length; i++ ) {

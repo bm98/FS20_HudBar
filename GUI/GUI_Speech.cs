@@ -25,22 +25,14 @@ namespace FS20_HudBar.GUI
     /// </summary>
     static GUI_Speech( )
     {
-      /*  System.Speech.Synthesis
-      using ( SpeechSynthesizer synthesizer = new SpeechSynthesizer( ) ) {
-        List<InstalledVoice> voices;
-        voices = synthesizer.GetInstalledVoices( ).ToList( );
-        foreach ( var v in voices ) {
-          if ( v.Enabled )
-            m_voiceNames.Add( v.VoiceInfo.Name );
-        }
+      // collect the available voices into our list, add Disabled as first item
+      List<InstalledVoice> voices;
+      voices = Speech.InstalledVoices.ToList( );
+      m_voiceNames.Add( "Voice out disabled" );
+      foreach ( var v in voices ) {
+        if ( v.Enabled )
+          m_voiceNames.Add( v.VoiceInfo.Name );
       }
-      */
-        List<InstalledVoice> voices;
-        voices = Speech.InstalledVoices.ToList();
-        foreach ( var v in voices ) {
-          if ( v.Enabled )
-            m_voiceNames.Add( v.VoiceInfo.Name );
-        }
     }
 
     /// <summary>
@@ -52,9 +44,6 @@ namespace FS20_HudBar.GUI
 
     // ******** CLASS 
 
-    /*  System.Speech.Synthesis
-    private SpeechSynthesizer m_synthesizer = new SpeechSynthesizer( );
-    */
     private Speech m_synthesizer = new Speech();
 
     private bool m_ready = false;
@@ -77,19 +66,16 @@ namespace FS20_HudBar.GUI
     {
       // reset
       m_ready = false;
-    /*  System.Speech.Synthesis
-      m_synthesizer.SpeakAsyncCancelAll( );
-      m_synthesizer.SetOutputToNull( );
-    */
+
       // get the voice
-      if ( m_voiceNames.Contains( voiceName ) ) {
+      if ( voiceName == m_voiceNames[0] ) {
+        // Voice disabled
+        m_ready = false;
+      }
+      else if ( m_voiceNames.Contains( voiceName ) ) {
         // this shall never fail
         try {
           m_synthesizer.SelectVoice( voiceName );
-    /*  System.Speech.Synthesis
-          m_synthesizer.SetOutputToDefaultAudioDevice( );
-          m_synthesizer.Volume = 80; // about right...
-    */
           m_ready = true;
         }
         catch {

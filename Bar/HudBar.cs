@@ -117,6 +117,8 @@ namespace FS20_HudBar.Bar
 
     RA_VOICE,     // Radio Altitude with voice output
 
+    NAV1,       // NAV1
+    NAV2,       // NAV2
     //    GPS_APT_APR,// GPS Airport & Approach - SIM PROVIDES EMPTY STRINGS ...
   }
 
@@ -228,6 +230,7 @@ namespace FS20_HudBar.Bar
     Fuel_Left,    // Fuel quantity Left Gallons
     Fuel_Right,   // Fuel quantity Right Gallons
     Fuel_Total,   // Fuel quantity Total Gallons
+    Fuel_Reach,   // Fuel reach in seconds
 
     MACH,         // Mach speed indication
 
@@ -259,6 +262,14 @@ namespace FS20_HudBar.Bar
     VS_PM,        // Vertical Speed with +- fpm
 
     RA_VOICE,     // Radio Altitude with voice output
+
+    NAV1_ID,      // NAV1 ID
+    NAV1_DST,     // NAV1 DME Distance
+    NAV1_BRG,     // NAV1 BRG to
+
+    NAV2_ID,      // NAV2 ID
+    NAV2_DST,     // NAV2 DME Distance
+    NAV2_BRG,     // NAV2 BRG to
 
     //GPS_APT,      // GPS Airport ID - SIM PROVIDES EMPTY STRINGS ...
     //GPS_APR,      // GPS Approach ID - SIM PROVIDES EMPTY STRINGS ...
@@ -324,6 +335,8 @@ namespace FS20_HudBar.Bar
 
     // Speech
     private static readonly GUI_Speech m_speech = new GUI_Speech();
+    // Voice Output Package
+    private static readonly HudVoice m_voicePack = new HudVoice(m_speech);
 
     /// <summary>
     /// The Checkpoint Meter 1
@@ -385,6 +398,10 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public string VoiceName { get; private set; } = "";
 
+    /// <summary>
+    /// Provide acces to the VoicePack
+    /// </summary>
+    public HudVoice VoicePack => m_voicePack;
 
     /// <summary>
     /// Returns the Show state of an item
@@ -485,6 +502,9 @@ namespace FS20_HudBar.Bar
       {LItem.AP_YD,"YD" },
       {LItem.AP_LVL,"LVL" },
 
+      {LItem.NAV1,"NAV 1" },
+      {LItem.NAV2,"NAV 2" },
+
       {LItem.ATC_APT,"APT" },
       {LItem.ATC_RWY,"RWY" },
       {LItem.ATC_ALT_HDG,"ATC" },
@@ -565,6 +585,9 @@ namespace FS20_HudBar.Bar
       {LItem.AP_YD,"AP Yaw Damper" },
       {LItem.AP_LVL,"AP Wing Leveler" },
 
+      {LItem.NAV1,"NAV-1 Id BRG DME" },
+      {LItem.NAV2,"NAV-2 Id BRG DME" },
+
       {LItem.ATC_APT,"ATC Airport and distance nm" },
       {LItem.ATC_RWY,"ATC Rwy (Dist, Track, Alt)" },
       {LItem.ATC_ALT_HDG,"ATC assigned Alt/Hdg" },
@@ -608,7 +631,7 @@ namespace FS20_HudBar.Bar
     /// <param name="showUnits">Showing units flag</param>
     /// <param name="cProfile">The current Profile</param>
     /// <param name="voiceName">The current VoiceName</param>
-    public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto, 
+    public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
                       bool showUnits, bool autoSave, CProfile cProfile, string voiceName )
     {
       // just save them in the HUD mainly for config purpose
@@ -645,7 +668,7 @@ namespace FS20_HudBar.Bar
       LItem disp; // the Label to add
       VItem item; // the Value item to add (can be defined and added multiple times for e.g. 2 engines values)
       // l is the Label control, v is a Value control, di is the Display Group containing Label and Values for one entity
-      Control l, v; DispItem di = null; 
+      Control l, v; DispItem di = null;
 
       // The pattern below repeats, define the Label, create the display group and add it to the group list
       // Define the Value item and add it to the Value Label list to later change properties when data arrives
@@ -668,7 +691,7 @@ namespace FS20_HudBar.Bar
       disp = LItem.TIME; di = m_dispItems.CreateDisp( disp );
       item = VItem.TIME;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Time( value2Proto ) { }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_TimeHHMMSS( value2Proto ) { }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // TRIMS
       // Elevator (plain)
@@ -726,7 +749,7 @@ namespace FS20_HudBar.Bar
       disp = LItem.Brakes; di = m_dispItems.CreateDisp( disp );
       item = VItem.Brakes;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Steps( signProto ) { ItemForeColor= cRA }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_Steps( signProto ) { ItemForeColor = cRA }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.Flaps; di = m_dispItems.CreateDisp( disp );
       item = VItem.Flaps;
@@ -832,12 +855,12 @@ namespace FS20_HudBar.Bar
       disp = LItem.GPS_WP_ETE; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_WP_ETE;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Time( valueProto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_TimeHHMMSS( valueProto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.GPS_ETE; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_ETE;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Time( valueProto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_TimeHHMMSS( valueProto ) { ItemForeColor = cGps }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.GPS_TRK; di = m_dispItems.CreateDisp( disp );
       item = VItem.GPS_TRK;
@@ -889,9 +912,9 @@ namespace FS20_HudBar.Bar
       disp = LItem.ENROUTE; di = m_dispItems.CreateDisp( disp );
       item = VItem.ENR_WP;
       l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Time( value2Proto ) { ItemForeColor = cInfo }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_TimeHHMMSS( value2Proto ) { ItemForeColor = cInfo }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.ENR_TOTAL;
-      v = new V_Time( value2Proto ) { ItemForeColor = cInfo }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_TimeHHMMSS( value2Proto ) { ItemForeColor = cInfo }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // Aircraft Data
       disp = LItem.HDG; di = m_dispItems.CreateDisp( disp );
@@ -1034,26 +1057,46 @@ namespace FS20_HudBar.Bar
       item = VItem.ATC_RWY_ALT;
       v = new V_Alt( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
+      // NAV 1 ID, BRG DME
+      disp = LItem.NAV1; di = m_dispItems.CreateDisp( disp );
+      item = VItem.NAV1_ID;
+      l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_ICAO_L( value2Proto ) { ItemForeColor = cNav }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      item = VItem.NAV1_BRG;
+      v = new V_Deg( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      item = VItem.NAV1_DST;
+      v = new V_DmeDist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
+
+      // NAV 2 ID, BRG DME
+      disp = LItem.NAV2; di = m_dispItems.CreateDisp( disp );
+      item = VItem.NAV2_ID;
+      l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
+      v = new V_ICAO_L( value2Proto ) { ItemForeColor = cNav }; di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      item = VItem.NAV2_BRG;
+      v = new V_Deg( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      item = VItem.NAV2_DST;
+      v = new V_DmeDist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
+
 
       // CP Meter
       disp = LItem.M_TIM_DIST1; di = m_dispItems.CreateDisp( disp );
       item = VItem.M_Elapsed1;
       l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Time( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_TimeHHMMSS( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.M_Dist1;
       v = new V_Dist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.M_TIM_DIST2; di = m_dispItems.CreateDisp( disp );
       item = VItem.M_Elapsed2;
       l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Time( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_TimeHHMMSS( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.M_Dist2;
       v = new V_Dist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       disp = LItem.M_TIM_DIST3; di = m_dispItems.CreateDisp( disp );
       item = VItem.M_Elapsed3;
       l = new B_Text( item, lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
-      v = new V_Time( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      v = new V_TimeHHMMSS( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.M_Dist3;
       v = new V_Dist( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
@@ -1089,11 +1132,13 @@ namespace FS20_HudBar.Bar
       v = new V_Gallons( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
       item = VItem.Fuel_Right;
       v = new V_Gallons( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
-      // Total Fuel
+      // Total Fuel and Reach
       disp = LItem.Fuel_Total; di = m_dispItems.CreateDisp( disp );
       item = VItem.Fuel_Total;
       l = new L_Text( lblProto ) { Text = GuiName( disp ) }; di.AddItem( l );
       v = new V_Gallons( value2Proto, showUnits ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
+      item = VItem.Fuel_Reach;
+      v = new V_TimeHHMM( value2Proto ); di.AddItem( v ); m_valueItems.AddLbl( item, v );
 
       // ATC Alt / HDG
       disp = LItem.ATC_ALT_HDG; di = m_dispItems.CreateDisp( disp );
@@ -1203,6 +1248,9 @@ namespace FS20_HudBar.Bar
       int numEngines = SC.SimConnectClient.Instance.EngineModule.NumEngines;
       var latLon = new LatLon( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon );
 
+      // update calculations
+      Calculator.PaceCalculator( );
+
       // we do this one by one.. only setting values for visible ones - should save some resources
 
       // SimRate
@@ -1229,7 +1277,7 @@ namespace FS20_HudBar.Bar
       // OAT
       if ( this.ShowItem( LItem.OAT ) ) {
         this.Value( VItem.OAT ).Value = SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC;
-        this.ColorType( VItem.OAT ).ItemForeColor = ( SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC < 0 ) ? cSubZero : cInfo; // icing conditions
+        this.ColorType( VItem.OAT ).ItemForeColor = ( SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC < 4 ) ? cSubZero : cInfo; // icing conditions
       }
       // BARO
       if ( this.ShowItem( LItem.BARO_HPA ) ) this.Value( VItem.BARO_HPA ).Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_mbar;
@@ -1372,9 +1420,17 @@ namespace FS20_HudBar.Bar
           this.ColorType( VItem.Fuel_Right ).ItemForeColor = cWarn;
         }
       }
-      // Fuel Tot
-      if ( this.ShowItem( LItem.Fuel_Total ) ) this.Value( VItem.Fuel_Total ).Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityTotal_gal;
+      // Fuel Tot & Reach
+      if ( this.ShowItem( LItem.Fuel_Total ) ) {
+        this.Value( VItem.Fuel_Total ).Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityTotal_gal;
+        float ff = Calculator.FuelReach_sec( );
+        this.Value( VItem.Fuel_Reach ).Value = ff;
+        this.ColorType( VItem.Fuel_Reach ).ItemForeColor = ( ff <= 1800 ) ? cAlert : ( ff <= 3600 ) ? cWarn : cInfo; // warn <1h, alert <1/2h
+      }
 
+      // GPS Always
+      if ( this.ShowItem( LItem.GPS_TRK ) ) this.Value( VItem.GPS_TRK ).Value = SC.SimConnectClient.Instance.GpsModule.GTRK;
+      if ( this.ShowItem( LItem.GPS_GS ) ) this.Value( VItem.GPS_GS ).Value = SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt;
       // GPS (is nulled when no flightplan is active)
       if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
         // WP Enroute Tracker
@@ -1398,11 +1454,9 @@ namespace FS20_HudBar.Bar
         if ( this.ShowItem( LItem.GPS_WP_DIST ) ) this.Value( VItem.GPS_WP_DIST ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_dist;
         if ( this.ShowItem( LItem.GPS_WP_ETE ) ) this.Value( VItem.GPS_WP_ETE ).Value = SC.SimConnectClient.Instance.GpsModule.WYP_ete;
         if ( this.ShowItem( LItem.GPS_ETE ) ) this.Value( VItem.GPS_ETE ).Value = SC.SimConnectClient.Instance.GpsModule.DEST_ete;
-        if ( this.ShowItem( LItem.GPS_TRK ) ) this.Value( VItem.GPS_TRK ).Value = SC.SimConnectClient.Instance.GpsModule.GTRK;
         if ( this.ShowItem( LItem.GPS_BRGm ) ) this.Value( VItem.GPS_BRGm ).Value = SC.SimConnectClient.Instance.GpsModule.BRG;
         if ( this.ShowItem( LItem.GPS_DTRK ) ) this.Value( VItem.GPS_DTRK ).Value = SC.SimConnectClient.Instance.GpsModule.DTK;
         if ( this.ShowItem( LItem.GPS_XTK ) ) this.Value( VItem.GPS_XTK ).Value = SC.SimConnectClient.Instance.GpsModule.GpsWaypointCrossTRK_nm;
-        if ( this.ShowItem( LItem.GPS_GS ) ) this.Value( VItem.GPS_GS ).Value = SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt;
 
         // Estimate handling
         float tgtAlt = SC.SimConnectClient.Instance.GpsModule.WYP_alt;
@@ -1450,11 +1504,9 @@ namespace FS20_HudBar.Bar
         if ( this.ShowItem( LItem.GPS_WP_DIST ) ) this.Value( VItem.GPS_WP_DIST ).Value = null;
         if ( this.ShowItem( LItem.GPS_WP_ETE ) ) this.Value( VItem.GPS_WP_ETE ).Value = null;
         if ( this.ShowItem( LItem.GPS_ETE ) ) this.Value( VItem.GPS_ETE ).Value = null;
-        if ( this.ShowItem( LItem.GPS_TRK ) ) this.Value( VItem.GPS_TRK ).Value = null;
         if ( this.ShowItem( LItem.GPS_BRGm ) ) this.Value( VItem.GPS_BRGm ).Value = null;
         if ( this.ShowItem( LItem.GPS_DTRK ) ) this.Value( VItem.GPS_DTRK ).Value = null;
         if ( this.ShowItem( LItem.GPS_XTK ) ) this.Value( VItem.GPS_XTK ).Value = null;
-        if ( this.ShowItem( LItem.GPS_GS ) ) this.Value( VItem.GPS_GS ).Value = null;
         if ( this.ShowItem( LItem.GPS_ALT ) ) this.Value( VItem.GPS_ALT ).Value = null;
         if ( this.ShowItem( LItem.EST_VS ) ) this.Value( VItem.EST_VS ).Value = null; // cannot if we don't have a WYP to aim at
         if ( this.ShowItem( LItem.EST_ALT ) ) this.Value( VItem.EST_ALT ).Value = null; // cannot if we don't have a WYP to aim at
@@ -1527,22 +1579,22 @@ namespace FS20_HudBar.Bar
         this.DispItem( LItem.AP ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.AP_mode == FSimClientIF.APMode.On ? cAP : cInfo;
 
       if ( this.ShowItem( LItem.AP_HDGs ) ) {
-        this.DispItem( LItem.AP_HDGs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.HDG_hold ? cSet : cInfo;
+        this.DispItem( LItem.AP_HDGs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.HDG_hold ? cAP : cInfo;
         this.Value( VItem.AP_HDGset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting_degm;
       }
 
       if ( this.ShowItem( LItem.AP_ALTs ) ) {
-        this.DispItem( LItem.AP_ALTs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold ? cSet : cInfo;
+        this.DispItem( LItem.AP_ALTs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold ? cAP : cInfo;
         this.Value( VItem.AP_ALTset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
       }
 
       if ( this.ShowItem( LItem.AP_VSs ) ) {
-        this.DispItem( LItem.AP_VSs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.VS_hold ? cSet : cInfo;
+        this.DispItem( LItem.AP_VSs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.VS_hold ? cAP : cInfo;
         this.Value( VItem.AP_VSset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.VS_setting_fpm;
       }
 
       if ( this.ShowItem( LItem.AP_FLCs ) ) {
-        this.DispItem( LItem.AP_FLCs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.FLC_active ? cSet : cInfo;
+        this.DispItem( LItem.AP_FLCs ).ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.FLC_active ? cAP : cInfo;
         this.Value( VItem.AP_FLCset ).Value = SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt;
       }
 
@@ -1616,6 +1668,65 @@ namespace FS20_HudBar.Bar
         }
       }
 
+      // NAV 1 Tuning
+      if ( this.ShowItem( LItem.NAV1 ) ) {
+        if ( SC.SimConnectClient.Instance.NavModule.Nav1_Ident != "" ) {
+          this.Value( VItem.NAV1_ID ).Text =
+             ( SC.SimConnectClient.Instance.NavModule.GS1_flag ? "‡◊"        // GS received
+             : SC.SimConnectClient.Instance.NavModule.GS1_available ? "‡ "  // GS available
+             : SC.SimConnectClient.Instance.NavModule.Nav1_hasLOC ? "† "    // LOC availbe
+             : "  " ) + SC.SimConnectClient.Instance.NavModule.Nav1_Ident;
+
+          if ( SC.SimConnectClient.Instance.NavModule.Nav1_Signal && SC.SimConnectClient.Instance.NavModule.FromToFlag1 != 0 ) {
+            this.Value( VItem.NAV1_BRG ).Value = (float)Geo.Wrap360( SC.SimConnectClient.Instance.NavModule.Nav1_Radial_degm - 180 );
+          }
+          else {
+            this.Value( VItem.NAV1_BRG ).Value = null;
+          }
+          if ( SC.SimConnectClient.Instance.NavModule.Nav1_hasDME ) {
+            this.Value( VItem.NAV1_DST ).Value =
+                V_DmeDist.DmeDistance( SC.SimConnectClient.Instance.NavModule.DMEdistNav1_nm, SC.SimConnectClient.Instance.NavModule.FromToFlag1 );
+          }
+          else {
+            this.Value( VItem.NAV1_DST ).Value = null;
+          }
+        }
+        else {
+          this.Value( VItem.NAV1_ID ).Text = null;
+          this.Value( VItem.NAV1_BRG ).Value = null;
+          this.Value( VItem.NAV1_DST ).Value = null;
+        }
+      }
+      // NAV 2 Tuning
+      if ( this.ShowItem( LItem.NAV2 ) ) {
+        if ( SC.SimConnectClient.Instance.NavModule.Nav2_Ident != "" ) {
+          this.Value( VItem.NAV2_ID ).Text =
+             ( SC.SimConnectClient.Instance.NavModule.GS2_flag ? "‡◊"       // GS received
+             : SC.SimConnectClient.Instance.NavModule.GS2_available ? "‡ "  // GS available
+             : SC.SimConnectClient.Instance.NavModule.Nav2_hasLOC ? "† "    // LOC availbe
+             : "  " ) + SC.SimConnectClient.Instance.NavModule.Nav2_Ident;
+
+          if ( SC.SimConnectClient.Instance.NavModule.Nav2_Signal && SC.SimConnectClient.Instance.NavModule.FromToFlag2 != 0 ) {
+            this.Value( VItem.NAV2_BRG ).Value = (float)Geo.Wrap360( SC.SimConnectClient.Instance.NavModule.Nav2_Radial_degm - 180 );
+          }
+          else {
+            this.Value( VItem.NAV2_BRG ).Value = null;
+          }
+          if ( SC.SimConnectClient.Instance.NavModule.Nav2_hasDME ) {
+            this.Value( VItem.NAV2_DST ).Value =
+              V_DmeDist.DmeDistance( SC.SimConnectClient.Instance.NavModule.DMEdistNav2_nm, SC.SimConnectClient.Instance.NavModule.FromToFlag2 );
+          }
+          else {
+            this.Value( VItem.NAV2_DST ).Value = null;
+          }
+        }
+        else {
+          this.Value( VItem.NAV2_ID ).Text = null;
+          this.Value( VItem.NAV2_BRG ).Value = null;
+          this.Value( VItem.NAV2_DST ).Value = null;
+        }
+      }
+
       // Eval Meters
       if ( this.ShowItem( LItem.M_TIM_DIST1 ) ) {
         CPMeter1.Lapse( latLon, SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
@@ -1635,6 +1746,10 @@ namespace FS20_HudBar.Bar
         this.Value( VItem.M_Dist3 ).Value = (float)CPMeter3.Distance;
         this.DispItem( LItem.M_TIM_DIST3 ).ColorType.ItemBackColor = CPMeter3.Started ? cLiveBG : cActBG;
       }
+
+      // VoicePack Update
+      // TODO ... ONLY IF VOICEPACK ENABLED THEN
+      m_voicePack.UpdateHudVoice( dataRefName );
 
     }
 
@@ -1664,6 +1779,15 @@ namespace FS20_HudBar.Bar
     public void SetVoiceName( string voiceName )
     {
       VoiceName = voiceName;
+    }
+
+    /// <summary>
+    /// Save the Voice Callout state from config
+    /// </summary>
+    /// <param name="clb">A checked listbox of Voice Items</param>
+    public void SetVoiceCallouts( CheckedListBox clb )
+    {
+
     }
 
     #endregion

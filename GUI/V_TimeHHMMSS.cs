@@ -7,13 +7,13 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
-  class V_Time : V_Base
+  class V_TimeHHMMSS : V_Base
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Time( Label proto )
+    public V_TimeHHMMSS( Label proto )
     : base( proto, false )
     {
       m_unit = "";

@@ -7,6 +7,9 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.GUI
 {
+  /// <summary>
+  /// Distance indicator with a directional arrow up to 99.9 shown
+  /// </summary>
   class V_AptDist : V_Base
   {
     /// <summary>
@@ -17,7 +20,7 @@ namespace FS20_HudBar.GUI
     : base( proto, showUnit )
     {
       m_unit = "nm";
-      m_default = DefaultString( "__._↓" );
+      m_default = DefaultString( "__._ " );
       Text = UnitString( m_default );
     }
 
@@ -27,6 +30,8 @@ namespace FS20_HudBar.GUI
 
     /// <summary>
     /// Set the value of the Control
+    ///  neg. values indicate dist towards the target
+    ///  pos. values indicate dist from the target
     /// </summary>
     override public float? Value {
       set {
@@ -37,7 +42,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else if ( Math.Abs( (float)value ) >= 100.0f ) {
-          this.Text = UnitString( m_default );
+          this.Text = UnitString( "> 999 " );
         }
         else {
           if ( value < 0 ) {

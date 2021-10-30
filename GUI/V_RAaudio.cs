@@ -17,6 +17,8 @@ namespace FS20_HudBar.GUI
     private int m_prevVal = -1000;
     private List<int> m_said = new List<int>();
 
+    private Triggers.T_RAcallout m_raCallout;
+
     /// <summary>
     /// cTor:
     /// </summary>
@@ -28,6 +30,7 @@ namespace FS20_HudBar.GUI
       m_default = DefaultString( "+__'___ " );
       Text = UnitString( m_default );
       m_gUI_SpeechRef = gUI_SpeechRef;
+      m_raCallout = new Triggers.T_RAcallout( gUI_SpeechRef ) { Enabled = true }; // must be enabled
     }
 
     /// <summary>
@@ -43,7 +46,10 @@ namespace FS20_HudBar.GUI
         }
         else {
           this.Text = UnitString( $"{value,7:##,##0} " ); // sign 5 digits, 1000 separator, add a blank to aling better
-          Say( (float)value );
+          // The RA callout should talk...
+          m_raCallout.UpdateState( SimConnectClient.SimConnectClient.Instance.AircraftModule );
+
+          //Say( (float)value );
         }
       }
     }

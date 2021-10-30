@@ -21,12 +21,35 @@ namespace FS20_HudBar
 
     internal int SelectedProfile { get; set; } = 0;
 
+    private bool initDone = false;
 
     public frmConfig( )
     {
+      initDone = false;
       InitializeComponent( );
+
+      this.Text = "Hud Bar Configuration - Instance: " + ( string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance );
     }
 
+    // fill the list with items and check them from the Instance
+    private void PopulateVoiceCallouts( )
+    {
+      clbVoice.Items.Clear( );
+      foreach ( var vt in HudBarRef.VoicePack.Triggers ) {
+        var idx = clbVoice.Items.Add( vt.Name );
+        clbVoice.SetItemChecked( idx, vt.Enabled );
+      }
+    }
+
+    // Save the new Checked State in the Instance and save them in Settings
+    private void SaveVoiceCallouts( )
+    {
+      int idx = 0;
+      foreach ( var vt in HudBarRef.VoicePack.Triggers ) {
+        vt.Enabled = clbVoice.GetItemChecked( idx++ );
+      }
+      HudBarRef.VoicePack.SaveSettings( );
+    }
 
     private void PopulateFonts( ComboBox cbx )
     {
@@ -58,6 +81,7 @@ namespace FS20_HudBar
       cbx.Items.Add( "Bar" );
       cbx.Items.Add( "Tile" );
       cbx.Items.Add( "Window" ); // 20210718
+      cbx.Items.Add( "Window no border" ); // 20211022
     }
 
     private void PopulateCond( ComboBox cbx )
@@ -82,19 +106,21 @@ namespace FS20_HudBar
       cbx.Items.Add( $"{(int)GUI.Transparent.T90 * 10}%  Transparent" );
     }
 
-    private void PopulateVoice(ComboBox cbx)
+    // Load the combo from installed voices
+    private void PopulateVoice( ComboBox cbx )
     {
       cbx.Items.Clear( );
-      foreach(var vn in GUI.GUI_Speech.AvailableVoices ) {
+      foreach ( var vn in GUI.GUI_Speech.AvailableVoices ) {
         cbx.Items.Add( vn );
       }
     }
 
+    // select the current voice from settings
     public void LoadVoice( ComboBox cbx )
     {
-      if ( cbx.Items.Contains(HudBarRef.VoiceName))
+      if ( cbx.Items.Contains( HudBarRef.VoiceName ) )
         cbx.SelectedItem = HudBarRef.VoiceName;
-      else if ( cbx.Items.Count>0) {
+      else if ( cbx.Items.Count > 0 ) {
         cbx.SelectedIndex = 0;
       }
       else {
@@ -110,10 +136,15 @@ namespace FS20_HudBar
       if ( HudBarRef == null ) return; // sanity ..
       if ( ProfilesRef?.Count < 5 ) return;// sanity ..
 
+
       cbxUnits.Checked = HudBarRef.ShowUnits;
       cbxFltSave.Checked = HudBarRef.FltAutoSave; // 20210821
+
       PopulateVoice( cbxVoice );// 20211006
       LoadVoice( cbxVoice );
+      speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
+
+      PopulateVoiceCallouts( ); // 20211018
 
       // Per profile
       txP1.Text = ProfilesRef[0].PName;
@@ -190,6 +221,9 @@ namespace FS20_HudBar
         case 4: txP5.BackColor = Color.LimeGreen; break;
         default: break;
       }
+
+      initDone = true;
+
     }
 
     private void frmConfig_FormClosing( object sender, FormClosingEventArgs e )
@@ -204,7 +238,6 @@ namespace FS20_HudBar
 
     private void btCancel_Click( object sender, EventArgs e )
     {
-
       this.DialogResult = DialogResult.Cancel;
       this.Close( );
     }
@@ -215,7 +248,8 @@ namespace FS20_HudBar
       // live update to HUD
       HudBarRef.SetShowUnits( cbxUnits.Checked );
       HudBarRef.SetFltAutoSave( cbxFltSave.Checked );
-      HudBarRef.SetVoiceName( cbxVoice.SelectedItem.ToString() );
+      HudBarRef.SetVoiceName( cbxVoice.SelectedItem.ToString( ) );
+      SaveVoiceCallouts( ); // 20211018 - save voice callouts
 
       // profile Updates
       ProfilesRef[0].PName = txP1.Text;
@@ -262,8 +296,13 @@ namespace FS20_HudBar
       this.Close( );
     }
 
+    // local instance for tests
     private GUI.GUI_Speech speech = new GUI.GUI_Speech();
 
+    private void cbxVoice_SelectedIndexChanged( object sender, EventArgs e )
+    {
+      speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
+    }
     private void cbxVoice_MouseClick( object sender, MouseEventArgs e )
     {
       if ( cbxVoice.DroppedDown ) return;
@@ -271,5 +310,16 @@ namespace FS20_HudBar
       speech.SaySynched( 100 );
     }
 
+    private void clbVoice_SelectedIndexChanged( object sender, EventArgs e )
+    {
+      if ( clbVoice.SelectedIndex < 0 ) return;
+      if ( !clbVoice.GetItemChecked( clbVoice.SelectedIndex ) ) return;
+      if ( !initDone ) return; // don't talk at startup
+
+      // Test when checked
+      HudBarRef.VoicePack.Triggers[clbVoice.SelectedIndex].Test( speech );
+    }
+
   }
+
 }

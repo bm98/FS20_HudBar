@@ -48,6 +48,7 @@ namespace FS20_HudBar.GUI
     Bar=0,
     Tile,
     Window, //20210718
+    WindowBL, //20211022 borderless window
   }
 
   /// <summary>

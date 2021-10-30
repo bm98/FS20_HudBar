@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>29</ApplicationRevision>
-    <ApplicationVersion>0.35.0.29</ApplicationVersion>
+    <ApplicationRevision>30</ApplicationRevision>
+    <ApplicationVersion>0.36.0.30</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -112,17 +112,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Bar\Calculator.cs" />
     <Compile Include="Bar\DispItemCat.cs" />
     <Compile Include="Bar\FltLib\FlightPlan.cs" />
     <Compile Include="Bar\FltLib\FltReader.cs" />
     <Compile Include="Bar\FltLib\FS20FltFile.cs" />
     <Compile Include="Bar\FltLib\Tooling.cs" />
     <Compile Include="Bar\FltLib\Waypoint.cs" />
+    <Compile Include="Bar\HudVoice.cs" />
     <Compile Include="Bar\ValueItemCat.cs" />
-    <Compile Include="CPointMeter.cs" />
+    <Compile Include="Bar\CPointMeter.cs" />
     <Compile Include="CProfile.cs" />
     <Compile Include="AirportMgr.cs" />
-    <Compile Include="Estimates.cs" />
+    <Compile Include="Bar\Estimates.cs" />
     <Compile Include="Bar\FltMgr.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -179,6 +181,9 @@
     <Compile Include="GUI\V_Dist.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GUI\V_DmeDist.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\V_Gallons.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -207,6 +212,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\V_Text.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\V_TimeHHMM.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\V_VSpeedPM.cs">
@@ -254,7 +262,7 @@
     <Compile Include="GUI\V_Temp.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Time.cs">
+    <Compile Include="GUI\V_TimeHHMMSS.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\V_Torque.cs">
@@ -271,6 +279,24 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tooling.cs" />
+    <Compile Include="Triggers\Base\EventProcBinary.cs" />
+    <Compile Include="Triggers\Base\EventProc.cs" />
+    <Compile Include="Triggers\Base\EventProcFloat.cs" />
+    <Compile Include="Triggers\Base\EventProcInteger.cs" />
+    <Compile Include="Triggers\Base\ITriggers.cs" />
+    <Compile Include="Triggers\Base\TriggerBand.cs" />
+    <Compile Include="Triggers\Base\TriggerBase.cs" />
+    <Compile Include="Triggers\Base\TriggerBinary.cs" />
+    <Compile Include="Triggers\T_AltHold.cs" />
+    <Compile Include="Triggers\T_Brakes.cs" />
+    <Compile Include="Triggers\T_Flaps.cs" />
+    <Compile Include="Triggers\Base\TriggerFloat.cs" />
+    <Compile Include="Triggers\T_Gear.cs" />
+    <Compile Include="Triggers\Base\TriggerInteger.cs" />
+    <Compile Include="Triggers\T_Glideslope.cs" />
+    <Compile Include="Triggers\T_OAT.cs" />
+    <Compile Include="Triggers\T_RAcallout.cs" />
+    <Compile Include="Triggers\T_WaypointETE.cs" />
     <Compile Include="WPTracker.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

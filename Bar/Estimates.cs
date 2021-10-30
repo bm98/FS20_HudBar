@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FS20_HudBar
+namespace FS20_HudBar.Bar
 {
   /// <summary>
   /// Calculate some estimates from current

@@ -108,6 +108,8 @@ namespace FS20_HudBar
     {
       InitializeComponent( );
 
+      this.Text = ( string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance ) + " HudBar - by bm98ch";
+
       // Load all from AppSettings
       AppSettings.Instance.Reload( );
 
@@ -148,7 +150,7 @@ namespace FS20_HudBar
 
       m_selProfile = AppSettings.Instance.SelProfile;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
-      m_appearance = ToColorSet(AppSettings.Instance.Appearance);
+      m_appearance = ToColorSet( AppSettings.Instance.Appearance );
       Colorset = m_appearance;
 
       // ShowUnits and Opacity are set via HUD in InitGUI
@@ -180,7 +182,7 @@ namespace FS20_HudBar
       flp.WrapContents = true; // Needs to wrap around
       flp.MouseDown += frmMain_MouseDown;
       flp.MouseUp += frmMain_MouseUp;
-      flp.MouseMove += frmMain_MouseMove ;
+      flp.MouseMove += frmMain_MouseMove;
 
       // Window Props
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc. to begin with
@@ -205,7 +207,7 @@ namespace FS20_HudBar
     private void frmMain_LocationChanged( object sender, EventArgs e )
     {
       if ( !m_initDone ) return; // bail out if in Init
-      if ( HUD.Kind != GUI.Kind.Window ) return; // can only handle Window here
+      if ( !( HUD.Kind == GUI.Kind.Window || HUD.Kind == GUI.Kind.WindowBL ) ) return; // can only handle Window here
 
       HUD.Profile.UpdateLocation( this.Location );
       // store new location per profile
@@ -408,7 +410,7 @@ namespace FS20_HudBar
     private void frmMain_MouseDown( object sender, MouseEventArgs e )
     {
       if ( !m_initDone ) return; // bail out if in Init
-      if ( HUD.Kind != GUI.Kind.Tile ) return; // can only move Tile kind around here
+      if ( !( HUD.Kind == GUI.Kind.Tile || HUD.Kind == GUI.Kind.WindowBL ) ) return; // can only move Tile kind around here
 
       m_moving = true;
       m_moveOffset = e.Location;
@@ -417,30 +419,37 @@ namespace FS20_HudBar
     private void frmMain_MouseMove( object sender, MouseEventArgs e )
     {
       if ( !m_initDone ) return; // bail out if in Init
-      if ( HUD.Kind != GUI.Kind.Tile ) return; // can only move Tile kind around here
+      if ( !( HUD.Kind == GUI.Kind.Tile || HUD.Kind == GUI.Kind.WindowBL ) ) return; // can only move Tile kind around here
       if ( !m_moving ) return;
 
-      switch ( HUD.Placement ) {
-        case GUI.Placement.Bottom:
-          this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y );
-          break;
-        case GUI.Placement.Left:
-          this.Location = new Point( this.Location.X, this.Location.Y + e.Y - m_moveOffset.Y );
-          break;
-        case GUI.Placement.Right:
-          this.Location = new Point( this.Location.X, this.Location.Y + e.Y - m_moveOffset.Y );
-          break;
-        case GUI.Placement.Top:
-          this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y );
-          break;
-        default: break;
+      if ( HUD.Kind == GUI.Kind.WindowBL ) {
+        // free movement
+        this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y + e.Y - m_moveOffset.Y );
+      }
+      else {
+        // Tiles are bound to a border
+        switch ( HUD.Placement ) {
+          case GUI.Placement.Bottom:
+            this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y );
+            break;
+          case GUI.Placement.Left:
+            this.Location = new Point( this.Location.X, this.Location.Y + e.Y - m_moveOffset.Y );
+            break;
+          case GUI.Placement.Right:
+            this.Location = new Point( this.Location.X, this.Location.Y + e.Y - m_moveOffset.Y );
+            break;
+          case GUI.Placement.Top:
+            this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y );
+            break;
+          default: break;
+        }
       }
     }
 
     private void frmMain_MouseUp( object sender, MouseEventArgs e )
     {
       if ( !m_initDone ) return; // bail out if in Init
-      if ( HUD.Kind != GUI.Kind.Tile ) return; // can only move Tile kind around here
+      if ( !( HUD.Kind == GUI.Kind.Tile || HUD.Kind == GUI.Kind.WindowBL ) ) return; // can only move Tile kind around here
       if ( !m_moving ) return;
 
       m_moving = false;
@@ -491,20 +500,20 @@ namespace FS20_HudBar
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) {
         // no action related to simConnect when not connected
-        if ( e.Item== VItem.Ad ) {
+        if ( e.Item == VItem.Ad ) {
           NextColorset( ); // MSFS, rotate colorset
           // save as setting
           AppSettings.Instance.Appearance = (int)Colorset;
           AppSettings.Instance.Save( );
 
         }
-        return; 
+        return;
       }
 
       // we are connected.. 
       switch ( e.Item ) {
         case VItem.Ad:
-          NextColorset(); // MSFS, rotate colorset
+          NextColorset( ); // MSFS, rotate colorset
           // save as setting
           AppSettings.Instance.Appearance = (int)Colorset;
           AppSettings.Instance.Save( );
@@ -642,7 +651,7 @@ namespace FS20_HudBar
       flp.Dock = DockStyle.None;
       flp.AutoSize = true;
       // can move a tile kind profile (but not a bar or window - has it's own window border anyway)
-      this.Cursor = HUD.Profile.Kind == GUI.Kind.Tile ? Cursors.SizeAll : Cursors.Default;
+      this.Cursor = ( HUD.Profile.Kind == GUI.Kind.Tile || HUD.Profile.Kind == GUI.Kind.WindowBL ) ? Cursors.SizeAll : Cursors.Default;
       // attach it to the PRIMARY screen (we assume the FS is run on the primary anyway...)
       // preliminary  windows full width/height
       switch ( HUD.Placement ) {
@@ -731,7 +740,7 @@ namespace FS20_HudBar
       switch ( HUD.Placement ) {
         case GUI.Placement.Bottom:
           this.Height = maxHeight + 5;
-          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) ) {
+          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) || ( HUD.Profile.Kind == GUI.Kind.WindowBL ) ) {
             this.Width = flp.Width + 5;
             this.Location = new Point( HUD.Profile.Location.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
           }
@@ -742,7 +751,7 @@ namespace FS20_HudBar
 
         case GUI.Placement.Left:
           this.Width = maxWidth + 10;
-          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) ) {
+          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) || ( HUD.Profile.Kind == GUI.Kind.WindowBL ) ) {
             this.Height = flp.Height + 10;
             this.Location = new Point( m_mainScreen.Bounds.X, HUD.Profile.Location.Y );
           }
@@ -753,7 +762,7 @@ namespace FS20_HudBar
 
         case GUI.Placement.Right:
           this.Width = maxWidth + 10;
-          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) ) {
+          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) || ( HUD.Profile.Kind == GUI.Kind.WindowBL ) ) {
             this.Height = flp.Height + 10;
             this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, HUD.Profile.Location.Y );
           }
@@ -764,7 +773,7 @@ namespace FS20_HudBar
 
         case GUI.Placement.Top:
           this.Height = maxHeight + 5;
-          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) ) {
+          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) || ( HUD.Profile.Kind == GUI.Kind.WindowBL ) ) {
             this.Width = flp.Width + 5;
             this.Location = new Point( HUD.Profile.Location.X, m_mainScreen.Bounds.Y );
           }
@@ -785,6 +794,14 @@ namespace FS20_HudBar
       // handle Window Style HUDs
       if ( HUD.Kind == GUI.Kind.Window ) {
         this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+        // We take the last user location to reposition the window / above it was bound to the edge of the main screen (Tile kind)
+        // avoid invisible windows from odd stored locations
+        if ( IsOnScreen( new Rectangle( HUD.Profile.Location, this.Size ) ) ) {
+          this.Location = HUD.Profile.Location;
+        }
+        // A Window is still TopMost - don't know if this is a good idea, we shall see...
+      }
+      else if ( HUD.Kind == GUI.Kind.WindowBL ) {
         // We take the last user location to reposition the window / above it was bound to the edge of the main screen (Tile kind)
         // avoid invisible windows from odd stored locations
         if ( IsOnScreen( new Rectangle( HUD.Profile.Location, this.Size ) ) ) {
@@ -839,8 +856,8 @@ namespace FS20_HudBar
     /// </summary>
     private void SimConnect( )
     {
-      HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor= ColorType.cInfo;
-      HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor= ColorType.cInverse;
+      HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cInfo;
+      HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse;
 
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         // Disconnect from Input and SimConnect
@@ -897,7 +914,7 @@ namespace FS20_HudBar
         // Happens when HudBar is running when the Sim is starting only.
         // Sometimes the Connection is made but was not hooking up to the event handling
         // Disconnect and try to reconnect 
-        if ( m_awaitingEvent ) {
+        if ( m_awaitingEvent || SC.SimConnectClient.Instance.AircraftModule.SimRate_rate <= 0 ) {
           // No events seen so far
           if ( m_scGracePeriod <= 0 ) {
             // grace period is expired !
