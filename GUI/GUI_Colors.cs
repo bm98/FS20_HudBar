@@ -92,6 +92,14 @@ namespace FS20_HudBar.GUI
       /// Live Items Background (e.g. when something is temporary active)
       /// </summary>
       cLiveBG,
+      /// <summary>
+      /// Warning Items Background (e.g. when something is to be fixed)
+      /// </summary>
+      cWarnBG,
+      /// <summary>
+      /// Alert Items Background (e.g. when something is to be fixed immediately)
+      /// </summary>
+      cAlertBG,
 
       // METAR BACKGROUND
       /// <summary>
@@ -157,6 +165,8 @@ namespace FS20_HudBar.GUI
       { ColorType.cBG, Color.Transparent },
       { ColorType.cActBG, Color.FromArgb(0,0,75) },
       { ColorType.cLiveBG, Color.DarkGreen },
+      { ColorType.cWarnBG, Color.DarkGoldenrod },
+      { ColorType.cAlertBG, Color.Firebrick },
 
       { ColorType.cMetG, Color.ForestGreen }, // METAR Green
       { ColorType.cMetB, Color.Blue }, // METAR Blue
@@ -187,6 +197,8 @@ namespace FS20_HudBar.GUI
       { ColorType.cBG, Color.Transparent },
       { ColorType.cActBG, Color.FromArgb(0,0,75) },
       { ColorType.cLiveBG, Color.DarkGreen },
+      { ColorType.cWarnBG, Color.DarkGoldenrod },
+      { ColorType.cAlertBG, Color.Firebrick },
 
       { ColorType.cMetG, Color.ForestGreen }, // METAR Green
       { ColorType.cMetB, Color.Blue }, // METAR Blue
@@ -217,6 +229,8 @@ namespace FS20_HudBar.GUI
       { ColorType.cBG, Color.Transparent },
       { ColorType.cActBG, Color.FromArgb(124, 214, 252) }, // mid blue
       { ColorType.cLiveBG, Color.DarkGreen },
+      { ColorType.cWarnBG, Color.DarkGoldenrod },
+      { ColorType.cAlertBG, Color.Firebrick },
 
       { ColorType.cMetG, Color.ForestGreen }, // METAR Green
       { ColorType.cMetB, Color.Blue }, // METAR Blue

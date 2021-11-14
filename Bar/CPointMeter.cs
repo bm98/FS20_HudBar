@@ -57,6 +57,14 @@ namespace FS20_HudBar.Bar
     }
 
     /// <summary>
+    /// Stop the Meter
+    /// </summary>
+    public void Stop( )
+    {
+      Started = false;
+    }
+
+    /// <summary>
     /// The elapsed distance in nm
     /// </summary>
     public double Distance => ( Started ) ? m_startLatLon.DistanceTo( m_lapseLatLon, ConvConsts.EarthRadiusNm ) : 0;

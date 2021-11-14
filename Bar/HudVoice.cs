@@ -27,6 +27,8 @@ namespace FS20_HudBar.Bar
     private T_Glideslope v_glideslope;
     private T_AltHold v_apAltHold;
     private T_OAT v_airTemp;
+    // warnings
+    private T_WarnFuel v_warnFuel;
 
     /// <summary>
     /// Provide the list of installed Voice Triggers
@@ -49,6 +51,8 @@ namespace FS20_HudBar.Bar
       v_glideslope = new T_Glideslope( speaker ); m_triggerList.Add( v_glideslope );
       v_apAltHold = new T_AltHold( speaker ); m_triggerList.Add( v_apAltHold );
       v_airTemp = new T_OAT(speaker); m_triggerList.Add( v_airTemp );
+
+      v_warnFuel = new T_WarnFuel( speaker ); m_triggerList.Add( v_warnFuel );
 
       // load from settings
       string profile = AppSettings.Instance.VoiceCalloutProfile;
@@ -90,6 +94,7 @@ namespace FS20_HudBar.Bar
       v_gear.UpdateState( SC.SimConnectClient.Instance.AircraftModule );
       v_flaps.UpdateState( SC.SimConnectClient.Instance.AircraftModule );
       v_airTemp.UpdateState( SC.SimConnectClient.Instance.AircraftModule );
+      v_warnFuel.UpdateState( null );
 
       // In Air Only callouts
       if ( !SC.SimConnectClient.Instance.AircraftModule.Sim_OnGround ) {

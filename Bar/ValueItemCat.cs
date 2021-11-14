@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using FS20_HudBar.GUI;
+
+using FS20_HudBar.Bar.Items.Base;
+using FS20_HudBar.Bar.Items;
 
 namespace FS20_HudBar.Bar
 {

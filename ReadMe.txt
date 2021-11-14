@@ -1,5 +1,5 @@
-FS20_HudBar V 0.36 - Build 30 BETA
-(c) M. Burri - 30-Oct-2021
+FS20_HudBar V 0.37 - Build 31 BETA
+(c) M. Burri - 14-Nov-2021
 
 Contains files:
 
@@ -37,6 +37,25 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.37-B31
+- Add item Control Handle% readout for Throttle, Mix, Propeller
+- Add item Power LOAD %
+- Add item CHT in °C and °F
+- Add item EGT in °F
+- Add item OAT in °F
+- Add Button Click for SimRate to set it to 1x (normal)
+- Add VoiceOut item for LowFuel Alert
+- Add Config Copy / Paste items between profiles
+- Add Default profiles to select from
+- Add Provide some default profiles when using the program the very first time
+- Add Load default profiles from Config menu
+- Update Button Click handling for CP Meters to Stop (within 2 sec of Start)
+- Update GPS source to show NAV1 or NAV2 or GPS
+- Update Cursor on ATC Tooltip changes to indicate content
+- Update Internal re-design for most of the parts..
+- Fix Interaction issue with SimConnect and loading flights (workaround MSFS bug)
+- Update QuickGuide
+
 V 0.36-B30
 - Add NAV1/2 with ID, Bearing To, and DME distance item
 - Add Fuel Time value to Fuel Total (based on the most current consumption)

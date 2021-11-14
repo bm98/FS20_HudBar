@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using FS20_HudBar.GUI;
+using FS20_HudBar.Bar.Items.Base;
+using FS20_HudBar.Bar.Items;
 
 namespace FS20_HudBar.Bar
 {
@@ -31,6 +32,12 @@ namespace FS20_HudBar.Bar
     public void AddDisp( LItem item, DispItem disp )
     {
       this.Add( item, disp );
+    }
+
+    // add a DispItem to the collection
+    public void AddDisp( DispItem disp )
+    {
+      this.Add( disp.LabelID, disp );
     }
 
   }

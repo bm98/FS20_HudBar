@@ -12,7 +12,7 @@ namespace FS20_HudBar
   class Tooling
   {
     private const float c_nmPerM = 5.399568e-4f;
-
+    private const float c_degF = 9f/5f;
     /// <summary>
     /// Nautical Miles from Meters
     /// </summary>
@@ -21,6 +21,16 @@ namespace FS20_HudBar
     public static float NmFromM( float meter )
     {
       return meter * c_nmPerM;
+    }
+
+    /// <summary>
+    /// Converst from DegC to DegF ((DEG°C * 9/5) + 32 = 32°F)
+    /// </summary>
+    /// <param name="degC"></param>
+    /// <returns>Temp in deg F</returns>
+    public static float DegCtoF( float degC )
+    {
+      return ( degC * c_degF ) + 32.0f;
     }
 
     /// <summary>
@@ -46,7 +56,7 @@ namespace FS20_HudBar
     /// <param name="number">The number</param>
     /// <param name="quant">Quantities to round to</param>
     /// <returns></returns>
-    public static float Round(float number, int quant )
+    public static float Round( float number, int quant )
     {
       return (float)( Math.Round( number / quant ) * quant );
     }

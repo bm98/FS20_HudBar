@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>30</ApplicationRevision>
-    <ApplicationVersion>0.36.0.30</ApplicationVersion>
+    <ApplicationRevision>31</ApplicationRevision>
+    <ApplicationVersion>0.37.0.31</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -114,17 +114,267 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="Bar\Calculator.cs" />
     <Compile Include="Bar\DispItemCat.cs" />
+    <Compile Include="Bar\Items\AircraftPara\DI_A_ETrim.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_AltSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_AprGs.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_BC.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_FlcSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_HdgSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_LVL.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_NavGps.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_VsSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_YD.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AtcPara\DI_Atc_AltHdg.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AtcPara\DI_Atc_APT.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AtcPara\DI_Atc_RWY.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AtcPara\DI_Metar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\CtrlPara\DI_Mix_LEV.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\CtrlPara\DI_Prop_LEV.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\CtrlPara\DI_Thr_LEV.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_N2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnvPara\DI_Oat_F.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Cht_C.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Cht_F.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Load_prct.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Egt_F.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_M_TimDist1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_M_TimDist2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_M_TimDist3.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Nav1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Nav2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Alt_eff.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Alt_Inst.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_LatLon.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Hdg.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_HdgT.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Ias.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Mach.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_MsFS.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Ra.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Ra_Voice.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Tas.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Vs.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Vs_PM.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Enroute.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Est_ALT.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Est_VS.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_ALT.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_GS.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_BRGm.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_DTRK.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_ETE.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_TRK.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_WP_Dist.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_WP_Ete.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_WYP.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_XTK.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_FFlow_GPH.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_FFlow_PPH.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\FltLib\FlightPlan.cs" />
     <Compile Include="Bar\FltLib\FltReader.cs" />
     <Compile Include="Bar\FltLib\FS20FltFile.cs" />
     <Compile Include="Bar\FltLib\Tooling.cs" />
     <Compile Include="Bar\FltLib\Waypoint.cs" />
     <Compile Include="Bar\HudVoice.cs" />
+    <Compile Include="Bar\Items\BarItems.cs" />
+    <Compile Include="Bar\Items\AircraftPara\DI_Acft_ID.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_Aoa.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_ATrim.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_Baro_HPA.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_Baro_InHg.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_Brakes.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Egt_C.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_ERpm.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_ETrim.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_Flaps.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Fuel_LR.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Fuel_Total.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_Gear.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Itt_C.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_Lights.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Man.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_N1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnvPara\DI_Oat_C.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_PRpm.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_RTrim.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_Time.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Torq.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_TorqP.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnvPara\DI_Vis.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnvPara\DI_Wind_SD.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnvPara\DI_Wind_XY.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\ValueItemCat.cs" />
     <Compile Include="Bar\CPointMeter.cs" />
+    <Compile Include="Config\FlpHandler.cs" />
     <Compile Include="CProfile.cs" />
     <Compile Include="AirportMgr.cs" />
-    <Compile Include="Bar\Estimates.cs" />
     <Compile Include="Bar\FltMgr.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -132,10 +382,10 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmConfig.cs">
+    <Compile Include="Config\frmConfig.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmConfig.Designer.cs">
+    <Compile Include="Config\frmConfig.Designer.cs">
       <DependentUpon>frmConfig.cs</DependentUpon>
     </Compile>
     <Compile Include="frmGui.cs">
@@ -144,134 +394,143 @@
     <Compile Include="frmGui.Designer.cs">
       <DependentUpon>frmGui.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\B_Base.cs">
+    <Compile Include="Bar\Items\SimPara\DI_SimRate.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\B_Text.cs">
+    <Compile Include="GUI\Templates\Base\B_Base.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\B_Prct.cs">
+    <Compile Include="GUI\Templates\Base\ToolTip_Base.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\B_Text.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\B_Prct.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\ClickedEventArgs.cs" />
-    <Compile Include="GUI\DispItem.cs">
+    <Compile Include="Bar\Items\Base\DispItem.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\GUI_Colors.cs" />
     <Compile Include="GUI\GUI_Fonts.cs" />
     <Compile Include="GUI\GUI_Speech.cs" />
     <Compile Include="GUI\IColorType.cs" />
-    <Compile Include="GUI\ValueItem.cs" />
-    <Compile Include="GUI\V_Alt.cs">
+    <Compile Include="Bar\Items\Base\ValueItem.cs" />
+    <Compile Include="GUI\Templates\V_Alt.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Angle.cs">
+    <Compile Include="GUI\Templates\V_Angle.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_AptDist.cs">
+    <Compile Include="GUI\Templates\V_AptDist.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Base.cs">
+    <Compile Include="GUI\Templates\Base\V_Base.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Deg.cs">
+    <Compile Include="GUI\Templates\V_Deg.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\IValue.cs" />
-    <Compile Include="GUI\V_Dist.cs">
+    <Compile Include="GUI\Templates\V_Dist.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_DmeDist.cs">
+    <Compile Include="GUI\Templates\V_DmeDist.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Gallons.cs">
+    <Compile Include="GUI\Templates\V_Gallons.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_ICAO.cs">
+    <Compile Include="GUI\Templates\V_ICAO.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_ICAO_L.cs">
+    <Compile Include="GUI\Templates\V_ICAO_L.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_LatDist.cs">
+    <Compile Include="GUI\Templates\V_LatDist.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Latitude.cs">
+    <Compile Include="GUI\Templates\V_Latitude.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Lights.cs">
+    <Compile Include="GUI\Templates\V_Lights.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Longitude.cs">
+    <Compile Include="GUI\Templates\V_Longitude.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Mach.cs">
+    <Compile Include="GUI\Templates\V_Mach.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_RAaudio.cs">
+    <Compile Include="GUI\Templates\V_RAaudio.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Text.cs">
+    <Compile Include="GUI\Templates\V_Temp_F.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_TimeHHMM.cs">
+    <Compile Include="GUI\Templates\V_Text.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_VSpeedPM.cs">
+    <Compile Include="GUI\Templates\V_TimeHHMM.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Wind_HT.cs">
+    <Compile Include="GUI\Templates\V_VSpeedPM.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Wind_X.cs">
+    <Compile Include="GUI\Templates\V_Wind_HT.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Xtk.cs">
+    <Compile Include="GUI\Templates\V_Wind_X.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Flow_gph.cs">
+    <Compile Include="GUI\Templates\V_Xtk.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Flow_pph.cs">
+    <Compile Include="GUI\Templates\V_Flow_gph.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\L_Text.cs">
+    <Compile Include="GUI\Templates\V_Flow_pph.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_PressureHPA.cs">
+    <Compile Include="GUI\Templates\L_Text.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_PressureInHg.cs">
+    <Compile Include="GUI\Templates\V_PressureHPA.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_RPM.cs">
+    <Compile Include="GUI\Templates\V_PressureInHg.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_SRate.cs">
+    <Compile Include="GUI\Templates\V_RPM.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Steps.cs">
+    <Compile Include="GUI\Templates\V_SRate.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Prct.cs">
+    <Compile Include="GUI\Templates\V_Steps.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Speed.cs">
+    <Compile Include="GUI\Templates\V_Prct.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Temp.cs">
+    <Compile Include="GUI\Templates\V_Speed.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_TimeHHMMSS.cs">
+    <Compile Include="GUI\Templates\V_Temp_C.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_Torque.cs">
+    <Compile Include="GUI\Templates\V_TimeHHMMSS.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\V_VSpeed.cs">
+    <Compile Include="GUI\Templates\V_Torque.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\X_ToolTip.cs">
+    <Compile Include="GUI\Templates\V_VSpeed.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\X_ToolTip.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\HudBar.cs" />
@@ -296,12 +555,13 @@
     <Compile Include="Triggers\T_Glideslope.cs" />
     <Compile Include="Triggers\T_OAT.cs" />
     <Compile Include="Triggers\T_RAcallout.cs" />
+    <Compile Include="Triggers\T_WarnFuel.cs" />
     <Compile Include="Triggers\T_WaypointETE.cs" />
     <Compile Include="WPTracker.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmConfig.resx">
+    <EmbeddedResource Include="Config\frmConfig.resx">
       <DependentUpon>frmConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmGui.resx">

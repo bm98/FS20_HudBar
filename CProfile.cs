@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using FS20_HudBar.Bar;
+using FS20_HudBar.Bar.Items;
 
 namespace FS20_HudBar
 {
@@ -16,6 +17,111 @@ namespace FS20_HudBar
   /// </summary>
   class CProfile
   {
+    #region DEFAULT PROFILES
+    public enum DProfile
+    {
+      Profile_All,    // all items checked
+      EssentialsProfile,
+      CombProfile_A, // most used combustion engine profile
+      CombProfile_B, // variant B
+      CombProfile_C, // variant C
+      TPropProfile_A,
+      TPropProfile_C208B,   // has some differences to the generic one
+      JetProfile,
+      HeavyProfile,
+    }
+
+    public class DefaultProfile
+    {
+      public string Name { get; private set; } = "";
+      public string Profile { get; private set; } = "";
+      public string DispOrder { get; private set; } = "";
+      public string FlowBreak { get; private set; } = "";
+
+      public DefaultProfile( string name, string profile, string dispOrder, string flowBreak )
+      {
+        Name = name;
+        Profile = profile;
+        DispOrder = dispOrder;
+        FlowBreak = flowBreak;
+      }
+      public override string ToString( ) => Name;
+    }
+
+    private static Dictionary<DProfile, DefaultProfile> _defaultProfileCat = new Dictionary<DProfile, DefaultProfile>(){
+      { DProfile.Profile_All, new DefaultProfile("All Items",
+        "1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;", // disp
+        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;", // order
+        "0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;1;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;1;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") }, // flowbreak
+
+      { DProfile.EssentialsProfile, new DefaultProfile("Essentials",
+        "1;0;1;0;0;1;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;1;1;0;1;0;0;0;1;0;1;1;1;1;0;0;0;0;1;1;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",
+        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
+        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
+
+      { DProfile.CombProfile_A, new DefaultProfile("Prop Easy",
+        "1;1;1;1;1;1;0;1;1;1;1;0;0;0;1;0;0;0;0;0;1;1;1;1;1;0;0;0;1;0;1;1;1;1;1;1;1;1;1;1;0;0;0;0;0;0;1;1;0;0;1;0;0;1;0;1;0;0;1;0;1;0;0;0;0;0;1;0;0;1;0;0;0;1;1;0;0;0;0;0;0;0;0;0;",
+        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
+        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
+
+      { DProfile.CombProfile_B, new DefaultProfile("Prop Direct",
+        "1;1;1;1;1;1;0;1;1;1;1;0;0;0;1;0;0;1;0;1;1;1;1;1;1;0;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;1;0;1;1;0;1;1;0;1;1;1;1;0;0;1;0;1;0;0;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;1;0;0;0;",
+        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
+        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
+
+      { DProfile.CombProfile_C, new DefaultProfile("Prop Gearbox",
+        "1;1;1;1;1;1;0;1;1;1;1;0;0;1;0;0;0;1;0;1;1;1;1;1;1;0;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;1;0;1;1;1;1;1;0;1;1;1;1;0;0;1;0;1;1;1;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;1;0;1;0;",
+        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
+        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
+
+      { DProfile.TPropProfile_A, new DefaultProfile("TurboProp",
+        "1;1;1;1;1;1;0;1;1;1;1;0;1;1;0;1;1;0;0;1;1;1;1;1;1;0;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;0;0;1;1;1;1;1;0;1;1;1;1;0;0;1;0;1;1;1;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;0;0;0;0;",
+        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
+        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
+
+      { DProfile.TPropProfile_C208B, new DefaultProfile("TurboProp 208B",
+        "1;1;1;1;1;1;0;1;1;1;1;1;0;1;0;1;1;0;1;0;1;1;1;1;1;0;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;0;0;1;1;1;1;1;0;1;1;1;1;0;0;1;0;1;1;1;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;0;0;0;0;",
+        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
+        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
+
+      { DProfile.JetProfile, new DefaultProfile("Jet",
+        "1;1;0;0;0;1;0;1;1;1;1;0;0;0;0;1;1;0;1;0;1;1;1;1;1;1;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;0;1;1;1;1;1;1;0;1;1;1;1;1;0;1;0;1;1;1;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;0;0;0;0;",
+        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
+        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
+
+      { DProfile.HeavyProfile, new DefaultProfile("Heavy",
+        "1;1;0;0;0;1;0;1;1;1;1;0;0;0;0;1;1;0;1;0;1;1;1;1;1;1;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;0;1;1;1;1;1;1;0;1;1;1;1;1;0;1;0;1;1;1;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;0;0;0;1;",
+        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
+        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
+    };
+
+    /// <summary>
+    /// Return a default profile 
+    /// </summary>
+    /// <param name="profile">The profile ID</param>
+    /// <returns>The DefaultProfile or null</returns>
+    public static DefaultProfile GetDefaultProfile( DProfile profile )
+    {
+      if ( !_defaultProfileCat.ContainsKey( profile ) ) return null;
+      return _defaultProfileCat[profile];
+    }
+
+    /// <summary>
+    /// Returns a default profile from a profile name
+    /// </summary>
+    /// <param name="profileName">The profile Name</param>
+    /// <returns>The DefaultProfile or null</returns>
+    public static DefaultProfile GetDefaultProfile( string profileName )
+    {
+      var dp = _defaultProfileCat.Where(x=> x.Value.Name == profileName );
+      if ( dp.Count() > 0 ) {
+        return dp.ElementAt(0).Value;
+      }
+      return null;
+    }
+
+    #endregion
+
     private int m_pNumber = 0;
 
     private FlowLayoutPanel m_flp = null;
@@ -38,7 +144,7 @@ namespace FS20_HudBar
     public Point Location => m_location;
     public bool Condensed => m_condensed;
     public GUI.Transparent Transparency => m_transparent;
-    public float Opacity =>1.0f - (int)m_transparent/10f; // inverse of transparency
+    public float Opacity => 1.0f - (int)m_transparent / 10f; // inverse of transparency
 
 
     /// <summary>
@@ -78,7 +184,7 @@ namespace FS20_HudBar
     {
       m_pNumber = pNum;
       LoadProfile( profileName, profile, flowBreak, sequence,
-                    (GUI.FontSize)fontSize, (GUI.Placement)placement, (GUI.Kind)kind, 
+                    (GUI.FontSize)fontSize, (GUI.Placement)placement, (GUI.Kind)kind,
                     location, condensed, (GUI.Transparent)transparent );
     }
 
@@ -87,9 +193,18 @@ namespace FS20_HudBar
     /// </summary>
     /// <param name="item">An Item</param>
     /// <returns>The Key/Name</returns>
+    private static string Key( int pNum, LItem item )
+    {
+      return $"P{pNum}_{item}";
+    }
+    /// <summary>
+    /// The Key or Name of the CheckBox
+    /// </summary>
+    /// <param name="item">An Item</param>
+    /// <returns>The Key/Name</returns>
     private string Key( LItem item )
     {
-      return $"P{m_pNumber}_{item}";
+      return Key( m_pNumber, item );
     }
 
     private bool IsSamePanel( string srcKey, string destKey )
@@ -325,6 +440,33 @@ namespace FS20_HudBar
 
     #endregion
 
+    public static DefaultProfile GetItemsFromFlp( int pNum, FlowLayoutPanel flp )
+    {
+      string profile = "";
+      string flowBreak = "";
+      string sequence = "";
+
+      // process along the Enum sequence
+      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
+        // find the item with its Key in the layout panel - no checks - may break if not consistent
+        try {
+          var cb = flp.Controls[Key(pNum, i)] as CheckBox;
+          int pos = flp.Controls.IndexOf(cb); // can be -1 if not found
+          if ( pos >= 0 ) {
+            // store along the Enum sequence
+            sequence += $"{pos};";
+            profile += cb.Checked ? "1;" : "0;";
+            flowBreak += ( (string)cb.Tag == "1" ) ? "1;" : "0;";
+          }
+        }
+        catch {
+          sequence += $"{i};";
+          profile += "0;";
+          flowBreak += "0;";
+        }
+      }
+      return new DefaultProfile( "COPY", profile, sequence, flowBreak );
+    }
 
     /// <summary>
     /// Update this profile from the FLPanel
@@ -443,10 +585,22 @@ namespace FS20_HudBar
       m_transparent = (GUI.Transparent)box.SelectedIndex;
     }
 
+    /// <summary>
+    /// Load and overwrite items from a default profile
+    /// </summary>
+    /// <param name="defaultProfile">The default profile ID</param>
+    public void LoadDefaultProfile( DProfile defaultProfile )
+    {
+      var dp = GetDefaultProfile(defaultProfile);
+      if ( dp == null ) return; // sanity, defaultProfile does not exist
+
+      LoadProfile( dp.Name, dp.Profile, dp.FlowBreak, dp.DispOrder, // provide from default profile
+        m_fontSize, m_placement, m_kind, m_location, m_condensed, m_transparent ); // use default Bar props
+    }
 
     // Load the profile from stored strings (Settings)
     private void LoadProfile( string profileName, string profile, string flowBreak, string sequence,
-                                GUI.FontSize fontSize, GUI.Placement placement, GUI.Kind kind, 
+                                GUI.FontSize fontSize, GUI.Placement placement, GUI.Kind kind,
                                 Point location, bool condensed, GUI.Transparent transparent )
     {
       // save props in Profile
@@ -495,7 +649,7 @@ namespace FS20_HudBar
             if ( iPos < m_profile.Count )
               m_sequence.Add( i, iPos ); // found an integer
             else
-              m_sequence.Add( i, m_profile.Count-1 ); // found an integer - was out of the range ??
+              m_sequence.Add( i, m_profile.Count - 1 ); // found an integer - was out of the range ??
           }
           else {
             m_sequence.Add( i, idx ); // default

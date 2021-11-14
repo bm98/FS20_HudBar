@@ -39,32 +39,46 @@ namespace FS20_HudBar
         // migrate the settings to the new version if the app runs the first time
         try {
           this.Upgrade( );
-          // V 0.18 TO V 0.2
-          // upgrade from prev to add the Fuel GPH setting (hide the new item)
+          // set profiles when no previous setting is available
           string p = (string)this.GetPreviousVersion( "Profile_1" );
-          if ( p.Length == 78 ) {
-            p = p.Insert( 19 * 2, "0;" ); // insert gph at GPS_WYP Pos and shift all one item
-            this.Profile_1 = p;
+          if ( p == null ) {
+            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.CombProfile_A);
+            this.Profile_1_Name = dprofile.Name;
+            this.Profile_1 = dprofile.Profile;
+            this.FlowBreak_1 = dprofile.FlowBreak;
+            this.Sequence_1 = dprofile.DispOrder;
           }
           p = (string)this.GetPreviousVersion( "Profile_2" );
-          if ( p.Length == 78 ) {
-            p = p.Insert( 19 * 2, "0;" );
-            this.Profile_2 = p;
+          if ( p == null ) {
+            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.CombProfile_B);
+            this.Profile_2_Name = dprofile.Name;
+            this.Profile_2 = dprofile.Profile;
+            this.FlowBreak_2 = dprofile.FlowBreak;
+            this.Sequence_2 = dprofile.DispOrder;
           }
           p = (string)this.GetPreviousVersion( "Profile_3" );
-          if ( p.Length == 78 ) {
-            p = p.Insert( 19 * 2, "0;" );
-            this.Profile_3 = p;
+          if ( p == null ) {
+            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.TPropProfile_A);
+            this.Profile_3_Name = dprofile.Name;
+            this.Profile_3 = dprofile.Profile;
+            this.FlowBreak_3 = dprofile.FlowBreak;
+            this.Sequence_3 = dprofile.DispOrder;
           }
           p = (string)this.GetPreviousVersion( "Profile_4" );
-          if ( p.Length == 78 ) {
-            p = p.Insert( 19 * 2, "0;" );
-            this.Profile_4 = p;
+          if ( p == null ) {
+            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.TPropProfile_C208B);
+            this.Profile_4_Name = dprofile.Name;
+            this.Profile_4 = dprofile.Profile;
+            this.FlowBreak_4 = dprofile.FlowBreak;
+            this.Sequence_4 = dprofile.DispOrder;
           }
           p = (string)this.GetPreviousVersion( "Profile_5" );
-          if ( p.Length == 78 ) {
-            p = p.Insert( 19 * 2, "0;" );
-            this.Profile_5 = p;
+          if ( p == null ) {
+            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.JetProfile);
+            this.Profile_5_Name = dprofile.Name;
+            this.Profile_5 = dprofile.Profile;
+            this.FlowBreak_5 = dprofile.FlowBreak;
+            this.Sequence_5 = dprofile.DispOrder;
           }
         }
         catch { }

@@ -41,6 +41,10 @@ namespace FS20_HudBar
       this.mP3 = new System.Windows.Forms.ToolStripMenuItem();
       this.mP4 = new System.Windows.Forms.ToolStripMenuItem();
       this.mP5 = new System.Windows.Forms.ToolStripMenuItem();
+      this.mAppearance = new System.Windows.Forms.ToolStripMenuItem();
+      this.maBright = new System.Windows.Forms.ToolStripMenuItem();
+      this.maDimm = new System.Windows.Forms.ToolStripMenuItem();
+      this.maDark = new System.Windows.Forms.ToolStripMenuItem();
       this.mConfig = new System.Windows.Forms.ToolStripMenuItem();
       this.mExit = new System.Windows.Forms.ToolStripMenuItem();
       this.signProto = new System.Windows.Forms.Label();
@@ -48,10 +52,6 @@ namespace FS20_HudBar
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
-      this.mAppearance = new System.Windows.Forms.ToolStripMenuItem();
-      this.maBright = new System.Windows.Forms.ToolStripMenuItem();
-      this.maDimm = new System.Windows.Forms.ToolStripMenuItem();
-      this.maDark = new System.Windows.Forms.ToolStripMenuItem();
       this.cMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -62,7 +62,7 @@ namespace FS20_HudBar
       this.lblProto.BackColor = System.Drawing.Color.Transparent;
       this.lblProto.Font = new System.Drawing.Font("Bahnschrift", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.lblProto.ForeColor = System.Drawing.Color.Silver;
-      this.lblProto.Location = new System.Drawing.Point(510, 38);
+      this.lblProto.Location = new System.Drawing.Point(510, 35);
       this.lblProto.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
       this.lblProto.Name = "lblProto";
       this.lblProto.Size = new System.Drawing.Size(44, 16);
@@ -111,7 +111,7 @@ namespace FS20_HudBar
             this.mConfig,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(181, 145);
+      this.cMenu.Size = new System.Drawing.Size(161, 123);
       // 
       // mSelProfile
       // 
@@ -123,7 +123,7 @@ namespace FS20_HudBar
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(157, 6);
       // 
       // mProfile
       // 
@@ -134,55 +134,86 @@ namespace FS20_HudBar
             this.mP4,
             this.mP5});
       this.mProfile.Name = "mProfile";
-      this.mProfile.Size = new System.Drawing.Size(180, 22);
+      this.mProfile.Size = new System.Drawing.Size(160, 22);
       this.mProfile.Text = "Select Profile";
       // 
       // mP1
       // 
       this.mP1.Name = "mP1";
-      this.mP1.Size = new System.Drawing.Size(180, 22);
+      this.mP1.Size = new System.Drawing.Size(117, 22);
       this.mP1.Text = "Profile 1";
       this.mP1.Click += new System.EventHandler(this.mP1_Click);
       // 
       // mP2
       // 
       this.mP2.Name = "mP2";
-      this.mP2.Size = new System.Drawing.Size(180, 22);
+      this.mP2.Size = new System.Drawing.Size(117, 22);
       this.mP2.Text = "Profile 2";
       this.mP2.Click += new System.EventHandler(this.mP2_Click);
       // 
       // mP3
       // 
       this.mP3.Name = "mP3";
-      this.mP3.Size = new System.Drawing.Size(180, 22);
+      this.mP3.Size = new System.Drawing.Size(117, 22);
       this.mP3.Text = "Profile 3";
       this.mP3.Click += new System.EventHandler(this.mP3_Click);
       // 
       // mP4
       // 
       this.mP4.Name = "mP4";
-      this.mP4.Size = new System.Drawing.Size(180, 22);
+      this.mP4.Size = new System.Drawing.Size(117, 22);
       this.mP4.Text = "Profile 4";
       this.mP4.Click += new System.EventHandler(this.mP4_Click);
       // 
       // mP5
       // 
       this.mP5.Name = "mP5";
-      this.mP5.Size = new System.Drawing.Size(180, 22);
+      this.mP5.Size = new System.Drawing.Size(117, 22);
       this.mP5.Text = "Profile 5";
       this.mP5.Click += new System.EventHandler(this.mP5_Click);
+      // 
+      // mAppearance
+      // 
+      this.mAppearance.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.maBright,
+            this.maDimm,
+            this.maDark});
+      this.mAppearance.Name = "mAppearance";
+      this.mAppearance.Size = new System.Drawing.Size(160, 22);
+      this.mAppearance.Text = "Appearance";
+      // 
+      // maBright
+      // 
+      this.maBright.Name = "maBright";
+      this.maBright.Size = new System.Drawing.Size(120, 22);
+      this.maBright.Text = "Bright";
+      this.maBright.Click += new System.EventHandler(this.maBright_Click);
+      // 
+      // maDimm
+      // 
+      this.maDimm.Name = "maDimm";
+      this.maDimm.Size = new System.Drawing.Size(120, 22);
+      this.maDimm.Text = "Dimmed";
+      this.maDimm.Click += new System.EventHandler(this.maDimm_Click);
+      // 
+      // maDark
+      // 
+      this.maDark.Name = "maDark";
+      this.maDark.Size = new System.Drawing.Size(120, 22);
+      this.maDark.Text = "Dark";
+      this.maDark.Click += new System.EventHandler(this.maDark_Click);
       // 
       // mConfig
       // 
       this.mConfig.Name = "mConfig";
-      this.mConfig.Size = new System.Drawing.Size(180, 22);
+      this.mConfig.Size = new System.Drawing.Size(160, 22);
       this.mConfig.Text = "Configure...";
       this.mConfig.Click += new System.EventHandler(this.mConfig_Click);
       // 
       // mExit
       // 
       this.mExit.Name = "mExit";
-      this.mExit.Size = new System.Drawing.Size(180, 22);
+      this.mExit.Size = new System.Drawing.Size(160, 22);
       this.mExit.Text = "Exit";
       this.mExit.Click += new System.EventHandler(this.mExit_Click);
       // 
@@ -257,37 +288,6 @@ namespace FS20_HudBar
       this.label1.UseCompatibleTextRendering = true;
       this.label1.Visible = false;
       // 
-      // mAppearance
-      // 
-      this.mAppearance.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.maBright,
-            this.maDimm,
-            this.maDark});
-      this.mAppearance.Name = "mAppearance";
-      this.mAppearance.Size = new System.Drawing.Size(180, 22);
-      this.mAppearance.Text = "Appearance";
-      // 
-      // maBright
-      // 
-      this.maBright.Name = "maBright";
-      this.maBright.Size = new System.Drawing.Size(180, 22);
-      this.maBright.Text = "Bright";
-      this.maBright.Click += new System.EventHandler(this.maBright_Click);
-      // 
-      // maDimm
-      // 
-      this.maDimm.Name = "maDimm";
-      this.maDimm.Size = new System.Drawing.Size(180, 22);
-      this.maDimm.Text = "Dimmed";
-      this.maDimm.Click += new System.EventHandler(this.maDimm_Click);
-      // 
-      // maDark
-      // 
-      this.maDark.Name = "maDark";
-      this.maDark.Size = new System.Drawing.Size(180, 22);
-      this.maDark.Text = "Dark";
-      this.maDark.Click += new System.EventHandler(this.maDark_Click);
-      // 
       // frmMain
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -311,6 +311,7 @@ namespace FS20_HudBar
       this.Name = "frmMain";
       this.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
       this.ShowIcon = false;
+      this.ShowInTaskbar = false;
       this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
       this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
       this.Text = "HudBar by bm98ch";

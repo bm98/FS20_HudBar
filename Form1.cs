@@ -8,12 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using CoordLib;
-using MetarLib;
-using static FS20_HudBar.GUI.GUI_Colors;
-using FS20_HudBar.Bar;
-
 using SC = SimConnectClient;
+using static FS20_HudBar.GUI.GUI_Colors;
+
+using FS20_HudBar.GUI.Templates.Base;
+using FS20_HudBar.Bar.Items.Base;
+using FS20_HudBar.Bar.Items;
+using FS20_HudBar.Bar;
+using FS20_HudBar.Config;
+
+using CoordLib;
 
 namespace FS20_HudBar
 {
@@ -47,18 +51,10 @@ namespace FS20_HudBar
     private List<CProfile> m_profiles = new List<CProfile>();
     private int m_selProfile = 0;
 
-    // The Appearance setting
-    private ColorSet m_appearance = ColorSet.BrightSet;
-
     //private SC.Input.InputHandler FSInput;  // Receive commands from FSim -  not yet used
     private readonly frmConfig CFG = new frmConfig( ); // Configuration Dialog
     // need to stop processing while reconfiguring the bar
     private bool m_initDone = false;
-
-    // Auto ETrim
-    private const int c_aETrimTime = 20_000; // msec  AutoETrim active time when clicked
-    private int m_aETrimTimer = 0;           // switch AET off when expired (<=0)
-
 
     /// <summary>
     /// Checks if a rectangle is visible on any screen
@@ -150,8 +146,7 @@ namespace FS20_HudBar
 
       m_selProfile = AppSettings.Instance.SelProfile;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
-      m_appearance = ToColorSet( AppSettings.Instance.Appearance );
-      Colorset = m_appearance;
+      Colorset = ToColorSet( AppSettings.Instance.Appearance );
 
       // ShowUnits and Opacity are set via HUD in InitGUI
       m_frmGui = new frmGui( );
@@ -375,8 +370,7 @@ namespace FS20_HudBar
 
     private void maBright_Click( object sender, EventArgs e )
     {
-      m_appearance = ColorSet.BrightSet;
-      GUI.GUI_Colors.Colorset = m_appearance;
+      Colorset = ColorSet.BrightSet;
       // save as setting
       AppSettings.Instance.Appearance = (int)Colorset;
       AppSettings.Instance.Save( );
@@ -384,8 +378,7 @@ namespace FS20_HudBar
 
     private void maDimm_Click( object sender, EventArgs e )
     {
-      m_appearance = ColorSet.DimmedSet;
-      GUI.GUI_Colors.Colorset = m_appearance;
+      Colorset = ColorSet.DimmedSet;
       // save as setting
       AppSettings.Instance.Appearance = (int)Colorset;
       AppSettings.Instance.Save( );
@@ -393,8 +386,7 @@ namespace FS20_HudBar
 
     private void maDark_Click( object sender, EventArgs e )
     {
-      m_appearance = ColorSet.DarkSet;
-      GUI.GUI_Colors.Colorset = m_appearance;
+      Colorset = ColorSet.DarkSet;
       // save as setting
       AppSettings.Instance.Appearance = (int)Colorset;
       AppSettings.Instance.Save( );
@@ -491,125 +483,6 @@ namespace FS20_HudBar
 
     #endregion
 
-    #region BarEvent Handler
-
-    /// <summary>
-    /// Handle the BAR click events here
-    /// </summary>
-    private void FrmMain_ButtonClicked( object sender, GUI.ClickedEventArgs e )
-    {
-      if ( !SC.SimConnectClient.Instance.IsConnected ) {
-        // no action related to simConnect when not connected
-        if ( e.Item == VItem.Ad ) {
-          NextColorset( ); // MSFS, rotate colorset
-          // save as setting
-          AppSettings.Instance.Appearance = (int)Colorset;
-          AppSettings.Instance.Save( );
-
-        }
-        return;
-      }
-
-      // we are connected.. 
-      switch ( e.Item ) {
-        case VItem.Ad:
-          NextColorset( ); // MSFS, rotate colorset
-          // save as setting
-          AppSettings.Instance.Appearance = (int)Colorset;
-          AppSettings.Instance.Save( );
-          break;
-        case VItem.AP:
-          SC.SimConnectClient.Instance.AP_G1000Module.Master_toggle( );
-          break;
-        case VItem.AP_ALT:
-          SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold = true; // toggles independent of the set value
-          break;
-        case VItem.AP_APR:
-          SC.SimConnectClient.Instance.AP_G1000Module.APR_hold = true; // toggles independent of the set value
-          break;
-        case VItem.AP_FLC:
-          SC.SimConnectClient.Instance.AP_G1000Module.FLC_active = true; // toggles independent of the set value
-          break;
-        case VItem.AP_HDG:
-          SC.SimConnectClient.Instance.AP_G1000Module.HDG_hold = true; // toggles independent of the set value
-          break;
-        case VItem.AP_NAV:
-          SC.SimConnectClient.Instance.AP_G1000Module.NAV_hold = true; // toggles independent of the set value
-          break;
-        case VItem.AP_VS:
-          SC.SimConnectClient.Instance.AP_G1000Module.VS_hold = true; // toggles independent of the set value
-          break;
-        case VItem.AP_BC:
-          SC.SimConnectClient.Instance.AP_G1000Module.BC_hold = true; // toggles independent of the set value
-          break;
-        case VItem.AP_YD:
-          SC.SimConnectClient.Instance.AP_G1000Module.YD_toggle( ); // toggles
-          break;
-        case VItem.AP_LVL:
-          SC.SimConnectClient.Instance.AP_G1000Module.LVL_toggle( ); // toggles
-          break;
-        case VItem.ETrim:
-          SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct = 0; // Set 0
-          break;
-        case VItem.RTrim:
-          SC.SimConnectClient.Instance.AircraftModule.RudderTrim_prct = 0; // Set 0
-          break;
-        case VItem.ATrim:
-          SC.SimConnectClient.Instance.AircraftModule.AileronTrim_prct = 0; // Set 0
-          break;
-        case VItem.A_ETRIM:
-          SC.SimConnectClient.Instance.AutoETrimModule.Enabled = !SC.SimConnectClient.Instance.AutoETrimModule.Enabled; // toggles
-          m_aETrimTimer = c_aETrimTime;
-          break;
-        case VItem.BARO_HPA:
-          SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting = true; // one shot trigger to sync Baro
-          break;
-        case VItem.BARO_InHg:
-          SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting = true; // one shot trigger to sync Baro
-          break;
-        // Enroute Reset
-        case VItem.ENR_WP:
-          WPTracker.InitFlight( );
-          break;
-
-        // METAR Airport - post a request
-        case VItem.ATC_APT:
-          HudBar.MetarApt.Clear( );
-          if ( AirportMgr.IsAvailable ) {
-            if ( AirportMgr.Location != null )
-              HudBar.MetarApt.PostMETAR_Request( AirportMgr.AirportICAO, AirportMgr.Location ); // station rec with Location
-            else
-              HudBar.MetarApt.PostMETAR_Request( AirportMgr.AirportICAO ); // station rec
-          }
-          break;
-        // METAR Location - post a request
-        case VItem.METAR:
-          HudBar.MetarLoc.Clear( );
-          HudBar.MetarLoc.PostMETAR_Request( SC.SimConnectClient.Instance.AircraftModule.Lat,
-                                      SC.SimConnectClient.Instance.AircraftModule.Lon,
-                                      SC.SimConnectClient.Instance.GpsModule.GTRK ); // from current pos along the current track
-          break;
-
-        // (Re-)Start Meters
-        case VItem.M_Elapsed1:
-          HudBar.CPMeter1.Start( new LatLon( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon ),
-                            SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
-          break;
-        case VItem.M_Elapsed2:
-          HudBar.CPMeter2.Start( new LatLon( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon ),
-                            SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
-          break;
-        case VItem.M_Elapsed3:
-          HudBar.CPMeter3.Start( new LatLon( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon ),
-                            SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
-          break;
-
-        default: break; // nothing 
-      }
-    }
-
-    #endregion
-
     #region GUI
 
     private HudBar HUD = null;
@@ -691,7 +564,7 @@ namespace FS20_HudBar
       // Walk all DispItems and add the ones to be shown
       int maxHeight = 0;
       int maxWidth = 0;
-      GUI.DispItem prevDi = null;
+      DispItem prevDi = null;
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         // using the enum index only to count from 0..max items
         var key = HUD.Profile.ItemKeyFromPos( (int)i);
@@ -720,17 +593,6 @@ namespace FS20_HudBar
         }
         else {
           if ( di != null ) di.Visible = false;
-        }
-      }
-
-      // attach mouse click handlers to Button Type Labels
-      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
-        var di = HUD.DispItem( i );
-        if ( di != null ) {
-          var l = di.Label;
-          if ( l is GUI.B_Base ) {
-            ( l as GUI.B_Base ).ButtonClicked += FrmMain_ButtonClicked;
-          }
         }
       }
 
@@ -885,8 +747,6 @@ namespace FS20_HudBar
         }
         else {
           HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Red;
-          //HUD.Value( GItem.Ad ).Text = SC.SimConnectClient.Instance.ErrorList.FirstOrDefault( ); // error message
-          //HUD.Value( VItem.Ad ).Text = "NO SIM";
         }
       }
 
@@ -901,15 +761,6 @@ namespace FS20_HudBar
     private void timer1_Tick( object sender, EventArgs e )
     {
       if ( SC.SimConnectClient.Instance.IsConnected ) {
-        // Kick AutoEtrim Module if needed
-        if ( m_aETrimTimer <= 0 ) {
-          // stop module
-          SC.SimConnectClient.Instance.AutoETrimModule.Enabled = false;
-        }
-        else {
-          m_aETrimTimer -= timer1.Interval; // dec timer for the AutoTrim lifetime
-        }
-
         // handle the situation where Sim is connected but could not hookup to events
         // Happens when HudBar is running when the Sim is starting only.
         // Sometimes the Connection is made but was not hooking up to the event handling
