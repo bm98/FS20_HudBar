@@ -40,8 +40,7 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.BARO_InHg;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_PressureInHg( value2Proto, showUnits );
-      this.AddItem( _value1 );
-      vCat.AddLbl( item, _value1 );
+      this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       _label.ButtonClicked += _label_ButtonClicked;
 

@@ -22,8 +22,8 @@ namespace FS20_HudBar.Bar
     /// Add a control to the Catalog
     /// </summary>
     /// <param name="item">The VItem enum</param>
-    /// <param name="ctrl">The control to add (must implement IValue)</param>
-    public void AddLbl( VItem item, Control ctrl )
+    /// <param name="ctrl">The control to add</param>
+    public void AddLbl( VItem item, object ctrl )
     {
       this.Add( item, new ValueItem( ctrl ) );
     }

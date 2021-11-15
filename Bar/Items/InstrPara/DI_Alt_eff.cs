@@ -40,8 +40,7 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.ALT;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Alt( valueProto, showUnits );
-      this.AddItem( _value1 );
-      vCat.AddLbl( item, _value1 as Control );
+      this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
     }

@@ -36,8 +36,12 @@ namespace FS20_HudBar.Bar.Items.Base
     /// cTor: Create a ValueItem exposing the Interface or the underlying Control
     /// </summary>
     /// <param name="ctrl">An object derived from Control, implementing an IValue interface</param>
-    public ValueItem( Control ctrl )
+    public ValueItem( object ctrl )
     {
+      if ( !( ctrl is Control ) ) throw new ArgumentException( "Argument must be of type Control" );
+      if ( !( ctrl is IColorType ) ) throw new ArgumentException( "Argument must implement IColorType" );
+      if ( !( ctrl is IValue ) ) throw new ArgumentException( "Argument must must implement IValue" );
+
       m_ctrl = ctrl;
     }
 

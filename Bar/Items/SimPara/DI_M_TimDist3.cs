@@ -45,13 +45,11 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.M_Elapsed3;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_TimeHHMMSS( value2Proto );
-      this.AddItem( _value1 );
-      vCat.AddLbl( item, _value1 );
+      this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.M_Dist3;
       _value2 = new V_Dist( value2Proto, showUnits );
-      this.AddItem( _value2 );
-      vCat.AddLbl( item, _value2 );
+      this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       _label.ButtonClicked += _label_ButtonClicked;
 

@@ -41,13 +41,11 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.GPS_PWYP;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_ICAO( value2Proto ) { ItemForeColor = cGps };
-      this.AddItem( _value1 );
-      vCat.AddLbl( item, _value1 as Control );
+      this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.GPS_NWYP;
       _value2 = new V_ICAO_L( value2Proto ) { ItemForeColor = cGps };
-      this.AddItem( _value2 );
-      vCat.AddLbl( item, _value2 as Control );
+      this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
     }

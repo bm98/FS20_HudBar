@@ -67,8 +67,8 @@ namespace FS20_HudBar.Bar.Items.Base
     /// <param name="control"></param>
     public void AddItem( object control )
     {
-      if ( !( control is Control ) ) return; // sanity
-      if ( !( control is IColorType ) ) return; // sanity
+      if ( !( control is Control ) ) throw new ArgumentException("Argument must be of type Control"); // sanity
+      if ( !( control is IColorType ) ) throw new ArgumentException( "Argument must implement IColorType" ); ; // sanity
 
       if ( this.Controls.Count == 0 ) {
         m_label = control as Control;

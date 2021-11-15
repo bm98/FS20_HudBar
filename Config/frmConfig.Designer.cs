@@ -41,9 +41,6 @@ namespace FS20_HudBar.Config
       this.checkBox2 = new System.Windows.Forms.CheckBox();
       this.txP5 = new System.Windows.Forms.TextBox();
       this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-      this.ctxCopy = new System.Windows.Forms.ToolStripMenuItem();
-      this.ctxPaste = new System.Windows.Forms.ToolStripMenuItem();
-      this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       this.txP4 = new System.Windows.Forms.TextBox();
       this.txP3 = new System.Windows.Forms.TextBox();
       this.txP2 = new System.Windows.Forms.TextBox();
@@ -87,7 +84,6 @@ namespace FS20_HudBar.Config
       this.flp2.SuspendLayout();
       this.flp3.SuspendLayout();
       this.flp4.SuspendLayout();
-      this.ctxMenu.SuspendLayout();
       this.flp5.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -275,31 +271,8 @@ namespace FS20_HudBar.Config
       // 
       // ctxMenu
       // 
-      this.ctxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ctxCopy,
-            this.ctxPaste,
-            this.toolStripSeparator1});
       this.ctxMenu.Name = "ctxMenu";
-      this.ctxMenu.Size = new System.Drawing.Size(161, 54);
-      // 
-      // ctxCopy
-      // 
-      this.ctxCopy.Name = "ctxCopy";
-      this.ctxCopy.Size = new System.Drawing.Size(160, 22);
-      this.ctxCopy.Text = "Copy Items";
-      this.ctxCopy.Click += new System.EventHandler(this.ctxCopy_Click);
-      // 
-      // ctxPaste
-      // 
-      this.ctxPaste.Name = "ctxPaste";
-      this.ctxPaste.Size = new System.Drawing.Size(160, 22);
-      this.ctxPaste.Text = "Paste Items here";
-      this.ctxPaste.Click += new System.EventHandler(this.ctxPaste_Click);
-      // 
-      // toolStripSeparator1
-      // 
-      this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(157, 6);
+      this.ctxMenu.Size = new System.Drawing.Size(181, 26);
       // 
       // txP4
       // 
@@ -793,7 +766,6 @@ namespace FS20_HudBar.Config
       this.flp3.PerformLayout();
       this.flp4.ResumeLayout(false);
       this.flp4.PerformLayout();
-      this.ctxMenu.ResumeLayout(false);
       this.flp5.ResumeLayout(false);
       this.flp5.PerformLayout();
       this.ResumeLayout(false);
@@ -850,8 +822,5 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.TextBox textBox1;
     private System.Windows.Forms.CheckedListBox clbVoice;
     private System.Windows.Forms.ContextMenuStrip ctxMenu;
-    private System.Windows.Forms.ToolStripMenuItem ctxCopy;
-    private System.Windows.Forms.ToolStripMenuItem ctxPaste;
-    private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
   }
 }

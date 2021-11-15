@@ -102,7 +102,7 @@ namespace FS20_HudBar
       if ( m_simTime < 0 ) m_simTime = simSeconds;
       if ( m_wpSimTime < 0 ) m_wpSimTime = simSeconds;
 
-      if ( next != m_nextWP ) {
+      if ( HasChanged ) {
         // WP has changed 
         m_wpSimTime = simSeconds; // new WP reference time
         m_wpTimeElapsed = 0;

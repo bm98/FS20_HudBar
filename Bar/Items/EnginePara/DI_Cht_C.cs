@@ -41,13 +41,11 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.E1_CHT_C;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Temp_C( value2Proto, showUnits );
-      this.AddItem( _value1 );
-      vCat.AddLbl( item, _value1 );
+      this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.E2_CHT_C;
       _value2 = new V_Temp_C( value2Proto, showUnits );
-      this.AddItem( _value2 );
-      vCat.AddLbl( item, _value2 );
+      this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       SC.SimConnectClient.Instance.EngineModule.AddObserver( Short, OnDataArrival );
     }

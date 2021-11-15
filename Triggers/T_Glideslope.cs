@@ -20,6 +20,9 @@ namespace FS20_HudBar.Triggers
   /// </summary>
   class T_Glideslope : TriggerBinary
   {
+    private const string _slope = "Glideslope";
+    private const string _path = "Glidepath";
+    private string _text = _slope;
     /// <summary>
     /// Update the internal state from the datasource
     /// </summary>
@@ -29,6 +32,7 @@ namespace FS20_HudBar.Triggers
       if ( !( dataSource is IAP_G1000 ) ) throw new ArgumentException( "Needs an IAP_G1000 argument" ); // Program ERROR
 
       var ds = (dataSource as IAP_G1000);
+      _text = ds.GPS_active ? _path : _slope;
       DetectStateChange( ds.GS_active );
       if ( ds.GS_active == false )
         m_lastTriggered = false; // RESET if no longer captured

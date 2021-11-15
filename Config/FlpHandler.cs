@@ -42,6 +42,7 @@ namespace FS20_HudBar.Config
 
     /// <summary>
     /// The Key or Name of the CheckBox
+    /// NOTE: MUST be the same as in CProfile (could be done better but for now it is OK...)
     /// </summary>
     /// <param name="item">An Item</param>
     /// <returns>The Key/Name</returns>
@@ -50,7 +51,8 @@ namespace FS20_HudBar.Config
       return $"P{pNum}_{item}";
     }
     /// <summary>
-    /// The Key or Name of the CheckBox
+    /// The Key or Name of the CheckBox 
+    /// NOTE: MUST be the same as in CProfile (could be done better but for now it is OK...)
     /// </summary>
     /// <param name="item">An Item</param>
     /// <returns>The Key/Name</returns>

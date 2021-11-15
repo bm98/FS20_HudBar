@@ -43,15 +43,15 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.ATC_ALT;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Alt( value2Proto, showUnits );
-      this.AddItem( _value1 ); vCat.AddLbl( item, _value1 as Control );
+      this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.ATC_HDG;
       _value2 = new V_Deg( value2Proto, showUnits );
-      this.AddItem( _value2 ); vCat.AddLbl( item, _value2 as Control );
+      this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       item = VItem.ATC_WYP;
       _value3 = new V_ICAO( value2Proto );
-      this.AddItem( _value3 ); vCat.AddLbl( item, _value3 as Control );
+      this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
       SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );// use the Location tracer
     }

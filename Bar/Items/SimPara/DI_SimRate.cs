@@ -41,8 +41,7 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.SimRate;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_SRate( value2Proto );
-      this.AddItem( _value1 );
-      vCat.AddLbl( item, _value1 as Control );
+      this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       _label.ButtonClicked += _label_ButtonClicked;
 

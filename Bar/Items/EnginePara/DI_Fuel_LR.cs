@@ -41,13 +41,11 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.Fuel_Left;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Gallons( value2Proto, showUnits );
-      this.AddItem( _value1 );
-      vCat.AddLbl( item, _value1 as Control );
+      this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.Fuel_Right;
       _value2 = new V_Gallons( value2Proto, showUnits );
-      this.AddItem( _value2 );
-      vCat.AddLbl( item, _value2 as Control );
+      this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
     }

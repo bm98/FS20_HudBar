@@ -58,7 +58,7 @@ namespace FS20_HudBar
           }
           p = (string)this.GetPreviousVersion( "Profile_3" );
           if ( p == null ) {
-            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.TPropProfile_A);
+            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.CombProfile_C);
             this.Profile_3_Name = dprofile.Name;
             this.Profile_3 = dprofile.Profile;
             this.FlowBreak_3 = dprofile.FlowBreak;
@@ -66,7 +66,7 @@ namespace FS20_HudBar
           }
           p = (string)this.GetPreviousVersion( "Profile_4" );
           if ( p == null ) {
-            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.TPropProfile_C208B);
+            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.TPropProfile_A);
             this.Profile_4_Name = dprofile.Name;
             this.Profile_4 = dprofile.Profile;
             this.FlowBreak_4 = dprofile.FlowBreak;
