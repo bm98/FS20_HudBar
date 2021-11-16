@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using FS20_HudBar.Config;
+
 namespace FS20_HudBar
 {
   sealed class AppSettings : ApplicationSettingsBase
@@ -42,7 +44,7 @@ namespace FS20_HudBar
           // set profiles when no previous setting is available
           string p = (string)this.GetPreviousVersion( "Profile_1" );
           if ( p == null ) {
-            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.CombProfile_A);
+            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Common);
             this.Profile_1_Name = dprofile.Name;
             this.Profile_1 = dprofile.Profile;
             this.FlowBreak_1 = dprofile.FlowBreak;
@@ -50,7 +52,7 @@ namespace FS20_HudBar
           }
           p = (string)this.GetPreviousVersion( "Profile_2" );
           if ( p == null ) {
-            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.CombProfile_B);
+            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Common_ATC);
             this.Profile_2_Name = dprofile.Name;
             this.Profile_2 = dprofile.Profile;
             this.FlowBreak_2 = dprofile.FlowBreak;
@@ -58,7 +60,7 @@ namespace FS20_HudBar
           }
           p = (string)this.GetPreviousVersion( "Profile_3" );
           if ( p == null ) {
-            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.CombProfile_C);
+            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.ExAutoPilot);
             this.Profile_3_Name = dprofile.Name;
             this.Profile_3 = dprofile.Profile;
             this.FlowBreak_3 = dprofile.FlowBreak;
@@ -66,7 +68,7 @@ namespace FS20_HudBar
           }
           p = (string)this.GetPreviousVersion( "Profile_4" );
           if ( p == null ) {
-            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.TPropProfile_A);
+            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Essentials);
             this.Profile_4_Name = dprofile.Name;
             this.Profile_4 = dprofile.Profile;
             this.FlowBreak_4 = dprofile.FlowBreak;
@@ -74,7 +76,7 @@ namespace FS20_HudBar
           }
           p = (string)this.GetPreviousVersion( "Profile_5" );
           if ( p == null ) {
-            var dprofile =  CProfile.GetDefaultProfile(CProfile.DProfile.JetProfile);
+            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Profile_All);
             this.Profile_5_Name = dprofile.Name;
             this.Profile_5 = dprofile.Profile;
             this.FlowBreak_5 = dprofile.FlowBreak;

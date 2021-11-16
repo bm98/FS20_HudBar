@@ -17,111 +17,6 @@ namespace FS20_HudBar
   /// </summary>
   class CProfile
   {
-    #region DEFAULT PROFILES
-    public enum DProfile
-    {
-      Profile_All,    // all items checked
-      EssentialsProfile,
-      CombProfile_A, // most used combustion engine profile
-      CombProfile_B, // variant B
-      CombProfile_C, // variant C
-      TPropProfile_A,
-      TPropProfile_C208B,   // has some differences to the generic one
-      JetProfile,
-      HeavyProfile,
-    }
-
-    public class DefaultProfile
-    {
-      public string Name { get; private set; } = "";
-      public string Profile { get; private set; } = "";
-      public string DispOrder { get; private set; } = "";
-      public string FlowBreak { get; private set; } = "";
-
-      public DefaultProfile( string name, string profile, string dispOrder, string flowBreak )
-      {
-        Name = name;
-        Profile = profile;
-        DispOrder = dispOrder;
-        FlowBreak = flowBreak;
-      }
-      public override string ToString( ) => Name;
-    }
-
-    private static Dictionary<DProfile, DefaultProfile> _defaultProfileCat = new Dictionary<DProfile, DefaultProfile>(){
-      { DProfile.Profile_All, new DefaultProfile("All Items",
-        "1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;", // disp
-        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;", // order
-        "0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;1;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;1;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") }, // flowbreak
-
-      { DProfile.EssentialsProfile, new DefaultProfile("Essentials",
-        "1;0;1;0;0;1;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;1;1;0;1;0;0;0;1;0;1;1;1;1;0;0;0;0;1;1;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;",
-        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
-        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
-
-      { DProfile.CombProfile_A, new DefaultProfile("Prop Easy",
-        "1;1;1;1;1;1;0;1;1;1;1;0;0;0;1;0;0;0;0;0;1;1;1;1;1;0;0;0;1;0;1;1;1;1;1;1;1;1;1;1;0;0;0;0;0;0;1;1;0;0;1;0;0;1;0;1;0;0;1;0;1;0;0;0;0;0;1;0;0;1;0;0;0;1;1;0;0;0;0;0;0;0;0;0;",
-        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
-        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
-
-      { DProfile.CombProfile_B, new DefaultProfile("Prop Direct",
-        "1;1;1;1;1;1;0;1;1;1;1;0;0;0;1;0;0;1;0;1;1;1;1;1;1;0;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;1;0;1;1;0;1;1;0;1;1;1;1;0;0;1;0;1;0;0;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;1;0;0;0;",
-        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
-        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
-
-      { DProfile.CombProfile_C, new DefaultProfile("Prop Gearbox",
-        "1;1;1;1;1;1;0;1;1;1;1;0;0;1;0;0;0;1;0;1;1;1;1;1;1;0;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;1;0;1;1;1;1;1;0;1;1;1;1;0;0;1;0;1;1;1;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;1;0;1;0;",
-        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
-        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
-
-      { DProfile.TPropProfile_A, new DefaultProfile("TurboProp",
-        "1;1;1;1;1;1;0;1;1;1;1;0;1;1;0;1;1;0;0;1;1;1;1;1;1;0;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;0;0;1;1;1;1;1;0;1;1;1;1;0;0;1;0;1;1;1;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;0;0;0;0;",
-        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
-        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
-
-      { DProfile.TPropProfile_C208B, new DefaultProfile("TurboProp 208B",
-        "1;1;1;1;1;1;0;1;1;1;1;1;0;1;0;1;1;0;1;0;1;1;1;1;1;0;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;0;0;1;1;1;1;1;0;1;1;1;1;0;0;1;0;1;1;1;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;0;0;0;0;",
-        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
-        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
-
-      { DProfile.JetProfile, new DefaultProfile("Jet",
-        "1;1;0;0;0;1;0;1;1;1;1;0;0;0;0;1;1;0;1;0;1;1;1;1;1;1;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;0;1;1;1;1;1;1;0;1;1;1;1;1;0;1;0;1;1;1;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;0;0;0;0;",
-        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
-        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
-
-      { DProfile.HeavyProfile, new DefaultProfile("Heavy",
-        "1;1;0;0;0;1;0;1;1;1;1;0;0;0;0;1;1;0;1;0;1;1;1;1;1;1;0;0;1;0;0;1;1;1;1;1;1;1;1;1;0;0;0;0;0;1;1;1;1;1;1;0;1;1;1;1;1;0;1;0;1;1;1;0;1;0;1;0;1;1;0;0;1;1;1;0;0;0;0;0;0;0;0;1;",
-        "0;1;3;4;5;71;6;7;8;9;10;20;21;14;15;22;24;16;25;26;44;47;46;53;52;48;55;56;32;35;36;38;42;57;58;59;60;61;62;64;81;82;83;2;12;49;50;51;43;39;69;74;73;11;27;28;40;75;70;33;63;65;66;80;77;79;45;54;76;34;78;41;37;67;68;29;30;31;72;17;18;19;13;23;",
-        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;") },
-    };
-
-    /// <summary>
-    /// Return a default profile 
-    /// </summary>
-    /// <param name="profile">The profile ID</param>
-    /// <returns>The DefaultProfile or null</returns>
-    public static DefaultProfile GetDefaultProfile( DProfile profile )
-    {
-      if ( !_defaultProfileCat.ContainsKey( profile ) ) return null;
-      return _defaultProfileCat[profile];
-    }
-
-    /// <summary>
-    /// Returns a default profile from a profile name
-    /// </summary>
-    /// <param name="profileName">The profile Name</param>
-    /// <returns>The DefaultProfile or null</returns>
-    public static DefaultProfile GetDefaultProfile( string profileName )
-    {
-      var dp = _defaultProfileCat.Where(x=> x.Value.Name == profileName );
-      if ( dp.Count() > 0 ) {
-        return dp.ElementAt(0).Value;
-      }
-      return null;
-    }
-
-    #endregion
-
     private int m_pNumber = 0; // Profile Number 1...
 
     private Dictionary<LItem, bool> m_profile = new Dictionary<LItem, bool>();   // true to show the item
@@ -135,13 +30,51 @@ namespace FS20_HudBar
     private bool m_condensed = false;
     private GUI.Transparent m_transparent = GUI.Transparent.T0;
 
+    /// <summary>
+    /// The string divider char
+    /// </summary>
+    public const char Divider = ';';
+    /// <summary>
+    /// The tag to indicate a flow break
+    /// </summary>
+    public const char NoBreakTag = '\0';
+    /// <summary>
+    /// The tag to indicate a flow break
+    /// </summary>
+    public const char FlowBreakTag = '1';
+
+    /// <summary>
+    /// The Profile name
+    /// </summary>
     public string PName { get; set; } = "Profile";
+    /// <summary>
+    /// The Fontsize
+    /// </summary>
     public GUI.FontSize FontSize => m_fontSize;
+    /// <summary>
+    /// The Placement of the Bar
+    /// </summary>
     public GUI.Placement Placement => m_placement;
+    /// <summary>
+    /// The Display Kind of the Bar
+    /// </summary>
     public GUI.Kind Kind => m_kind;
+    /// <summary>
+    /// The Location of the bar (last recorded)
+    /// </summary>
     public Point Location => m_location;
+    /// <summary>
+    /// Whether or not using a condensed font
+    /// </summary>
     public bool Condensed => m_condensed;
+    /// <summary>
+    /// The Transparency of the window
+    /// </summary>
     public GUI.Transparent Transparency => m_transparent;
+    /// <summary>
+    /// The Opacity of the window
+    ///  just the inverse of the Transparency
+    /// </summary>
     public float Opacity => 1.0f - (int)m_transparent / 10f; // inverse of transparency
 
 
@@ -191,7 +124,7 @@ namespace FS20_HudBar
     /// </summary>
     /// <param name="item">An Item</param>
     /// <returns>The Key/Name</returns>
-    private static string Key( int pNum, LItem item )
+    public static string Key( int pNum, LItem item )
     {
       return $"P{pNum}_{item}";
     }
@@ -222,7 +155,7 @@ namespace FS20_HudBar
             // store along the Enum sequence
             m_sequence[i] = pos;
             m_profile[i] = cb.Checked;
-            m_flowBreak[i] = (string)cb.Tag == "1";
+            m_flowBreak[i] = (char)cb.Tag == FlowBreakTag;
           }
         }
         catch {
@@ -341,7 +274,7 @@ namespace FS20_HudBar
       // i.e. we always want a complete Dictionary when leaving the method!!!
 
       // Get the visibility status for each item
-      string[] e = profile.Split(new char[]{ ';' }, StringSplitOptions.RemoveEmptyEntries );
+      string[] e = profile.Split(new char[]{ Divider }, StringSplitOptions.RemoveEmptyEntries );
       m_profile.Clear( );
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         bool show = (i== LItem.MSFS)?true : false; // default OFF except the first 20210708
@@ -352,7 +285,7 @@ namespace FS20_HudBar
       }
 
       // Get the flow break  status for each item
-      e = flowBreak.Split( new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries );
+      e = flowBreak.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
       m_flowBreak.Clear( );
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         bool fbreak = false; // default OFF
@@ -363,7 +296,7 @@ namespace FS20_HudBar
       }
 
       // Get the item position - don't validate the sequence here
-      e = sequence.Split( new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries );
+      e = sequence.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
       m_sequence.Clear( );
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         int idx = (int)i; // default Enum Sequence
@@ -456,7 +389,7 @@ namespace FS20_HudBar
       string ret="";
 
       foreach ( var kv in m_profile ) {
-        ret += kv.Value ? "1;" : "0;";
+        ret += ( kv.Value ? $"1" : "0" ) + Divider;
       }
       return ret;
     }
@@ -470,7 +403,7 @@ namespace FS20_HudBar
       string ret="";
 
       foreach ( var kv in m_flowBreak ) {
-        ret += kv.Value ? "1;" : "0;";
+        ret += ( kv.Value ? "1" : "0" ) + Divider;
       }
       return ret;
     }
@@ -484,7 +417,7 @@ namespace FS20_HudBar
       string ret="";
 
       foreach ( var kv in m_sequence ) {
-        ret += $"{kv.Value};";
+        ret += $"{kv.Value}" + Divider;
       }
       return ret;
     }

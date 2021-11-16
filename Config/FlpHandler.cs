@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 using FS20_HudBar.Bar;
 using FS20_HudBar.Bar.Items;
 using static FS20_HudBar.CProfile;
@@ -33,23 +34,13 @@ namespace FS20_HudBar.Config
     /// <param name="profile">A semicolon separated string of 0 or 1 (shown) </param>
     /// <param name="flowBreak">A semicolon separated string of 0 or 1 (break) </param>
     /// <param name="sequence">A semicolon separated string of numbers (display position) </param>
-    public FlpHandler(FlowLayoutPanel flp, int pNum, string profile, string flowBreak, string sequence )
+    public FlpHandler( FlowLayoutPanel flp, int pNum, string profile, string flowBreak, string sequence )
     {
       m_pNumber = pNum;
       m_flp = flp;
-      LoadProfile( profile, flowBreak, sequence);
+      LoadProfile( profile, flowBreak, sequence );
     }
 
-    /// <summary>
-    /// The Key or Name of the CheckBox
-    /// NOTE: MUST be the same as in CProfile (could be done better but for now it is OK...)
-    /// </summary>
-    /// <param name="item">An Item</param>
-    /// <returns>The Key/Name</returns>
-    private static string Key( int pNum, LItem item )
-    {
-      return $"P{pNum}_{item}";
-    }
     /// <summary>
     /// The Key or Name of the CheckBox 
     /// NOTE: MUST be the same as in CProfile (could be done better but for now it is OK...)
@@ -58,7 +49,7 @@ namespace FS20_HudBar.Config
     /// <returns>The Key/Name</returns>
     private string Key( LItem item )
     {
-      return Key( m_pNumber, item );
+      return CProfile.Key( m_pNumber, item );
     }
 
     private bool IsSamePanel( string srcKey, string destKey )
@@ -80,7 +71,7 @@ namespace FS20_HudBar.Config
         var cb = new CheckBox(){
           Name =Key(i),
           Text = hudBar.CfgName( i ),
-          Tag = m_flowBreak[i] ? "1" : "", // use TAG as string 0 / 1
+          Tag = m_flowBreak[i] ? FlowBreakTag : NoBreakTag, // use TAG as string 0 / 1
           Margin = new Padding(3,0,3,0),
           Anchor = AnchorStyles.Left,
           AutoSize = true,
@@ -200,15 +191,15 @@ namespace FS20_HudBar.Config
       var cb = sender as CheckBox;
       // RIGHT Button - Toggle the FlowBreak when the RIGHT button is down
       if ( e.Button == MouseButtons.Right ) {
-        if ( (string)cb.Tag == "1" ) {
+        if ( (char)cb.Tag == FlowBreakTag ) {
           // remove FB
           cb.BackColor = m_flp.BackColor;
-          cb.Tag = "";
+          cb.Tag = NoBreakTag;
         }
         else {
           // add FB
           cb.BackColor = Color.PaleGreen;
-          cb.Tag = "1"; // FlowBreak 
+          cb.Tag = FlowBreakTag; // FlowBreak 
         }
       }
       // LEFT Button - Start to MOVE a CheckBox
@@ -267,12 +258,10 @@ namespace FS20_HudBar.Config
     #endregion
 
     /// <summary>
-    /// Get the items from current FLP
+    /// Get the items from current FLP and return them as DefaultProfile obj
     /// </summary>
-    /// <param name="pNum"></param>
-    /// <param name="flp"></param>
-    /// <returns></returns>
-    public DefaultProfile GetItemsFromFlp( )
+    /// <returns>A filled DefaultProfile</returns>
+    public ProfileStore GetItemsFromFlp( )
     {
       string profile = "";
       string flowBreak = "";
@@ -286,18 +275,18 @@ namespace FS20_HudBar.Config
           int pos = m_flp.Controls.IndexOf(cb); // can be -1 if not found
           if ( pos >= 0 ) {
             // store along the Enum sequence
-            sequence += $"{pos};";
-            profile += cb.Checked ? "1;" : "0;";
-            flowBreak += ( (string)cb.Tag == "1" ) ? "1;" : "0;";
+            sequence += $"{pos}" + Divider;
+            profile += ( cb.Checked ? "1" : "0" ) + Divider;
+            flowBreak += ( ( (char)cb.Tag == FlowBreakTag ) ? "1" : "0" ) + Divider; ;
           }
         }
         catch {
-          sequence += $"{i};";
-          profile += "0;";
-          flowBreak += "0;";
+          sequence += $"{i}" + +Divider; ;
+          profile += "0" + Divider; ;
+          flowBreak += "0" + Divider; ;
         }
       }
-      return new DefaultProfile( "COPY", profile, sequence, flowBreak );
+      return new ProfileStore( "COPY", profile, sequence, flowBreak );
     }
 
     /// <summary>
@@ -306,7 +295,7 @@ namespace FS20_HudBar.Config
     /// <param name="defaultProfile">The default profile ID</param>
     public void LoadDefaultProfile( DProfile defaultProfile )
     {
-      var dp = GetDefaultProfile(defaultProfile);
+      var dp = DefaultProfiles.GetDefaultProfile(defaultProfile);
       if ( dp == null ) return; // sanity, defaultProfile does not exist
 
       LoadDefaultProfile( dp ); // use default Bar props
@@ -316,11 +305,39 @@ namespace FS20_HudBar.Config
     /// Load and overwrite items from a default profile
     /// </summary>
     /// <param name="defaultProfile">The default profile object</param>
-    public void LoadDefaultProfile( DefaultProfile defaultProfile )
+    public void LoadDefaultProfile( ProfileStore defaultProfile )
     {
       if ( defaultProfile == null ) return; // sanity, defaultProfile does not exist
 
       LoadProfile( defaultProfile.Profile, defaultProfile.FlowBreak, defaultProfile.DispOrder ); // use default Bar props
+    }
+
+    /// <summary>
+    /// Merges a new profile with the existing one
+    ///  Rule: 1= forced, 0= forced, {any other character}= copy from current profile
+    /// </summary>
+    /// <param name="profile">A merge profile string</param>
+    public void MergeProfile( string profile )
+    {
+      string thisProfile = this.ProfileString();
+      string mergedProfile = "";
+      // scan the source and merge according to the rules, copy Semicolons as divider
+      for ( int i = 0; i < thisProfile.Length; i++ ) {
+        char thisChar = thisProfile[i];
+        // check the input only if there are chars..
+        if ( i < profile.Length ) {
+          if ( thisProfile[i] == Divider ) mergedProfile += Divider; // maintain the source dividers in all cases
+          else if ( profile[i] == '0' ) mergedProfile += '0'; // merge from input
+          else if ( profile[i] == '1' ) mergedProfile += '1'; // merge from input
+          else mergedProfile += thisChar; // use current profile value
+        }
+        else {
+          //no more chars in the input
+          mergedProfile += thisChar; // use current profile value
+        }
+      }
+      // Load from merged sources
+      LoadProfile( mergedProfile, this.FlowBreakString( ), this.ItemPosString( ) );
     }
 
     // Load the profile from stored strings (Settings)
@@ -332,7 +349,7 @@ namespace FS20_HudBar.Config
       // i.e. we always want a complete Dictionary when leaving the method!!!
 
       // Get the visibility status for each item
-      string[] e = profile.Split(new char[]{ ';' }, StringSplitOptions.RemoveEmptyEntries );
+      string[] e = profile.Split(new char[]{ Divider }, StringSplitOptions.RemoveEmptyEntries );
       m_profile.Clear( );
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         bool show = (i== LItem.MSFS)?true : false; // default OFF except the first 20210708
@@ -343,7 +360,7 @@ namespace FS20_HudBar.Config
       }
 
       // Get the flow break  status for each item
-      e = flowBreak.Split( new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries );
+      e = flowBreak.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
       m_flowBreak.Clear( );
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         bool fbreak = false; // default OFF
@@ -354,7 +371,7 @@ namespace FS20_HudBar.Config
       }
 
       // Get the item position - don't validate the sequence here
-      e = sequence.Split( new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries );
+      e = sequence.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
       m_sequence.Clear( );
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         int idx = (int)i; // default Enum Sequence
@@ -401,7 +418,7 @@ namespace FS20_HudBar.Config
       string ret="";
 
       foreach ( var kv in m_profile ) {
-        ret += kv.Value ? "1;" : "0;";
+        ret += ( kv.Value ? "1" : "0" ) + Divider;
       }
       return ret;
     }
@@ -415,7 +432,7 @@ namespace FS20_HudBar.Config
       string ret="";
 
       foreach ( var kv in m_flowBreak ) {
-        ret += kv.Value ? "1;" : "0;";
+        ret += ( kv.Value ? "1" : "0" ) + Divider;
       }
       return ret;
     }
@@ -429,7 +446,7 @@ namespace FS20_HudBar.Config
       string ret="";
 
       foreach ( var kv in m_sequence ) {
-        ret += $"{kv.Value};";
+        ret += $"{kv.Value}" + Divider; ;
       }
       return ret;
     }

@@ -60,16 +60,17 @@ namespace FS20_HudBar.Config
       ctxMenu.Items.Add( "Copy items", null, ctxCopy_Click );
       ctxMenu.Items.Add( "Paste items here", null, ctxPaste_Click );
       ctxMenu.Items.Add( new ToolStripSeparator( ) );
-      // profiles
-      ctxMenu.Items.Add( CProfile.GetDefaultProfile( CProfile.DProfile.Profile_All ).Name, null, ctxDP_Click );
-      ctxMenu.Items.Add( CProfile.GetDefaultProfile( CProfile.DProfile.EssentialsProfile ).Name, null, ctxDP_Click );
-      ctxMenu.Items.Add( CProfile.GetDefaultProfile( CProfile.DProfile.CombProfile_A ).Name, null, ctxDP_Click );
-      ctxMenu.Items.Add( CProfile.GetDefaultProfile( CProfile.DProfile.CombProfile_B ).Name, null, ctxDP_Click );
-      ctxMenu.Items.Add( CProfile.GetDefaultProfile( CProfile.DProfile.CombProfile_C ).Name, null, ctxDP_Click );
-      ctxMenu.Items.Add( CProfile.GetDefaultProfile( CProfile.DProfile.TPropProfile_A ).Name, null, ctxDP_Click );
-      ctxMenu.Items.Add( CProfile.GetDefaultProfile( CProfile.DProfile.TPropProfile_C208B ).Name, null, ctxDP_Click );
-      ctxMenu.Items.Add( CProfile.GetDefaultProfile( CProfile.DProfile.JetProfile ).Name, null, ctxDP_Click );
-      ctxMenu.Items.Add( CProfile.GetDefaultProfile( CProfile.DProfile.HeavyProfile ).Name, null, ctxDP_Click );
+
+      // Add Aircraft Merges
+      var menu = new ToolStripMenuItem( "Aircraft Merges" );
+      ctxMenu.Items.Add( menu );
+      AcftMerges.AddMenuItems( menu, ctxAP_Click );
+
+      // Add Default Profiles
+      menu = new ToolStripMenuItem( "Default Profiles" );
+      ctxMenu.Items.Add( menu );
+      DefaultProfiles.AddMenuItems( menu, ctxDP_Click );
+
 
       // indexed access for profile controls
       m_flps[0] = flp1; m_flps[1] = flp2; m_flps[2] = flp3; m_flps[3] = flp4; m_flps[4] = flp5;
@@ -215,7 +216,7 @@ namespace FS20_HudBar.Config
     {
       // reset Sel Color
       for ( int p = 0; p < c_NumProfiles; p++ ) {
-          m_pName[p].BackColor = this.BackColor;
+        m_pName[p].BackColor = this.BackColor;
       }
     }
 
@@ -245,7 +246,7 @@ namespace FS20_HudBar.Config
         ProfilesRef[p].GetFontSizeFromCombo( m_pFont[p] );
         ProfilesRef[p].GetPlacementFromCombo( m_pPlace[p] );
         ProfilesRef[p].GetKindFromCombo( m_pKind[p] );
-        ProfilesRef[p].GetCondFromCombo( m_pCondensed[p]);
+        ProfilesRef[p].GetCondFromCombo( m_pCondensed[p] );
         ProfilesRef[p].GetTramsFromCombo( m_pTransparency[p] );
       }
 
@@ -280,7 +281,7 @@ namespace FS20_HudBar.Config
     #region Context Menu
 
     // Buffer to maintain copied items
-    private CProfile.DefaultProfile m_copyBuffer;
+    private ProfileStore m_copyBuffer;
 
     // Copy Items is clicked
     private void ctxCopy_Click( object sender, EventArgs e )
@@ -310,14 +311,51 @@ namespace FS20_HudBar.Config
     private void ctxDP_Click( object sender, EventArgs e )
     {
       var tsi = (sender as ToolStripItem);
-      var ctx = (sender as ToolStripItem).Owner as ContextMenuStrip;
+      object item = tsi.Owner;
+      // backup the menu tree
+      while ( !( item is ContextMenuStrip ) ) {
+        if ( item is ToolStripDropDownMenu )
+          item = ( item as ToolStripDropDownMenu ).OwnerItem;
+        else if ( item is ToolStripMenuItem )
+          item = ( item as ToolStripMenuItem ).Owner;
+        else
+          return; // not an expected menu tree 
+      }
+      var ctx = item as ContextMenuStrip;
       // col is the profile index assuming Col 0..4 carry the profiles...
       var col = tlp.GetColumn(ctx.SourceControl);
       if ( col > c_NumProfiles ) return; // sanity
 
-      var dp = CProfile.GetDefaultProfile( tsi.Text );
+      var dp = DefaultProfiles.GetDefaultProfile( tsi.Text );
       if ( dp != null ) {
         m_flpHandler[col].LoadDefaultProfile( dp );
+        m_flpHandler[col].LoadFlp( HudBarRef );
+        m_pName[col].Text = dp.Name;
+      }
+    }
+
+    // An aircraft merge profile is clicked
+    private void ctxAP_Click( object sender, EventArgs e )
+    {
+      var tsi = (sender as ToolStripItem);
+      object item = tsi.Owner;
+      // backup the menu tree
+      while ( !(item is ContextMenuStrip ) ) {
+        if ( item is ToolStripDropDownMenu )
+          item = ( item as ToolStripDropDownMenu ).OwnerItem;
+        else if ( item is ToolStripMenuItem )
+          item = ( item as ToolStripMenuItem ).Owner;
+        else
+          return; // not an expected menu tree 
+      }
+      var ctx = item as ContextMenuStrip;
+      // col is the profile index assuming Col 0..4 carry the profiles...
+      var col = tlp.GetColumn(ctx.SourceControl);
+      if ( col > c_NumProfiles ) return; // sanity
+
+      var dp = AcftMerges.GetAircraftProfile( tsi.Text );
+      if ( dp != null ) {
+        m_flpHandler[col].MergeProfile( dp.Profile );
         m_flpHandler[col].LoadFlp( HudBarRef );
         m_pName[col].Text = dp.Name;
       }

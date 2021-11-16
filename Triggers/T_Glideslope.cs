@@ -32,7 +32,7 @@ namespace FS20_HudBar.Triggers
       if ( !( dataSource is IAP_G1000 ) ) throw new ArgumentException( "Needs an IAP_G1000 argument" ); // Program ERROR
 
       var ds = (dataSource as IAP_G1000);
-      _text = ds.GPS_active ? _path : _slope;
+      this.m_actions[true].Text = ds.GPS_active ? _path : _slope; // change according to NAV mode
       DetectStateChange( ds.GS_active );
       if ( ds.GS_active == false )
         m_lastTriggered = false; // RESET if no longer captured
@@ -48,11 +48,11 @@ namespace FS20_HudBar.Triggers
       : base( speaker )
     {
       m_name = "AP GS Capture";
-      m_test = "Glideslope";
+      m_test = _slope;
 
       // add the proc most likely to be hit as the first - saves some computing time on the long run
       m_lastTriggered = false;
-      this.AddProc( new EventProcBinary( ) { TriggerState = true, Callback = Say, Text = "Glideslope" } );
+      this.AddProc( new EventProcBinary( ) { TriggerState = true, Callback = Say, Text = _text } );
     }
 
   }

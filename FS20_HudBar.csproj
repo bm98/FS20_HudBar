@@ -372,7 +372,10 @@
     </Compile>
     <Compile Include="Bar\ValueItemCat.cs" />
     <Compile Include="Bar\CPointMeter.cs" />
+    <Compile Include="Config\AcftMerges.cs" />
+    <Compile Include="Config\DefaultProfiles.cs" />
     <Compile Include="Config\FlpHandler.cs" />
+    <Compile Include="Config\ProfileStore.cs" />
     <Compile Include="CProfile.cs" />
     <Compile Include="AirportMgr.cs" />
     <Compile Include="Bar\FltMgr.cs" />
@@ -578,6 +581,8 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="Fonts\ShareTechMono-Regular.ttf" />
+    <EmbeddedResource Include="Config\EngineMerge.csv" />
+    <EmbeddedResource Include="Config\DefaultProfiles.csv" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

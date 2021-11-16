@@ -45,10 +45,10 @@ V 0.37-B31
 - Add item OAT in °F
 - Add Button Click for SimRate to set it to 1x (normal)
 - Add VoiceOut item for LowFuel Alert
-- Add Config Copy / Paste items between profiles
-- Add Default profiles to select from
+- Add Copy / Paste of Items between profiles in Config menu
+- Add Load default profiles in Config menu
+- Add Aircraft specific Merge Items in Config menu (modifies only engine readouts according to the plane)
 - Add Provide some default profiles when using the program the very first time
-- Add Load default profiles from Config menu
 - Update Button Click handling for CP Meters to Stop (within 2 sec of Start)
 - Update GPS source to show NAV1 or NAV2 or GPS
 - Update Cursor on ATC Tooltip changes to indicate content

@@ -41,6 +41,10 @@ namespace FS20_HudBar.Config
       this.checkBox2 = new System.Windows.Forms.CheckBox();
       this.txP5 = new System.Windows.Forms.TextBox();
       this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.asdaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.asdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.asdasdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.asdasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.txP4 = new System.Windows.Forms.TextBox();
       this.txP3 = new System.Windows.Forms.TextBox();
       this.txP2 = new System.Windows.Forms.TextBox();
@@ -84,6 +88,7 @@ namespace FS20_HudBar.Config
       this.flp2.SuspendLayout();
       this.flp3.SuspendLayout();
       this.flp4.SuspendLayout();
+      this.ctxMenu.SuspendLayout();
       this.flp5.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -271,8 +276,38 @@ namespace FS20_HudBar.Config
       // 
       // ctxMenu
       // 
+      this.ctxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.asdaToolStripMenuItem,
+            this.asdToolStripMenuItem});
       this.ctxMenu.Name = "ctxMenu";
-      this.ctxMenu.Size = new System.Drawing.Size(181, 26);
+      this.ctxMenu.Size = new System.Drawing.Size(99, 48);
+      // 
+      // asdaToolStripMenuItem
+      // 
+      this.asdaToolStripMenuItem.Name = "asdaToolStripMenuItem";
+      this.asdaToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+      this.asdaToolStripMenuItem.Text = "asda";
+      // 
+      // asdToolStripMenuItem
+      // 
+      this.asdToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.asdasdToolStripMenuItem,
+            this.asdasToolStripMenuItem});
+      this.asdToolStripMenuItem.Name = "asdToolStripMenuItem";
+      this.asdToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+      this.asdToolStripMenuItem.Text = "asd";
+      // 
+      // asdasdToolStripMenuItem
+      // 
+      this.asdasdToolStripMenuItem.Name = "asdasdToolStripMenuItem";
+      this.asdasdToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+      this.asdasdToolStripMenuItem.Text = "asdasd";
+      // 
+      // asdasToolStripMenuItem
+      // 
+      this.asdasToolStripMenuItem.Name = "asdasToolStripMenuItem";
+      this.asdasToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+      this.asdasToolStripMenuItem.Text = "asdas";
       // 
       // txP4
       // 
@@ -766,6 +801,7 @@ namespace FS20_HudBar.Config
       this.flp3.PerformLayout();
       this.flp4.ResumeLayout(false);
       this.flp4.PerformLayout();
+      this.ctxMenu.ResumeLayout(false);
       this.flp5.ResumeLayout(false);
       this.flp5.PerformLayout();
       this.ResumeLayout(false);
@@ -822,5 +858,9 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.TextBox textBox1;
     private System.Windows.Forms.CheckedListBox clbVoice;
     private System.Windows.Forms.ContextMenuStrip ctxMenu;
+    private System.Windows.Forms.ToolStripMenuItem asdaToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem asdToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem asdasdToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem asdasToolStripMenuItem;
   }
 }
