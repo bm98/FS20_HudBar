@@ -144,7 +144,7 @@ namespace FS20_HudBar.Bar
     /// <returns>The fuel reach in seconds</returns>
     public static float FuelReach_sec( )
     {
-      if ( AvgFuelFlowTotal_galPh() <= 0 ) return float.NaN;
+      if ( AvgFuelFlowTotal_galPh( ) <= 0 ) return float.NaN;
 
       return ( SC.SimConnectClient.Instance.AircraftModule.FuelQuantityTotal_gal / m_avgFuelFlowModule.Avg ) * 3600f;
     }
@@ -233,18 +233,21 @@ namespace FS20_HudBar.Bar
     #endregion
 
     #region NAV ID Evaluation
+
+    
     /// <summary>
     /// Returns the NAV1 ID for the tuned Station
     /// </summary>
     public static string NAV1_ID {
       get {
-        if ( !SC.SimConnectClient.Instance.IsConnected ) return ""; // cannot calculate anything
+        if ( !SC.SimConnectClient.Instance.IsConnected ) return "  "; // cannot calculate anything
 
-        return
-          ( SC.SimConnectClient.Instance.NavModule.GS1_flag ? "‡◊"        // GS received
-          : SC.SimConnectClient.Instance.NavModule.GS1_available ? "‡ "  // GS available
-          : SC.SimConnectClient.Instance.NavModule.Nav1_hasLOC ? "† "    // LOC availbe
-          : "  " ) + SC.SimConnectClient.Instance.NavModule.Nav1_Ident;
+        string gsi = ( SC.SimConnectClient.Instance.NavModule.GS1_flag ? " ◊"        // GS received
+          : SC.SimConnectClient.Instance.NavModule.GS1_available ? " ‡"  // GS available
+          : " " );
+        string id = SC.SimConnectClient.Instance.NavModule.Nav1_Ident + gsi;
+
+        return id;
       }
     }
     /// <summary>
@@ -252,13 +255,14 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static string NAV2_ID {
       get {
-        if ( !SC.SimConnectClient.Instance.IsConnected ) return ""; // cannot calculate anything
+        if ( !SC.SimConnectClient.Instance.IsConnected ) return "  "; // cannot calculate anything
 
-        return
-          ( SC.SimConnectClient.Instance.NavModule.GS2_flag ? "‡◊"        // GS received
-          : SC.SimConnectClient.Instance.NavModule.GS2_available ? "‡ "  // GS available
-          : SC.SimConnectClient.Instance.NavModule.Nav2_hasLOC ? "† "    // LOC availbe
-          : "  " ) + SC.SimConnectClient.Instance.NavModule.Nav2_Ident;
+        string gsi = ( SC.SimConnectClient.Instance.NavModule.GS2_flag ? " ◊"        // GS received
+          : SC.SimConnectClient.Instance.NavModule.GS2_available ? " ‡"  // GS available
+          : " " );
+        string id = SC.SimConnectClient.Instance.NavModule.Nav2_Ident + gsi;
+
+        return id;
       }
     }
     #endregion
@@ -307,9 +311,9 @@ namespace FS20_HudBar.Bar
     /// <param name="erpm">Engine RPM</param>
     /// <param name="maxHP">Max rated HP</param>
     /// <returns>The % Load</returns>
-    public static float LoadPrct(float trq_ftlb, float erpm, float maxHP )
+    public static float LoadPrct( float trq_ftlb, float erpm, float maxHP )
     {
-      return ( trq_ftlb * (erpm/5252.0f)) / maxHP;
+      return ( trq_ftlb * ( erpm / 5252.0f ) ) / maxHP;
     }
 
     /// <summary>

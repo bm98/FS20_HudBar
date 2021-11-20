@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>31</ApplicationRevision>
-    <ApplicationVersion>0.37.0.31</ApplicationVersion>
+    <ApplicationRevision>32</ApplicationRevision>
+    <ApplicationVersion>0.37.0.32</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -166,6 +166,18 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\CtrlPara\DI_Thr_LEV.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Nav1_Name.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Nav2_Name.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Fuel_LR_Lb.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Fuel_Total_Lb.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\EnginePara\DI_N2.cs">
@@ -322,10 +334,10 @@
     <Compile Include="Bar\Items\AircraftPara\DI_Flaps.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_Fuel_LR.cs">
+    <Compile Include="Bar\Items\EnginePara\DI_Fuel_LR_Gal.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_Fuel_Total.cs">
+    <Compile Include="Bar\Items\EnginePara\DI_Fuel_Total_Gal.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AircraftPara\DI_Gear.cs">
@@ -465,6 +477,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Templates\V_Mach.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\V_Pounds.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Templates\V_RAaudio.cs">

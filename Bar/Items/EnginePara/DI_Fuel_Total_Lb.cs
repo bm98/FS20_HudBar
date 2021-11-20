@@ -16,38 +16,39 @@ using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.Bar.Items
 {
-  class DI_Fuel_LR : DispItem
+  class DI_Fuel_Total_Lb : DispItem
   {
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.Fuel_LR;
+    public static readonly LItem LItem = LItem.Fuel_Total_lb;
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "F-LR";
+    public static string Short = "F-TOT";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Fuel Left/Right Gal";
+    public static string Desc = "Fuel Total Lb";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    public DI_Fuel_LR( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Fuel_Total_Lb( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
       LabelID = LItem;
-      var item = VItem.Fuel_Left;
+      var item = VItem.Fuel_Total_lb;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Gallons( value2Proto, showUnits );
+      _value1 = new V_Pounds( value2Proto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      item = VItem.Fuel_Right;
-      _value2 = new V_Gallons( value2Proto, showUnits );
+      item = VItem.Fuel_Reach_lb;
+      _value2 = new V_TimeHHMM( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.EngineModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -56,17 +57,10 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( )
     {
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityLeft_gal;
-        _value2.Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityRight_gal;
-        // Color when there is a substantial unbalance
-        if ( Calculator.HasFuelImbalance ) {
-          _value1.ItemForeColor = cWarn;
-          _value2.ItemForeColor = cWarn;
-        }
-        else {
-          _value1.ItemForeColor = cInfo;
-          _value2.ItemForeColor = cInfo;
-        }
+        // Fuel Tot & Reach
+        _value1.Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityTotal_lb;
+        _value2.Value = Calculator.FuelReach_sec( );
+        _value2.ItemForeColor = Calculator.FuelReachAlert ? cAlert : ( Calculator.FuelReachWarn ? cWarn : cInfo );
       }
     }
 

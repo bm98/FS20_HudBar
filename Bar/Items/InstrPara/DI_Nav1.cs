@@ -62,20 +62,27 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( )
     {
       if ( this.Visible ) {
+        this.Label.Text = SC.SimConnectClient.Instance.NavModule.Nav1_hasLOC ? "LOC 1" : "NAV 1";
         if ( SC.SimConnectClient.Instance.NavModule.Nav1_Ident != "" ) {
-
           _value1.Text = Calculator.NAV1_ID;
 
+          var brg = (float)Geo.Wrap360( SC.SimConnectClient.Instance.NavModule.Nav1_Radial_degm - 180 ); // direction towards the station 
+          brg = SC.SimConnectClient.Instance.NavModule.Nav1_hasLOC ? SC.SimConnectClient.Instance.NavModule.CRS1 : brg; // for LOC use the LOC heading as direction
+
           if ( SC.SimConnectClient.Instance.NavModule.Nav1_Signal && SC.SimConnectClient.Instance.NavModule.FromToFlag1 != 0 ) {
-            _value2.Value = (float)Geo.Wrap360( SC.SimConnectClient.Instance.NavModule.Nav1_Radial_degm - 180 );
+            _value2.Value = brg;
           }
           else {
             _value2.Value = null;
           }
 
           if ( SC.SimConnectClient.Instance.NavModule.Nav1_hasDME ) {
+            var diversion = Geo.Wrap180(SC.SimConnectClient.Instance.GpsModule.GTRK - brg); // delta < +-90 -> going towards the Station, outside going away from it
+            var toFromFlag = (Math.Abs(diversion) <= 90) ? 1 : 2; // same values as the Sim ToFrom Flag (1->To, 2-> From, 0->Off)
+            toFromFlag = SC.SimConnectClient.Instance.NavModule.Nav1_Signal ? toFromFlag : 0; // no signal -> direction Off
+
             _value3.Value =
-                  V_DmeDist.DmeDistance( SC.SimConnectClient.Instance.NavModule.DMEdistNav1_nm, SC.SimConnectClient.Instance.NavModule.FromToFlag1 );
+                  V_DmeDist.DmeDistance( SC.SimConnectClient.Instance.NavModule.DMEdistNav1_nm, toFromFlag );
           }
           else {
             _value3.Value = null;

@@ -1,5 +1,5 @@
-FS20_HudBar V 0.37 - Build 31 BETA
-(c) M. Burri - 14-Nov-2021
+FS20_HudBar V 0.37 - Build 32 BETA
+(c) M. Burri - 21-Nov-2021
 
 Contains files:
 
@@ -38,6 +38,9 @@ github@mail.burri-web.org
 
 Changelog:
 V 0.37-B31
+- Add item NAV1/2 Name incl. ILS LOC information 
+
+V 0.37-B31
 - Add item Control Handle% readout for Throttle, Mix, Propeller
 - Add item Power LOAD %
 - Add item CHT in °C and °F
@@ -50,7 +53,7 @@ V 0.37-B31
 - Add Aircraft specific Merge Items in Config menu (modifies only engine readouts according to the plane)
 - Add Provide some default profiles when using the program the very first time
 - Update Button Click handling for CP Meters to Stop (within 2 sec of Start)
-- Update GPS source to show NAV1 or NAV2 or GPS
+- Update GPS source to show NAV/LOC 1/2 or GPS
 - Update Cursor on ATC Tooltip changes to indicate content
 - Update Internal re-design for most of the parts..
 - Fix Interaction issue with SimConnect and loading flights (workaround MSFS bug)

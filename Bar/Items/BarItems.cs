@@ -75,8 +75,8 @@ namespace FS20_HudBar.Bar.Items
     WIND_XY,  // Wind X and Y Component
 
     Lights,   // Lights indication
-    Fuel_LR,    // Fuel quantity Left/Right
-    Fuel_Total, // Fuel quantity Total
+    Fuel_LR_gal,    // Fuel quantity Left/Right
+    Fuel_Total_gal, // Fuel quantity Total Gallons
 
     MACH,       // Mach speed indication
 
@@ -105,6 +105,9 @@ namespace FS20_HudBar.Bar.Items
     NAV1,       // NAV1
     NAV2,       // NAV2
 
+    NAV1_NAME,  // NAV1
+    NAV2_NAME,  // NAV2
+
     THR_LEV,    // Throttle Lever
     MIX_LEV,    // Mixture Lever
     PROP_LEV,   // Propeller Lever
@@ -115,6 +118,8 @@ namespace FS20_HudBar.Bar.Items
     CHT_F,      // CHT in °F
     LOAD_P,     // LOAD %
     N2,         // Turbine N2 %
+    Fuel_LR_lb,    // Fuel quantity Left/Right  Pounds
+    Fuel_Total_lb, // Fuel quantity Total Pounds
 
   }
 
@@ -223,10 +228,10 @@ namespace FS20_HudBar.Bar.Items
 
     Lights,       // Lights indication
 
-    Fuel_Left,    // Fuel quantity Left Gallons
-    Fuel_Right,   // Fuel quantity Right Gallons
-    Fuel_Total,   // Fuel quantity Total Gallons
-    Fuel_Reach,   // Fuel reach in seconds
+    Fuel_Left_gal,    // Fuel quantity Left Gallons
+    Fuel_Right_gal,   // Fuel quantity Right Gallons
+    Fuel_Total_gal,   // Fuel quantity Total Gallons
+    Fuel_Reach_gal,   // Fuel reach in seconds for the Gallons Readout
 
     MACH,         // Mach speed indication
 
@@ -267,6 +272,9 @@ namespace FS20_HudBar.Bar.Items
     NAV2_DST,     // NAV2 DME Distance
     NAV2_BRG,     // NAV2 BRG to
 
+    NAV1_NAME,    // NAV1 Name {Apt}
+    NAV2_NAME,    // NAV2 Name {Apt}
+
     E1_THR_LEV,    // Throttle Lever Engine 1
     E2_THR_LEV,    // Throttle Lever Engine 2
     E1_MIX_LEV,    // Mixture Lever Engine 1
@@ -289,6 +297,12 @@ namespace FS20_HudBar.Bar.Items
 
     E1_N2,      // Engine1 N2 %
     E2_N2,      // Engine2 N2 %
+
+    Fuel_Left_lb,    // Fuel quantity Left Pounds
+    Fuel_Right_lb,   // Fuel quantity Right Pounds
+    Fuel_Total_lb,   // Fuel quantity Total Pounds
+    Fuel_Reach_lb,   // Fuel reach in seconds for the Pounds Readout
+
   }
 
 }

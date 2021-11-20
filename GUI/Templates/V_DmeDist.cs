@@ -69,12 +69,12 @@ namespace FS20_HudBar.GUI.Templates
     /// flag==0 => Off  NaN
     /// 
     /// </summary>
-    /// <param name="absValue"></param>
-    /// <param name="fromToFlag"></param>
+    /// <param name="absValue">DME Input from Sim</param>
+    /// <param name="fromToFlag">FromTo Flag from Sim</param>
     /// <returns></returns>
     public static float DmeDistance( float absValue, int fromToFlag )
     {
-      return fromToFlag == 0 ? float.NaN : fromToFlag == 1 ? absValue : -absValue;
+      return (fromToFlag == 0) ? float.NaN : ((fromToFlag == 1) ? absValue : -absValue);
     }
     #endregion
 

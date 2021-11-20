@@ -139,7 +139,8 @@ namespace FS20_HudBar.Bar
       {LItem.CHT_C, DI_Cht_C.Desc },          {LItem.CHT_F, DI_Cht_F.Desc },
       {LItem.LOAD_P, DI_Load_prct.Desc },
       {LItem.FFlow_pph, DI_FFlow_PPH.Desc },  {LItem.FFlow_gph, DI_FFlow_GPH.Desc },
-      {LItem.Fuel_LR, DI_Fuel_LR.Desc },      {LItem.Fuel_Total, DI_Fuel_Total.Desc },
+      {LItem.Fuel_LR_gal, DI_Fuel_LR_Gal.Desc },       {LItem.Fuel_LR_lb, DI_Fuel_LR_Lb.Desc },
+      {LItem.Fuel_Total_gal, DI_Fuel_Total_Gal.Desc }, {LItem.Fuel_Total_lb, DI_Fuel_Total_Lb.Desc },
 
       {LItem.GPS_WYP, DI_Gps_WYP.Desc },
       {LItem.GPS_WP_DIST, DI_Gps_WP_Dist.Desc },
@@ -173,6 +174,7 @@ namespace FS20_HudBar.Bar
       {LItem.AP_LVL, DI_Ap_LVL.Desc },
 
       {LItem.NAV1, DI_Nav1.Desc },            {LItem.NAV2, DI_Nav2.Desc },
+      {LItem.NAV1_NAME, DI_Nav1_Name.Desc },  {LItem.NAV2_NAME, DI_Nav2_Name.Desc },
 
       {LItem.ATC_APT, DI_Atc_APT.Desc },
       {LItem.ATC_RWY, DI_Atc_RWY.Desc },
@@ -283,8 +285,10 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Load_prct( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_FFlow_PPH( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_FFlow_GPH( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Fuel_LR( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Fuel_Total( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Fuel_LR_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Fuel_LR_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Fuel_Total_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Fuel_Total_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       // Trim
       m_dispItems.AddDisp( new DI_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_A_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -319,6 +323,8 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Vs_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Nav1( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Nav2( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Nav1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Nav2_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       // Autopilot
       m_dispItems.AddDisp( new DI_Ap( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_HdgSet( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );

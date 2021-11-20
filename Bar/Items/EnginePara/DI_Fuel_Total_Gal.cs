@@ -16,12 +16,12 @@ using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.Bar.Items
 {
-  class DI_Fuel_Total : DispItem
+  class DI_Fuel_Total_Gal : DispItem
   {
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.Fuel_Total;
+    public static readonly LItem LItem = LItem.Fuel_Total_gal;
     /// <summary>
     /// The GUI Name
     /// </summary>
@@ -35,15 +35,15 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    public DI_Fuel_Total( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Fuel_Total_Gal( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
       LabelID = LItem;
-      var item = VItem.Fuel_Total;
+      var item = VItem.Fuel_Total_gal;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Gallons( value2Proto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      item = VItem.Fuel_Reach;
+      item = VItem.Fuel_Reach_gal;
       _value2 = new V_TimeHHMM( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
