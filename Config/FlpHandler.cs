@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 using FS20_HudBar.Bar;
 using FS20_HudBar.Bar.Items;
-using static FS20_HudBar.CProfile;
+using static FS20_HudBar.Config.CProfile;
 
 namespace FS20_HudBar.Config
 {

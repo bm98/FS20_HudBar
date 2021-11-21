@@ -9,7 +9,7 @@ namespace FS20_HudBar
   /// <summary>
   /// Some general tools are located here..
   /// </summary>
-  class Tooling
+  class Conversions
   {
     private const float c_nmPerM = 5.399568e-4f;
     private const float c_degF = 9f/5f;
@@ -55,7 +55,7 @@ namespace FS20_HudBar
     /// </summary>
     /// <param name="number">The number</param>
     /// <param name="quant">Quantities to round to</param>
-    /// <returns></returns>
+    /// <returns>The rounded number</returns>
     public static float Round( float number, int quant )
     {
       return (float)( Math.Round( number / quant ) * quant );

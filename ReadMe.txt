@@ -9,10 +9,10 @@ FS20_HudBar.exe               The program
 FSimClientIF.dll            Generic FSim Client interface definition (updated)
 FSimIF.dll                  Generic FSim interface definition (updated)
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
-MetarLib.dll				A METAR access library (new V0.29)
-CoordLib.dll				A coord. handling library (new V0.29)
-FS20_AptLib.dll             MSFS2020 Airport DB (new V0.29)
-SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new V0.35)
+MetarLib.dll				A METAR access library (new since V0.29)
+CoordLib.dll				A coord. handling library (new since V0.29)
+FS20_AptLib.dll             MSFS2020 Airport DB (new since V0.29)
+SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new since V0.35)
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg
@@ -39,6 +39,7 @@ github@mail.burri-web.org
 Changelog:
 V 0.37-B31
 - Add item NAV1/2 Name incl. ILS LOC information 
+- Fix more insconsistencies found throughout
 
 V 0.37-B31
 - Add item Control Handle% readout for Throttle, Mix, Propeller

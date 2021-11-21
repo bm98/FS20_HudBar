@@ -36,7 +36,8 @@ namespace FS20_HudBar.Triggers
       else {
         m_actions.First( ).Value.Text = $"Holding Flightlevel {(int)( ds.ALT_setting_ft / 100 ) }";
       }
-      DetectStateChange( ds.ALT_hold );
+      // only if AP is On
+      DetectStateChange( ( ds.AP_mode == FSimClientIF.APMode.On ) && ds.ALT_hold );
       if ( ds.ALT_hold == false )
         m_lastTriggered = false; // RESET if no longer captured
     }

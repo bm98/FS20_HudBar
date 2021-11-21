@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using FS20_HudBar.Bar;
 using FS20_HudBar.Bar.Items;
 
-namespace FS20_HudBar
+namespace FS20_HudBar.Config
 {
   /// <summary>
   /// A settings profile

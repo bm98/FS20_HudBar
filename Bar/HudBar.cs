@@ -9,18 +9,13 @@ using System.Windows.Forms;
 using FSimClientIF.Flightplan;
 using SC = SimConnectClient;
 
-using CoordLib;
-using MetarLib;
-
-using static FS20_HudBar.GUI.GUI_Colors;
-using static FS20_HudBar.GUI.GUI_Colors.ColorType;
-
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.Bar.Items;
 
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
-using FS20_HudBar.GUI.Templates.Base;
+
+using FS20_HudBar.Config;
 
 //using FS20_HudBar.Bar.FltLib;
 
@@ -35,7 +30,7 @@ namespace FS20_HudBar.Bar
   {
     #region STATIC PART
 
-    // this part is maintaned only once for all HudBar Instances (there is only One at a given time)
+    // this part is maintaned only once for all HudBar Instances (there is only One Instance at any given time - else it breaks...)
 
     // FLT ATC Flightplan
     private static FlightPlan m_atcFlightPlan = new FlightPlan(); // empty one
@@ -54,67 +49,9 @@ namespace FS20_HudBar.Bar
     // Voice Output Package
     private static readonly HudVoice m_voicePack = new HudVoice(m_speech);
 
-    #endregion  // STATIC
 
-
-
-
-    /// <summary>
-    /// The currently used profile settings for the Bar
-    /// </summary>
-    public CProfile Profile => m_profile;
-    private CProfile m_profile = null;     // currently used profile
-
-    /// <summary>
-    /// Show Units if true
-    /// </summary>
-    public bool ShowUnits { get; private set; } = false;
-
-    /// <summary>
-    /// FLT File AutoSave and FlightPlan Handler Enabled
-    /// </summary>
-    public bool FltAutoSave { get; private set; } = false;
-
-    /// <summary>
-    /// The used VoiceName
-    /// </summary>
-    public string VoiceName { get; private set; } = "";
-
-    /// <summary>
-    /// Provide acces to the VoicePack
-    /// </summary>
-    public HudVoice VoicePack => m_voicePack;
-
-    /// <summary>
-    /// Returns the Show state of an item
-    /// </summary>
-    /// <param name="item">A Label item</param>
-    /// <returns>True if it is shown</returns>
-    public bool ShowItem( LItem item ) => m_profile.ShowItem( item );
-
-    /// <summary>
-    /// The Current FontSize to use
-    /// </summary>
-    public FontSize FontSize => m_profile.FontSize;
-
-    /// <summary>
-    /// Placement of the Bar
-    /// </summary>
-    public Placement Placement => m_profile.Placement;
-
-    /// <summary>
-    /// Display Kind of the Bar
-    /// </summary>
-    public Kind Kind => m_profile.Kind;
-
-    /// <summary>
-    /// The Tooltip control for the FP
-    /// </summary>
-    public X_ToolTip ToolTipFP => m_toolTipFP;
-    private X_ToolTip m_toolTipFP = new X_ToolTip();     // Our Custom Mono ToolTip for the Flight path
-
-    // Descriptive Configuration GUI label names to match the enum above
-    private Dictionary<LItem,string> m_cfgNames = new Dictionary<LItem, string>(){
+    // Descriptive Configuration GUI label names to match the BarItems LItem Enum (sequence does not matter)
+    private static Dictionary<LItem,string> m_cfgNames = new Dictionary<LItem, string>(){
       {LItem.MSFS, DI_MsFS.Desc },
       {LItem.SimRate, DI_SimRate.Desc },
       {LItem.ACFT_ID, DI_Acft_ID.Desc },
@@ -187,6 +124,66 @@ namespace FS20_HudBar.Bar
 
     };
 
+    #endregion  // STATIC
+
+
+
+
+    /// <summary>
+    /// The currently used profile settings for the Bar
+    /// </summary>
+    public CProfile Profile => m_profile;
+    private CProfile m_profile = null;     // currently used profile
+
+    /// <summary>
+    /// Show Units if true
+    /// </summary>
+    public bool ShowUnits { get; private set; } = false;
+
+    /// <summary>
+    /// FLT File AutoSave and FlightPlan Handler Enabled
+    /// </summary>
+    public bool FltAutoSave { get; private set; } = false;
+
+    /// <summary>
+    /// The used VoiceName
+    /// </summary>
+    public string VoiceName { get; private set; } = "";
+
+    /// <summary>
+    /// Provide acces to the VoicePack
+    /// </summary>
+    public HudVoice VoicePack => m_voicePack;
+
+    /// <summary>
+    /// Returns the Show state of an item
+    /// </summary>
+    /// <param name="item">A Label item</param>
+    /// <returns>True if it is shown</returns>
+    public bool ShowItem( LItem item ) => m_profile.ShowItem( item );
+
+    /// <summary>
+    /// The Current FontSize to use
+    /// </summary>
+    public FontSize FontSize => m_profile.FontSize;
+
+    /// <summary>
+    /// Placement of the Bar
+    /// </summary>
+    public Placement Placement => m_profile.Placement;
+
+    /// <summary>
+    /// Display Kind of the Bar
+    /// </summary>
+    public Kind Kind => m_profile.Kind;
+
+    /// <summary>
+    /// The Tooltip control for the FP
+    /// </summary>
+    public X_ToolTip ToolTipFP => m_toolTipFP;
+    private X_ToolTip m_toolTipFP = new X_ToolTip();     // Our Custom Mono ToolTip for the Flight path
+
+
     // maintain collections of the created Controls to do the processing
     // One collection contains the actionable interface
     // The second collection the WinForm Control itself (to act on the Control interface)
@@ -242,13 +239,15 @@ namespace FS20_HudBar.Bar
       value2Proto.Font = FONTS.Value2Font;
       signProto.Font = FONTS.SignFont;
 
-      // reset all dictionaries
+      // reset all Catalogs before creating this Instance
       m_valueItems.Clear( );
       m_dispItems.Clear( );
 
       // The pattern below repeats, create the display group and add it to the group list
       // All visual handling is done in the respective Class Implementation
       // Data Update is triggered by subscribing with the SimUpdate from the created object
+
+      // Add all Display Items with prepared prototype labels (sequence does not matter)
 
       // Sim Status
       m_dispItems.AddDisp( new DI_MsFS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -425,7 +424,7 @@ namespace FS20_HudBar.Bar
     #region Update Content and Settings
 
     /// <summary>
-    /// Update from values from Sim 
+    /// Update from values from Sim which are not part of the Item content update 
     /// </summary>
     public void UpdateGUI( string dataRefName )
     {
@@ -459,7 +458,7 @@ namespace FS20_HudBar.Bar
           this.ValueControl( VItem.GPS_PWYP ).Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
 
           tt = m_atcFlightPlan.WaypointByName( WPTracker.NextWP ).PrettyDetailed;
-          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_NWYP ),  tt );
+          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_NWYP ), tt );
           this.ValueControl( VItem.GPS_NWYP ).Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
 
           tt = m_atcFlightPlan.Pretty;

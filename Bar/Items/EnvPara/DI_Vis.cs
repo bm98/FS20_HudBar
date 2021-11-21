@@ -52,7 +52,7 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( )
     {
       if ( this.Visible ) {
-        _value1.Value = Tooling.NmFromM( SC.SimConnectClient.Instance.AircraftModule.Visibility_m );
+        _value1.Value = Conversions.NmFromM( SC.SimConnectClient.Instance.AircraftModule.Visibility_m );
       }
     }
 

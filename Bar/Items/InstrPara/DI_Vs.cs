@@ -51,7 +51,7 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( )
     {
       if ( this.Visible ) {
-        _value1.Value = Tooling.Round( SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin, 20 ); // steps 20
+        _value1.Value = Conversions.Round( SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin, 20 ); // steps 20
       }
     }
 
