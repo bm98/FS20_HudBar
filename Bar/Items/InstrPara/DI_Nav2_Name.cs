@@ -49,7 +49,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         this.Label.Text = SC.SimConnectClient.Instance.NavModule.Nav2_hasLOC ? "LOC 2" : "NAV 2";

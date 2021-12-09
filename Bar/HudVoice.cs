@@ -90,14 +90,14 @@ namespace FS20_HudBar.Bar
     public void UpdateHudVoice( string dataRefName )
     {
       // Update all voice out items
-      v_parkbrake.UpdateState( SC.SimConnectClient.Instance.AircraftModule );
-      v_gear.UpdateState( SC.SimConnectClient.Instance.AircraftModule );
-      v_flaps.UpdateState( SC.SimConnectClient.Instance.AircraftModule );
-      v_airTemp.UpdateState( SC.SimConnectClient.Instance.AircraftModule );
+      v_parkbrake.UpdateState( SC.SimConnectClient.Instance.HudBarModule );
+      v_gear.UpdateState( SC.SimConnectClient.Instance.HudBarModule );
+      v_flaps.UpdateState( SC.SimConnectClient.Instance.HudBarModule );
+      v_airTemp.UpdateState( SC.SimConnectClient.Instance.HudBarModule );
       v_warnFuel.UpdateState( null );
 
       // In Air Only callouts
-      if ( !SC.SimConnectClient.Instance.AircraftModule.Sim_OnGround ) {
+      if ( !SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) {
         v_waypointETE.UpdateState( SC.SimConnectClient.Instance.GpsModule );
         v_glideslope.UpdateState( SC.SimConnectClient.Instance.AP_G1000Module );
         v_apAltHold.UpdateState( SC.SimConnectClient.Instance.AP_G1000Module );

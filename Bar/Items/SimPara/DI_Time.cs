@@ -42,16 +42,16 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_TimeHHMMSS( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.AircraftModule.SimTime_loc_sec;
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.SimTime_loc_sec;
       }
     }
 

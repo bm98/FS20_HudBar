@@ -89,7 +89,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.EngineModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     // Calibrate the Load% per Engine 
@@ -97,30 +97,30 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
-      int nEng = SC.SimConnectClient.Instance.EngineModule.NumEngines;
+      int nEng = SC.SimConnectClient.Instance.HudBarModule.NumEngines;
       if ( nEng > 0 )
-        CalEngine( 1, SC.SimConnectClient.Instance.EngineModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.EngineModule.Engine1_rpm );
+        CalEngine( 1, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
       if ( nEng > 1 )
-        CalEngine( 2, SC.SimConnectClient.Instance.EngineModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.EngineModule.Engine1_rpm );
+        CalEngine( 2, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
       if ( nEng > 2 )
-        CalEngine( 3, SC.SimConnectClient.Instance.EngineModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.EngineModule.Engine1_rpm );
+        CalEngine( 3, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
       if ( nEng > 3 )
-        CalEngine( 4, SC.SimConnectClient.Instance.EngineModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.EngineModule.Engine1_rpm );
+        CalEngine( 4, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
       s_calibrated = true;
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
 
       if ( this.Visible ) {
         // detect a new aircraft and derive the MaxHP if possible
-        if ( SC.SimConnectClient.Instance.AircraftModule.AcftConfigFile.GetHashCode( ) != m_acftTitleHash ) {
+        if ( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile.GetHashCode( ) != m_acftTitleHash ) {
           // acft title has changed
-          m_acftTitleHash = SC.SimConnectClient.Instance.AircraftModule.AcftConfigFile.GetHashCode( );
-          var acft = SC.MSFS.MsAcftTitles.AircraftFromTitle(SC.SimConnectClient.Instance.AircraftModule.AcftConfigFile);
+          m_acftTitleHash = SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile.GetHashCode( );
+          var acft = SC.MSFS.MsAcftTitles.AircraftFromTitle(SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile);
           if (acft!= SC.MSFS.MsAcftTitles.Acft.Unknown ) {
             // found in the SimConnectClient library
             var acdesc = SC.MSFS.MsAcftTitles.AircraftDesc(acft);
@@ -133,15 +133,15 @@ namespace FS20_HudBar.Bar.Items
           }
           else {
             s_calibrated = false;
-            Console.WriteLine( $"HudBar- Unknown Aircraft :{SC.SimConnectClient.Instance.AircraftModule.AcftConfigFile}" );
+            Console.WriteLine( $"HudBar- Unknown Aircraft :{SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile}" );
           }
         }
 
-        _value1.Value = Load_prct( 1, SC.SimConnectClient.Instance.EngineModule.Engine1_Torque_ft_lbs,
-                                      SC.SimConnectClient.Instance.EngineModule.Engine1_rpm );
-        _value2.Value = Load_prct( 2, SC.SimConnectClient.Instance.EngineModule.Engine1_Torque_ft_lbs,
-                                      SC.SimConnectClient.Instance.EngineModule.Engine1_rpm );
-        _value2.Visible = ( SC.SimConnectClient.Instance.EngineModule.NumEngines > 1 );
+        _value1.Value = Load_prct( 1, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs,
+                                      SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
+        _value2.Value = Load_prct( 2, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs,
+                                      SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
+        _value2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );
         this.ColorType.ItemBackColor = s_calibrated ? cActBG : cWarnBG; // change to live once established
       }
     }

@@ -42,16 +42,16 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_VSpeed( valueProto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = Conversions.Round( SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin, 20 ); // steps 20
+        _value1.Value = Conversions.Round( SC.SimConnectClient.Instance.HudBarModule.VS_ftPmin, 20 ); // steps 20
       }
     }
 

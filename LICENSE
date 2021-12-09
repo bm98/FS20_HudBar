@@ -20,17 +20,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+//---------------------------------------------------------
 
-
-Share Tech Mono Font: https://fonts.google.com/specimen/Share+Tech+Mono?category=Monospace#license
+Share Tech Mono Font: 
+https://fonts.google.com/specimen/Share+Tech+Mono?category=Monospace#license
 Designed by Carrois Apostrophe 
 License
 These fonts are licensed under the Open Font License.
 You can use them freely in your products & projects - print or digital, commercial or otherwise. However, you can't sell the fonts on their own.
 This isn't legal advice, please consider consulting a lawyer and see the full license for all details. 
 
+//---------------------------------------------------------
 
-CoordLibrary based on: https://github.com/chrisveness/geodesy
+CoordLibrary based on: 
+https://github.com/chrisveness/geodesy
 Translated to C# and partially modified by bm98ch (M.Burri)
 
 Original code license
@@ -55,4 +58,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+//---------------------------------------------------------
+
+RawInputLib supplied as DLL based on:
+https://www.codeproject.com/Articles/17123/Using-Raw-Input-from-C-to-handle-multiple-keyboard
+Emma Burrows, Steve Messer  9 Mar 2015
+LGPL3  https://opensource.org/licenses/lgpl-3.0.html
+Downloaded as rawinput_latest.zip - 106.4 KB (08-Dec-2021)
+
+//---------------------------------------------------------
+
 

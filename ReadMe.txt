@@ -1,5 +1,5 @@
-FS20_HudBar V 0.37 - Build 32 BETA
-(c) M. Burri - 21-Nov-2021
+FS20_HudBar V 0.38 - Build 33 BETA
+(c) M. Burri - 09-Dec-2021
 
 Contains files:
 
@@ -13,6 +13,7 @@ MetarLib.dll				A METAR access library (new since V0.29)
 CoordLib.dll				A coord. handling library (new since V0.29)
 FS20_AptLib.dll             MSFS2020 Airport DB (new since V0.29)
 SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new since V0.35)
+RawInputLib.dll             A librara to capture Keyboard keys (new since V0.38)
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg
@@ -37,9 +38,27 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
-V 0.37-B31
+V 0.38-B33
+- Add item Transponder (Code and Status)
+- Add item FPS (frames per second)
+- Add item ZULU (fictional UTC of the current Simulation)
+- Add item C-CLK (the computer local time)
+- Add item GForce current
+- Add item GForce min, max (resetable)
+- Add item Afterburner % for engine 1+2
+- Add item Spoilers / Speedbrakes (are the same SimVar)
+- Add item FuelTank Center in Gal and Lb
+- Add switching to Hide/Show the Bar (Right Ctrl + Numpad 0), must be enabled in Config
+- Add switching of Profiles (Right Ctrl + Numpad 1 .. 5), must be enabled in Config
+- Update AutoBackup can be selected from DISABLED (default), AutoBackup (5 Min), AutoBackup+ATC (30 sec)
+         Known issue: while saving an FLT file to capture the backup or the ATC flightplan the Sim may momentarily stutter
+- Fix Enroute Timer does not longer reset when opening Config
+- Fix Interaction issue with SimConnect and loading new flights (workaround another MSFS bug)
+- Update QuickGuide
+
+V 0.37-B32
 - Add item NAV1/2 Name incl. ILS LOC information 
-- Fix more insconsistencies found throughout
+- Fix more inconsistencies found throughout
 
 V 0.37-B31
 - Add item Control Handle% readout for Throttle, Mix, Propeller

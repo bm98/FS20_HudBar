@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,6 +84,14 @@ namespace FS20_HudBar.Config
     }
 
     // fill the list with items and check them from the Instance
+    private void PopulateASave( ComboBox cbx )
+    {
+      cbx.Items.Clear( );
+      cbx.Items.Add( "AutoBackup DISABLED" );
+      cbx.Items.Add( "AutoBackup (5 Min)" );
+      cbx.Items.Add( "AutoBackup + ATC" );
+    }
+
     private void PopulateVoiceCallouts( )
     {
       clbVoice.Items.Clear( );
@@ -178,8 +187,11 @@ namespace FS20_HudBar.Config
       if ( ProfilesRef?.Count < c_NumProfiles ) return;// sanity ..
 
       cbxUnits.Checked = HudBarRef.ShowUnits;
-      cbxFltSave.Checked = HudBarRef.FltAutoSave; // 20210821
+      cbxKeyboard.Checked = HudBarRef.KeyboardHook; // 20211208
+      //cbxFltSave.Checked = HudBarRef.FltAutoSave; // 20210821
 
+      PopulateASave( cbxASave ); //20211204
+      cbxASave.SelectedIndex = (int)HudBarRef.FltAutoSave;
       PopulateVoice( cbxVoice );// 20211006
       LoadVoice( cbxVoice );
       speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
@@ -209,6 +221,9 @@ namespace FS20_HudBar.Config
         }
       }
 
+#if DEBUG
+      btDumpConfigs.Visible = true; // way to dump the configuration
+#endif
       initDone = true;
     }
 
@@ -231,7 +246,8 @@ namespace FS20_HudBar.Config
       // update from edits
       // live update to HUD
       HudBarRef.SetShowUnits( cbxUnits.Checked );
-      HudBarRef.SetFltAutoSave( cbxFltSave.Checked );
+      HudBarRef.SetKeyboardHook( cbxKeyboard.Checked );
+      HudBarRef.SetFltAutoSave( (FSimClientIF.FlightPlanMode)cbxASave.SelectedIndex );
       HudBarRef.SetVoiceName( cbxVoice.SelectedItem.ToString( ) );
       int idx = 0;
       foreach ( var vt in HudBarRef.VoicePack.Triggers ) {
@@ -340,7 +356,7 @@ namespace FS20_HudBar.Config
       var tsi = (sender as ToolStripItem);
       object item = tsi.Owner;
       // backup the menu tree
-      while ( !(item is ContextMenuStrip ) ) {
+      while ( !( item is ContextMenuStrip ) ) {
         if ( item is ToolStripDropDownMenu )
           item = ( item as ToolStripDropDownMenu ).OwnerItem;
         else if ( item is ToolStripMenuItem )
@@ -362,6 +378,31 @@ namespace FS20_HudBar.Config
     }
 
     #endregion
+
+    // For Debug and Setup only
+    private void btDumpConfigs_Click( object sender, EventArgs e )
+    {
+      DumpProfiles( );
+    }
+
+    /// <summary>
+    /// Dump Profiles for embedding after adding items
+    /// </summary>
+    internal void DumpProfiles( )
+    {
+      using ( var sw = new StreamWriter( DefaultProfiles.DefaultProfileName ) ) {
+        sw.WriteLine( "# HEADER: 4 lines for each profile (Name, profile, order, flowbreak) All lines must be semicolon separated" );
+        for ( int p = 0; p < c_NumProfiles; p++ ) {
+          // 4 lines
+          sw.WriteLine( ProfilesRef[p].PName );
+          sw.WriteLine( ProfilesRef[p].ProfileString() );
+          sw.WriteLine( ProfilesRef[p].ItemPosString() );
+          sw.WriteLine( ProfilesRef[p].FlowBreakString() );
+        }
+      }
+    }
+
+
 
   }
 }

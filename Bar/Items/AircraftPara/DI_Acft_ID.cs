@@ -42,16 +42,16 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Text( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Text = SC.SimConnectClient.Instance.AircraftModule.AcftID;
+        _value1.Text = SC.SimConnectClient.Instance.HudBarModule.AcftID;
       }
     }
 

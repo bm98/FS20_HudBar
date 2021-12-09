@@ -53,7 +53,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );// use the Location tracer
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
     }
 
     private void _metar_MetarDataEvent( object sender, MetarLib.MetarTafDataEventArgs e )
@@ -65,8 +65,8 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         _metar.Clear( );
-        _metar.PostMETAR_Request( SC.SimConnectClient.Instance.AircraftModule.Lat,
-                                    SC.SimConnectClient.Instance.AircraftModule.Lon,
+        _metar.PostMETAR_Request( SC.SimConnectClient.Instance.HudBarModule.Lat,
+                                    SC.SimConnectClient.Instance.HudBarModule.Lon,
                                     SC.SimConnectClient.Instance.GpsModule.GTRK ); // from current pos along the current track
       }
     }
@@ -74,7 +74,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         // Location METAR

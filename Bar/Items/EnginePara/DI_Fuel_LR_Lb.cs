@@ -21,7 +21,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.Fuel_LR_lb;
+    public static readonly LItem LItem = LItem.FUEL_LR_lb;
     /// <summary>
     /// The GUI Name
     /// </summary>
@@ -38,26 +38,26 @@ namespace FS20_HudBar.Bar.Items
     public DI_Fuel_LR_Lb( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
       LabelID = LItem;
-      var item = VItem.Fuel_Left_lb;
+      var item = VItem.FUEL_L_lb;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Pounds( value2Proto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      item = VItem.Fuel_Right_lb;
+      item = VItem.FUEL_R_lb;
       _value2 = new V_Pounds( value2Proto, showUnits );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityLeft_lb;
-        _value2.Value = SC.SimConnectClient.Instance.AircraftModule.FuelQuantityRight_lb;
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_lb;
+        _value2.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_lb;
         // Color when there is a substantial unbalance
         if ( Calculator.HasFuelImbalance ) {
           _value1.ItemForeColor = cWarn;

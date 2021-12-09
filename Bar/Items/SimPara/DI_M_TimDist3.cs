@@ -41,6 +41,8 @@ namespace FS20_HudBar.Bar.Items
 
     public DI_M_TimDist3( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
+      TText = "Click to enable Meter 1\nClick twice within 2 sec. to switch it off";
+
       LabelID = LItem;
       var item = VItem.M_Elapsed3;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
@@ -53,7 +55,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
@@ -64,8 +66,8 @@ namespace FS20_HudBar.Bar.Items
           _cpMeter.Stop( );
         }
         else {
-          _cpMeter.Start( new LatLon( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon ),
-                      SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
+          _cpMeter.Start( new LatLon( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon ),
+                      SC.SimConnectClient.Instance.HudBarModule.SimTime_zulu_sec );
         }
       }
     }
@@ -73,11 +75,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        var latLon = new LatLon( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon );
-        _cpMeter.Lapse( latLon, SC.SimConnectClient.Instance.AircraftModule.SimTime_zulu_sec );
+        var latLon = new LatLon( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon );
+        _cpMeter.Lapse( latLon, SC.SimConnectClient.Instance.HudBarModule.SimTime_zulu_sec );
         _value1.Value = _cpMeter.Duration;
         _value2.Value = (float)_cpMeter.Distance;
         this.ColorType.ItemBackColor = _cpMeter.Started ? cLiveBG : cActBG;

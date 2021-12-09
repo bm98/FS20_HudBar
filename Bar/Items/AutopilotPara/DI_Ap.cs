@@ -35,6 +35,8 @@ namespace FS20_HudBar.Bar.Items
 
     public DI_Ap( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
+      TText = "Autopilot Master\nClick to toggle";
+
       LabelID = LItem;
       var item = VItem.AP;
       _label = new B_Text( item, value2Proto ) { Text = Short }; this.AddItem( _label );
@@ -52,7 +54,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.AP_mode == FSimClientIF.APMode.On ? cAP : cLabel;

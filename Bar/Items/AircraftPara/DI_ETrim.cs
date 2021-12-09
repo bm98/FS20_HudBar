@@ -21,7 +21,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.ETrim;
+    public static readonly LItem LItem = LItem.ETRIM;
     /// <summary>
     /// The GUI Name
     /// </summary>
@@ -36,34 +36,36 @@ namespace FS20_HudBar.Bar.Items
 
     public DI_ETrim( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
+      TText = "Elevator Trim value\nClick to reset to 0 %";
+
       LabelID = LItem;
       // Elevator (plain)
       // All ERA-Trim label get a button to activate the 0 Trim action
-      var item = VItem.ETrim;
+      var item = VItem.ETRIM;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Prct( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
       if ( SC.SimConnectClient.Instance.IsConnected ) {
-        SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct = 0; // Set 0
+        SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct = 0; // Set 0
       }
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       // SimRate
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct;
       }
     }
 

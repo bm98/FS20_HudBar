@@ -44,7 +44,7 @@ namespace FS20_HudBar
           // set profiles when no previous setting is available
           string p = (string)this.GetPreviousVersion( "Profile_1" );
           if ( p == null ) {
-            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Common);
+            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Profile_1);
             this.Profile_1_Name = dprofile.Name;
             this.Profile_1 = dprofile.Profile;
             this.FlowBreak_1 = dprofile.FlowBreak;
@@ -52,7 +52,7 @@ namespace FS20_HudBar
           }
           p = (string)this.GetPreviousVersion( "Profile_2" );
           if ( p == null ) {
-            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Common_ATC);
+            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Profile_2);
             this.Profile_2_Name = dprofile.Name;
             this.Profile_2 = dprofile.Profile;
             this.FlowBreak_2 = dprofile.FlowBreak;
@@ -60,7 +60,7 @@ namespace FS20_HudBar
           }
           p = (string)this.GetPreviousVersion( "Profile_3" );
           if ( p == null ) {
-            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.ExAutoPilot);
+            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Profile_3);
             this.Profile_3_Name = dprofile.Name;
             this.Profile_3 = dprofile.Profile;
             this.FlowBreak_3 = dprofile.FlowBreak;
@@ -68,7 +68,7 @@ namespace FS20_HudBar
           }
           p = (string)this.GetPreviousVersion( "Profile_4" );
           if ( p == null ) {
-            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Essentials);
+            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Profile_4);
             this.Profile_4_Name = dprofile.Name;
             this.Profile_4 = dprofile.Profile;
             this.FlowBreak_4 = dprofile.FlowBreak;
@@ -76,12 +76,22 @@ namespace FS20_HudBar
           }
           p = (string)this.GetPreviousVersion( "Profile_5" );
           if ( p == null ) {
-            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Profile_All);
+            var dprofile =  DefaultProfiles.GetDefaultProfile(DProfile.Profile_5);
             this.Profile_5_Name = dprofile.Name;
             this.Profile_5 = dprofile.Profile;
             this.FlowBreak_5 = dprofile.FlowBreak;
             this.Sequence_5 = dprofile.DispOrder;
           }
+          // update for the new AutoSave mode
+          try {
+            int i = (int)this.GetPreviousVersion("FltAutoSaveATC");
+          }
+          catch {
+            // no old value - try to derive from the Bool Switch if there is one
+            bool b = (bool)this.GetPreviousVersion("FltAutoSave"); // if this fails we use the built in default
+            this.FltAutoSaveATC = b ? 2 : 0; // ATC save or disabled
+          } 
+
         }
         catch { }
         this.FirstRun = false;
@@ -117,14 +127,14 @@ namespace FS20_HudBar
       set { this["ShowUnits"] = value; }
     }
 
-    // Obsolete - no longer used
     [UserScopedSetting( )]
     [DefaultSettingValue( "False" )]
-    public bool Opaque {
-      get { return (bool)this["Opaque"]; }
-      set { this["Opaque"] = value; }
+    public bool KeyboardHook {
+      get { return (bool)this["KeyboardHook"]; }
+      set { this["KeyboardHook"] = value; }
     }
 
+    // Obsolete - no longer used - replaced with FltAutoSaveATC
     [UserScopedSetting( )]
     [DefaultSettingValue( "False" )]
     public bool FltAutoSave {
@@ -132,12 +142,11 @@ namespace FS20_HudBar
       set { this["FltAutoSave"] = value; }
     }
 
-    // Obsolete - no longer used
     [UserScopedSetting( )]
-    [DefaultSettingValue( "10" )]
-    public int SplitDistance {
-      get { return (int)this["SplitDistance"]; }
-      set { this["SplitDistance"] = value; }
+    [DefaultSettingValue( "0" )] // ref enum FSimClientIF.FlightPlanMode  (0=Disabled, 1=AutoB, 2=AutoB+ATC)
+    public int FltAutoSaveATC {
+      get { return (int)this["FltAutoSaveATC"]; }
+      set { this["FltAutoSaveATC"] = value; }
     }
 
     [UserScopedSetting( )]

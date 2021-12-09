@@ -9,7 +9,7 @@ namespace FS20_HudBar
   /// <summary>
   /// Waypoint Tracker (static module)
   /// </summary>
-  class WPTracker
+  static class WPTracker
   {
     private static bool m_started = false;   // true if the flight has started
 

@@ -36,6 +36,8 @@ namespace FS20_HudBar.Bar.Items
 
     public DI_Ap_AprGs( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
+      TText = "Approach Mode\nClick to toggle";
+
       LabelID = LItem;
       var item = VItem.AP_APR; // Button Handler
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
@@ -59,7 +61,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.APR_hold ? cAP : cLabel;

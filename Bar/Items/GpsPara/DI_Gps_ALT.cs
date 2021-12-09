@@ -48,7 +48,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         _value1.Value = SC.SimConnectClient.Instance.GpsModule.WYP_alt;

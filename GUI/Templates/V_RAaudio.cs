@@ -49,7 +49,7 @@ namespace FS20_HudBar.GUI.Templates
         else {
           this.Text = UnitString( $"{value,7:##,##0} " ); // sign 5 digits, 1000 separator, add a blank to aling better
           // The RA callout should talk...
-          m_raCallout.UpdateState( SimConnectClient.SimConnectClient.Instance.AircraftModule );
+          m_raCallout.UpdateState( SimConnectClient.SimConnectClient.Instance.HudBarModule );
 
           //Say( (float)value );
         }

@@ -42,16 +42,16 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Speed( valueProto, showUnits ) { ItemForeColor = cGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt;
+        _value1.Value = SC.SimConnectClient.Instance.GpsModule.GS;
       }
     }
 

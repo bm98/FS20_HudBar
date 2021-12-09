@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>32</ApplicationRevision>
-    <ApplicationVersion>0.37.0.32</ApplicationVersion>
+    <ApplicationRevision>33</ApplicationRevision>
+    <ApplicationVersion>0.38.0.33</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -91,6 +91,9 @@
     </Reference>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <HintPath>..\..\Redist\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="RawInputLib">
+      <HintPath>..\..\Redist\RawInputLib.dll</HintPath>
     </Reference>
     <Reference Include="SimConnectClient">
       <HintPath>..\..\Redist\SimConnectClient.dll</HintPath>
@@ -166,6 +169,36 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\CtrlPara\DI_Thr_LEV.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_Spoilers.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Xpdr.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_CompTime.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_Fps.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_ZuluTime.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Fuel_C_Gal.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Fuel_C_Lb.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Gforce_MM.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Afterburner.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_GForce.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\InstrPara\DI_Nav1_Name.cs">
@@ -297,11 +330,6 @@
     <Compile Include="Bar\Items\EnginePara\DI_FFlow_PPH.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\FltLib\FlightPlan.cs" />
-    <Compile Include="Bar\FltLib\FltReader.cs" />
-    <Compile Include="Bar\FltLib\FS20FltFile.cs" />
-    <Compile Include="Bar\FltLib\Tooling.cs" />
-    <Compile Include="Bar\FltLib\Waypoint.cs" />
     <Compile Include="Bar\HudVoice.cs" />
     <Compile Include="Bar\Items\BarItems.cs" />
     <Compile Include="Bar\Items\AircraftPara\DI_Acft_ID.cs">
@@ -416,6 +444,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Templates\Base\ToolTip_Base.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\V_Fps.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\V_GForce.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Templates\B_Text.cs">
@@ -561,6 +595,7 @@
     <Compile Include="Triggers\Base\EventProcFloat.cs" />
     <Compile Include="Triggers\Base\EventProcInteger.cs" />
     <Compile Include="Triggers\Base\ITriggers.cs" />
+    <Compile Include="Triggers\Base\TSmoother.cs" />
     <Compile Include="Triggers\Base\TriggerBand.cs" />
     <Compile Include="Triggers\Base\TriggerBase.cs" />
     <Compile Include="Triggers\Base\TriggerBinary.cs" />
@@ -575,6 +610,10 @@
     <Compile Include="Triggers\T_RAcallout.cs" />
     <Compile Include="Triggers\T_WarnFuel.cs" />
     <Compile Include="Triggers\T_WaypointETE.cs" />
+    <Compile Include="Win\KeyboardHookController.cs" />
+    <Compile Include="Win\KeyboardHookItem.cs" />
+    <Compile Include="Win\KeyboardHookItemCat.cs" />
+    <Compile Include="Win\WinApi_InputConst.cs" />
     <Compile Include="WPTracker.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

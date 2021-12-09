@@ -42,17 +42,17 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Alt( valueProto, showUnits ) { ItemForeColor = cRA };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        if ( SC.SimConnectClient.Instance.AircraftModule.AltAoG_ft <= 1500 ) {
-          _value1.Value = SC.SimConnectClient.Instance.AircraftModule.AltAoG_ft;
+        if ( SC.SimConnectClient.Instance.HudBarModule.AltAoG_ft <= 1500 ) {
+          _value1.Value = SC.SimConnectClient.Instance.HudBarModule.AltAoG_ft;
         }
         else {
           _value1.Text = " .....";

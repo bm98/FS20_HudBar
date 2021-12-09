@@ -35,7 +35,11 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:##0.0} " );  // positive only 3.1 digits, add a blank to aling better
+          if ( value > 1000 )
+            this.Text = UnitString( $"{value,5:###0} " );  // positive only 4 digits, add a blank to aling better
+          else
+            this.Text = UnitString( $"{value,5:##0.0} " );  // positive only 3.1 digits, add a blank to aling better
+
         }
       }
     }

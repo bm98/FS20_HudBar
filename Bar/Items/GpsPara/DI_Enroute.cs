@@ -37,6 +37,8 @@ namespace FS20_HudBar.Bar.Items
 
     public DI_Enroute( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
+      TText = "Time since last Waypoint - Time since restart\nClick to restart the Enroute timers";
+
       LabelID = LItem;
       var item = VItem.ENR_WP;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
@@ -49,7 +51,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
       SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
     }
 
@@ -61,7 +63,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       // Maintain the Waypoint Tracker here to support the GPS Flightplan 
       if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
@@ -69,14 +71,14 @@ namespace FS20_HudBar.Bar.Items
         WPTracker.Track(
           SC.SimConnectClient.Instance.GpsModule.WYP_prev,
           SC.SimConnectClient.Instance.GpsModule.WYP_next,
-          SC.SimConnectClient.Instance.AircraftModule.SimTime_loc_sec,
-          SC.SimConnectClient.Instance.AircraftModule.Sim_OnGround
+          SC.SimConnectClient.Instance.HudBarModule.SimTime_loc_sec,
+          SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround
         );
         // Update Estimate Calculation with Acf data
         Calculator.UpdateValues(
-          SC.SimConnectClient.Instance.AircraftModule.Groundspeed_kt,
-          SC.SimConnectClient.Instance.AircraftModule.AltMsl_ft,
-          SC.SimConnectClient.Instance.AircraftModule.VS_ftPmin
+          SC.SimConnectClient.Instance.HudBarModule.Groundspeed_kt,
+          SC.SimConnectClient.Instance.HudBarModule.AltMsl_ft,
+          SC.SimConnectClient.Instance.HudBarModule.VS_ftPmin
         );
       }
 

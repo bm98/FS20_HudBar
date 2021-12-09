@@ -21,24 +21,28 @@ namespace FS20_HudBar.Triggers
     // the OAT we start processing (not above)
     private const float c_detectionOAT = 5f;
 
+    private TSmoother _smooth = new TSmoother();
+
     /// <summary>
     /// Update the internal state from the datasource
     /// </summary>
     /// <param name="dataSource">An IAircraft object from the FSim library</param>
     protected override void UpdateStateLow( object dataSource )
     {
-      if ( !( dataSource is IAircraft ) ) throw new ArgumentException( "Needs an IAircraft argument" ); // Program ERROR
+      if ( !( dataSource is IHudBar ) ) throw new ArgumentException( "Needs an IHudBar argument" ); // Program ERROR
 
-      var ds = (dataSource as IAircraft);
-      if ( ds.OutsideTemperature_degC > c_detectionOAT ) {
+      var ds = (dataSource as IHudBar);
+      _smooth.Add( ds.OutsideTemperature_degC ); // smoothen
+
+      if ( _smooth.GetFloat > c_detectionOAT ) {
         // when OAT is above 5 retrigger the alert detection
         m_lastTriggered = c_detectionOAT;
       }
       else {
         // in callout range
-        if ( ds.OutsideTemperature_degC < m_lastTriggered ) {
+        if ( _smooth.GetFloat < m_lastTriggered ) {
           // only if below last callout
-          DetectStateChange( ds.OutsideTemperature_degC );
+          DetectStateChange( _smooth.GetFloat );
         }
       }
 

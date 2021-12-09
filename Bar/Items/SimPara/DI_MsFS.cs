@@ -35,6 +35,8 @@ namespace FS20_HudBar.Bar.Items
 
     public DI_MsFS( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
+      TText = "Click to change the text appearance\nSteps through Bright, Dim, Dark ";
+
       LabelID = LItem;
       var item = VItem.Ad;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );

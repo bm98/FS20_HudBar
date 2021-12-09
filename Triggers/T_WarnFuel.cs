@@ -11,13 +11,17 @@ namespace FS20_HudBar.Triggers
 {
   class T_WarnFuel : TriggerBinary
   {
+
+    private TSmoother _smooth = new TSmoother();
+
     /// <summary>
     /// Update the internal state from the datasource
     /// </summary>
     /// <param name="dataSource">not used</param>
     protected override void UpdateStateLow( object dataSource )
     {
-      DetectStateChange( Calculator.FuelReachAlert );
+      _smooth.Add( Calculator.FuelReachAlert );
+      DetectStateChange( _smooth.GetBool );
     }
 
     // Implements the means to speak out the Gear State

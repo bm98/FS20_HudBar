@@ -37,6 +37,7 @@ namespace FS20_HudBar.Bar.Items
 
     public DI_SimRate( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
+      TText = "The Sim Rate\nClick to reset to 1x";
       LabelID = LItem;
       var item = VItem.SimRate;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
@@ -45,7 +46,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
@@ -55,8 +56,8 @@ namespace FS20_HudBar.Bar.Items
         var steps = Calculator.SimRateStepsToNormal(); // returns the needed steps in either direction
         while ( steps != 0 ) {
           CmdMode dir = (steps>0)? CmdMode.Inc : CmdMode.Dec;
-          steps += ( steps > 0 ) ?  -1 : 1;
-          SC.SimConnectClient.Instance.AircraftModule.SimRate_setting( dir );
+          steps += ( steps > 0 ) ? -1 : 1;
+          SC.SimConnectClient.Instance.HudBarModule.SimRate_setting( dir );
         }
       }
     }
@@ -64,12 +65,12 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.AircraftModule.SimRate_rate;
-        _value1.ItemForeColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? cInverse : cInfo;
-        _value1.ItemBackColor = ( SC.SimConnectClient.Instance.AircraftModule.SimRate_rate != 1.0f ) ? cSRATE : cBG;
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.SimRate_rate;
+        _value1.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.SimRate_rate != 1.0f ) ? cInverse : cInfo;
+        _value1.ItemBackColor = ( SC.SimConnectClient.Instance.HudBarModule.SimRate_rate != 1.0f ) ? cSRATE : cBG;
       }
     }
 

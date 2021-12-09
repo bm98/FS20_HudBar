@@ -53,13 +53,13 @@ namespace FS20_HudBar.Bar.Items
       _value3 = new V_ICAO( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );// use the Location tracer
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         // if we have an ATC FlightPlan show ATC assignments

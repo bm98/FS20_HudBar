@@ -21,7 +21,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.Gear;
+    public static readonly LItem LItem = LItem.GEAR;
     /// <summary>
     /// The GUI Name
     /// </summary>
@@ -37,24 +37,27 @@ namespace FS20_HudBar.Bar.Items
     public DI_Gear( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
-      var item = VItem.Gear;
+      var item = VItem.GEAR;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Steps( signProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        if ( SC.SimConnectClient.Instance.AircraftModule.IsGearRetractable ) {
+        if ( SC.SimConnectClient.Instance.HudBarModule.IsGearRetractable ) {
           _value1.Step =
-              SC.SimConnectClient.Instance.AircraftModule.GearPosition == FSimClientIF.GearPosition.Down ? Steps.Down :
-              SC.SimConnectClient.Instance.AircraftModule.GearPosition == FSimClientIF.GearPosition.Up ? Steps.Up : Steps.Unk;
+              ( SC.SimConnectClient.Instance.HudBarModule.GearPos == FSimClientIF.GearPosition.Down )
+              ? Steps.Down
+              : ( ( SC.SimConnectClient.Instance.HudBarModule.GearPos == FSimClientIF.GearPosition.Up )
+                  ? Steps.Up
+                  : Steps.Unk );
         }
         else {
           _value1.Step = Steps.Down;

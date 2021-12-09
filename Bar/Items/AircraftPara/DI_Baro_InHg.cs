@@ -36,6 +36,8 @@ namespace FS20_HudBar.Bar.Items
 
     public DI_Baro_InHg( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
+      TText = "Barometer reading\nClick to set to adjust to Sim";
+
       LabelID = LItem;
       var item = VItem.BARO_InHg;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
@@ -44,23 +46,23 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
       if ( SC.SimConnectClient.Instance.IsConnected ) {
-        SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting = true; // one shot trigger to sync Baro
+        SC.SimConnectClient.Instance.HudBarModule.AltimeterSetting = true; // one shot trigger to sync Baro
       }
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.AircraftModule.AltimeterSetting_inHg;
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.AltimeterSetting_inHg;
       }
     }
 

@@ -21,7 +21,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.Flaps;
+    public static readonly LItem LItem = LItem.FLAPS;
     /// <summary>
     /// The GUI Name
     /// </summary>
@@ -37,12 +37,12 @@ namespace FS20_HudBar.Bar.Items
     public DI_Flaps( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
-      var item = VItem.Flaps;
+      var item = VItem.FLAPS;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Steps( signProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -52,20 +52,33 @@ namespace FS20_HudBar.Bar.Items
       get {
         if ( !SC.SimConnectClient.Instance.IsConnected ) return Steps.Up; // cannot calculate anything
 
-        if ( SC.SimConnectClient.Instance.AircraftModule.Flaps == FSimClientIF.CmdMode.Up ) {
+        if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 0 ) {
           return Steps.Up;
         }
-        else if ( SC.SimConnectClient.Instance.AircraftModule.Flaps == FSimClientIF.CmdMode.Down ) {
+        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == SC.SimConnectClient.Instance.HudBarModule.NumberOfFlapsPositions ) {
           return Steps.Down;
         }
-        else if ( SC.SimConnectClient.Instance.AircraftModule.Flaps == FSimClientIF.CmdMode.Pos1 ) {
+
+        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 1 ) {
           return Steps.P1;
         }
-        else if ( SC.SimConnectClient.Instance.AircraftModule.Flaps == FSimClientIF.CmdMode.Pos2 ) {
+        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 2 ) {
           return Steps.P2;
         }
-        else if ( SC.SimConnectClient.Instance.AircraftModule.Flaps == FSimClientIF.CmdMode.Pos3 ) {
+        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 3 ) {
           return Steps.P3;
+        }
+        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 4 ) {
+          return Steps.P4;
+        }
+        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 5 ) {
+          return Steps.P5;
+        }
+        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 6 ) {
+          return Steps.P6;
+        }
+        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 7 ) {
+          return Steps.P7;
         }
         return Steps.Up;
       }
@@ -74,7 +87,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         _value1.Step = FlapsState;

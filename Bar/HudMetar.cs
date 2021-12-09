@@ -50,7 +50,7 @@ namespace FS20_HudBar.Bar
     /// <param name="metarDatas"></param>
     public void Update( MetarTafDataList metarDatas )
     {
-      var closest = metarDatas.GetClosest( SC.SimConnectClient.Instance.AircraftModule.Lat, SC.SimConnectClient.Instance.AircraftModule.Lon );
+      var closest = metarDatas.GetClosest( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon );
       if ( closest.Valid ) {
         MText = closest.Pretty;
         StationText = $"{closest.Data.Station.StationID}";

@@ -14,19 +14,19 @@ namespace FS20_HudBar.GUI
     /// <summary>
     /// Unknown
     /// </summary>
-    Unk = 0, 
+    Unk = 0,
     /// <summary>
     /// Up and OK (Gear, Flaps)
     /// </summary>
-    Up, 
+    Up,
     /// <summary>
     /// Down and OK (Gear, Flaps)
     /// </summary>
-    Down, 
+    Down,
     /// <summary>
     /// Positional Levels (Flaps)
     /// </summary>
-    P1,P2,P3,P4,P5, 
+    P1, P2, P3, P4, P5, P6, P7,
 
     /// <summary>
     /// On and OK - counter part is OffWarn
@@ -71,7 +71,7 @@ namespace FS20_HudBar.GUI
     /// <summary>
     /// Set the label text (Control provides this if not overridden)
     /// </summary>
-    string Text { get;  set; }
+    string Text { get; set; }
 
     /// <summary>
     /// Set true to show units

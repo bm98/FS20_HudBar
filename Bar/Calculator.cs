@@ -76,8 +76,8 @@ namespace FS20_HudBar.Bar
         if ( !SC.SimConnectClient.Instance.IsConnected ) return false; // cannot calculate anything
 
         var imbalanceGal
-          =  Math.Abs( SC.SimConnectClient.Instance.AircraftModule.FuelQuantityLeft_gal -SC.SimConnectClient.Instance.AircraftModule.FuelQuantityRight_gal);
-        if ( imbalanceGal > ( SC.SimConnectClient.Instance.AircraftModule.FuelCapacityTotal_gal * 0.15 ) ) {
+          =  Math.Abs( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal - SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal);
+        if ( imbalanceGal > ( SC.SimConnectClient.Instance.HudBarModule.FuelCapacityTotal_gal * 0.15 ) ) {
           //Imbalance > 15% Total Fuel
           return true;
         }
@@ -109,7 +109,7 @@ namespace FS20_HudBar.Bar
 
 
     // Fuel Flow
-    private static AvgModule m_avgFuelFlowModule = new AvgModule( 5 ); // use 10 samples to average
+    private static AvgModule m_avgFuelFlowModule = new AvgModule( 5 ); // use N samples to average
 
     /// <summary>
     /// Sample the total fuel flow in  gal/hour and feed the AvgModule
@@ -119,11 +119,11 @@ namespace FS20_HudBar.Bar
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return; // cannot calculate anything
 
-      var eModule = SC.SimConnectClient.Instance.EngineModule;
+      var eModule = SC.SimConnectClient.Instance.HudBarModule;
       float ff = eModule.Engine1_FuelFlow_galPh;
-      if ( eModule.NumEngines > 1 ) ff += SC.SimConnectClient.Instance.EngineModule.Engine2_FuelFlow_galPh;
-      if ( eModule.NumEngines > 2 ) ff += SC.SimConnectClient.Instance.EngineModule.Engine3_FuelFlow_galPh;
-      if ( eModule.NumEngines > 3 ) ff += SC.SimConnectClient.Instance.EngineModule.Engine4_FuelFlow_galPh;
+      if ( eModule.NumEngines > 1 ) ff += eModule.Engine2_FuelFlow_galPh;
+      if ( eModule.NumEngines > 2 ) ff += eModule.Engine3_FuelFlow_galPh;
+      if ( eModule.NumEngines > 3 ) ff += eModule.Engine4_FuelFlow_galPh;
 
       m_avgFuelFlowModule.Sample( ff );
     }
@@ -134,7 +134,7 @@ namespace FS20_HudBar.Bar
     /// <returns>Avg Fuel Flow [gal/h]</returns>
     public static float AvgFuelFlowTotal_galPh( )
     {
-      //return SC.SimConnectClient.Instance.AircraftModule.EstimatedCruiseFFlow_gph;
+      //return SC.SimConnectClient.Instance.HudBarModule.EstimatedCruiseFFlow_gph;
       return m_avgFuelFlowModule.Avg;
     }
 
@@ -146,7 +146,7 @@ namespace FS20_HudBar.Bar
     {
       if ( AvgFuelFlowTotal_galPh( ) <= 0 ) return float.NaN;
 
-      return ( SC.SimConnectClient.Instance.AircraftModule.FuelQuantityTotal_gal / m_avgFuelFlowModule.Avg ) * 3600f;
+      return ( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityTotal_gal / m_avgFuelFlowModule.Avg ) * 3600f;
     }
 
     #endregion
@@ -227,14 +227,14 @@ namespace FS20_HudBar.Bar
       get {
         if ( !SC.SimConnectClient.Instance.IsConnected ) return false; // cannot calculate anything
 
-        return SC.SimConnectClient.Instance.AircraftModule.OutsideTemperature_degC < 4;
+        return SC.SimConnectClient.Instance.HudBarModule.OutsideTemperature_degC < 4;
       }
     }
     #endregion
 
     #region NAV ID Evaluation
 
-    
+
     /// <summary>
     /// Returns the NAV1 ID for the tuned Station
     /// </summary>
@@ -279,7 +279,7 @@ namespace FS20_HudBar.Bar
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return 0; // cannot calculate anything
 
-      var r = SC.SimConnectClient.Instance.AircraftModule.SimRate_rate;
+      var r = SC.SimConnectClient.Instance.HudBarModule.SimRate_rate;
       int steps = 0;
       // (0.25, 0.5, 1, 2, 4, 8, ..) only a float may not represent the numbers exactly 
       // so we add some tolerance for the resolution here (shifting all to Integers then rounding would be a solution too... e.g. *8)

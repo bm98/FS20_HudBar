@@ -43,16 +43,16 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Dist( value2Proto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = Conversions.NmFromM( SC.SimConnectClient.Instance.AircraftModule.Visibility_m );
+        _value1.Value = Conversions.NmFromM( SC.SimConnectClient.Instance.HudBarModule.Visibility_m );
       }
     }
 

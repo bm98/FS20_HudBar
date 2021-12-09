@@ -53,24 +53,24 @@ namespace FS20_HudBar.Bar.Items
       _value3 = new V_Alt( value2Proto, showUnits );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );// use the Location tracer
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         // ATC Runway
-        if ( SC.SimConnectClient.Instance.AircraftModule.AtcRunwaySelected ) {
-          _value1.Value = SC.SimConnectClient.Instance.AircraftModule.AtcRunway_Distance_nm;
+        if ( SC.SimConnectClient.Instance.HudBarModule.AtcRunwaySelected ) {
+          _value1.Value = SC.SimConnectClient.Instance.HudBarModule.AtcRunway_Distance_nm;
 
-          float f = SC.SimConnectClient.Instance.AircraftModule.AtcRunway_Displacement_ft;
+          float f = SC.SimConnectClient.Instance.HudBarModule.AtcRunway_Displacement_ft;
           _value2.Value = f;
           _value2.ItemForeColor = ( Math.Abs( f ) <= 3 ) ? cOK : cInfo; // green if within +- 3ft
 
-          f = SC.SimConnectClient.Instance.AircraftModule.AtcRunway_HeightAbove_ft;
+          f = SC.SimConnectClient.Instance.HudBarModule.AtcRunway_HeightAbove_ft;
           _value3.Value = f;
           _value3.ItemForeColor = ( f <= 500 ) ? cRA : cInfo;  // RA yellow if below 500ft
         }

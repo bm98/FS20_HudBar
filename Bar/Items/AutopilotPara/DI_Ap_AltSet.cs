@@ -36,6 +36,8 @@ namespace FS20_HudBar.Bar.Items
 
     public DI_Ap_AltSet( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
+      TText = "Altitude Hold\nClick to toggle";
+
       LabelID = LItem;
       var item = VItem.AP_ALT; // Button Handler
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
@@ -59,7 +61,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold ? cAP : cLabel;

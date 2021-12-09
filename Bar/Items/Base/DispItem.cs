@@ -44,6 +44,11 @@ namespace FS20_HudBar.Bar.Items.Base
     /// Returns the Label of this group (first added control)
     /// </summary>
     public IColorType ColorType => (IColorType)m_label;
+    /// <summary>
+    /// ToolTip Text 
+    /// If set it will be attached to the Label Control of the DisplayItem
+    /// </summary>
+    public string TText = null;
 
     /// <summary>
     /// cTor: Create an item

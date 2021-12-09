@@ -17,8 +17,6 @@ using FS20_HudBar.Bar.Items;
 using FS20_HudBar.Bar;
 using FS20_HudBar.Config;
 
-using CoordLib;
-
 namespace FS20_HudBar
 {
   /// <summary>
@@ -47,9 +45,15 @@ namespace FS20_HudBar
     private frmGui m_frmGui;
     private FlowLayoutPanel flp;
 
+    // A HudBar standard ToolTip for the Button Helpers
+    private ToolTip_Base m_toolTip = new ToolTip_Base();
+
     // The profiles
     private List<CProfile> m_profiles = new List<CProfile>();
     private int m_selProfile = 0;
+
+    // Handles the RawInput from HID Keyboards
+    Win.KeyboardHookController _keyHook;
 
     //private SC.Input.InputHandler FSInput;  // Receive commands from FSim -  not yet used
     private readonly frmConfig CFG = new frmConfig( ); // Configuration Dialog
@@ -73,29 +77,67 @@ namespace FS20_HudBar
       return false;
     }
 
+    // synch the two forms for Size
     private void SynchGUISize( )
     {
-      // synch size
       m_frmGui.Size = this.ClientSize;
     }
+    // synch the two forms for Location
     private void SynchGUILocation( )
     {
-      // synch location
       m_frmGui.Location = this.PointToScreen( this.ClientRectangle.Location ); // in Windowed mode we need to get it from the client rect
     }
-
+    // synch the two forms for Size and Location
     private void SynchGUI( )
     {
       SynchGUISize( );
       SynchGUILocation( );
     }
-
+    // synch the two forms for Visible state
     private void SynchGUIVisible( bool visible )
     {
       this.Visible = visible;
       m_frmGui.Visible = visible;
     }
 
+    // Enable/Disable Keyboard interaction 
+    private void SetupKeyboardHook( bool enabled )
+    {
+      if ( enabled ) {
+        if ( _keyHook == null ) {
+          _keyHook = new Win.KeyboardHookController( Handle );
+        }
+        _keyHook.KeyHandling( false );
+
+        _keyHook.RemoveAllKeys( );
+
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD0, Win.KeyModifiers.RCtrl, "ShowHide", OnKey );
+
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD1, Win.KeyModifiers.RCtrl, "P1", OnKey );
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD2, Win.KeyModifiers.RCtrl, "P2", OnKey );
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD3, Win.KeyModifiers.RCtrl, "P3", OnKey );
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD4, Win.KeyModifiers.RCtrl, "P4", OnKey );
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD5, Win.KeyModifiers.RCtrl, "P5", OnKey );
+
+        _keyHook.KeyHandling( true );
+      }
+      else {
+        // disable - we cannot unhook the RawInput 
+        _keyHook?.KeyHandling( false );
+        _keyHook?.RemoveAllKeys( );
+      }
+    }
+
+    // Callback - handles the Keyboard Hooks
+    private void OnKey( string tag )
+    {
+      if ( tag == "ShowHide" ) SynchGUIVisible( !this.Visible );
+      else if ( tag == "P1" ) mP1_Click( null, new EventArgs( ) );
+      else if ( tag == "P2" ) mP2_Click( null, new EventArgs( ) );
+      else if ( tag == "P3" ) mP3_Click( null, new EventArgs( ) );
+      else if ( tag == "P4" ) mP4_Click( null, new EventArgs( ) );
+      else if ( tag == "P5" ) mP5_Click( null, new EventArgs( ) );
+    }
 
     /// <summary>
     /// Main Form Init
@@ -103,8 +145,6 @@ namespace FS20_HudBar
     public frmMain( )
     {
       InitializeComponent( );
-
-      this.Text = ( string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance ) + " HudBar - by bm98ch";
 
       // Load all from AppSettings
       AppSettings.Instance.Reload( );
@@ -146,6 +186,7 @@ namespace FS20_HudBar
 
       m_selProfile = AppSettings.Instance.SelProfile;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
+
       Colorset = ToColorSet( AppSettings.Instance.Appearance );
 
       // ShowUnits and Opacity are set via HUD in InitGUI
@@ -167,6 +208,7 @@ namespace FS20_HudBar
     }
 
 
+
     private void frmMain_Load( object sender, EventArgs e )
     {
       // prepare the GUI 
@@ -186,6 +228,7 @@ namespace FS20_HudBar
 
       // Get the controls
       InitGUI( );
+      WPTracker.Reset( );
 
       // attach a Callback for the SimClient
       SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
@@ -202,6 +245,7 @@ namespace FS20_HudBar
     private void frmMain_LocationChanged( object sender, EventArgs e )
     {
       if ( !m_initDone ) return; // bail out if in Init
+      if ( this.WindowState != FormWindowState.Normal ) return;   // can only handle the normal Window State here
       if ( !( HUD.Kind == GUI.Kind.Window || HUD.Kind == GUI.Kind.WindowBL ) ) return; // can only handle Window here
 
       HUD.Profile.UpdateLocation( this.Location );
@@ -264,7 +308,8 @@ namespace FS20_HudBar
       if ( CFG.ShowDialog( this ) == DialogResult.OK ) {
         // Save all configuration properties
         AppSettings.Instance.ShowUnits = HUD.ShowUnits;
-        AppSettings.Instance.FltAutoSave = HUD.FltAutoSave;
+        AppSettings.Instance.KeyboardHook = HUD.KeyboardHook;
+        AppSettings.Instance.FltAutoSaveATC = (int)HUD.FltAutoSave;
         AppSettings.Instance.VoiceName = HUD.VoiceName;
 
         AppSettings.Instance.SelProfile = m_selProfile;
@@ -493,15 +538,15 @@ namespace FS20_HudBar
     {
       timer1.Enabled = false; // stop asynch events
       m_initDone = false; // stop updating values while reconfiguring
-      //this.Visible = false; 
       SynchGUIVisible( false ); // hide, else we see all kind of shaping
 
       // reread after config change
-      SC.SimConnectClient.Instance.FlightPlanModule.Enabled = AppSettings.Instance.FltAutoSave;
+      SetupKeyboardHook( AppSettings.Instance.KeyboardHook );
+
+      SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode = (FSimClientIF.FlightPlanMode)AppSettings.Instance.FltAutoSaveATC;
+      SC.SimConnectClient.Instance.FlightPlanModule.Enabled = ( SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode != FSimClientIF.FlightPlanMode.Disabled );
 
       AirportMgr.Reset( );
-      WPTracker.Reset( );
-
 
       // Update profile selection items
       mP1.Text = m_profiles[0].PName;
@@ -510,10 +555,12 @@ namespace FS20_HudBar
       mP4.Text = m_profiles[3].PName;
       mP5.Text = m_profiles[4].PName;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
+      this.Text = ( string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance ) + $" HudBar: {m_profiles[m_selProfile].PName}          - by bm98ch";
 
       // start from scratch
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
-                          AppSettings.Instance.ShowUnits, AppSettings.Instance.FltAutoSave,
+                          AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook,
+                          AppSettings.Instance.FltAutoSaveATC,
                           m_profiles[m_selProfile], AppSettings.Instance.VoiceName );
 
       // prepare to create the content as bar or tile (may be switch to Window later if needed)
@@ -575,7 +622,11 @@ namespace FS20_HudBar
           if ( di.Controls.Count > 0 ) {
             // add it to the Main FlowPanel when we have to show something
             flp.Controls.Add( di );
-
+            /*
+            if ( !string.IsNullOrEmpty( di.TText ) ) {
+              m_toolTip.SetToolTip( di.Label, di.TText );
+            }
+            */
             // the flowbreak causes the tagged item to be on the same line and then to break for the next one
             // Not so intuitive for the user - so we mark the one that goes on the next line but need to attach the FB then to the prev one
             if ( HUD.Profile.BreakItem( key ) && prevDi != null ) {
@@ -736,7 +787,7 @@ namespace FS20_HudBar
         if ( SC.SimConnectClient.Instance.Connect( ) ) {
           HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
           // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
-          _ = SC.SimConnectClient.Instance.AircraftModule.AcftConfigFile;
+          _ = SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile;
           // Receive commands from FSim -  not yet used
           /*
           FSInput = SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_01 ); // use first input
@@ -765,7 +816,7 @@ namespace FS20_HudBar
         // Happens when HudBar is running when the Sim is starting only.
         // Sometimes the Connection is made but was not hooking up to the event handling
         // Disconnect and try to reconnect 
-        if ( m_awaitingEvent || SC.SimConnectClient.Instance.AircraftModule.SimRate_rate <= 0 ) {
+        if ( m_awaitingEvent || SC.SimConnectClient.Instance.HudBarModule.SimRate_rate <= 0 ) {
           // No events seen so far
           if ( m_scGracePeriod <= 0 ) {
             // grace period is expired !

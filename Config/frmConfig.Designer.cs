@@ -77,12 +77,14 @@ namespace FS20_HudBar.Config
       this.cbxTrans3 = new System.Windows.Forms.ComboBox();
       this.cbxTrans4 = new System.Windows.Forms.ComboBox();
       this.cbxTrans5 = new System.Windows.Forms.ComboBox();
-      this.cbxFltSave = new System.Windows.Forms.CheckBox();
       this.cbxVoice = new System.Windows.Forms.ComboBox();
       this.textBox1 = new System.Windows.Forms.TextBox();
       this.btCancel = new System.Windows.Forms.Button();
       this.btAccept = new System.Windows.Forms.Button();
       this.clbVoice = new System.Windows.Forms.CheckedListBox();
+      this.cbxASave = new System.Windows.Forms.ComboBox();
+      this.btDumpConfigs = new System.Windows.Forms.Button();
+      this.cbxKeyboard = new System.Windows.Forms.CheckBox();
       this.tlp.SuspendLayout();
       this.flp1.SuspendLayout();
       this.flp2.SuspendLayout();
@@ -137,12 +139,14 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.cbxTrans3, 2, 6);
       this.tlp.Controls.Add(this.cbxTrans4, 3, 6);
       this.tlp.Controls.Add(this.cbxTrans5, 4, 6);
-      this.tlp.Controls.Add(this.cbxFltSave, 2, 7);
       this.tlp.Controls.Add(this.cbxVoice, 1, 7);
       this.tlp.Controls.Add(this.textBox1, 5, 0);
       this.tlp.Controls.Add(this.btCancel, 5, 7);
       this.tlp.Controls.Add(this.btAccept, 4, 7);
       this.tlp.Controls.Add(this.clbVoice, 5, 1);
+      this.tlp.Controls.Add(this.cbxASave, 2, 7);
+      this.tlp.Controls.Add(this.btDumpConfigs, 5, 4);
+      this.tlp.Controls.Add(this.cbxKeyboard, 5, 2);
       this.tlp.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tlp.Location = new System.Drawing.Point(0, 0);
       this.tlp.Name = "tlp";
@@ -695,17 +699,6 @@ namespace FS20_HudBar.Config
       this.cbxTrans5.Size = new System.Drawing.Size(164, 23);
       this.cbxTrans5.TabIndex = 23;
       // 
-      // cbxFltSave
-      // 
-      this.cbxFltSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.cbxFltSave.AutoSize = true;
-      this.cbxFltSave.Location = new System.Drawing.Point(343, 803);
-      this.cbxFltSave.Name = "cbxFltSave";
-      this.cbxFltSave.Size = new System.Drawing.Size(129, 19);
-      this.cbxFltSave.TabIndex = 24;
-      this.cbxFltSave.Text = "Allow FLT AutoSave";
-      this.cbxFltSave.UseVisualStyleBackColor = true;
-      // 
       // cbxVoice
       // 
       this.cbxVoice.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -713,7 +706,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxVoice.Location = new System.Drawing.Point(173, 801);
+      this.cbxVoice.Location = new System.Drawing.Point(173, 799);
       this.cbxVoice.Name = "cbxVoice";
       this.cbxVoice.Size = new System.Drawing.Size(164, 23);
       this.cbxVoice.TabIndex = 25;
@@ -769,6 +762,42 @@ namespace FS20_HudBar.Config
       this.clbVoice.Size = new System.Drawing.Size(147, 599);
       this.clbVoice.TabIndex = 27;
       this.clbVoice.SelectedIndexChanged += new System.EventHandler(this.clbVoice_SelectedIndexChanged);
+      // 
+      // cbxASave
+      // 
+      this.cbxASave.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.cbxASave.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxASave.Location = new System.Drawing.Point(343, 799);
+      this.cbxASave.Name = "cbxASave";
+      this.cbxASave.Size = new System.Drawing.Size(164, 23);
+      this.cbxASave.TabIndex = 29;
+      // 
+      // btDumpConfigs
+      // 
+      this.btDumpConfigs.Dock = System.Windows.Forms.DockStyle.Right;
+      this.btDumpConfigs.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btDumpConfigs.Location = new System.Drawing.Point(867, 698);
+      this.btDumpConfigs.Name = "btDumpConfigs";
+      this.btDumpConfigs.Size = new System.Drawing.Size(133, 24);
+      this.btDumpConfigs.TabIndex = 28;
+      this.btDumpConfigs.Text = "Dump Def.Profiles";
+      this.btDumpConfigs.UseVisualStyleBackColor = true;
+      this.btDumpConfigs.Visible = false;
+      this.btDumpConfigs.Click += new System.EventHandler(this.btDumpConfigs_Click);
+      // 
+      // cbxKeyboard
+      // 
+      this.cbxKeyboard.AutoSize = true;
+      this.cbxKeyboard.Dock = System.Windows.Forms.DockStyle.Right;
+      this.cbxKeyboard.Location = new System.Drawing.Point(864, 638);
+      this.cbxKeyboard.Name = "cbxKeyboard";
+      this.cbxKeyboard.Size = new System.Drawing.Size(136, 24);
+      this.cbxKeyboard.TabIndex = 30;
+      this.cbxKeyboard.Text = "Use Keyboard Switch";
+      this.cbxKeyboard.UseVisualStyleBackColor = true;
       // 
       // frmConfig
       // 
@@ -848,7 +877,6 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.ComboBox cbxCondP3;
     private System.Windows.Forms.ComboBox cbxCondP4;
     private System.Windows.Forms.ComboBox cbxCondP5;
-    private System.Windows.Forms.CheckBox cbxFltSave;
     private System.Windows.Forms.ComboBox cbxTrans1;
     private System.Windows.Forms.ComboBox cbxTrans2;
     private System.Windows.Forms.ComboBox cbxTrans3;
@@ -862,5 +890,8 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.ToolStripMenuItem asdToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem asdasdToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem asdasToolStripMenuItem;
+    private System.Windows.Forms.Button btDumpConfigs;
+    private System.Windows.Forms.ComboBox cbxASave;
+    private System.Windows.Forms.CheckBox cbxKeyboard;
   }
 }

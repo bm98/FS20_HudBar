@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SC = SimConnectClient;
-using FS20_HudBar.Bar.FltLib;
+using FSimClientIF.Flightplan;
 
 namespace FS20_HudBar.Bar
 {
@@ -16,11 +16,12 @@ namespace FS20_HudBar.Bar
   /// </summary>
   internal static class FltMgr
   {
-    private static FS20FltFile m_fltFile = null;
+//    private static FS20FltFile m_fltFile = null;
     private static int m_currentHash = 0;
 
     private static object m_lock = new object();
 
+    private static FlightPlan m_FP; // The managed one
     private static FlightPlan m_dummyFP = new FlightPlan(); // an empty one to return when needed
 
     /// <summary>
@@ -39,8 +40,8 @@ namespace FS20_HudBar.Bar
     public static FlightPlan FlightPlan {
       get {
         lock ( m_lock ) {
-          if ( m_fltFile != null )
-            return m_fltFile.FlightPlan;
+          if ( m_FP != null )
+            return m_FP;
           else
             return m_dummyFP; // the empty one
         }
@@ -85,16 +86,13 @@ namespace FS20_HudBar.Bar
     private static void Instance_FltSave( object sender, SC.State.FltSaveEventArgs e )
     {
       lock ( m_lock ) {
-        // MSFS BUG sends path with  xy\\xy 
-        var fName = e.Filename.Replace (@"\\", @"\");
-        m_fltFile = new FS20FltFile( fName ); // recreate
-        // decide if something has changed for this update
-        HasChanged = ( m_currentHash != m_fltFile.FlightPlan.Hash );
-        m_currentHash = m_fltFile.FlightPlan.Hash;
-        // call the owner
-        if ( HasChanged )
-          OnNewFlightPlan( ); // inform the Bar
+        m_FP = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Copy(); // we have a copy
+        HasChanged = ( m_currentHash != m_FP.Hash );
+        m_currentHash = m_FP.Hash;
       }
+      // call the owner
+      if ( HasChanged )
+        OnNewFlightPlan( ); // inform the Bar
     }
 
 
@@ -119,7 +117,7 @@ namespace FS20_HudBar.Bar
       HasChanged = false;
       m_currentHash = 0;
       lock ( m_lock ) {
-        m_fltFile = null; // Note: The FlightPlan property returns an empty one now
+        m_FP = null; // Note: The FlightPlan property returns an empty one now
       }
     }
 

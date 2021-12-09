@@ -43,6 +43,8 @@ namespace FS20_HudBar.Bar.Items
 
     public DI_A_ETrim( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
+      TText = "Click to enable Auto Elevator Trim for 20 seconds.";
+
       LabelID = LItem;
       var item = VItem.A_ETRIM;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
@@ -51,7 +53,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
@@ -65,11 +67,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         this.ColorType.ItemBackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? cLiveBG : cActBG;
-        _value1.Value = SC.SimConnectClient.Instance.AircraftModule.PitchTrim_prct;
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct;
       }
 
       // switch the module off if the end time has passed

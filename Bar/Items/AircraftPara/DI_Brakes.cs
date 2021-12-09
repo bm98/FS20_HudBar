@@ -21,7 +21,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.Brakes;
+    public static readonly LItem LItem = LItem.BRAKES;
     /// <summary>
     /// The GUI Name
     /// </summary>
@@ -37,21 +37,21 @@ namespace FS20_HudBar.Bar.Items
     public DI_Brakes( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
-      var item = VItem.Brakes;
+      var item = VItem.BRAKES;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Steps( signProto ) { ItemForeColor = cRA };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Step = SC.SimConnectClient.Instance.AircraftModule.Parkbrake_on ? Steps.OnWarn : Steps.OffOK;
+        _value1.Step = SC.SimConnectClient.Instance.HudBarModule.Parkbrake_on ? Steps.OnWarn : Steps.OffOK;
       }
     }
 

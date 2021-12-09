@@ -35,9 +35,9 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAircraft object from the FSim library</param>
     protected override void UpdateStateLow( object dataSource )
     {
-      if ( !( dataSource is IAircraft ) ) throw new ArgumentException( "Needs an IAircraft argument" ); // Program ERROR
+      if ( !( dataSource is IHudBar ) ) throw new ArgumentException( "Needs an IHudBar argument" ); // Program ERROR
 
-      var ds = (dataSource as IAircraft);
+      var ds = (dataSource as IHudBar);
       if ( ds.Sim_OnGround ) {
         // on ground we disable callouts, this lasts on the way up until we are above our highest RA level
         m_lastTriggered = -1;

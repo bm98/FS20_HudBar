@@ -21,6 +21,7 @@ namespace FS20_HudBar.Config
   /// </summary>
   class AcftMerges
   {
+    private const string c_mergeFileName = "EngineMerge.csv";
 
     /// <summary>
     /// cTor: static init of the merge database from an embedded resource
@@ -37,14 +38,22 @@ namespace FS20_HudBar.Config
     /// </summary>
     private static void LoadEngineFile( )
     {
-      Stream csvStream =  typeof(Program).Assembly.GetManifestResourceStream(@"FS20_HudBar.Config.EngineMerge.csv");
+      Stream csvStream;
+      if ( File.Exists( c_mergeFileName ) ) {
+        // user provided one
+        csvStream = File.OpenRead( c_mergeFileName );
+      }
+      else {
+        // get the built in
+        csvStream = typeof( Program ).Assembly.GetManifestResourceStream( "FS20_HudBar.Config." + c_mergeFileName );
+      }
       using ( var sr = new StreamReader( csvStream ) ) {
         string line = sr.ReadLine(); // Header
         line = sr.ReadLine( );
         DAircraft tag = DAircraft.DUMMY;
         while ( line != null ) {
           // Load
-          string[] e = line.Split(new char[]{CProfile.Divider } );
+          string[] e = line.Split(new char[]{CProfile.Divider, ',' } ); // allow to read commas and semi
           string profile = "";
           string acft;
           for ( int i = 0; i < e.Length; i++ ) {

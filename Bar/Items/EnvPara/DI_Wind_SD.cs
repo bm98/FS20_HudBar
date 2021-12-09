@@ -48,17 +48,17 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Speed( value2Proto, showUnits );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-          _value1.Value = SC.SimConnectClient.Instance.AircraftModule.WindSpeed_kt;
-          _value2.Value = SC.SimConnectClient.Instance.AircraftModule.WindDirection_deg;
+          _value1.Value = SC.SimConnectClient.Instance.HudBarModule.WindSpeed_kt;
+          _value2.Value = SC.SimConnectClient.Instance.HudBarModule.WindDirection_deg;
       }
     }
 

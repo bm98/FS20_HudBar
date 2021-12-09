@@ -53,11 +53,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = (float)SC.SimConnectClient.Instance.AircraftModule.Lat;
-        _value2.Value = (float)SC.SimConnectClient.Instance.AircraftModule.Lon;
+        _value1.Value = (float)SC.SimConnectClient.Instance.GpsModule.LAT;
+        _value2.Value = (float)SC.SimConnectClient.Instance.GpsModule.LON;
       }
     }
 

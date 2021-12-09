@@ -37,31 +37,31 @@ namespace FS20_HudBar.Bar.Items
     public DI_Lights( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
-      var item = VItem.Lights;
+      var item = VItem.LIGHTS;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Lights( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.AircraftModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         // Consolidated lights (RA colored for Taxi and/or Landing lights on)
         int lightsInt = 0;
         _value1.ItemForeColor = cInfo;
-        if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Beacon ) lightsInt |= (int)V_Lights.Lights.Beacon;
-        if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Nav ) lightsInt |= (int)V_Lights.Lights.Nav;
-        if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Strobe ) lightsInt |= (int)V_Lights.Lights.Strobe;
-        if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Taxi ) {
+        if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Beacon ) lightsInt |= (int)V_Lights.Lights.Beacon;
+        if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Nav ) lightsInt |= (int)V_Lights.Lights.Nav;
+        if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Strobe ) lightsInt |= (int)V_Lights.Lights.Strobe;
+        if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Taxi ) {
           lightsInt |= (int)V_Lights.Lights.Taxi;
           _value1.ItemForeColor = cWarn;
         }
-        if ( SC.SimConnectClient.Instance.AircraftModule.Lights_Landing ) {
+        if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Landing ) {
           lightsInt |= (int)V_Lights.Lights.Landing;
           _value1.ItemForeColor = cWarn;
         }

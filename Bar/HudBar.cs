@@ -17,8 +17,6 @@ using FS20_HudBar.GUI.Templates;
 
 using FS20_HudBar.Config;
 
-//using FS20_HudBar.Bar.FltLib;
-
 namespace FS20_HudBar.Bar
 {
 
@@ -33,11 +31,13 @@ namespace FS20_HudBar.Bar
     // this part is maintaned only once for all HudBar Instances (there is only One Instance at any given time - else it breaks...)
 
     // FLT ATC Flightplan
-    private static FlightPlan m_atcFlightPlan = new FlightPlan(); // empty one
+    //private static FlightPlan m_atcFlightPlan = new FlightPlan(); // empty one
+
+
     /// <summary>
-    /// The current ATC Flightplan
+    /// The current ATC Flightplan (actually a copy of it)
     /// </summary>
-    public static FlightPlan AtcFlightPlan => m_atcFlightPlan;
+    public static FlightPlan AtcFlightPlan => FltMgr.FlightPlan;
 
 
     /// <summary>
@@ -53,31 +53,35 @@ namespace FS20_HudBar.Bar
     // Descriptive Configuration GUI label names to match the BarItems LItem Enum (sequence does not matter)
     private static Dictionary<LItem,string> m_cfgNames = new Dictionary<LItem, string>(){
       {LItem.MSFS, DI_MsFS.Desc },
-      {LItem.SimRate, DI_SimRate.Desc },
+      {LItem.SimRate, DI_SimRate.Desc },      {LItem.FPS, DI_Fps.Desc },
       {LItem.ACFT_ID, DI_Acft_ID.Desc },
-      {LItem.TIME, DI_Time.Desc },
+      {LItem.TIME, DI_Time.Desc },            {LItem.ZULU, DI_ZuluTime.Desc },  {LItem.CTIME, DI_CompTime.Desc },
 
-      {LItem.ETrim, DI_ETrim.Desc },          {LItem.RTrim, DI_RTrim.Desc }, {LItem.ATrim, DI_ATrim.Desc },
+      {LItem.ETRIM, DI_ETrim.Desc },          {LItem.RTRIM, DI_RTrim.Desc },    {LItem.ATRIM, DI_ATrim.Desc },
       {LItem.A_ETRIM, DI_A_ETrim.Desc},
+
       {LItem.OAT_C, DI_Oat_C.Desc },          {LItem.OAT_F, DI_Oat_F.Desc },
       {LItem.VIS, DI_Vis.Desc },
       {LItem.WIND_SD, DI_Wind_SD.Desc },      {LItem.WIND_XY, DI_Wind_XY.Desc },
       {LItem.BARO_HPA, DI_Baro_HPA.Desc },    {LItem.BARO_InHg, DI_Baro_InHg.Desc },
-      {LItem.Gear, DI_Gear.Desc },            {LItem.Brakes, DI_Brakes.Desc },
-      {LItem.Flaps, DI_Flaps.Desc },          {LItem.Lights, DI_Lights.Desc },
-      {LItem.AOA, DI_Aoa.Desc },
+      {LItem.GEAR, DI_Gear.Desc },            {LItem.BRAKES, DI_Brakes.Desc },
+      {LItem.FLAPS, DI_Flaps.Desc },          {LItem.SPOILERS, DI_Spoilers.Desc },
+      {LItem.Lights, DI_Lights.Desc },
+      {LItem.XPDR, DI_Xpdr.Desc },
 
       {LItem.MAN, DI_Man.Desc },
       {LItem.TORQ, DI_Torq.Desc },            {LItem.TORQP, DI_TorqP.Desc },
       {LItem.PRPM, DI_PRpm.Desc },            {LItem.ERPM, DI_ERpm.Desc },
       {LItem.N1, DI_N1.Desc },                {LItem.N2, DI_N2.Desc },
+      {LItem.AFTB, DI_Afterburner.Desc },
       {LItem.ITT, DI_Itt_C.Desc },
       {LItem.EGT_C, DI_Egt_C.Desc },          {LItem.EGT_F, DI_Egt_F.Desc },
       {LItem.CHT_C, DI_Cht_C.Desc },          {LItem.CHT_F, DI_Cht_F.Desc },
       {LItem.LOAD_P, DI_Load_prct.Desc },
       {LItem.FFlow_pph, DI_FFlow_PPH.Desc },  {LItem.FFlow_gph, DI_FFlow_GPH.Desc },
-      {LItem.Fuel_LR_gal, DI_Fuel_LR_Gal.Desc },       {LItem.Fuel_LR_lb, DI_Fuel_LR_Lb.Desc },
-      {LItem.Fuel_Total_gal, DI_Fuel_Total_Gal.Desc }, {LItem.Fuel_Total_lb, DI_Fuel_Total_Lb.Desc },
+      {LItem.FUEL_LR_gal, DI_Fuel_LR_Gal.Desc },     {LItem.FUEL_LR_lb, DI_Fuel_LR_Lb.Desc },
+      {LItem.FUEL_C_gal, DI_Fuel_C_Gal.Desc },       {LItem.FUEL_C_lb, DI_Fuel_C_Lb.Desc },
+      {LItem.FUEL_TOT_gal, DI_Fuel_Total_Gal.Desc }, {LItem.FUEL_TOT_lb, DI_Fuel_Total_Lb.Desc },
 
       {LItem.GPS_WYP, DI_Gps_WYP.Desc },
       {LItem.GPS_WP_DIST, DI_Gps_WP_Dist.Desc },
@@ -98,6 +102,8 @@ namespace FS20_HudBar.Bar
       {LItem.TAS, DI_Tas.Desc },
       {LItem.MACH, DI_Mach.Desc },
       {LItem.VS, DI_Vs.Desc },                {LItem.VS_PM, DI_Vs_PM.Desc },
+      {LItem.AOA, DI_Aoa.Desc },
+      {LItem.GFORCE, DI_GForce.Desc },        {LItem.GFORCE_MM, DI_Gforce_MM.Desc },
 
       {LItem.AP, DI_Ap.Desc },
       {LItem.AP_HDGs, DI_Ap_HdgSet.Desc },
@@ -141,9 +147,14 @@ namespace FS20_HudBar.Bar
     public bool ShowUnits { get; private set; } = false;
 
     /// <summary>
+    /// Use Keyboard Hook if true
+    /// </summary>
+    public bool KeyboardHook { get; private set; } = false;
+
+    /// <summary>
     /// FLT File AutoSave and FlightPlan Handler Enabled
     /// </summary>
-    public bool FltAutoSave { get; private set; } = false;
+    public FSimClientIF.FlightPlanMode FltAutoSave { get; private set; } = FSimClientIF.FlightPlanMode.Disabled;
 
     /// <summary>
     /// The used VoiceName
@@ -210,12 +221,14 @@ namespace FS20_HudBar.Bar
     /// <param name="cProfile">The current Profile</param>
     /// <param name="voiceName">The current VoiceName</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
-                      bool showUnits, bool autoSave, CProfile cProfile, string voiceName )
+                      bool showUnits, bool keyboardHook,
+                      int autoSave, CProfile cProfile, string voiceName )
     {
       // just save them in the HUD mainly for config purpose
       m_profile = cProfile;
       ShowUnits = showUnits;
-      FltAutoSave = autoSave;
+      KeyboardHook = keyboardHook;
+      FltAutoSave = (FSimClientIF.FlightPlanMode)autoSave;
       VoiceName = voiceName;
       _ = m_speech.SetVoice( VoiceName );
 
@@ -252,8 +265,11 @@ namespace FS20_HudBar.Bar
       // Sim Status
       m_dispItems.AddDisp( new DI_MsFS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_SimRate( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Fps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Environment
       m_dispItems.AddDisp( new DI_Time( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_ZuluTime( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_CompTime( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Oat_C( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Oat_F( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Vis( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -263,11 +279,12 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Acft_ID( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Baro_HPA( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Baro_InHg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Xpdr( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Gear( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Brakes( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Flaps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Spoilers( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Lights( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
-      m_dispItems.AddDisp( new DI_Aoa( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       // Engine
       m_dispItems.AddDisp( new DI_Man( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Torq( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -276,6 +293,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_ERpm( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_N1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_N2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Afterburner( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Itt_C( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Egt_C( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Egt_F( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -286,6 +304,8 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_FFlow_GPH( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_LR_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_LR_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Fuel_C_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Fuel_C_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_Total_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_Total_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       // Trim
@@ -320,6 +340,9 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Mach( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Vs( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Vs_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Aoa( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_GForce( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Gforce_MM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Nav1( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Nav2( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Nav1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -430,42 +453,32 @@ namespace FS20_HudBar.Bar
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity..
 
-
-      // check for an update of the Flightplan
-      if ( dataRefName == SC.SimConnectClient.Instance.FlightPlanModule.ModuleName ) {
-        lock ( m_atcFlightPlan ) {
-          m_atcFlightPlan = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan;
-        }
-        return; // only update the flightplan, the values are updated during the SimData cycle
-      }
-
       // update calculations
       Calculator.PaceCalculator( );
 
       // ATC Flightplan  - LOCK the flightplan while using it, else the Asynch Update may change it ..
-      lock ( m_atcFlightPlan ) {
-        // ATC Airport
-        AirportMgr.Update( HudBar.AtcFlightPlan.Destination ); // maintain APT (we should always have a Destination here)
-        // Load Remaining Plan if the WYP or Flightplan has changed
-        if ( WPTracker.HasChanged || FltMgr.HasChanged ) {
-          FltMgr.Read( ); // commit that we read the changes of the Flight Plan
-          string tt = m_atcFlightPlan.RemainingPlan( WPTracker.Read( ) );
-          this.ToolTipFP.SetToolTip( this.DispItem( LItem.GPS_WYP ).Label, tt );
-          this.DispItem( LItem.GPS_WYP ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+      // ATC Airport
+      AirportMgr.Update( AtcFlightPlan.Destination ); // maintain APT (we should always have a Destination here)
+                                                             // Load Remaining Plan if the WYP or Flightplan has changed
+      if ( WPTracker.HasChanged || FltMgr.HasChanged ) {
+        string tt = AtcFlightPlan.RemainingPlan( WPTracker.Read( ) );
+        this.ToolTipFP.SetToolTip( this.DispItem( LItem.GPS_WYP ).Label, tt );
+        this.DispItem( LItem.GPS_WYP ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
 
-          tt = m_atcFlightPlan.WaypointByName( WPTracker.PrevWP ).PrettyDetailed;
-          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_PWYP ), tt );
-          this.ValueControl( VItem.GPS_PWYP ).Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+        tt = AtcFlightPlan.WaypointByName( WPTracker.PrevWP ).PrettyDetailed;
+        this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_PWYP ), tt );
+        this.ValueControl( VItem.GPS_PWYP ).Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
 
-          tt = m_atcFlightPlan.WaypointByName( WPTracker.NextWP ).PrettyDetailed;
-          this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_NWYP ), tt );
-          this.ValueControl( VItem.GPS_NWYP ).Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+        tt = AtcFlightPlan.WaypointByName( WPTracker.NextWP ).PrettyDetailed;
+        this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_NWYP ), tt );
+        this.ValueControl( VItem.GPS_NWYP ).Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
 
-          tt = m_atcFlightPlan.Pretty;
-          this.ToolTipFP.SetToolTip( this.DispItem( LItem.ATC_ALT_HDG ).Label, tt );
-          this.DispItem( LItem.ATC_ALT_HDG ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
-        }
-      }// end m_flightPlan LOCK
+        tt = AtcFlightPlan.Pretty;
+        this.ToolTipFP.SetToolTip( this.DispItem( LItem.ATC_ALT_HDG ).Label, tt );
+        this.DispItem( LItem.ATC_ALT_HDG ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+        // commit that we read the changes of the Flight Plan
+        FltMgr.Read( ); 
+      }
 
       // VoicePack Alert and message Update
       // TODO ... ONLY IF VOICEPACK ENABLED THEN
@@ -477,17 +490,26 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// Set the current show unit flag communicated by the HUD
     /// </summary>
-    /// <param name="opacity"></param>
+    /// <param name="showUnits"></param>
     public void SetShowUnits( bool showUnits )
     {
       ShowUnits = showUnits;
     }
 
     /// <summary>
+    /// Set the current show unit flag communicated by the HUD
+    /// </summary>
+    /// <param name="keyboardHook"></param>
+    public void SetKeyboardHook( bool keyboardHook )
+    {
+      KeyboardHook = keyboardHook;
+    }
+
+    /// <summary>
     /// Set the current FltAutoSave communicated by the HUD
     /// </summary>
     /// <param name="opacity"></param>
-    public void SetFltAutoSave( bool autoSave )
+    public void SetFltAutoSave( FSimClientIF.FlightPlanMode autoSave )
     {
       FltAutoSave = autoSave;
     }

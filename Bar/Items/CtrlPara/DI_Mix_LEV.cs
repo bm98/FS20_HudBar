@@ -47,18 +47,18 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Prct( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      SC.SimConnectClient.Instance.ControlsModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.ControlsModule.MixingLever1_prct;
-        _value2.Value = SC.SimConnectClient.Instance.ControlsModule.MixingLever2_prct;
-        _value2.Visible = ( SC.SimConnectClient.Instance.EngineModule.NumEngines > 1 );
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.MixtureLever1_prct;
+        _value2.Value = SC.SimConnectClient.Instance.HudBarModule.MixtureLever2_prct;
+        _value2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );
       }
     }
 

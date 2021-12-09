@@ -53,7 +53,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {

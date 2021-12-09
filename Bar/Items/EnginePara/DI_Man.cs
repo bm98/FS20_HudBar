@@ -48,18 +48,18 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_PressureInHg( value2Proto, showUnits );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      SC.SimConnectClient.Instance.EngineModule.AddObserver( Short, OnDataArrival );
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-          _value1.Value = SC.SimConnectClient.Instance.EngineModule.Engine1MAN_inhg;
-          _value2.Value = SC.SimConnectClient.Instance.EngineModule.Engine2MAN_inhg;
-          _value2.Visible = ( SC.SimConnectClient.Instance.EngineModule.NumEngines > 1 );
+          _value1.Value = SC.SimConnectClient.Instance.HudBarModule.Engine1MAN_inhg;
+          _value2.Value = SC.SimConnectClient.Instance.HudBarModule.Engine2MAN_inhg;
+          _value2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );
       }
     }
 
