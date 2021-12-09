@@ -52,11 +52,22 @@ namespace FS20_HudBar
     private List<CProfile> m_profiles = new List<CProfile>();
     private int m_selProfile = 0;
 
+    // Our interaction hooks 
+    private enum Hooks
+    {
+      Show_Hide=0, // toggle show/hide of the bar
+      Profile_1, Profile_2, Profile_3, Profile_4, Profile_5, // Profile selection
+    }
+
     // Handles the RawInput from HID Keyboards
     Win.KeyboardHookController _keyHook;
 
-    //private SC.Input.InputHandler FSInput;  // Receive commands from FSim -  not yet used
-    private readonly frmConfig CFG = new frmConfig( ); // Configuration Dialog
+    // FS Input handlers
+    private Dictionary<Hooks, SC.Input.InputHandler> _fsInputCat = new Dictionary<Hooks, SC.Input.InputHandler>();
+
+    // Configuration Dialog
+    private readonly frmConfig CFG = new frmConfig( ); 
+
     // need to stop processing while reconfiguring the bar
     private bool m_initDone = false;
 
@@ -76,6 +87,8 @@ namespace FS20_HudBar
       }
       return false;
     }
+
+    #region Synch GUI Forms
 
     // synch the two forms for Size
     private void SynchGUISize( )
@@ -100,6 +113,86 @@ namespace FS20_HudBar
       m_frmGui.Visible = visible;
     }
 
+    #endregion
+
+    #region InGame Hooks
+
+    // Hook into the InGame Keyboard Events 
+    private void SetupInGameHook( bool enabled )
+    {
+      // sanity checks
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return;
+
+      if ( enabled ) {
+        if ( _fsInputCat.Count <= 0 ) {
+          // reinitiate the hooks
+          _fsInputCat.Add( Hooks.Show_Hide, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_01 ) );
+          _fsInputCat[Hooks.Show_Hide].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hooks.Profile_1, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_02 ) );
+          _fsInputCat[Hooks.Profile_1].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hooks.Profile_2, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_03 ) );
+          _fsInputCat[Hooks.Profile_2].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hooks.Profile_3, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_04 ) );
+          _fsInputCat[Hooks.Profile_3].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hooks.Profile_4, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_05 ) );
+          _fsInputCat[Hooks.Profile_4].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hooks.Profile_5, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_06 ) );
+          _fsInputCat[Hooks.Profile_5].InputArrived += FSInput_InputArrived;
+        }
+      }
+      else {
+        // disable all callbacks
+        foreach ( var fi in _fsInputCat ) {
+          // this shall never fail..
+          try {
+            fi.Value.InputArrived -= FSInput_InputArrived;
+          }
+          catch { }
+        }
+        // remove all cat entries
+        _fsInputCat.Clear( ); 
+      }
+    }
+
+    // Receive commands from FSim
+    private void FSInput_InputArrived( object sender, SC.Input.FSInputEventArgs e )
+    {
+      // sanity checks
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return; // catch odd cases of disruption
+      if ( _fsInputCat.Count <= 0 ) return;
+
+      // _fsInputCat should be valid when this event fires..
+      if ( e.ActionName == _fsInputCat[Hooks.Show_Hide].Inputname ) SynchGUIVisible( !this.Visible );
+      else if ( e.ActionName == _fsInputCat[Hooks.Profile_1].Inputname ) mP1_Click( null, new EventArgs( ) );
+      else if ( e.ActionName == _fsInputCat[Hooks.Profile_2].Inputname ) mP2_Click( null, new EventArgs( ) );
+      else if ( e.ActionName == _fsInputCat[Hooks.Profile_3].Inputname ) mP3_Click( null, new EventArgs( ) );
+      else if ( e.ActionName == _fsInputCat[Hooks.Profile_4].Inputname ) mP4_Click( null, new EventArgs( ) );
+      else if ( e.ActionName == _fsInputCat[Hooks.Profile_5].Inputname ) mP5_Click( null, new EventArgs( ) );
+    }
+
+    /// <summary>
+    /// returns a crlf formatted string of the hooks and their MSFS Key items
+    /// </summary>
+    /// <returns></returns>
+    internal string InGameHints( )
+    {
+      string ret = "";
+      foreach(var hi in _fsInputCat ) {
+        ret += $"{hi.Key} -> {hi.Value.InputActionString}\n";
+      }
+      if ( string.IsNullOrEmpty( ret ) ) {
+        ret = "There are no InGame Hooks active";
+      }
+      else {
+        ret = "InGame Hooks active - use the commands listed below\n" + ret;
+      }
+      return ret;
+    }
+
+    #endregion
+
+    #region Keyboard Hooks
+
     // Enable/Disable Keyboard interaction 
     private void SetupKeyboardHook( bool enabled )
     {
@@ -107,17 +200,15 @@ namespace FS20_HudBar
         if ( _keyHook == null ) {
           _keyHook = new Win.KeyboardHookController( Handle );
         }
-        _keyHook.KeyHandling( false );
+        _keyHook.KeyHandling( false ); // disable momentarily
 
         _keyHook.RemoveAllKeys( );
-
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD0, Win.KeyModifiers.RCtrl, "ShowHide", OnKey );
-
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD1, Win.KeyModifiers.RCtrl, "P1", OnKey );
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD2, Win.KeyModifiers.RCtrl, "P2", OnKey );
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD3, Win.KeyModifiers.RCtrl, "P3", OnKey );
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD4, Win.KeyModifiers.RCtrl, "P4", OnKey );
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD5, Win.KeyModifiers.RCtrl, "P5", OnKey );
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD0, Win.KeyModifiers.RCtrl, Hooks.Show_Hide.ToString(), OnHookKey );
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD1, Win.KeyModifiers.RCtrl, Hooks.Profile_1.ToString( ), OnHookKey );
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD2, Win.KeyModifiers.RCtrl, Hooks.Profile_2.ToString( ), OnHookKey );
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD3, Win.KeyModifiers.RCtrl, Hooks.Profile_3.ToString( ), OnHookKey );
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD4, Win.KeyModifiers.RCtrl, Hooks.Profile_4.ToString( ), OnHookKey );
+        _keyHook.AddKey( Win.VirtualKey.NUMPAD5, Win.KeyModifiers.RCtrl, Hooks.Profile_5.ToString( ), OnHookKey );
 
         _keyHook.KeyHandling( true );
       }
@@ -129,15 +220,17 @@ namespace FS20_HudBar
     }
 
     // Callback - handles the Keyboard Hooks
-    private void OnKey( string tag )
+    private void OnHookKey( string tag )
     {
-      if ( tag == "ShowHide" ) SynchGUIVisible( !this.Visible );
-      else if ( tag == "P1" ) mP1_Click( null, new EventArgs( ) );
-      else if ( tag == "P2" ) mP2_Click( null, new EventArgs( ) );
-      else if ( tag == "P3" ) mP3_Click( null, new EventArgs( ) );
-      else if ( tag == "P4" ) mP4_Click( null, new EventArgs( ) );
-      else if ( tag == "P5" ) mP5_Click( null, new EventArgs( ) );
+      if ( tag == Hooks.Show_Hide.ToString( ) ) SynchGUIVisible( !this.Visible );
+      else if ( tag == Hooks.Profile_1.ToString( ) ) mP1_Click( null, new EventArgs( ) );
+      else if ( tag == Hooks.Profile_2.ToString( ) ) mP2_Click( null, new EventArgs( ) );
+      else if ( tag == Hooks.Profile_3.ToString( ) ) mP3_Click( null, new EventArgs( ) );
+      else if ( tag == Hooks.Profile_4.ToString( ) ) mP4_Click( null, new EventArgs( ) );
+      else if ( tag == Hooks.Profile_5.ToString( ) ) mP5_Click( null, new EventArgs( ) );
     }
+
+    #endregion
 
     /// <summary>
     /// Main Form Init
@@ -309,6 +402,7 @@ namespace FS20_HudBar
         // Save all configuration properties
         AppSettings.Instance.ShowUnits = HUD.ShowUnits;
         AppSettings.Instance.KeyboardHook = HUD.KeyboardHook;
+        AppSettings.Instance.InGameHook = HUD.InGameHook;
         AppSettings.Instance.FltAutoSaveATC = (int)HUD.FltAutoSave;
         AppSettings.Instance.VoiceName = HUD.VoiceName;
 
@@ -506,7 +600,7 @@ namespace FS20_HudBar
 
     #endregion
 
-    #region Callback Handlers
+    #region FSIm Data Callback Handler
 
     // fired from Sim for new Data
     private void Instance_DataArrived( object sender, FSimClientIF.ClientDataArrivedEventArgs e )
@@ -515,17 +609,6 @@ namespace FS20_HudBar
       UpdateGUI( e.DataRefName );
     }
 
-    // Receive commands from FSim -  not yet used
-    /*
-    private void FSInput_InputArrived( object sender, SC.Input.FSInputEventArgs e )
-    {
-      // FSInput should be valid when this event fires..
-      if ( SC.SimConnectClient.Instance.IsConnected && ( e.ActionName == FSInput.Inputname ) ) {
-        // DO SOMETHING HERE
-      }
-    }
-    */
-
     #endregion
 
     #region GUI
@@ -533,7 +616,6 @@ namespace FS20_HudBar
     private HudBar HUD = null;
 
     // initialize the form, the labels and default values
-    // sequence defines appearance
     private void InitGUI( )
     {
       timer1.Enabled = false; // stop asynch events
@@ -542,6 +624,7 @@ namespace FS20_HudBar
 
       // reread after config change
       SetupKeyboardHook( AppSettings.Instance.KeyboardHook );
+      SetupInGameHook( AppSettings.Instance.InGameHook );
 
       SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode = (FSimClientIF.FlightPlanMode)AppSettings.Instance.FltAutoSaveATC;
       SC.SimConnectClient.Instance.FlightPlanModule.Enabled = ( SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode != FSimClientIF.FlightPlanMode.Disabled );
@@ -559,7 +642,7 @@ namespace FS20_HudBar
 
       // start from scratch
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
-                          AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook,
+                          AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook,
                           AppSettings.Instance.FltAutoSaveATC,
                           m_profiles[m_selProfile], AppSettings.Instance.VoiceName );
 
@@ -760,6 +843,8 @@ namespace FS20_HudBar
 
     #endregion
 
+    #region SimConnectClient chores
+
     // Monitor the Sim Event Handler after Connection
     private bool m_awaitingEvent = true; // cleared in the Sim Event Handler
     private int m_scGracePeriod = -1;    // grace period count down
@@ -774,8 +859,7 @@ namespace FS20_HudBar
 
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         // Disconnect from Input and SimConnect
-        // FSInput.InputArrived -= FSInput_InputArrived; // Receive commands from FSim -  not yet used
-        //FltMgr.Disable( );
+        SetupInGameHook( false );
         SC.SimConnectClient.Instance.FlightPlanModule.Enabled = false;
         SC.SimConnectClient.Instance.Disconnect( );
       }
@@ -788,13 +872,9 @@ namespace FS20_HudBar
           HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
           // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
           _ = SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile;
-          // Receive commands from FSim -  not yet used
-          /*
-          FSInput = SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_01 ); // use first input
-          FSInput.InputArrived += FSInput_InputArrived;
-          */
           SC.SimConnectClient.Instance.FlightPlanModule.Enabled = AppSettings.Instance.FltAutoSave;
-          //FltMgr.Enable( );
+          // enable game hooks if newly connected and desired
+          SetupInGameHook( AppSettings.Instance.InGameHook );
         }
         else {
           HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Red;
@@ -802,7 +882,6 @@ namespace FS20_HudBar
       }
 
     }
-
 
     /// <summary>
     /// Try every interval to connect - and if connected.. do in Sim chores
@@ -825,13 +904,14 @@ namespace FS20_HudBar
           }
           m_scGracePeriod--;
         }
-
       }
       else {
         // If not connected try again
         SimConnect( );
       }
     }
+
+    #endregion
 
   }
 }

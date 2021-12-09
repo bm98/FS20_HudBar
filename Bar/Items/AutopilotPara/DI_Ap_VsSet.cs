@@ -47,8 +47,22 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       _label.ButtonClicked += _label_ButtonClicked;
+      _label.MouseWheel += _label_MouseWheel;
+      _label.Cursor = Cursors.SizeNS;
 
       SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
+    }
+
+    private void _label_MouseWheel( object sender, MouseEventArgs e )
+    {
+      if ( e.Delta > 0 ) {
+        // Up
+        SC.SimConnectClient.Instance.AP_G1000Module.VS_setting( FSimClientIF.CmdMode.Inc );
+      }
+      else if ( e.Delta < 0 ) {
+        // Down
+        SC.SimConnectClient.Instance.AP_G1000Module.VS_setting( FSimClientIF.CmdMode.Dec );
+      }
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )

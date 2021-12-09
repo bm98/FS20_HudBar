@@ -152,6 +152,11 @@ namespace FS20_HudBar.Bar
     public bool KeyboardHook { get; private set; } = false;
 
     /// <summary>
+    /// Use InGame Hook if true
+    /// </summary>
+    public bool InGameHook { get; private set; } = false;
+
+    /// <summary>
     /// FLT File AutoSave and FlightPlan Handler Enabled
     /// </summary>
     public FSimClientIF.FlightPlanMode FltAutoSave { get; private set; } = FSimClientIF.FlightPlanMode.Disabled;
@@ -221,13 +226,14 @@ namespace FS20_HudBar.Bar
     /// <param name="cProfile">The current Profile</param>
     /// <param name="voiceName">The current VoiceName</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
-                      bool showUnits, bool keyboardHook,
+                      bool showUnits, bool keyboardHook, bool inGameHook,
                       int autoSave, CProfile cProfile, string voiceName )
     {
       // just save them in the HUD mainly for config purpose
       m_profile = cProfile;
       ShowUnits = showUnits;
       KeyboardHook = keyboardHook;
+      InGameHook = inGameHook;
       FltAutoSave = (FSimClientIF.FlightPlanMode)autoSave;
       VoiceName = voiceName;
       _ = m_speech.SetVoice( VoiceName );
@@ -497,12 +503,21 @@ namespace FS20_HudBar.Bar
     }
 
     /// <summary>
-    /// Set the current show unit flag communicated by the HUD
+    /// Set the current keyboardHook flag communicated by the HUD
     /// </summary>
     /// <param name="keyboardHook"></param>
     public void SetKeyboardHook( bool keyboardHook )
     {
       KeyboardHook = keyboardHook;
+    }
+
+    /// <summary>
+    /// Set the current InGame Hook flag communicated by the HUD
+    /// </summary>
+    /// <param name="inGameHook"></param>
+    public void SetInGameHook( bool inGameHook )
+    {
+      InGameHook = inGameHook;
     }
 
     /// <summary>

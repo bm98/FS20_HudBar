@@ -48,6 +48,9 @@ V 0.38-B33
 - Add item Afterburner % for engine 1+2
 - Add item Spoilers / Speedbrakes (are the same SimVar)
 - Add item FuelTank Center in Gal and Lb
+- Add mouse wheel Inc/Dec on AP settings HDG, ALT, VS, FLC
+- Add switching to Hide/Show the Bar via InGame Events, must be enabled in Config
+- Add switching of Profiles via InGame Events, must be enabled in Config
 - Add switching to Hide/Show the Bar (Right Ctrl + Numpad 0), must be enabled in Config
 - Add switching of Profiles (Right Ctrl + Numpad 1 .. 5), must be enabled in Config
 - Update AutoBackup can be selected from DISABLED (default), AutoBackup (5 Min), AutoBackup+ATC (30 sec)

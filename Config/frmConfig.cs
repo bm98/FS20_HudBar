@@ -188,7 +188,7 @@ namespace FS20_HudBar.Config
 
       cbxUnits.Checked = HudBarRef.ShowUnits;
       cbxKeyboard.Checked = HudBarRef.KeyboardHook; // 20211208
-      //cbxFltSave.Checked = HudBarRef.FltAutoSave; // 20210821
+      cbxInGame.Checked = HudBarRef.InGameHook; // 20211208
 
       PopulateASave( cbxASave ); //20211204
       cbxASave.SelectedIndex = (int)HudBarRef.FltAutoSave;
@@ -247,6 +247,7 @@ namespace FS20_HudBar.Config
       // live update to HUD
       HudBarRef.SetShowUnits( cbxUnits.Checked );
       HudBarRef.SetKeyboardHook( cbxKeyboard.Checked );
+      HudBarRef.SetInGameHook( cbxInGame.Checked );
       HudBarRef.SetFltAutoSave( (FSimClientIF.FlightPlanMode)cbxASave.SelectedIndex );
       HudBarRef.SetVoiceName( cbxVoice.SelectedItem.ToString( ) );
       int idx = 0;

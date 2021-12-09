@@ -85,6 +85,7 @@ namespace FS20_HudBar.Config
       this.cbxASave = new System.Windows.Forms.ComboBox();
       this.btDumpConfigs = new System.Windows.Forms.Button();
       this.cbxKeyboard = new System.Windows.Forms.CheckBox();
+      this.cbxInGame = new System.Windows.Forms.CheckBox();
       this.tlp.SuspendLayout();
       this.flp1.SuspendLayout();
       this.flp2.SuspendLayout();
@@ -147,6 +148,7 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.cbxASave, 2, 7);
       this.tlp.Controls.Add(this.btDumpConfigs, 5, 4);
       this.tlp.Controls.Add(this.cbxKeyboard, 5, 2);
+      this.tlp.Controls.Add(this.cbxInGame, 5, 3);
       this.tlp.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tlp.Location = new System.Drawing.Point(0, 0);
       this.tlp.Name = "tlp";
@@ -791,13 +793,24 @@ namespace FS20_HudBar.Config
       // cbxKeyboard
       // 
       this.cbxKeyboard.AutoSize = true;
-      this.cbxKeyboard.Dock = System.Windows.Forms.DockStyle.Right;
-      this.cbxKeyboard.Location = new System.Drawing.Point(864, 638);
+      this.cbxKeyboard.Dock = System.Windows.Forms.DockStyle.Left;
+      this.cbxKeyboard.Location = new System.Drawing.Point(853, 638);
       this.cbxKeyboard.Name = "cbxKeyboard";
       this.cbxKeyboard.Size = new System.Drawing.Size(136, 24);
       this.cbxKeyboard.TabIndex = 30;
       this.cbxKeyboard.Text = "Use Keyboard Switch";
       this.cbxKeyboard.UseVisualStyleBackColor = true;
+      // 
+      // cbxInGame
+      // 
+      this.cbxInGame.AutoSize = true;
+      this.cbxInGame.Dock = System.Windows.Forms.DockStyle.Left;
+      this.cbxInGame.Location = new System.Drawing.Point(853, 668);
+      this.cbxInGame.Name = "cbxInGame";
+      this.cbxInGame.Size = new System.Drawing.Size(127, 24);
+      this.cbxInGame.TabIndex = 31;
+      this.cbxInGame.Text = "Use InGame Switch";
+      this.cbxInGame.UseVisualStyleBackColor = true;
       // 
       // frmConfig
       // 
@@ -893,5 +906,6 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.Button btDumpConfigs;
     private System.Windows.Forms.ComboBox cbxASave;
     private System.Windows.Forms.CheckBox cbxKeyboard;
+    private System.Windows.Forms.CheckBox cbxInGame;
   }
 }

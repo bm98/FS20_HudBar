@@ -134,6 +134,13 @@ namespace FS20_HudBar
       set { this["KeyboardHook"] = value; }
     }
 
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "False" )]
+    public bool InGameHook {
+      get { return (bool)this["InGameHook"]; }
+      set { this["InGameHook"] = value; }
+    }
+
     // Obsolete - no longer used - replaced with FltAutoSaveATC
     [UserScopedSetting( )]
     [DefaultSettingValue( "False" )]
