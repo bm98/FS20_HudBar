@@ -46,7 +46,10 @@ namespace FS20_HudBar.GUI
 
     private Speech m_synthesizer = new Speech();
 
-    private bool m_ready = false;
+    // true if the pack is available - i.e. a Voice is set and supported
+    private bool m_available = false;
+    // true if Enabled 
+    private bool m_enabled = false;
 
     /// <summary>
     /// cTor:  Init with a valid VoiceName from the List
@@ -54,8 +57,15 @@ namespace FS20_HudBar.GUI
     /// <param name="voiceName">The Voicename</param>
     public GUI_Speech( )
     {
-      m_ready = false;
+      m_available = false;
+      m_enabled = false;
     }
+
+    /// <summary>
+    /// Enable or disable the Voice Out
+    ///  Default DISABLED
+    /// </summary>
+    public bool Enabled { get => m_enabled; set => m_enabled=value; }
 
     /// <summary>
     /// Set the Voice for Speach output
@@ -65,24 +75,24 @@ namespace FS20_HudBar.GUI
     public bool SetVoice( string voiceName )
     {
       // reset
-      m_ready = false;
+      m_available = false;
 
       // get the voice
       if ( voiceName == m_voiceNames[0] ) {
         // Voice disabled
-        m_ready = false;
+        m_available = false;
       }
       else if ( m_voiceNames.Contains( voiceName ) ) {
         // this shall never fail
         try {
           m_synthesizer.SelectVoice( voiceName );
-          m_ready = true;
+          m_available = true;
         }
         catch {
           ; // DEBUG STOP
         }
       }
-      return m_ready;
+      return m_available;
     }
 
 
@@ -93,7 +103,7 @@ namespace FS20_HudBar.GUI
     /// <param name="number">The number to speak</param>
     public void SaySynched( int number )
     {
-      if ( m_ready ) m_synthesizer.Speak( number.ToString( ) );
+      if ( m_available && m_enabled ) m_synthesizer.Speak( number.ToString( ) );
     }
 
     /// <summary>
@@ -102,7 +112,7 @@ namespace FS20_HudBar.GUI
     /// <param name="number">The number to speak</param>
     public void Say( int number )
     {
-      if ( m_ready ) m_synthesizer.SpeakAsync( number.ToString( ) );
+      if ( m_available && m_enabled ) m_synthesizer.SpeakAsync( number.ToString( ) );
     }
 
     /// <summary>
@@ -111,7 +121,7 @@ namespace FS20_HudBar.GUI
     /// <param name="text">The text to speak</param>
     public void Say( string text )
     {
-      if ( m_ready ) m_synthesizer.SpeakAsync( text );
+      if ( m_available && m_enabled ) m_synthesizer.SpeakAsync( text );
     }
 
   }

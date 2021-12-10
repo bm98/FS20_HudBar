@@ -29,11 +29,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "APT";
+    public static readonly string Short = "APT";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "ATC Airport and distance nm";
+    public static readonly string Desc = "ATC Airport and distance nm";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;

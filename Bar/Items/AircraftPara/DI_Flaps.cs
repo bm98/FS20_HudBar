@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "Flaps";
+    public static readonly string Short = "Flaps";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Flaps";
+    public static readonly string Desc = "Flaps";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

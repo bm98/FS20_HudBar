@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "G-MM";
+    public static readonly string Short = "G-MM";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "G Force Min, Max";
+    public static readonly string Desc = "G Force Min, Max";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;

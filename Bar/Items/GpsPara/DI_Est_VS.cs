@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "WP-VS";
+    public static readonly string Short = "WP-VS";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Estimate VS to WYP@ALT";
+    public static readonly string Desc = "Estimate VS to WYP@ALT";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

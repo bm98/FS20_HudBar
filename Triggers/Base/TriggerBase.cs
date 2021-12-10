@@ -64,25 +64,23 @@ namespace FS20_HudBar.Triggers.Base
     public abstract void AddProc( EventProc callback );
 
     /// <summary>
-    /// Update the internal state of this trigger
+    /// Calls to register for dataupdates
     ///   To be implemented in the derived class
     /// </summary>
-    /// <param name="dataSource">A datasource</param>
-    protected abstract void UpdateStateLow( object dataSource );
+    public abstract void RegisterObserver( );
 
     /// <summary>
     /// Update the internal state of this trigger
     ///   To be implemented in the derived class
     /// </summary>
-    /// <param name="dataSource">A datasource</param>
-    public  void UpdateState( object dataSource )
-    {
-      if ( m_enabled ) UpdateStateLow( dataSource ); // call updates only if enabled
-    }
+    /// <param name="dataRefName">A dataRefName</param>
+    protected abstract void OnDataArrival( string dataRefName );
 
     /// <summary>
     /// Reset the trigger to callout the current state on the next update
     /// </summary>
     public abstract void Reset( );
+
+
   }
 }

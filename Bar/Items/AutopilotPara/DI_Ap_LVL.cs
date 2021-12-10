@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "LVL";
+    public static readonly string Short = "LVL";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "AP Wing Leveler";
+    public static readonly string Desc = "AP Wing Leveler";
 
     private readonly B_Base _label;
 

@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "N2";
+    public static readonly string Short = "N2";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Turbine N2 %";
+    public static readonly string Desc = "Turbine N2 %";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

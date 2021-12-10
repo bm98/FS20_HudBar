@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
 using FSimClientIF.Modules;
@@ -20,14 +21,24 @@ namespace FS20_HudBar.Triggers
   class T_WaypointETE : TriggerFloat
   {
     /// <summary>
+    /// Calls to register for dataupdates
+    /// </summary>
+    public override void RegisterObserver( )
+    {
+      SC.SimConnectClient.Instance.GpsModule.AddObserver( m_name, OnDataArrival );
+    }
+
+    /// <summary>
     /// Update the internal state from the datasource
     /// </summary>
     /// <param name="dataSource">An IGps object from the FSim library</param>
-    protected override void UpdateStateLow( object dataSource )
+    protected override void OnDataArrival( string dataRefName )
     {
-      if ( !( dataSource is IGps ) ) throw new ArgumentException( "Needs an IGps argument" ); // Program ERROR
+      if ( !Enabled ) return; // not enabled
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity, capture odd cases
+      if ( SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) return; // not while on ground
 
-      var ds = (dataSource as IGps);
+        var ds = SC.SimConnectClient.Instance.GpsModule;
       if ( ds.IsGpsFlightplan_active ) {
         DetectStateChange( ds.WYP_ete );
       }

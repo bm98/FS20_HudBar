@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "ALTP";
+    public static readonly string Short = "ALTP";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Waypoint ALT ft";
+    public static readonly string Desc = "Waypoint ALT ft";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

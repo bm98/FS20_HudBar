@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
 using FSimClientIF.Modules;
@@ -21,14 +22,23 @@ namespace FS20_HudBar.Triggers
   class T_Gear : TriggerBinary
   {
     /// <summary>
+    /// Calls to register for dataupdates
+    /// </summary>
+    public override void RegisterObserver( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( m_name, OnDataArrival );
+    }
+
+    /// <summary>
     /// Update the internal state from the datasource
     /// </summary>
     /// <param name="dataSource">An IAircraft object from the FSim library</param>
-    protected override void UpdateStateLow( object dataSource )
+    protected override void OnDataArrival( string dataRefName )
     {
-      if ( !( dataSource is IHudBar ) ) throw new ArgumentException( "Needs an IHudBar argument" ); // Program ERROR
+      if ( !Enabled ) return; // not enabled
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity, capture odd cases
 
-      var ds = (dataSource as IHudBar);
+      var ds = SC.SimConnectClient.Instance.HudBarModule;
 
       if ( ds.IsGearRetractable ) {
         // only if we have a retractable gear...

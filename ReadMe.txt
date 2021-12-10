@@ -1,5 +1,5 @@
-FS20_HudBar V 0.38 - Build 33 BETA
-(c) M. Burri - 09-Dec-2021
+FS20_HudBar V 0.38 - Build 34 BETA
+(c) M. Burri - 10-Dec-2021
 
 Contains files:
 
@@ -13,7 +13,6 @@ MetarLib.dll				A METAR access library (new since V0.29)
 CoordLib.dll				A coord. handling library (new since V0.29)
 FS20_AptLib.dll             MSFS2020 Airport DB (new since V0.29)
 SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new since V0.35)
-RawInputLib.dll             A librara to capture Keyboard keys (new since V0.38)
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg
@@ -38,6 +37,12 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.38-B34
+- Add Rotate Callout - uses the Sim provided speed - may be correct.. or not depends on the plane (enable in Configuration)
+- Update Keyboard Hotkey switching uses another method which should be more compatible with some Game Tools out there.
+- Fix Delayed Voice callouts to avoid speech when the App starts
+- Update QuickGuide
+
 V 0.38-B33
 - Add item Transponder (Code and Status)
 - Add item FPS (frames per second)

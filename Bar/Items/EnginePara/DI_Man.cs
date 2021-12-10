@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "MAN";
+    public static readonly string Short = "MAN";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "MAN Pressure inHg";
+    public static readonly string Desc = "MAN Pressure inHg";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

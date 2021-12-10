@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using SC = SimConnectClient;
+
 using FS20_HudBar.Bar;
 using FS20_HudBar.Triggers.Base;
 
@@ -15,11 +17,22 @@ namespace FS20_HudBar.Triggers
     private TSmoother _smooth = new TSmoother();
 
     /// <summary>
+    /// Calls to register for dataupdates
+    /// </summary>
+    public override void RegisterObserver( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( m_name, OnDataArrival );
+    }
+
+    /// <summary>
     /// Update the internal state from the datasource
     /// </summary>
     /// <param name="dataSource">not used</param>
-    protected override void UpdateStateLow( object dataSource )
+    protected override void OnDataArrival( string dataRefName )
     {
+      if ( !Enabled ) return; // not enabled
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity, capture odd cases
+
       _smooth.Add( Calculator.FuelReachAlert );
       DetectStateChange( _smooth.GetBool );
     }

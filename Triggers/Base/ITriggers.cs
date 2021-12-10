@@ -28,11 +28,10 @@ namespace FS20_HudBar.Triggers.Base
     void AddProc( EventProc callback );
 
     /// <summary>
-    /// Update the internal state of this trigger
+    /// Calls to register for dataupdates
     ///   To be implemented in the derived class
     /// </summary>
-    /// <param name="dataSource">A datasource</param>
-    void UpdateState( object dataSource );
+    void RegisterObserver( );
 
     /// <summary>
     /// Speak a test sentence

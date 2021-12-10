@@ -26,8 +26,6 @@ namespace FS20_HudBar.Bar.Items.Base
     //  - we use value2Proto to get a smaller font usually for 2+ values are to be shown for an item
     // Colors are used from default or set here explicitely 
 
-
-
     /// <summary>
     /// The Label ID 
     /// </summary>

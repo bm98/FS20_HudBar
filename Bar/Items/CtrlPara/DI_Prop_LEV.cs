@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "%Prop";
+    public static readonly string Short = "%Prop";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Propeller Handle %";
+    public static readonly string Desc = "Propeller Handle %";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

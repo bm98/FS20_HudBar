@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "ETE";
+    public static readonly string Short = "ETE";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "WYP ETE h:mm:ss";
+    public static readonly string Desc = "WYP ETE h:mm:ss";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

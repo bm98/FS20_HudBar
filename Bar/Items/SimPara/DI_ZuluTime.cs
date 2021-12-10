@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "Zulu";
+    public static readonly string Short = "Zulu";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Zulu Time (Sim)";
+    public static readonly string Desc = "Zulu Time (Sim)";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

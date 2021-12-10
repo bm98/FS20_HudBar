@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "WP-ALT";
+    public static readonly string Short = "WP-ALT";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Estimated ALT @WYP";
+    public static readonly string Desc = "Estimated ALT @WYP";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

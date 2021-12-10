@@ -27,8 +27,8 @@ namespace FS20_HudBar.Bar
     private T_Glideslope v_glideslope;
     private T_AltHold v_apAltHold;
     private T_OAT v_airTemp;
-    // warnings
     private T_WarnFuel v_warnFuel;
+    private T_IAS_Rotate v_rotate;
 
     /// <summary>
     /// Provide the list of installed Voice Triggers
@@ -51,8 +51,8 @@ namespace FS20_HudBar.Bar
       v_glideslope = new T_Glideslope( speaker ); m_triggerList.Add( v_glideslope );
       v_apAltHold = new T_AltHold( speaker ); m_triggerList.Add( v_apAltHold );
       v_airTemp = new T_OAT(speaker); m_triggerList.Add( v_airTemp );
-
       v_warnFuel = new T_WarnFuel( speaker ); m_triggerList.Add( v_warnFuel );
+      v_rotate = new T_IAS_Rotate( speaker ); m_triggerList.Add( v_rotate );
 
       // load from settings
       string profile = AppSettings.Instance.VoiceCalloutProfile;
@@ -84,23 +84,13 @@ namespace FS20_HudBar.Bar
     }
 
     /// <summary>
-    /// Data Update pace
+    /// Register Observers to get Data Updates
     /// </summary>
-    /// <param name="dataRefName">The dataref name from the Sim data update</param>
-    public void UpdateHudVoice( string dataRefName )
+    public void RegisterObservers(  )
     {
       // Update all voice out items
-      v_parkbrake.UpdateState( SC.SimConnectClient.Instance.HudBarModule );
-      v_gear.UpdateState( SC.SimConnectClient.Instance.HudBarModule );
-      v_flaps.UpdateState( SC.SimConnectClient.Instance.HudBarModule );
-      v_airTemp.UpdateState( SC.SimConnectClient.Instance.HudBarModule );
-      v_warnFuel.UpdateState( null );
-
-      // In Air Only callouts
-      if ( !SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) {
-        v_waypointETE.UpdateState( SC.SimConnectClient.Instance.GpsModule );
-        v_glideslope.UpdateState( SC.SimConnectClient.Instance.AP_G1000Module );
-        v_apAltHold.UpdateState( SC.SimConnectClient.Instance.AP_G1000Module );
+      foreach (var trig in m_triggerList ) {
+        trig.RegisterObserver( );
       }
     }
 

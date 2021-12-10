@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "EGT";
+    public static readonly string Short = "EGT";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Engine EGT °F";
+    public static readonly string Desc = "Engine EGT °F";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

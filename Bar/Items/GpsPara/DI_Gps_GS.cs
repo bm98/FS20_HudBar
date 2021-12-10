@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "GS";
+    public static readonly string Short = "GS";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Groundspeed";
+    public static readonly string Desc = "Groundspeed";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

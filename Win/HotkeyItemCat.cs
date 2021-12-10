@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FS20_HudBar.Win
 {
-  class KeyboardHookItemCat : Dictionary<string, KeyboardHookItem>
+  class HotkeyItemCat : Dictionary<string, HotkeyItem>
   {
   }
 }

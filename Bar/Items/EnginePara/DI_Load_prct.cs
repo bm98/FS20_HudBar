@@ -23,6 +23,21 @@ namespace FS20_HudBar.Bar.Items
   class DI_Load_prct : DispItem
   {
     /// <summary>
+    /// The Label ID 
+    /// </summary>
+    public static readonly LItem LItem = LItem.LOAD_P;
+    /// <summary>
+    /// The GUI Name
+    /// </summary>
+    public static readonly string Short = "LOAD";
+    /// <summary>
+    /// The Configuration Description
+    /// </summary>
+    public static readonly string Desc = "Engine Pwr Load %";
+
+    #region HP calibration
+
+    /// <summary>
     /// Max HP Calibration storage
     /// </summary>
     static float[] s_maxHP = new float[]{ 180, 180, 180, 180}; // init 4 engines
@@ -58,18 +73,7 @@ namespace FS20_HudBar.Bar.Items
       return Calculator.LoadPrct( torq, erpm, s_maxHP[engine - 1] );
     }
 
-    /// <summary>
-    /// The Label ID 
-    /// </summary>
-    public static readonly LItem LItem = LItem.LOAD_P;
-    /// <summary>
-    /// The GUI Name
-    /// </summary>
-    public static string Short = "LOAD";
-    /// <summary>
-    /// The Configuration Description
-    /// </summary>
-    public static string Desc = "Engine Pwr Load %";
+    #endregion
 
     private readonly B_Base _label;
     private readonly V_Base _value1;

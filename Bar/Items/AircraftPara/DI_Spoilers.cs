@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "Sp-B";
+    public static readonly string Short = "Sp-B";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Spoiler / Speedbrakes";
+    public static readonly string Desc = "Spoiler / Speedbrakes";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "APR";
+    public static readonly string Short = "APR";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "AP APR and GS";
+    public static readonly string Desc = "AP APR and GS";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;

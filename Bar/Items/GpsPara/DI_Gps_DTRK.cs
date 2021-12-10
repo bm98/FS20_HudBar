@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "DTK";
+    public static readonly string Short = "DTK";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Desired track to WYP";
+    public static readonly string Desc = "Desired track to WYP";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

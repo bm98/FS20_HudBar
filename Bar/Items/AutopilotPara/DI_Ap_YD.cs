@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "YD";
+    public static readonly string Short = "YD";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "AP Yaw Damper";
+    public static readonly string Desc = "AP Yaw Damper";
 
     private readonly B_Base _label;
 

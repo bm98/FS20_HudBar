@@ -60,13 +60,13 @@ namespace FS20_HudBar
     }
 
     // Handles the RawInput from HID Keyboards
-    Win.KeyboardHookController _keyHook;
+    Win.HotkeyController _keyHook;
 
     // FS Input handlers
     private Dictionary<Hooks, SC.Input.InputHandler> _fsInputCat = new Dictionary<Hooks, SC.Input.InputHandler>();
 
     // Configuration Dialog
-    private readonly frmConfig CFG = new frmConfig( ); 
+    private readonly frmConfig CFG = new frmConfig( );
 
     // need to stop processing while reconfiguring the bar
     private bool m_initDone = false;
@@ -150,7 +150,7 @@ namespace FS20_HudBar
           catch { }
         }
         // remove all cat entries
-        _fsInputCat.Clear( ); 
+        _fsInputCat.Clear( );
       }
     }
 
@@ -177,7 +177,7 @@ namespace FS20_HudBar
     internal string InGameHints( )
     {
       string ret = "";
-      foreach(var hi in _fsInputCat ) {
+      foreach ( var hi in _fsInputCat ) {
         ret += $"{hi.Key} -> {hi.Value.InputActionString}\n";
       }
       if ( string.IsNullOrEmpty( ret ) ) {
@@ -198,24 +198,26 @@ namespace FS20_HudBar
     {
       if ( enabled ) {
         if ( _keyHook == null ) {
-          _keyHook = new Win.KeyboardHookController( Handle );
+          _keyHook = new Win.HotkeyController( Handle );
         }
         _keyHook.KeyHandling( false ); // disable momentarily
 
         _keyHook.RemoveAllKeys( );
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD0, Win.KeyModifiers.RCtrl, Hooks.Show_Hide.ToString(), OnHookKey );
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD1, Win.KeyModifiers.RCtrl, Hooks.Profile_1.ToString( ), OnHookKey );
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD2, Win.KeyModifiers.RCtrl, Hooks.Profile_2.ToString( ), OnHookKey );
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD3, Win.KeyModifiers.RCtrl, Hooks.Profile_3.ToString( ), OnHookKey );
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD4, Win.KeyModifiers.RCtrl, Hooks.Profile_4.ToString( ), OnHookKey );
-        _keyHook.AddKey( Win.VirtualKey.NUMPAD5, Win.KeyModifiers.RCtrl, Hooks.Profile_5.ToString( ), OnHookKey );
+        _keyHook.AddKey( Keys.NumPad0, Win.KeyModifiers.RCtrl, Hooks.Show_Hide.ToString( ), OnHookKey );
+        _keyHook.AddKey( Keys.NumPad1, Win.KeyModifiers.RCtrl, Hooks.Profile_1.ToString( ), OnHookKey );
+        _keyHook.AddKey( Keys.NumPad2, Win.KeyModifiers.RCtrl, Hooks.Profile_2.ToString( ), OnHookKey );
+        _keyHook.AddKey( Keys.NumPad3, Win.KeyModifiers.RCtrl, Hooks.Profile_3.ToString( ), OnHookKey );
+        _keyHook.AddKey( Keys.NumPad4, Win.KeyModifiers.RCtrl, Hooks.Profile_4.ToString( ), OnHookKey );
+        _keyHook.AddKey( Keys.NumPad5, Win.KeyModifiers.RCtrl, Hooks.Profile_5.ToString( ), OnHookKey );
 
         _keyHook.KeyHandling( true );
       }
       else {
-        // disable - we cannot unhook the RawInput 
+        // disable - we cannot unhook the RawInputLib / not currently used anyway 
         _keyHook?.KeyHandling( false );
         _keyHook?.RemoveAllKeys( );
+        _keyHook?.Dispose( );
+        _keyHook = null;
       }
     }
 
@@ -374,6 +376,10 @@ namespace FS20_HudBar
       AppSettings.Instance.Save( );
       // stop connecting tries
       timer1.Enabled = false;
+
+      // Unhook Hotkeys
+      SetupKeyboardHook( false );
+      SetupInGameHook( false );
 
       // disconnect from Sim if needed
       if ( SC.SimConnectClient.Instance.IsConnected ) {
@@ -904,6 +910,9 @@ namespace FS20_HudBar
           }
           m_scGracePeriod--;
         }
+        // Voice is disabled when a new HUD is created, so enable if not yet done
+        // The timer is enabled after InitGUI - so this one is always 5 sec later which should avoid the early takling..
+        HUD.VoiceEnabled = true;
       }
       else {
         // If not connected try again

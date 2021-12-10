@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "ITT";
+    public static readonly string Short = "ITT";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Turbine ITT °C";
+    public static readonly string Desc = "Turbine ITT °C";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

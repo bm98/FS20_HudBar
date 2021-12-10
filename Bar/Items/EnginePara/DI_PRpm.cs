@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "P-RPM";
+    public static readonly string Short = "P-RPM";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Propeller RPM";
+    public static readonly string Desc = "Propeller RPM";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

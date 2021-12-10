@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "Enroute";
+    public static readonly string Short = "Enroute";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Enroute Times (WP/Tot)";
+    public static readonly string Desc = "Enroute Times (WP/Tot)";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;

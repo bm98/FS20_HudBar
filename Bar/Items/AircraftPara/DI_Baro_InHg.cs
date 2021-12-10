@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "BARO";
+    public static readonly string Short = "BARO";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Baro Setting InHg";
+    public static readonly string Desc = "Baro Setting InHg";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;

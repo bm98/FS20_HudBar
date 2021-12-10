@@ -61,12 +61,4 @@ SOFTWARE.
 
 //---------------------------------------------------------
 
-RawInputLib supplied as DLL based on:
-https://www.codeproject.com/Articles/17123/Using-Raw-Input-from-C-to-handle-multiple-keyboard
-Emma Burrows, Steve Messer  9 Mar 2015
-LGPL3  https://opensource.org/licenses/lgpl-3.0.html
-Downloaded as rawinput_latest.zip - 106.4 KB (08-Dec-2021)
-
-//---------------------------------------------------------
-
 

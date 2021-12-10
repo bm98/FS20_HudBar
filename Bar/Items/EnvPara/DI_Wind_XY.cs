@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "WIND";
+    public static readonly string Short = "WIND";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Wind cross / head kt";
+    public static readonly string Desc = "Wind cross / head kt";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

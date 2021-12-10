@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "RAv";
+    public static readonly string Short = "RAv";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Aircraft RA ft audible";
+    public static readonly string Desc = "Aircraft RA ft audible";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

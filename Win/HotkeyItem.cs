@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace FS20_HudBar.Win
 {
   /// <summary>
   /// A reportable item
   /// </summary>
-  internal class KeyboardHookItem
+  internal class HotkeyItem
   {
     private int _virtualKey;
     private KeyModifiers _keyModifiers;
@@ -23,7 +24,7 @@ namespace FS20_HudBar.Win
     /// <param name="modifiers">A Modifier Map</param>
     /// <param name="tag">A unique tag</param>
     /// <param name="onKey">A method to call (arg will be the tag when called)</param>
-    public KeyboardHookItem( VirtualKey key, KeyModifiers modifiers, string tag, Action<string> onKey )
+    public HotkeyItem( Keys key, KeyModifiers modifiers, string tag, Action<string> onKey )
     {
       _virtualKey = (int)key;
       _keyModifiers = modifiers;

@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "NAV";
+    public static readonly string Short = "NAV";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "AP NAV and Source";
+    public static readonly string Desc = "AP NAV and Source";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;

@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "BRG";
+    public static readonly string Short = "BRG";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Bearing to WYP (mag)";
+    public static readonly string Desc = "Bearing to WYP (mag)";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

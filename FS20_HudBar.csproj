@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>33</ApplicationRevision>
-    <ApplicationVersion>0.38.0.33</ApplicationVersion>
+    <ApplicationRevision>34</ApplicationRevision>
+    <ApplicationVersion>0.38.0.34</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -92,9 +92,6 @@
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <HintPath>..\..\Redist\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
-    <Reference Include="RawInputLib">
-      <HintPath>..\..\Redist\RawInputLib.dll</HintPath>
-    </Reference>
     <Reference Include="SimConnectClient">
       <HintPath>..\..\Redist\SimConnectClient.dll</HintPath>
     </Reference>
@@ -114,7 +111,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppSettings.cs" />
+    <Compile Include="AApp\AppSettings.cs" />
     <Compile Include="Bar\Calculator.cs" />
     <Compile Include="Bar\DispItemCat.cs" />
     <Compile Include="Bar\Items\AircraftPara\DI_A_ETrim.cs">
@@ -417,12 +414,12 @@
     <Compile Include="Config\FlpHandler.cs" />
     <Compile Include="Config\ProfileStore.cs" />
     <Compile Include="Config\CProfile.cs" />
-    <Compile Include="AirportMgr.cs" />
+    <Compile Include="AApp\AirportMgr.cs" />
     <Compile Include="Bar\FltMgr.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="AApp\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
+    <Compile Include="AApp\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Config\frmConfig.cs">
@@ -431,10 +428,10 @@
     <Compile Include="Config\frmConfig.Designer.cs">
       <DependentUpon>frmConfig.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmGui.cs">
+    <Compile Include="AApp\frmGui.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmGui.Designer.cs">
+    <Compile Include="AApp\frmGui.Designer.cs">
       <DependentUpon>frmGui.cs</DependentUpon>
     </Compile>
     <Compile Include="Bar\Items\SimPara\DI_SimRate.cs">
@@ -587,9 +584,9 @@
     </Compile>
     <Compile Include="Bar\HudBar.cs" />
     <Compile Include="Bar\HudMetar.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="AApp\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Conversions.cs" />
+    <Compile Include="AApp\Conversions.cs" />
     <Compile Include="Triggers\Base\EventProcBinary.cs" />
     <Compile Include="Triggers\Base\EventProc.cs" />
     <Compile Include="Triggers\Base\EventProcFloat.cs" />
@@ -606,22 +603,24 @@
     <Compile Include="Triggers\T_Gear.cs" />
     <Compile Include="Triggers\Base\TriggerInteger.cs" />
     <Compile Include="Triggers\T_Glideslope.cs" />
+    <Compile Include="Triggers\T_IAS_Rotate.cs" />
     <Compile Include="Triggers\T_OAT.cs" />
     <Compile Include="Triggers\T_RAcallout.cs" />
     <Compile Include="Triggers\T_WarnFuel.cs" />
     <Compile Include="Triggers\T_WaypointETE.cs" />
-    <Compile Include="Win\KeyboardHookController.cs" />
-    <Compile Include="Win\KeyboardHookItem.cs" />
-    <Compile Include="Win\KeyboardHookItemCat.cs" />
-    <Compile Include="Win\WinApi_InputConst.cs" />
-    <Compile Include="WPTracker.cs" />
-    <EmbeddedResource Include="Form1.resx">
+    <Compile Include="Win\GlobalKbdHook.cs" />
+    <Compile Include="Win\GlobalKbdHookEventArgs.cs" />
+    <Compile Include="Win\HotkeyController.cs" />
+    <Compile Include="Win\HotkeyItem.cs" />
+    <Compile Include="Win\HotkeyItemCat.cs" />
+    <Compile Include="AApp\WPTracker.cs" />
+    <EmbeddedResource Include="AApp\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Config\frmConfig.resx">
       <DependentUpon>frmConfig.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmGui.resx">
+    <EmbeddedResource Include="AApp\frmGui.resx">
       <DependentUpon>frmGui.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -26,11 +26,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "ATC";
+    public static readonly string Short = "ATC";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "ATC assigned Alt/Hdg";
+    public static readonly string Desc = "ATC assigned Alt/Hdg";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

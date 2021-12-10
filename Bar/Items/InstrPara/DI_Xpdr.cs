@@ -26,11 +26,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "XPDR";
+    public static readonly string Short = "XPDR";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Transponder Code/Status";
+    public static readonly string Desc = "Transponder Code/Status";
 
     private readonly V_Base _label;
     private readonly V_Base _value1; // Code

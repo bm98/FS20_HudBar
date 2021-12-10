@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "R-Trim";
+    public static readonly string Short = "R-Trim";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Rudder Trim";
+    public static readonly string Desc = "Rudder Trim";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;

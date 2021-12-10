@@ -172,6 +172,14 @@ namespace FS20_HudBar.Bar
     public HudVoice VoicePack => m_voicePack;
 
     /// <summary>
+    /// Enable or disable the Voice Out
+    /// </summary>
+    public bool VoiceEnabled {
+      get => m_speech.Enabled;
+      set => m_speech.Enabled = value;
+    }
+
+    /// <summary>
     /// Returns the Show state of an item
     /// </summary>
     /// <param name="item">A Label item</param>
@@ -235,6 +243,7 @@ namespace FS20_HudBar.Bar
       KeyboardHook = keyboardHook;
       InGameHook = inGameHook;
       FltAutoSave = (FSimClientIF.FlightPlanMode)autoSave;
+      VoiceEnabled = false; // disable, else we get early talks..
       VoiceName = voiceName;
       _ = m_speech.SetVoice( VoiceName );
 
@@ -448,6 +457,8 @@ namespace FS20_HudBar.Bar
           }
         }
       }
+      // VoicePack Data Registration (as we cleared all above..)
+      m_voicePack.RegisterObservers( );
     }
 
     #region Update Content and Settings
@@ -465,7 +476,7 @@ namespace FS20_HudBar.Bar
       // ATC Flightplan  - LOCK the flightplan while using it, else the Asynch Update may change it ..
       // ATC Airport
       AirportMgr.Update( AtcFlightPlan.Destination ); // maintain APT (we should always have a Destination here)
-                                                             // Load Remaining Plan if the WYP or Flightplan has changed
+                                                      // Load Remaining Plan if the WYP or Flightplan has changed
       if ( WPTracker.HasChanged || FltMgr.HasChanged ) {
         string tt = AtcFlightPlan.RemainingPlan( WPTracker.Read( ) );
         this.ToolTipFP.SetToolTip( this.DispItem( LItem.GPS_WYP ).Label, tt );
@@ -483,12 +494,8 @@ namespace FS20_HudBar.Bar
         this.ToolTipFP.SetToolTip( this.DispItem( LItem.ATC_ALT_HDG ).Label, tt );
         this.DispItem( LItem.ATC_ALT_HDG ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
         // commit that we read the changes of the Flight Plan
-        FltMgr.Read( ); 
+        FltMgr.Read( );
       }
-
-      // VoicePack Alert and message Update
-      // TODO ... ONLY IF VOICEPACK ENABLED THEN
-      m_voicePack.UpdateHudVoice( dataRefName );
 
     }
 

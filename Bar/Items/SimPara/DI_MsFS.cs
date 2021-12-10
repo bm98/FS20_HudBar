@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "MSFS";
+    public static readonly string Short = "MSFS";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "MSFS Status";
+    public static readonly string Desc = "MSFS Status";
 
     private readonly B_Base _label;
 

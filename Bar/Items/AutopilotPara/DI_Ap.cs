@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "≡AP≡";
+    public static readonly string Short = "≡AP≡";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Autopilot Master";
+    public static readonly string Desc = "Autopilot Master";
 
     private readonly B_Base _label;
 

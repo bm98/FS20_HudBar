@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "F-TOT";
+    public static readonly string Short = "F-TOT";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Fuel Total Gal";
+    public static readonly string Desc = "Fuel Total Gal";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

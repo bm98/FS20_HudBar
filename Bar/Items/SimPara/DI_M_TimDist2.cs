@@ -29,11 +29,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "CP 2";
+    public static readonly string Short = "CP 2";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Checkpoint 2";
+    public static readonly string Desc = "Checkpoint 2";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;

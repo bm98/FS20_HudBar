@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "FLC";
+    public static readonly string Short = "FLC";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "AP FLC / Set";
+    public static readonly string Desc = "AP FLC / Set";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;

@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "AoA";
+    public static readonly string Short = "AoA";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Angle of attack deg";
+    public static readonly string Desc = "Angle of attack deg";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

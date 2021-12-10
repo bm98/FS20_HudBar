@@ -25,11 +25,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "AFTB";
+    public static readonly string Short = "AFTB";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "Afterburner %";
+    public static readonly string Desc = "Afterburner %";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;

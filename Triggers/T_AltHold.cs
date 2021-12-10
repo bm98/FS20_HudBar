@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
 using FSimClientIF.Modules;
@@ -21,14 +22,24 @@ namespace FS20_HudBar.Triggers
   class T_AltHold : TriggerBinary
   {
     /// <summary>
+    /// Calls to register for dataupdates
+    /// </summary>
+    public override void RegisterObserver( )
+    {
+      SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( m_name, OnDataArrival );
+    }
+
+    /// <summary>
     /// Update the internal state from the datasource
     /// </summary>
     /// <param name="dataSource">An IAP_G1000 object from the FSim library</param>
-    protected override void UpdateStateLow( object dataSource )
+    protected override void OnDataArrival( string dataRefName )
     {
-      if ( !( dataSource is IAP_G1000 ) ) throw new ArgumentException( "Needs an IAP_G1000 argument" ); // Program ERROR
+      if ( !Enabled ) return; // not enabled
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity, capture odd cases
+      if ( SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) return; // not while on ground
 
-      var ds = (dataSource as IAP_G1000);
+      var ds = SC.SimConnectClient.Instance.AP_G1000Module;
 
       if ( ds.ALT_setting_ft < 8000 ) {
         m_actions.First( ).Value.Text = $"Holding {(int)ds.ALT_setting_ft } feet";

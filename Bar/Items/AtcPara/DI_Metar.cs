@@ -30,11 +30,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static string Short = "METAR";
+    public static readonly string Short = "METAR";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static string Desc = "METAR Close to location";
+    public static readonly string Desc = "METAR Close to location";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;

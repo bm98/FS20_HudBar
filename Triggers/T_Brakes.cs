@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using SC = SimConnectClient;
+
 using FS20_HudBar.Triggers.Base;
 using FSimClientIF.Modules;
 
@@ -20,14 +22,23 @@ namespace FS20_HudBar.Triggers
   class T_Brakes : TriggerBinary
   {
     /// <summary>
+    /// Calls to register for dataupdates
+    /// </summary>
+    public override void RegisterObserver( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.AddObserver( m_name, OnDataArrival );
+    }
+
+    /// <summary>
     /// Update the internal state from the datasource
     /// </summary>
     /// <param name="dataSource">An IAircraft object from the FSim library</param>
-    protected override void UpdateStateLow( object dataSource )
+    protected override void OnDataArrival( string dataRefName )
     {
-      if ( !( dataSource is IHudBar ) ) throw new ArgumentException( "Needs an IHudBar argument" ); // Program ERROR
+      if ( !Enabled ) return; // not enabled
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity, capture odd cases
 
-      var ds = (dataSource as IHudBar);
+      var ds = SC.SimConnectClient.Instance.HudBarModule;
       DetectStateChange( ds.Parkbrake_on );
     }
 
@@ -41,7 +52,7 @@ namespace FS20_HudBar.Triggers
       : base( speaker )
     {
       m_name = "Parkingbrake";
-      m_test = "Parkingbrake Applied";
+      m_test = "Parkingbrake Set";
 
       // add the proc most likely to be hit as the first - saves some computing time on the long run
       this.AddProc( new EventProcBinary( ) { TriggerState = false, Callback = Say, Text = "Parkingbrake Released" } );
