@@ -197,18 +197,20 @@ namespace FS20_HudBar
     private void SetupKeyboardHook( bool enabled )
     {
       if ( enabled ) {
+        if ( HUD == null ) return; // no HUD so far - ignore this one
+
         if ( _keyHook == null ) {
           _keyHook = new Win.HotkeyController( Handle );
         }
         _keyHook.KeyHandling( false ); // disable momentarily
-
+        // reload the bindings
         _keyHook.RemoveAllKeys( );
-        _keyHook.AddKey( Keys.NumPad0, Win.KeyModifiers.RCtrl, Hooks.Show_Hide.ToString( ), OnHookKey );
-        _keyHook.AddKey( Keys.NumPad1, Win.KeyModifiers.RCtrl, Hooks.Profile_1.ToString( ), OnHookKey );
-        _keyHook.AddKey( Keys.NumPad2, Win.KeyModifiers.RCtrl, Hooks.Profile_2.ToString( ), OnHookKey );
-        _keyHook.AddKey( Keys.NumPad3, Win.KeyModifiers.RCtrl, Hooks.Profile_3.ToString( ), OnHookKey );
-        _keyHook.AddKey( Keys.NumPad4, Win.KeyModifiers.RCtrl, Hooks.Profile_4.ToString( ), OnHookKey );
-        _keyHook.AddKey( Keys.NumPad5, Win.KeyModifiers.RCtrl, Hooks.Profile_5.ToString( ), OnHookKey );
+        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Show_Hide ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Show_Hide], Hooks.Show_Hide.ToString( ), OnHookKey );
+        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_1 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_1], Hooks.Profile_1.ToString( ), OnHookKey );
+        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_2 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_2], Hooks.Profile_2.ToString( ), OnHookKey );
+        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_3 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_3], Hooks.Profile_3.ToString( ), OnHookKey );
+        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_4 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_4], Hooks.Profile_4.ToString( ), OnHookKey );
+        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_5 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_5], Hooks.Profile_5.ToString( ), OnHookKey );
 
         _keyHook.KeyHandling( true );
       }
@@ -407,8 +409,16 @@ namespace FS20_HudBar
       if ( CFG.ShowDialog( this ) == DialogResult.OK ) {
         // Save all configuration properties
         AppSettings.Instance.ShowUnits = HUD.ShowUnits;
+
+        AppSettings.Instance.HKShowHide = HUD.Hotkeys.HotkeyString( Hotkeys.Show_Hide );
+        AppSettings.Instance.HKProfile1 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_1 );
+        AppSettings.Instance.HKProfile2 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_2 );
+        AppSettings.Instance.HKProfile3 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_3 );
+        AppSettings.Instance.HKProfile4 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_4 );
+        AppSettings.Instance.HKProfile5 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_5 );
         AppSettings.Instance.KeyboardHook = HUD.KeyboardHook;
         AppSettings.Instance.InGameHook = HUD.InGameHook;
+
         AppSettings.Instance.FltAutoSaveATC = (int)HUD.FltAutoSave;
         AppSettings.Instance.VoiceName = HUD.VoiceName;
 
@@ -628,10 +638,6 @@ namespace FS20_HudBar
       m_initDone = false; // stop updating values while reconfiguring
       SynchGUIVisible( false ); // hide, else we see all kind of shaping
 
-      // reread after config change
-      SetupKeyboardHook( AppSettings.Instance.KeyboardHook );
-      SetupInGameHook( AppSettings.Instance.InGameHook );
-
       SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode = (FSimClientIF.FlightPlanMode)AppSettings.Instance.FltAutoSaveATC;
       SC.SimConnectClient.Instance.FlightPlanModule.Enabled = ( SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode != FSimClientIF.FlightPlanMode.Disabled );
 
@@ -646,11 +652,23 @@ namespace FS20_HudBar
       mSelProfile.Text = m_profiles[m_selProfile].PName;
       this.Text = ( string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance ) + $" HudBar: {m_profiles[m_selProfile].PName}          - by bm98ch";
 
+      // create a catalog from Settings (serialized as item strings..)
+      var _hotkeycat = new WinHotkeyCat();
+      _hotkeycat.AddHotkeyString( Hotkeys.Show_Hide, AppSettings.Instance.HKShowHide );
+      _hotkeycat.AddHotkeyString( Hotkeys.Profile_1, AppSettings.Instance.HKProfile1 );
+      _hotkeycat.AddHotkeyString( Hotkeys.Profile_2, AppSettings.Instance.HKProfile2 );
+      _hotkeycat.AddHotkeyString( Hotkeys.Profile_3, AppSettings.Instance.HKProfile3 );
+      _hotkeycat.AddHotkeyString( Hotkeys.Profile_4, AppSettings.Instance.HKProfile4 );
+      _hotkeycat.AddHotkeyString( Hotkeys.Profile_5, AppSettings.Instance.HKProfile5 );
       // start from scratch
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
-                          AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook,
+                          AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook, _hotkeycat,
                           AppSettings.Instance.FltAutoSaveATC,
                           m_profiles[m_selProfile], AppSettings.Instance.VoiceName );
+
+      // reread after config change
+      SetupKeyboardHook( AppSettings.Instance.KeyboardHook );
+      SetupInGameHook( AppSettings.Instance.InGameHook );
 
       // prepare to create the content as bar or tile (may be switch to Window later if needed)
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc.

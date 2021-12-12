@@ -13,7 +13,7 @@ namespace FS20_HudBar.Win
   internal class HotkeyItem
   {
     private int _virtualKey;
-    private KeyModifiers _keyModifiers;
+    private KeyModifier _keyModifiers;
     public string Tag { get; private set; }
     private Action<string> _OnKey;
 
@@ -24,7 +24,7 @@ namespace FS20_HudBar.Win
     /// <param name="modifiers">A Modifier Map</param>
     /// <param name="tag">A unique tag</param>
     /// <param name="onKey">A method to call (arg will be the tag when called)</param>
-    public HotkeyItem( Keys key, KeyModifiers modifiers, string tag, Action<string> onKey )
+    public HotkeyItem( Keys key, KeyModifier modifiers, string tag, Action<string> onKey )
     {
       _virtualKey = (int)key;
       _keyModifiers = modifiers;
@@ -46,7 +46,7 @@ namespace FS20_HudBar.Win
     /// <param name="key">A virtual Key</param>
     /// <param name="modMap">A Modifier Map</param>
     /// <returns>True for a Match</returns>
-    public bool HitTest( int key, KeyModifiers modMap )
+    public bool HitTest( int key, KeyModifier modMap )
     {
       //Console.WriteLine( $"HitTest: {key}-{modMap}  > {_virtualKey}-{_keyModifiers}" );
 
@@ -58,7 +58,7 @@ namespace FS20_HudBar.Win
     /// </summary>
     /// <param name="key">A virtual Key</param>
     /// <param name="modMap">A Modifier Map</param>
-    public void TestAndCall( int key, KeyModifiers modMap )
+    public void TestAndCall( int key, KeyModifier modMap )
     {
       if ( HitTest( key, modMap ) )
         OnKey( );

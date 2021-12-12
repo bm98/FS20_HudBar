@@ -128,6 +128,45 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string HKShowHide {
+      get { return (string)this["HKShowHide"]; }
+      set { this["HKShowHide"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string HKProfile1 {
+      get { return (string)this["HKProfile1"]; }
+      set { this["HKProfile1"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string HKProfile2 {
+      get { return (string)this["HKProfile2"]; }
+      set { this["HKProfile2"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string HKProfile3 {
+      get { return (string)this["HKProfile3"]; }
+      set { this["HKProfile3"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string HKProfile4 {
+      get { return (string)this["HKProfile4"]; }
+      set { this["HKProfile4"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string HKProfile5 {
+      get { return (string)this["HKProfile5"]; }
+      set { this["HKProfile5"] = value; }
+    }
+
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "False" )]
     public bool KeyboardHook {
       get { return (bool)this["KeyboardHook"]; }

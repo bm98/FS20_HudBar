@@ -15,7 +15,7 @@ namespace FS20_HudBar.Win
   ///  Can be ORed (|) together for multiple modifiers
   /// </summary>
   [Flags]
-  public enum KeyModifiers
+  public enum KeyModifier
   {
     None   =  0x00,
     LAlt   =  0x01,
@@ -42,7 +42,27 @@ namespace FS20_HudBar.Win
     private HotkeyItemCat _cat;
 
     // current modifier pattern
-    private KeyModifiers _modifiers;
+    private KeyModifier _modifiers;
+
+
+    /// <summary>
+    /// Translate from WinKey to our Modifiers
+    /// </summary>
+    /// <param name="winKey">A Win Key</param>
+    /// <returns>A KeyModifier</returns>
+    private static KeyModifier GetModFromWinKey( Keys winKey )
+    {
+      switch ( winKey ) {
+        case Keys.LControlKey: return KeyModifier.LCtrl;
+        case Keys.RControlKey: return KeyModifier.RCtrl;
+        case Keys.LShiftKey: return KeyModifier.LShift;
+        case Keys.RShiftKey: return KeyModifier.RShift;
+        case Keys.LMenu: return KeyModifier.LAlt;
+        case Keys.RMenu: return KeyModifier.RAlt;
+        default: return KeyModifier.None;
+      }
+    }
+
 
     public HotkeyController( IntPtr handle )
     {
@@ -94,11 +114,30 @@ namespace FS20_HudBar.Win
     /// <param name="modifierPattern">The Key Modifier pattern</param>
     /// <param name="tag">A unique ID</param>
     /// <param name="onKey">An Action(string) which is exec when the Hotkey is pressed</param>
-    public void AddKey( Keys key, KeyModifiers modifierPattern, string tag, Action<string> onKey )
+    public void AddKey( Keys key, KeyModifier modifierPattern, string tag, Action<string> onKey )
     {
       RemoveKey( tag );
       var item = new HotkeyItem(key, modifierPattern, tag, onKey);
       _cat.Add( tag, item );
+    }
+
+    /// <summary>
+    /// Add a Hotkey to the list (no checks for potentially problematic cases here..)
+    ///  NOTE: The Action may only last some milliseconds, else the KeyHook will be unhooked by Windows (see doc)
+    /// </summary>
+    /// <param name="hotkey"></param>
+    /// <param name="tag">A unique ID</param>
+    /// <param name="onKey">An Action(string) which is exec when the Hotkey is pressed</param>
+    public void AddKey( WinHotkey hotkey, string tag, Action<string> onKey )
+    {
+      if ( !hotkey.isValid ) return; // sanity
+
+      // translate from WinHotkey
+      KeyModifier modifierPattern = KeyModifier.None;
+      foreach(var mod in hotkey.Modifier ) {
+        modifierPattern |= GetModFromWinKey( mod );
+      }     
+      AddKey( hotkey.Key, modifierPattern, tag, onKey );
     }
 
 
@@ -121,21 +160,21 @@ namespace FS20_HudBar.Win
       // maintain the currently held down modifiers
       if ( e.KeyDown ) {
         // pressed
-        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.LMenu ) ? KeyModifiers.LAlt : KeyModifiers.None;
-        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.RMenu ) ? KeyModifiers.RAlt : KeyModifiers.None;
-        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.LControlKey ) ? KeyModifiers.LCtrl : KeyModifiers.None;
-        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.RControlKey ) ? KeyModifiers.RCtrl : KeyModifiers.None;
-        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.LShiftKey ) ? KeyModifiers.LShift : KeyModifiers.None;
-        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.RShiftKey ) ? KeyModifiers.RShift : KeyModifiers.None;
+        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.LMenu ) ? KeyModifier.LAlt : KeyModifier.None;
+        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.RMenu ) ? KeyModifier.RAlt : KeyModifier.None;
+        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.LControlKey ) ? KeyModifier.LCtrl : KeyModifier.None;
+        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.RControlKey ) ? KeyModifier.RCtrl : KeyModifier.None;
+        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.LShiftKey ) ? KeyModifier.LShift : KeyModifier.None;
+        _modifiers |= ( e.KeyboardData.VirtualCode == (int)Keys.RShiftKey ) ? KeyModifier.RShift : KeyModifier.None;
       }
       else {
         // released
-        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.LMenu ) ? ~KeyModifiers.LAlt : ~KeyModifiers.None;
-        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.RMenu ) ? ~KeyModifiers.RAlt : ~KeyModifiers.None;
-        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.LControlKey ) ? ~KeyModifiers.LCtrl : ~KeyModifiers.None;
-        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.RControlKey ) ? ~KeyModifiers.RCtrl : ~KeyModifiers.None;
-        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.LShiftKey ) ? ~KeyModifiers.LShift : ~KeyModifiers.None;
-        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.RShiftKey ) ? ~KeyModifiers.RShift : ~KeyModifiers.None;
+        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.LMenu ) ? ~KeyModifier.LAlt : ~KeyModifier.None;
+        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.RMenu ) ? ~KeyModifier.RAlt : ~KeyModifier.None;
+        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.LControlKey ) ? ~KeyModifier.LCtrl : ~KeyModifier.None;
+        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.RControlKey ) ? ~KeyModifier.RCtrl : ~KeyModifier.None;
+        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.LShiftKey ) ? ~KeyModifier.LShift : ~KeyModifier.None;
+        _modifiers &= ( e.KeyboardData.VirtualCode == (int)Keys.RShiftKey ) ? ~KeyModifier.RShift : ~KeyModifier.None;
       }
 
       //Console.WriteLine( $"{e.KeyDown,6} {e.KeyboardData.VirtualCode} {(Keys)e.KeyboardData.VirtualCode}  {e.KeyboardData.Flags}  {e.KeyboardData.AdditionalInformation}" );

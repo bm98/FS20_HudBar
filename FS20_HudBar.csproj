@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>34</ApplicationRevision>
-    <ApplicationVersion>0.38.0.34</ApplicationVersion>
+    <ApplicationRevision>35</ApplicationRevision>
+    <ApplicationVersion>0.39.0.35</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -412,6 +412,12 @@
     <Compile Include="Config\AcftMerges.cs" />
     <Compile Include="Config\DefaultProfiles.cs" />
     <Compile Include="Config\FlpHandler.cs" />
+    <Compile Include="Config\FrmHotkey.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\FrmHotkey.Designer.cs">
+      <DependentUpon>FrmHotkey.cs</DependentUpon>
+    </Compile>
     <Compile Include="Config\ProfileStore.cs" />
     <Compile Include="Config\CProfile.cs" />
     <Compile Include="AApp\AirportMgr.cs" />
@@ -614,6 +620,8 @@
     <Compile Include="Win\HotkeyItem.cs" />
     <Compile Include="Win\HotkeyItemCat.cs" />
     <Compile Include="AApp\WPTracker.cs" />
+    <Compile Include="Win\WinHotkey.cs" />
+    <Compile Include="Config\WinHotkeyCat.cs" />
     <EmbeddedResource Include="AApp\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -622,6 +630,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AApp\frmGui.resx">
       <DependentUpon>frmGui.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Config\FrmHotkey.resx">
+      <DependentUpon>FrmHotkey.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

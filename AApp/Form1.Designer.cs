@@ -46,12 +46,14 @@ namespace FS20_HudBar
       this.maDimm = new System.Windows.Forms.ToolStripMenuItem();
       this.maDark = new System.Windows.Forms.ToolStripMenuItem();
       this.mConfig = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.mExit = new System.Windows.Forms.ToolStripMenuItem();
       this.signProto = new System.Windows.Forms.Label();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
+      this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
       this.cMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -108,10 +110,12 @@ namespace FS20_HudBar
             this.toolStripSeparator1,
             this.mProfile,
             this.mAppearance,
+            this.toolStripSeparator2,
             this.mConfig,
+            this.toolStripSeparator3,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(161, 123);
+      this.cMenu.Size = new System.Drawing.Size(161, 135);
       // 
       // mSelProfile
       // 
@@ -210,6 +214,11 @@ namespace FS20_HudBar
       this.mConfig.Text = "Configure...";
       this.mConfig.Click += new System.EventHandler(this.mConfig_Click);
       // 
+      // toolStripSeparator2
+      // 
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
+      // 
       // mExit
       // 
       this.mExit.Name = "mExit";
@@ -288,6 +297,11 @@ namespace FS20_HudBar
       this.label1.UseCompatibleTextRendering = true;
       this.label1.Visible = false;
       // 
+      // toolStripSeparator3
+      // 
+      this.toolStripSeparator3.Name = "toolStripSeparator3";
+      this.toolStripSeparator3.Size = new System.Drawing.Size(157, 6);
+      // 
       // frmMain
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -356,6 +370,8 @@ namespace FS20_HudBar
     private System.Windows.Forms.ToolStripMenuItem maBright;
     private System.Windows.Forms.ToolStripMenuItem maDimm;
     private System.Windows.Forms.ToolStripMenuItem maDark;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
   }
 }
 

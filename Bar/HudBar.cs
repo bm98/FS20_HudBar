@@ -145,6 +145,11 @@ namespace FS20_HudBar.Bar
     /// Show Units if true
     /// </summary>
     public bool ShowUnits { get; private set; } = false;
+    
+    /// <summary>
+    /// The Configured Hotkeys
+    /// </summary>
+    public WinHotkeyCat Hotkeys { get; private set; }
 
     /// <summary>
     /// Use Keyboard Hook if true
@@ -234,12 +239,13 @@ namespace FS20_HudBar.Bar
     /// <param name="cProfile">The current Profile</param>
     /// <param name="voiceName">The current VoiceName</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
-                      bool showUnits, bool keyboardHook, bool inGameHook,
+                      bool showUnits, bool keyboardHook, bool inGameHook, WinHotkeyCat hotkeys,
                       int autoSave, CProfile cProfile, string voiceName )
     {
       // just save them in the HUD mainly for config purpose
       m_profile = cProfile;
       ShowUnits = showUnits;
+      Hotkeys = hotkeys.Copy( );
       KeyboardHook = keyboardHook;
       InGameHook = inGameHook;
       FltAutoSave = (FSimClientIF.FlightPlanMode)autoSave;
@@ -507,6 +513,15 @@ namespace FS20_HudBar.Bar
     public void SetShowUnits( bool showUnits )
     {
       ShowUnits = showUnits;
+    }
+
+    /// <summary>
+    /// Set the Hotkey Catalog
+    /// </summary>
+    /// <param name="hotkeys"></param>
+    public void SetHotkeys( WinHotkeyCat hotkeys )
+    {
+      Hotkeys = hotkeys.Copy( );      
     }
 
     /// <summary>

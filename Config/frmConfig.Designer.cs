@@ -31,6 +31,7 @@ namespace FS20_HudBar.Config
       this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmConfig));
       this.tlp = new System.Windows.Forms.TableLayoutPanel();
+      this.chkKeyboard = new System.Windows.Forms.CheckBox();
       this.flp1 = new System.Windows.Forms.FlowLayoutPanel();
       this.checkBox5 = new System.Windows.Forms.CheckBox();
       this.flp2 = new System.Windows.Forms.FlowLayoutPanel();
@@ -45,6 +46,7 @@ namespace FS20_HudBar.Config
       this.asdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.asdasdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.asdasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.txHkProfile5 = new System.Windows.Forms.TextBox();
       this.txP4 = new System.Windows.Forms.TextBox();
       this.txP3 = new System.Windows.Forms.TextBox();
       this.txP2 = new System.Windows.Forms.TextBox();
@@ -84,8 +86,12 @@ namespace FS20_HudBar.Config
       this.clbVoice = new System.Windows.Forms.CheckedListBox();
       this.cbxASave = new System.Windows.Forms.ComboBox();
       this.btDumpConfigs = new System.Windows.Forms.Button();
-      this.cbxKeyboard = new System.Windows.Forms.CheckBox();
-      this.cbxInGame = new System.Windows.Forms.CheckBox();
+      this.txHkShowHide = new System.Windows.Forms.TextBox();
+      this.txHkProfile1 = new System.Windows.Forms.TextBox();
+      this.txHkProfile2 = new System.Windows.Forms.TextBox();
+      this.txHkProfile3 = new System.Windows.Forms.TextBox();
+      this.txHkProfile4 = new System.Windows.Forms.TextBox();
+      this.chkInGame = new System.Windows.Forms.CheckBox();
       this.tlp.SuspendLayout();
       this.flp1.SuspendLayout();
       this.flp2.SuspendLayout();
@@ -103,66 +109,87 @@ namespace FS20_HudBar.Config
       this.tlp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
       this.tlp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
       this.tlp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-      this.tlp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 153F));
+      this.tlp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 154F));
+      this.tlp.Controls.Add(this.chkKeyboard, 5, 4);
       this.tlp.Controls.Add(this.flp1, 0, 1);
       this.tlp.Controls.Add(this.flp2, 1, 1);
       this.tlp.Controls.Add(this.flp3, 2, 1);
       this.tlp.Controls.Add(this.flp4, 3, 1);
       this.tlp.Controls.Add(this.txP5, 4, 0);
+      this.tlp.Controls.Add(this.txHkProfile5, 4, 3);
       this.tlp.Controls.Add(this.txP4, 3, 0);
       this.tlp.Controls.Add(this.txP3, 2, 0);
       this.tlp.Controls.Add(this.txP2, 1, 0);
       this.tlp.Controls.Add(this.txP1, 0, 0);
-      this.tlp.Controls.Add(this.cbxFontP1, 0, 2);
-      this.tlp.Controls.Add(this.cbxFontP2, 1, 2);
-      this.tlp.Controls.Add(this.cbxFontP3, 2, 2);
-      this.tlp.Controls.Add(this.cbxFontP4, 3, 2);
-      this.tlp.Controls.Add(this.cbxFontP5, 4, 2);
-      this.tlp.Controls.Add(this.cbxPlaceP1, 0, 3);
-      this.tlp.Controls.Add(this.cbxPlaceP2, 1, 3);
-      this.tlp.Controls.Add(this.cbxPlaceP3, 2, 3);
-      this.tlp.Controls.Add(this.cbxPlaceP4, 3, 3);
-      this.tlp.Controls.Add(this.cbxPlaceP5, 4, 3);
+      this.tlp.Controls.Add(this.cbxFontP1, 0, 4);
+      this.tlp.Controls.Add(this.cbxFontP2, 1, 4);
+      this.tlp.Controls.Add(this.cbxFontP3, 2, 4);
+      this.tlp.Controls.Add(this.cbxFontP4, 3, 4);
+      this.tlp.Controls.Add(this.cbxFontP5, 4, 4);
+      this.tlp.Controls.Add(this.cbxPlaceP1, 0, 5);
+      this.tlp.Controls.Add(this.cbxPlaceP2, 1, 5);
+      this.tlp.Controls.Add(this.cbxPlaceP3, 2, 5);
+      this.tlp.Controls.Add(this.cbxPlaceP4, 3, 5);
+      this.tlp.Controls.Add(this.cbxPlaceP5, 4, 5);
       this.tlp.Controls.Add(this.flp5, 4, 1);
-      this.tlp.Controls.Add(this.cbxKindP1, 0, 4);
-      this.tlp.Controls.Add(this.cbxKindP2, 1, 4);
-      this.tlp.Controls.Add(this.cbxKindP3, 2, 4);
-      this.tlp.Controls.Add(this.cbxKindP4, 3, 4);
-      this.tlp.Controls.Add(this.cbxKindP5, 4, 4);
-      this.tlp.Controls.Add(this.cbxCondP1, 0, 5);
-      this.tlp.Controls.Add(this.cbxCondP2, 1, 5);
-      this.tlp.Controls.Add(this.cbxCondP3, 2, 5);
-      this.tlp.Controls.Add(this.cbxCondP4, 3, 5);
-      this.tlp.Controls.Add(this.cbxCondP5, 4, 5);
-      this.tlp.Controls.Add(this.cbxUnits, 0, 7);
-      this.tlp.Controls.Add(this.cbxTrans1, 0, 6);
-      this.tlp.Controls.Add(this.cbxTrans2, 1, 6);
-      this.tlp.Controls.Add(this.cbxTrans3, 2, 6);
-      this.tlp.Controls.Add(this.cbxTrans4, 3, 6);
-      this.tlp.Controls.Add(this.cbxTrans5, 4, 6);
-      this.tlp.Controls.Add(this.cbxVoice, 1, 7);
+      this.tlp.Controls.Add(this.cbxKindP1, 0, 6);
+      this.tlp.Controls.Add(this.cbxKindP2, 1, 6);
+      this.tlp.Controls.Add(this.cbxKindP3, 2, 6);
+      this.tlp.Controls.Add(this.cbxKindP4, 3, 6);
+      this.tlp.Controls.Add(this.cbxKindP5, 4, 6);
+      this.tlp.Controls.Add(this.cbxCondP1, 0, 7);
+      this.tlp.Controls.Add(this.cbxCondP2, 1, 7);
+      this.tlp.Controls.Add(this.cbxCondP3, 2, 7);
+      this.tlp.Controls.Add(this.cbxCondP4, 3, 7);
+      this.tlp.Controls.Add(this.cbxCondP5, 4, 7);
+      this.tlp.Controls.Add(this.cbxUnits, 0, 9);
+      this.tlp.Controls.Add(this.cbxTrans1, 0, 8);
+      this.tlp.Controls.Add(this.cbxTrans2, 1, 8);
+      this.tlp.Controls.Add(this.cbxTrans3, 2, 8);
+      this.tlp.Controls.Add(this.cbxTrans4, 3, 8);
+      this.tlp.Controls.Add(this.cbxTrans5, 4, 8);
+      this.tlp.Controls.Add(this.cbxVoice, 1, 9);
       this.tlp.Controls.Add(this.textBox1, 5, 0);
-      this.tlp.Controls.Add(this.btCancel, 5, 7);
-      this.tlp.Controls.Add(this.btAccept, 4, 7);
+      this.tlp.Controls.Add(this.btCancel, 5, 9);
+      this.tlp.Controls.Add(this.btAccept, 4, 9);
       this.tlp.Controls.Add(this.clbVoice, 5, 1);
-      this.tlp.Controls.Add(this.cbxASave, 2, 7);
-      this.tlp.Controls.Add(this.btDumpConfigs, 5, 4);
-      this.tlp.Controls.Add(this.cbxKeyboard, 5, 2);
-      this.tlp.Controls.Add(this.cbxInGame, 5, 3);
+      this.tlp.Controls.Add(this.cbxASave, 2, 9);
+      this.tlp.Controls.Add(this.btDumpConfigs, 5, 8);
+      this.tlp.Controls.Add(this.txHkShowHide, 5, 3);
+      this.tlp.Controls.Add(this.txHkProfile1, 0, 3);
+      this.tlp.Controls.Add(this.txHkProfile2, 1, 3);
+      this.tlp.Controls.Add(this.txHkProfile3, 2, 3);
+      this.tlp.Controls.Add(this.txHkProfile4, 3, 3);
+      this.tlp.Controls.Add(this.chkInGame, 5, 5);
       this.tlp.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tlp.Location = new System.Drawing.Point(0, 0);
       this.tlp.Name = "tlp";
-      this.tlp.RowCount = 8;
+      this.tlp.RowCount = 10;
       this.tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 240F));
+      this.tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
       this.tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-      this.tlp.Size = new System.Drawing.Size(1003, 825);
+      this.tlp.Size = new System.Drawing.Size(934, 766);
       this.tlp.TabIndex = 1;
+      // 
+      // chkKeyboard
+      // 
+      this.chkKeyboard.AutoSize = true;
+      this.chkKeyboard.BackColor = System.Drawing.Color.Honeydew;
+      this.chkKeyboard.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.chkKeyboard.Location = new System.Drawing.Point(783, 579);
+      this.chkKeyboard.Name = "chkKeyboard";
+      this.chkKeyboard.Size = new System.Drawing.Size(148, 24);
+      this.chkKeyboard.TabIndex = 30;
+      this.chkKeyboard.Text = "Keyboard Hotkeys";
+      this.chkKeyboard.UseVisualStyleBackColor = false;
+      this.chkKeyboard.CheckedChanged += new System.EventHandler(this.chkKeyboard_CheckedChanged);
       // 
       // flp1
       // 
@@ -174,7 +201,8 @@ namespace FS20_HudBar.Config
       this.flp1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
       this.flp1.Location = new System.Drawing.Point(3, 33);
       this.flp1.Name = "flp1";
-      this.flp1.Size = new System.Drawing.Size(164, 599);
+      this.tlp.SetRowSpan(this.flp1, 2);
+      this.flp1.Size = new System.Drawing.Size(150, 510);
       this.flp1.TabIndex = 22;
       this.flp1.WrapContents = false;
       // 
@@ -198,9 +226,10 @@ namespace FS20_HudBar.Config
       this.flp2.Controls.Add(this.checkBox4);
       this.flp2.Dock = System.Windows.Forms.DockStyle.Fill;
       this.flp2.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-      this.flp2.Location = new System.Drawing.Point(173, 33);
+      this.flp2.Location = new System.Drawing.Point(159, 33);
       this.flp2.Name = "flp2";
-      this.flp2.Size = new System.Drawing.Size(164, 599);
+      this.tlp.SetRowSpan(this.flp2, 2);
+      this.flp2.Size = new System.Drawing.Size(150, 510);
       this.flp2.TabIndex = 21;
       this.flp2.WrapContents = false;
       // 
@@ -224,9 +253,10 @@ namespace FS20_HudBar.Config
       this.flp3.Controls.Add(this.checkBox3);
       this.flp3.Dock = System.Windows.Forms.DockStyle.Fill;
       this.flp3.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-      this.flp3.Location = new System.Drawing.Point(343, 33);
+      this.flp3.Location = new System.Drawing.Point(315, 33);
       this.flp3.Name = "flp3";
-      this.flp3.Size = new System.Drawing.Size(164, 599);
+      this.tlp.SetRowSpan(this.flp3, 2);
+      this.flp3.Size = new System.Drawing.Size(150, 510);
       this.flp3.TabIndex = 20;
       this.flp3.WrapContents = false;
       // 
@@ -250,9 +280,10 @@ namespace FS20_HudBar.Config
       this.flp4.Controls.Add(this.checkBox2);
       this.flp4.Dock = System.Windows.Forms.DockStyle.Fill;
       this.flp4.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-      this.flp4.Location = new System.Drawing.Point(513, 33);
+      this.flp4.Location = new System.Drawing.Point(471, 33);
       this.flp4.Name = "flp4";
-      this.flp4.Size = new System.Drawing.Size(164, 599);
+      this.tlp.SetRowSpan(this.flp4, 2);
+      this.flp4.Size = new System.Drawing.Size(150, 510);
       this.flp4.TabIndex = 19;
       this.flp4.WrapContents = false;
       // 
@@ -273,9 +304,9 @@ namespace FS20_HudBar.Config
       this.txP5.ContextMenuStrip = this.ctxMenu;
       this.txP5.Dock = System.Windows.Forms.DockStyle.Fill;
       this.txP5.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txP5.Location = new System.Drawing.Point(683, 3);
+      this.txP5.Location = new System.Drawing.Point(627, 3);
       this.txP5.Name = "txP5";
-      this.txP5.Size = new System.Drawing.Size(164, 23);
+      this.txP5.Size = new System.Drawing.Size(150, 23);
       this.txP5.TabIndex = 13;
       this.txP5.Text = "Profile 5";
       this.txP5.WordWrap = false;
@@ -315,14 +346,26 @@ namespace FS20_HudBar.Config
       this.asdasToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
       this.asdasToolStripMenuItem.Text = "asdas";
       // 
+      // txHkProfile5
+      // 
+      this.txHkProfile5.BackColor = System.Drawing.Color.Honeydew;
+      this.txHkProfile5.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.txHkProfile5.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txHkProfile5.Location = new System.Drawing.Point(627, 549);
+      this.txHkProfile5.Name = "txHkProfile5";
+      this.txHkProfile5.ReadOnly = true;
+      this.txHkProfile5.Size = new System.Drawing.Size(150, 22);
+      this.txHkProfile5.TabIndex = 43;
+      this.txHkProfile5.DoubleClick += new System.EventHandler(this.txHkProfile5_DoubleClick);
+      // 
       // txP4
       // 
       this.txP4.ContextMenuStrip = this.ctxMenu;
       this.txP4.Dock = System.Windows.Forms.DockStyle.Fill;
       this.txP4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txP4.Location = new System.Drawing.Point(513, 3);
+      this.txP4.Location = new System.Drawing.Point(471, 3);
       this.txP4.Name = "txP4";
-      this.txP4.Size = new System.Drawing.Size(164, 23);
+      this.txP4.Size = new System.Drawing.Size(150, 23);
       this.txP4.TabIndex = 12;
       this.txP4.Text = "Profile 4";
       this.txP4.WordWrap = false;
@@ -332,9 +375,9 @@ namespace FS20_HudBar.Config
       this.txP3.ContextMenuStrip = this.ctxMenu;
       this.txP3.Dock = System.Windows.Forms.DockStyle.Fill;
       this.txP3.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txP3.Location = new System.Drawing.Point(343, 3);
+      this.txP3.Location = new System.Drawing.Point(315, 3);
       this.txP3.Name = "txP3";
-      this.txP3.Size = new System.Drawing.Size(164, 23);
+      this.txP3.Size = new System.Drawing.Size(150, 23);
       this.txP3.TabIndex = 11;
       this.txP3.Text = "Profile 3";
       this.txP3.WordWrap = false;
@@ -344,9 +387,9 @@ namespace FS20_HudBar.Config
       this.txP2.ContextMenuStrip = this.ctxMenu;
       this.txP2.Dock = System.Windows.Forms.DockStyle.Fill;
       this.txP2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txP2.Location = new System.Drawing.Point(173, 3);
+      this.txP2.Location = new System.Drawing.Point(159, 3);
       this.txP2.Name = "txP2";
-      this.txP2.Size = new System.Drawing.Size(164, 23);
+      this.txP2.Size = new System.Drawing.Size(150, 23);
       this.txP2.TabIndex = 10;
       this.txP2.Text = "Profile 2";
       this.txP2.WordWrap = false;
@@ -358,7 +401,7 @@ namespace FS20_HudBar.Config
       this.txP1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.txP1.Location = new System.Drawing.Point(3, 3);
       this.txP1.Name = "txP1";
-      this.txP1.Size = new System.Drawing.Size(164, 23);
+      this.txP1.Size = new System.Drawing.Size(150, 23);
       this.txP1.TabIndex = 9;
       this.txP1.Text = "Profile 1";
       this.txP1.WordWrap = false;
@@ -370,9 +413,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFontP1.Location = new System.Drawing.Point(3, 638);
+      this.cbxFontP1.Location = new System.Drawing.Point(3, 579);
       this.cbxFontP1.Name = "cbxFontP1";
-      this.cbxFontP1.Size = new System.Drawing.Size(164, 23);
+      this.cbxFontP1.Size = new System.Drawing.Size(150, 23);
       this.cbxFontP1.TabIndex = 17;
       // 
       // cbxFontP2
@@ -382,9 +425,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFontP2.Location = new System.Drawing.Point(173, 638);
+      this.cbxFontP2.Location = new System.Drawing.Point(159, 579);
       this.cbxFontP2.Name = "cbxFontP2";
-      this.cbxFontP2.Size = new System.Drawing.Size(164, 23);
+      this.cbxFontP2.Size = new System.Drawing.Size(150, 23);
       this.cbxFontP2.TabIndex = 17;
       // 
       // cbxFontP3
@@ -394,9 +437,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFontP3.Location = new System.Drawing.Point(343, 638);
+      this.cbxFontP3.Location = new System.Drawing.Point(315, 579);
       this.cbxFontP3.Name = "cbxFontP3";
-      this.cbxFontP3.Size = new System.Drawing.Size(164, 23);
+      this.cbxFontP3.Size = new System.Drawing.Size(150, 23);
       this.cbxFontP3.TabIndex = 17;
       // 
       // cbxFontP4
@@ -406,9 +449,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFontP4.Location = new System.Drawing.Point(513, 638);
+      this.cbxFontP4.Location = new System.Drawing.Point(471, 579);
       this.cbxFontP4.Name = "cbxFontP4";
-      this.cbxFontP4.Size = new System.Drawing.Size(164, 23);
+      this.cbxFontP4.Size = new System.Drawing.Size(150, 23);
       this.cbxFontP4.TabIndex = 17;
       // 
       // cbxFontP5
@@ -418,9 +461,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxFontP5.Location = new System.Drawing.Point(683, 638);
+      this.cbxFontP5.Location = new System.Drawing.Point(627, 579);
       this.cbxFontP5.Name = "cbxFontP5";
-      this.cbxFontP5.Size = new System.Drawing.Size(164, 23);
+      this.cbxFontP5.Size = new System.Drawing.Size(150, 23);
       this.cbxFontP5.TabIndex = 17;
       // 
       // cbxPlaceP1
@@ -430,9 +473,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxPlaceP1.Location = new System.Drawing.Point(3, 668);
+      this.cbxPlaceP1.Location = new System.Drawing.Point(3, 609);
       this.cbxPlaceP1.Name = "cbxPlaceP1";
-      this.cbxPlaceP1.Size = new System.Drawing.Size(164, 23);
+      this.cbxPlaceP1.Size = new System.Drawing.Size(150, 23);
       this.cbxPlaceP1.TabIndex = 16;
       // 
       // cbxPlaceP2
@@ -442,9 +485,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxPlaceP2.Location = new System.Drawing.Point(173, 668);
+      this.cbxPlaceP2.Location = new System.Drawing.Point(159, 609);
       this.cbxPlaceP2.Name = "cbxPlaceP2";
-      this.cbxPlaceP2.Size = new System.Drawing.Size(164, 23);
+      this.cbxPlaceP2.Size = new System.Drawing.Size(150, 23);
       this.cbxPlaceP2.TabIndex = 16;
       // 
       // cbxPlaceP3
@@ -454,9 +497,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxPlaceP3.Location = new System.Drawing.Point(343, 668);
+      this.cbxPlaceP3.Location = new System.Drawing.Point(315, 609);
       this.cbxPlaceP3.Name = "cbxPlaceP3";
-      this.cbxPlaceP3.Size = new System.Drawing.Size(164, 23);
+      this.cbxPlaceP3.Size = new System.Drawing.Size(150, 23);
       this.cbxPlaceP3.TabIndex = 16;
       // 
       // cbxPlaceP4
@@ -466,9 +509,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxPlaceP4.Location = new System.Drawing.Point(513, 668);
+      this.cbxPlaceP4.Location = new System.Drawing.Point(471, 609);
       this.cbxPlaceP4.Name = "cbxPlaceP4";
-      this.cbxPlaceP4.Size = new System.Drawing.Size(164, 23);
+      this.cbxPlaceP4.Size = new System.Drawing.Size(150, 23);
       this.cbxPlaceP4.TabIndex = 16;
       // 
       // cbxPlaceP5
@@ -478,9 +521,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxPlaceP5.Location = new System.Drawing.Point(683, 668);
+      this.cbxPlaceP5.Location = new System.Drawing.Point(627, 609);
       this.cbxPlaceP5.Name = "cbxPlaceP5";
-      this.cbxPlaceP5.Size = new System.Drawing.Size(164, 23);
+      this.cbxPlaceP5.Size = new System.Drawing.Size(150, 23);
       this.cbxPlaceP5.TabIndex = 16;
       // 
       // flp5
@@ -491,9 +534,10 @@ namespace FS20_HudBar.Config
       this.flp5.Controls.Add(this.checkBox1);
       this.flp5.Dock = System.Windows.Forms.DockStyle.Fill;
       this.flp5.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-      this.flp5.Location = new System.Drawing.Point(683, 33);
+      this.flp5.Location = new System.Drawing.Point(627, 33);
       this.flp5.Name = "flp5";
-      this.flp5.Size = new System.Drawing.Size(164, 599);
+      this.tlp.SetRowSpan(this.flp5, 2);
+      this.flp5.Size = new System.Drawing.Size(150, 510);
       this.flp5.TabIndex = 18;
       this.flp5.WrapContents = false;
       // 
@@ -517,9 +561,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxKindP1.Location = new System.Drawing.Point(3, 698);
+      this.cbxKindP1.Location = new System.Drawing.Point(3, 639);
       this.cbxKindP1.Name = "cbxKindP1";
-      this.cbxKindP1.Size = new System.Drawing.Size(164, 23);
+      this.cbxKindP1.Size = new System.Drawing.Size(150, 23);
       this.cbxKindP1.TabIndex = 23;
       // 
       // cbxKindP2
@@ -529,9 +573,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxKindP2.Location = new System.Drawing.Point(173, 698);
+      this.cbxKindP2.Location = new System.Drawing.Point(159, 639);
       this.cbxKindP2.Name = "cbxKindP2";
-      this.cbxKindP2.Size = new System.Drawing.Size(164, 23);
+      this.cbxKindP2.Size = new System.Drawing.Size(150, 23);
       this.cbxKindP2.TabIndex = 23;
       // 
       // cbxKindP3
@@ -541,9 +585,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxKindP3.Location = new System.Drawing.Point(343, 698);
+      this.cbxKindP3.Location = new System.Drawing.Point(315, 639);
       this.cbxKindP3.Name = "cbxKindP3";
-      this.cbxKindP3.Size = new System.Drawing.Size(164, 23);
+      this.cbxKindP3.Size = new System.Drawing.Size(150, 23);
       this.cbxKindP3.TabIndex = 23;
       // 
       // cbxKindP4
@@ -553,9 +597,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxKindP4.Location = new System.Drawing.Point(513, 698);
+      this.cbxKindP4.Location = new System.Drawing.Point(471, 639);
       this.cbxKindP4.Name = "cbxKindP4";
-      this.cbxKindP4.Size = new System.Drawing.Size(164, 23);
+      this.cbxKindP4.Size = new System.Drawing.Size(150, 23);
       this.cbxKindP4.TabIndex = 23;
       // 
       // cbxKindP5
@@ -565,9 +609,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxKindP5.Location = new System.Drawing.Point(683, 698);
+      this.cbxKindP5.Location = new System.Drawing.Point(627, 639);
       this.cbxKindP5.Name = "cbxKindP5";
-      this.cbxKindP5.Size = new System.Drawing.Size(164, 23);
+      this.cbxKindP5.Size = new System.Drawing.Size(150, 23);
       this.cbxKindP5.TabIndex = 23;
       // 
       // cbxCondP1
@@ -577,9 +621,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxCondP1.Location = new System.Drawing.Point(3, 728);
+      this.cbxCondP1.Location = new System.Drawing.Point(3, 669);
       this.cbxCondP1.Name = "cbxCondP1";
-      this.cbxCondP1.Size = new System.Drawing.Size(164, 23);
+      this.cbxCondP1.Size = new System.Drawing.Size(150, 23);
       this.cbxCondP1.TabIndex = 23;
       // 
       // cbxCondP2
@@ -589,9 +633,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxCondP2.Location = new System.Drawing.Point(173, 728);
+      this.cbxCondP2.Location = new System.Drawing.Point(159, 669);
       this.cbxCondP2.Name = "cbxCondP2";
-      this.cbxCondP2.Size = new System.Drawing.Size(164, 23);
+      this.cbxCondP2.Size = new System.Drawing.Size(150, 23);
       this.cbxCondP2.TabIndex = 23;
       // 
       // cbxCondP3
@@ -601,9 +645,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxCondP3.Location = new System.Drawing.Point(343, 728);
+      this.cbxCondP3.Location = new System.Drawing.Point(315, 669);
       this.cbxCondP3.Name = "cbxCondP3";
-      this.cbxCondP3.Size = new System.Drawing.Size(164, 23);
+      this.cbxCondP3.Size = new System.Drawing.Size(150, 23);
       this.cbxCondP3.TabIndex = 23;
       // 
       // cbxCondP4
@@ -613,9 +657,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxCondP4.Location = new System.Drawing.Point(513, 728);
+      this.cbxCondP4.Location = new System.Drawing.Point(471, 669);
       this.cbxCondP4.Name = "cbxCondP4";
-      this.cbxCondP4.Size = new System.Drawing.Size(164, 23);
+      this.cbxCondP4.Size = new System.Drawing.Size(150, 23);
       this.cbxCondP4.TabIndex = 23;
       // 
       // cbxCondP5
@@ -625,16 +669,16 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxCondP5.Location = new System.Drawing.Point(683, 728);
+      this.cbxCondP5.Location = new System.Drawing.Point(627, 669);
       this.cbxCondP5.Name = "cbxCondP5";
-      this.cbxCondP5.Size = new System.Drawing.Size(164, 23);
+      this.cbxCondP5.Size = new System.Drawing.Size(150, 23);
       this.cbxCondP5.TabIndex = 23;
       // 
       // cbxUnits
       // 
       this.cbxUnits.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
       this.cbxUnits.AutoSize = true;
-      this.cbxUnits.Location = new System.Drawing.Point(3, 803);
+      this.cbxUnits.Location = new System.Drawing.Point(3, 744);
       this.cbxUnits.Name = "cbxUnits";
       this.cbxUnits.Size = new System.Drawing.Size(85, 19);
       this.cbxUnits.TabIndex = 8;
@@ -648,9 +692,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxTrans1.Location = new System.Drawing.Point(3, 758);
+      this.cbxTrans1.Location = new System.Drawing.Point(3, 699);
       this.cbxTrans1.Name = "cbxTrans1";
-      this.cbxTrans1.Size = new System.Drawing.Size(164, 23);
+      this.cbxTrans1.Size = new System.Drawing.Size(150, 23);
       this.cbxTrans1.TabIndex = 23;
       // 
       // cbxTrans2
@@ -660,9 +704,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxTrans2.Location = new System.Drawing.Point(173, 758);
+      this.cbxTrans2.Location = new System.Drawing.Point(159, 699);
       this.cbxTrans2.Name = "cbxTrans2";
-      this.cbxTrans2.Size = new System.Drawing.Size(164, 23);
+      this.cbxTrans2.Size = new System.Drawing.Size(150, 23);
       this.cbxTrans2.TabIndex = 23;
       // 
       // cbxTrans3
@@ -672,9 +716,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxTrans3.Location = new System.Drawing.Point(343, 758);
+      this.cbxTrans3.Location = new System.Drawing.Point(315, 699);
       this.cbxTrans3.Name = "cbxTrans3";
-      this.cbxTrans3.Size = new System.Drawing.Size(164, 23);
+      this.cbxTrans3.Size = new System.Drawing.Size(150, 23);
       this.cbxTrans3.TabIndex = 23;
       // 
       // cbxTrans4
@@ -684,9 +728,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxTrans4.Location = new System.Drawing.Point(513, 758);
+      this.cbxTrans4.Location = new System.Drawing.Point(471, 699);
       this.cbxTrans4.Name = "cbxTrans4";
-      this.cbxTrans4.Size = new System.Drawing.Size(164, 23);
+      this.cbxTrans4.Size = new System.Drawing.Size(150, 23);
       this.cbxTrans4.TabIndex = 23;
       // 
       // cbxTrans5
@@ -696,9 +740,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxTrans5.Location = new System.Drawing.Point(683, 758);
+      this.cbxTrans5.Location = new System.Drawing.Point(627, 699);
       this.cbxTrans5.Name = "cbxTrans5";
-      this.cbxTrans5.Size = new System.Drawing.Size(164, 23);
+      this.cbxTrans5.Size = new System.Drawing.Size(150, 23);
       this.cbxTrans5.TabIndex = 23;
       // 
       // cbxVoice
@@ -708,9 +752,9 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxVoice.Location = new System.Drawing.Point(173, 799);
+      this.cbxVoice.Location = new System.Drawing.Point(159, 740);
       this.cbxVoice.Name = "cbxVoice";
-      this.cbxVoice.Size = new System.Drawing.Size(164, 23);
+      this.cbxVoice.Size = new System.Drawing.Size(150, 23);
       this.cbxVoice.TabIndex = 25;
       this.cbxVoice.SelectedIndexChanged += new System.EventHandler(this.cbxVoice_SelectedIndexChanged);
       this.cbxVoice.MouseClick += new System.Windows.Forms.MouseEventHandler(this.cbxVoice_MouseClick);
@@ -720,10 +764,10 @@ namespace FS20_HudBar.Config
       this.textBox1.BackColor = System.Drawing.Color.Wheat;
       this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
       this.textBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.textBox1.Location = new System.Drawing.Point(853, 3);
+      this.textBox1.Location = new System.Drawing.Point(783, 3);
       this.textBox1.Name = "textBox1";
       this.textBox1.ReadOnly = true;
-      this.textBox1.Size = new System.Drawing.Size(147, 23);
+      this.textBox1.Size = new System.Drawing.Size(148, 23);
       this.textBox1.TabIndex = 26;
       this.textBox1.Text = "Voice Callouts";
       // 
@@ -732,7 +776,7 @@ namespace FS20_HudBar.Config
       this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
       this.btCancel.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCancel.Location = new System.Drawing.Point(894, 797);
+      this.btCancel.Location = new System.Drawing.Point(825, 738);
       this.btCancel.Name = "btCancel";
       this.btCancel.Size = new System.Drawing.Size(106, 25);
       this.btCancel.TabIndex = 6;
@@ -744,7 +788,7 @@ namespace FS20_HudBar.Config
       // 
       this.btAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btAccept.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btAccept.Location = new System.Drawing.Point(741, 797);
+      this.btAccept.Location = new System.Drawing.Point(671, 738);
       this.btAccept.Name = "btAccept";
       this.btAccept.Size = new System.Drawing.Size(106, 25);
       this.btAccept.TabIndex = 7;
@@ -759,9 +803,9 @@ namespace FS20_HudBar.Config
       this.clbVoice.CheckOnClick = true;
       this.clbVoice.Dock = System.Windows.Forms.DockStyle.Fill;
       this.clbVoice.FormattingEnabled = true;
-      this.clbVoice.Location = new System.Drawing.Point(853, 33);
+      this.clbVoice.Location = new System.Drawing.Point(783, 33);
       this.clbVoice.Name = "clbVoice";
-      this.clbVoice.Size = new System.Drawing.Size(147, 599);
+      this.clbVoice.Size = new System.Drawing.Size(148, 270);
       this.clbVoice.TabIndex = 27;
       this.clbVoice.SelectedIndexChanged += new System.EventHandler(this.clbVoice_SelectedIndexChanged);
       // 
@@ -772,16 +816,15 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxASave.Location = new System.Drawing.Point(343, 799);
+      this.cbxASave.Location = new System.Drawing.Point(315, 740);
       this.cbxASave.Name = "cbxASave";
-      this.cbxASave.Size = new System.Drawing.Size(164, 23);
+      this.cbxASave.Size = new System.Drawing.Size(150, 23);
       this.cbxASave.TabIndex = 29;
       // 
       // btDumpConfigs
       // 
-      this.btDumpConfigs.Dock = System.Windows.Forms.DockStyle.Right;
       this.btDumpConfigs.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btDumpConfigs.Location = new System.Drawing.Point(867, 698);
+      this.btDumpConfigs.Location = new System.Drawing.Point(783, 699);
       this.btDumpConfigs.Name = "btDumpConfigs";
       this.btDumpConfigs.Size = new System.Drawing.Size(133, 24);
       this.btDumpConfigs.TabIndex = 28;
@@ -790,27 +833,77 @@ namespace FS20_HudBar.Config
       this.btDumpConfigs.Visible = false;
       this.btDumpConfigs.Click += new System.EventHandler(this.btDumpConfigs_Click);
       // 
-      // cbxKeyboard
+      // txHkShowHide
       // 
-      this.cbxKeyboard.AutoSize = true;
-      this.cbxKeyboard.Dock = System.Windows.Forms.DockStyle.Left;
-      this.cbxKeyboard.Location = new System.Drawing.Point(853, 638);
-      this.cbxKeyboard.Name = "cbxKeyboard";
-      this.cbxKeyboard.Size = new System.Drawing.Size(136, 24);
-      this.cbxKeyboard.TabIndex = 30;
-      this.cbxKeyboard.Text = "Use Keyboard Switch";
-      this.cbxKeyboard.UseVisualStyleBackColor = true;
+      this.txHkShowHide.BackColor = System.Drawing.Color.Honeydew;
+      this.txHkShowHide.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.txHkShowHide.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txHkShowHide.Location = new System.Drawing.Point(783, 549);
+      this.txHkShowHide.Name = "txHkShowHide";
+      this.txHkShowHide.ReadOnly = true;
+      this.txHkShowHide.Size = new System.Drawing.Size(148, 22);
+      this.txHkShowHide.TabIndex = 35;
+      this.txHkShowHide.DoubleClick += new System.EventHandler(this.txHkShowHide_DoubleClick);
       // 
-      // cbxInGame
+      // txHkProfile1
       // 
-      this.cbxInGame.AutoSize = true;
-      this.cbxInGame.Dock = System.Windows.Forms.DockStyle.Left;
-      this.cbxInGame.Location = new System.Drawing.Point(853, 668);
-      this.cbxInGame.Name = "cbxInGame";
-      this.cbxInGame.Size = new System.Drawing.Size(127, 24);
-      this.cbxInGame.TabIndex = 31;
-      this.cbxInGame.Text = "Use InGame Switch";
-      this.cbxInGame.UseVisualStyleBackColor = true;
+      this.txHkProfile1.BackColor = System.Drawing.Color.Honeydew;
+      this.txHkProfile1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.txHkProfile1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txHkProfile1.Location = new System.Drawing.Point(3, 549);
+      this.txHkProfile1.Name = "txHkProfile1";
+      this.txHkProfile1.ReadOnly = true;
+      this.txHkProfile1.Size = new System.Drawing.Size(150, 22);
+      this.txHkProfile1.TabIndex = 33;
+      this.txHkProfile1.DoubleClick += new System.EventHandler(this.txHkProfile1_DoubleClick);
+      // 
+      // txHkProfile2
+      // 
+      this.txHkProfile2.BackColor = System.Drawing.Color.Honeydew;
+      this.txHkProfile2.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.txHkProfile2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txHkProfile2.Location = new System.Drawing.Point(159, 549);
+      this.txHkProfile2.Name = "txHkProfile2";
+      this.txHkProfile2.ReadOnly = true;
+      this.txHkProfile2.Size = new System.Drawing.Size(150, 22);
+      this.txHkProfile2.TabIndex = 37;
+      this.txHkProfile2.DoubleClick += new System.EventHandler(this.txHkProfile2_DoubleClick);
+      // 
+      // txHkProfile3
+      // 
+      this.txHkProfile3.BackColor = System.Drawing.Color.Honeydew;
+      this.txHkProfile3.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.txHkProfile3.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txHkProfile3.Location = new System.Drawing.Point(315, 549);
+      this.txHkProfile3.Name = "txHkProfile3";
+      this.txHkProfile3.ReadOnly = true;
+      this.txHkProfile3.Size = new System.Drawing.Size(150, 22);
+      this.txHkProfile3.TabIndex = 39;
+      this.txHkProfile3.DoubleClick += new System.EventHandler(this.txHkProfile3_DoubleClick);
+      // 
+      // txHkProfile4
+      // 
+      this.txHkProfile4.BackColor = System.Drawing.Color.Honeydew;
+      this.txHkProfile4.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.txHkProfile4.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txHkProfile4.Location = new System.Drawing.Point(471, 549);
+      this.txHkProfile4.Name = "txHkProfile4";
+      this.txHkProfile4.ReadOnly = true;
+      this.txHkProfile4.Size = new System.Drawing.Size(150, 22);
+      this.txHkProfile4.TabIndex = 41;
+      this.txHkProfile4.DoubleClick += new System.EventHandler(this.txHkProfile4_DoubleClick);
+      // 
+      // chkInGame
+      // 
+      this.chkInGame.AutoSize = true;
+      this.chkInGame.BackColor = System.Drawing.Color.Azure;
+      this.chkInGame.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.chkInGame.Location = new System.Drawing.Point(783, 609);
+      this.chkInGame.Name = "chkInGame";
+      this.chkInGame.Size = new System.Drawing.Size(148, 24);
+      this.chkInGame.TabIndex = 31;
+      this.chkInGame.Text = "MSFS Hotkeys";
+      this.chkInGame.UseVisualStyleBackColor = false;
       // 
       // frmConfig
       // 
@@ -818,14 +911,14 @@ namespace FS20_HudBar.Config
       this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.btCancel;
-      this.ClientSize = new System.Drawing.Size(1003, 825);
+      this.ClientSize = new System.Drawing.Size(934, 766);
       this.Controls.Add(this.tlp);
       this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(640, 480);
+      this.MinimumSize = new System.Drawing.Size(950, 680);
       this.Name = "frmConfig";
       this.ShowInTaskbar = false;
       this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
@@ -905,7 +998,13 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.ToolStripMenuItem asdasToolStripMenuItem;
     private System.Windows.Forms.Button btDumpConfigs;
     private System.Windows.Forms.ComboBox cbxASave;
-    private System.Windows.Forms.CheckBox cbxKeyboard;
-    private System.Windows.Forms.CheckBox cbxInGame;
+    private System.Windows.Forms.CheckBox chkKeyboard;
+    private System.Windows.Forms.CheckBox chkInGame;
+    private System.Windows.Forms.TextBox txHkShowHide;
+    private System.Windows.Forms.TextBox txHkProfile1;
+    private System.Windows.Forms.TextBox txHkProfile2;
+    private System.Windows.Forms.TextBox txHkProfile3;
+    private System.Windows.Forms.TextBox txHkProfile4;
+    private System.Windows.Forms.TextBox txHkProfile5;
   }
 }

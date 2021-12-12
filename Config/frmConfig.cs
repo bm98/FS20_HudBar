@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using FS20_HudBar.Bar;
+using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.Config
 {
@@ -47,6 +48,12 @@ namespace FS20_HudBar.Config
     private ComboBox[] m_pCondensed = new ComboBox[c_NumProfiles];
     private ComboBox[] m_pTransparency = new ComboBox[c_NumProfiles];
 
+    // internal temporary list only
+    private WinHotkeyCat _hotkeys = new WinHotkeyCat();
+    private FrmHotkey HK = new FrmHotkey();
+
+    private ToolTip_Base _tooltip = new ToolTip_Base();
+
     // concurency avoidance
     private bool initDone = false;
 
@@ -54,6 +61,7 @@ namespace FS20_HudBar.Config
     {
       initDone = false;
       InitializeComponent( );
+
       // Show the instance name in the Window Border Text
       this.Text = "Hud Bar Configuration - Instance: " + ( string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance );
       // load the Profile Name Context Menu with items
@@ -71,7 +79,14 @@ namespace FS20_HudBar.Config
       menu = new ToolStripMenuItem( "Default Profiles" );
       ctxMenu.Items.Add( menu );
       DefaultProfiles.AddMenuItems( menu, ctxDP_Click );
-
+      _tooltip.ReshowDelay = 100; // pop a bit faster
+      _tooltip.InitialDelay = 300; // pop a bit faster
+      _tooltip.SetToolTip( txHkShowHide, "Hotkey to Show/Hide the Bar\nDouble click to edit the Hotkey" );
+      _tooltip.SetToolTip( txHkProfile1, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
+      _tooltip.SetToolTip( txHkProfile2, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
+      _tooltip.SetToolTip( txHkProfile3, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
+      _tooltip.SetToolTip( txHkProfile4, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
+      _tooltip.SetToolTip( txHkProfile5, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
 
       // indexed access for profile controls
       m_flps[0] = flp1; m_flps[1] = flp2; m_flps[2] = flp3; m_flps[3] = flp4; m_flps[4] = flp5;
@@ -156,6 +171,17 @@ namespace FS20_HudBar.Config
       cbx.Items.Add( $"{(int)GUI.Transparent.T90 * 10}%  Transparent" );
     }
 
+    private void PopulateHotkeys( )
+    {
+      txHkShowHide.Text = _hotkeys.ContainsKey( Hotkeys.Show_Hide ) ? _hotkeys[Hotkeys.Show_Hide].AsString : "";
+      txHkProfile1.Text = _hotkeys.ContainsKey( Hotkeys.Profile_1 ) ? _hotkeys[Hotkeys.Profile_1].AsString : "";
+      txHkProfile2.Text = _hotkeys.ContainsKey( Hotkeys.Profile_2 ) ? _hotkeys[Hotkeys.Profile_2].AsString : "";
+      txHkProfile3.Text = _hotkeys.ContainsKey( Hotkeys.Profile_3 ) ? _hotkeys[Hotkeys.Profile_3].AsString : "";
+      txHkProfile4.Text = _hotkeys.ContainsKey( Hotkeys.Profile_4 ) ? _hotkeys[Hotkeys.Profile_4].AsString : "";
+      txHkProfile5.Text = _hotkeys.ContainsKey( Hotkeys.Profile_5 ) ? _hotkeys[Hotkeys.Profile_5].AsString : "";
+    }
+
+
     // Load the combo from installed voices
     private void PopulateVoice( ComboBox cbx )
     {
@@ -179,16 +205,15 @@ namespace FS20_HudBar.Config
     }
 
     // LOAD is called on any invocation of the Dialog
+    // Load all items from HUD to make them editable
     private void frmConfig_Load( object sender, EventArgs e )
     {
-      this.TopMost = false;
+      this.TopMost = false; // inherited from parent - we don't want this here
 
       if ( HudBarRef == null ) return; // sanity ..
       if ( ProfilesRef?.Count < c_NumProfiles ) return;// sanity ..
 
       cbxUnits.Checked = HudBarRef.ShowUnits;
-      cbxKeyboard.Checked = HudBarRef.KeyboardHook; // 20211208
-      cbxInGame.Checked = HudBarRef.InGameHook; // 20211208
 
       PopulateASave( cbxASave ); //20211204
       cbxASave.SelectedIndex = (int)HudBarRef.FltAutoSave;
@@ -197,6 +222,13 @@ namespace FS20_HudBar.Config
       speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
 
       PopulateVoiceCallouts( ); // 20211018
+
+      // Hotkeys // 20211211
+      _hotkeys = HudBarRef.Hotkeys.Copy( );
+      PopulateHotkeys( );
+      chkKeyboard.Checked = HudBarRef.KeyboardHook; // 20211208
+      chkInGame.Checked = HudBarRef.InGameHook; // 20211208
+
 
       // for all profiles
       for ( int p = 0; p < c_NumProfiles; p++ ) {
@@ -235,20 +267,26 @@ namespace FS20_HudBar.Config
       }
     }
 
+    // CANCEL - leave unchanged
     private void btCancel_Click( object sender, EventArgs e )
     {
       this.DialogResult = DialogResult.Cancel;
       this.Close( );
     }
 
+    // ACCEPT - transfer all items back to the HUD
     private void btAccept_Click( object sender, EventArgs e )
     {
       // update from edits
       // live update to HUD
       HudBarRef.SetShowUnits( cbxUnits.Checked );
-      HudBarRef.SetKeyboardHook( cbxKeyboard.Checked );
-      HudBarRef.SetInGameHook( cbxInGame.Checked );
+
+      HudBarRef.SetHotkeys( _hotkeys );
+      HudBarRef.SetKeyboardHook( chkKeyboard.Checked );
+      HudBarRef.SetInGameHook( chkInGame.Checked );
+
       HudBarRef.SetFltAutoSave( (FSimClientIF.FlightPlanMode)cbxASave.SelectedIndex );
+
       HudBarRef.SetVoiceName( cbxVoice.SelectedItem.ToString( ) );
       int idx = 0;
       foreach ( var vt in HudBarRef.VoicePack.Triggers ) {
@@ -294,6 +332,7 @@ namespace FS20_HudBar.Config
       // Test when checked
       HudBarRef.VoicePack.Triggers[clbVoice.SelectedIndex].Test( speech );
     }
+
 
     #region Context Menu
 
@@ -380,6 +419,95 @@ namespace FS20_HudBar.Config
 
     #endregion
 
+    #region Hotkey Configuration
+
+    private void chkKeyboard_CheckedChanged( object sender, EventArgs e )
+    {
+      txHkShowHide.Visible = chkKeyboard.Checked;
+      txHkProfile1.Visible = chkKeyboard.Checked;
+      txHkProfile2.Visible = chkKeyboard.Checked;
+      txHkProfile3.Visible = chkKeyboard.Checked;
+      txHkProfile4.Visible = chkKeyboard.Checked;
+      txHkProfile5.Visible = chkKeyboard.Checked;
+    }
+
+    // Handle the hotkey entry for the given Key item
+    private string HandleHotkey( Hotkeys hotkey )
+    {
+      // Setup of the Input Form
+      if ( _hotkeys.ContainsKey( hotkey ) )
+        HK.Hotkey = _hotkeys[hotkey];
+      else
+        HK.Hotkey = new Win.WinHotkey( ); // not set -> empty
+      var old = HK.Hotkey.AsString;
+
+      HK.ProfileName = $"{hotkey} Hotkey";
+      if ( HK.ShowDialog( this ) == DialogResult.OK ) {
+        // OK - save keys
+        if ( _hotkeys.ContainsKey( hotkey ) ) {
+          // HK exists
+          if ( HK.Hotkey.isValid ) {
+            _hotkeys[hotkey] = HK.Hotkey.Copy( ); // replace
+          }
+          else {
+            _hotkeys.Remove( hotkey ); // remove
+          }
+        }
+        else {
+          // HK does not exist
+          if ( HK.Hotkey.isValid ) {
+            _hotkeys.Add( hotkey, HK.Hotkey.Copy( ) ); // add
+          }
+        }
+        return HK.Hotkey.AsString;
+      }
+      else {
+        // cancelled
+        return old; // the one we started with
+      }
+    }
+
+    private void txHkShowHide_DoubleClick( object sender, EventArgs e )
+    {
+      txHkShowHide.Text = HandleHotkey( Hotkeys.Show_Hide );
+      txHkShowHide.Select( 0, 0 );
+    }
+
+    private void txHkProfile1_DoubleClick( object sender, EventArgs e )
+    {
+      txHkProfile1.Text = HandleHotkey( Hotkeys.Profile_1 );
+      txHkProfile1.Select( 0, 0 );
+    }
+
+    private void txHkProfile2_DoubleClick( object sender, EventArgs e )
+    {
+      txHkProfile2.Text = HandleHotkey( Hotkeys.Profile_2 );
+      txHkProfile2.Select( 0, 0 );
+    }
+
+    private void txHkProfile3_DoubleClick( object sender, EventArgs e )
+    {
+      txHkProfile3.Text = HandleHotkey( Hotkeys.Profile_3 );
+      txHkProfile3.Select( 0, 0 );
+    }
+
+    private void txHkProfile4_DoubleClick( object sender, EventArgs e )
+    {
+      txHkProfile4.Text = HandleHotkey( Hotkeys.Profile_4 );
+      txHkProfile4.Select( 0, 0 );
+    }
+
+    private void txHkProfile5_DoubleClick( object sender, EventArgs e )
+    {
+      txHkProfile5.Text = HandleHotkey( Hotkeys.Profile_5 );
+      txHkProfile5.Select( 0, 0 );
+    }
+
+    #endregion
+
+
+    #region Dump Profile (R&D Mode..)
+
     // For Debug and Setup only
     private void btDumpConfigs_Click( object sender, EventArgs e )
     {
@@ -396,14 +524,14 @@ namespace FS20_HudBar.Config
         for ( int p = 0; p < c_NumProfiles; p++ ) {
           // 4 lines
           sw.WriteLine( ProfilesRef[p].PName );
-          sw.WriteLine( ProfilesRef[p].ProfileString() );
-          sw.WriteLine( ProfilesRef[p].ItemPosString() );
-          sw.WriteLine( ProfilesRef[p].FlowBreakString() );
+          sw.WriteLine( ProfilesRef[p].ProfileString( ) );
+          sw.WriteLine( ProfilesRef[p].ItemPosString( ) );
+          sw.WriteLine( ProfilesRef[p].FlowBreakString( ) );
         }
       }
     }
 
-
+    #endregion
 
   }
 }
