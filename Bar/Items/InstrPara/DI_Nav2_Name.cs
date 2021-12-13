@@ -30,7 +30,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "NAV-2 Name {Apt}";
+    public static readonly string Desc = "NAV-2 Name (Apt)";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
@@ -40,7 +40,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.NAV2_NAME;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Text( valueProto ) { ItemForeColor = cInfo };
+      _value1 = new V_Text( value2Proto ) { ItemForeColor = cInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );

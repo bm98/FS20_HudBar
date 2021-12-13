@@ -40,6 +40,7 @@ Changelog:
 V 0.39-B35
 - Update Allow for configuration of Keyboard Hotkeys
 - Update Gear availability included in Aircraft merges
+- Fix Used the smaller font for NAV1/2 Names
 - Update QuickGuide
 
 V 0.38-B34
