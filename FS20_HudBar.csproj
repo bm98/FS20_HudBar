@@ -171,6 +171,9 @@
     <Compile Include="Bar\Items\AircraftPara\DI_Spoilers.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_FlightLog.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\InstrPara\DI_Xpdr.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -519,6 +522,9 @@
     <Compile Include="GUI\Templates\V_Pounds.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GUI\Templates\V_Prct_999.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\Templates\V_RAaudio.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -612,6 +618,7 @@
     <Compile Include="Triggers\T_IAS_Rotate.cs" />
     <Compile Include="Triggers\T_OAT.cs" />
     <Compile Include="Triggers\T_RAcallout.cs" />
+    <Compile Include="Triggers\T_Spoilers.cs" />
     <Compile Include="Triggers\T_WarnFuel.cs" />
     <Compile Include="Triggers\T_WaypointETE.cs" />
     <Compile Include="Win\GlobalKbdHook.cs" />

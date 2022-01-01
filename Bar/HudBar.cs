@@ -54,6 +54,7 @@ namespace FS20_HudBar.Bar
     private static Dictionary<LItem,string> m_cfgNames = new Dictionary<LItem, string>(){
       {LItem.MSFS, DI_MsFS.Desc },
       {LItem.SimRate, DI_SimRate.Desc },      {LItem.FPS, DI_Fps.Desc },
+      {LItem.LOG, DI_FlightLog.Desc },
       {LItem.ACFT_ID, DI_Acft_ID.Desc },
       {LItem.TIME, DI_Time.Desc },            {LItem.ZULU, DI_ZuluTime.Desc },  {LItem.CTIME, DI_CompTime.Desc },
 
@@ -162,6 +163,11 @@ namespace FS20_HudBar.Bar
     public bool InGameHook { get; private set; } = false;
 
     /// <summary>
+    /// Use Flight Recorder if true
+    /// </summary>
+    public bool FlightRecorder { get; private set; } = false;
+
+    /// <summary>
     /// FLT File AutoSave and FlightPlan Handler Enabled
     /// </summary>
     public FSimClientIF.FlightPlanMode FltAutoSave { get; private set; } = FSimClientIF.FlightPlanMode.Disabled;
@@ -238,9 +244,10 @@ namespace FS20_HudBar.Bar
     /// <param name="showUnits">Showing units flag</param>
     /// <param name="cProfile">The current Profile</param>
     /// <param name="voiceName">The current VoiceName</param>
+    /// <param name="fRecorder">FlightRecorder Enabled</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
                       bool showUnits, bool keyboardHook, bool inGameHook, WinHotkeyCat hotkeys,
-                      int autoSave, CProfile cProfile, string voiceName )
+                      int autoSave, CProfile cProfile, string voiceName, bool fRecorder )
     {
       // just save them in the HUD mainly for config purpose
       m_profile = cProfile;
@@ -251,6 +258,7 @@ namespace FS20_HudBar.Bar
       FltAutoSave = (FSimClientIF.FlightPlanMode)autoSave;
       VoiceEnabled = false; // disable, else we get early talks..
       VoiceName = voiceName;
+      FlightRecorder = fRecorder;
       _ = m_speech.SetVoice( VoiceName );
 
       // Reset the observers as we rebuild the GUI now 
@@ -287,6 +295,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_MsFS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_SimRate( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Fps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_FlightLog( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Environment
       m_dispItems.AddDisp( new DI_Time( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ZuluTime( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -540,6 +549,15 @@ namespace FS20_HudBar.Bar
     public void SetInGameHook( bool inGameHook )
     {
       InGameHook = inGameHook;
+    }
+
+    /// <summary>
+    /// Set the Flight Recorder enabled flag
+    /// </summary>
+    /// <param name="fRec"></param>
+    public void SetFlightRecorder( bool fRec )
+    {
+      FlightRecorder = fRec;
     }
 
     /// <summary>

@@ -385,6 +385,11 @@ namespace FS20_HudBar
 
       // disconnect from Sim if needed
       if ( SC.SimConnectClient.Instance.IsConnected ) {
+        // finalize a Recording if one is pending
+        if ( SC.SimConnectClient.Instance.FlightLogModule.LogMode != FSimClientIF.FlightLogMode.Off ) {
+          SC.SimConnectClient.Instance.FlightLogModule.LogMode = FSimClientIF.FlightLogMode.Off;
+        }
+        // closure
         SC.SimConnectClient.Instance.Disconnect( );
       }
     }
@@ -409,6 +414,7 @@ namespace FS20_HudBar
       if ( CFG.ShowDialog( this ) == DialogResult.OK ) {
         // Save all configuration properties
         AppSettings.Instance.ShowUnits = HUD.ShowUnits;
+        AppSettings.Instance.FRecorder = HUD.FlightRecorder;
 
         AppSettings.Instance.HKShowHide = HUD.Hotkeys.HotkeyString( Hotkeys.Show_Hide );
         AppSettings.Instance.HKProfile1 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_1 );
@@ -640,7 +646,7 @@ namespace FS20_HudBar
 
       SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode = (FSimClientIF.FlightPlanMode)AppSettings.Instance.FltAutoSaveATC;
       SC.SimConnectClient.Instance.FlightPlanModule.Enabled = ( SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode != FSimClientIF.FlightPlanMode.Disabled );
-
+      SC.SimConnectClient.Instance.FlightLogModule.Enabled = AppSettings.Instance.FRecorder;
       AirportMgr.Reset( );
 
       // Update profile selection items
@@ -664,7 +670,7 @@ namespace FS20_HudBar
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
                           AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook, _hotkeycat,
                           AppSettings.Instance.FltAutoSaveATC,
-                          m_profiles[m_selProfile], AppSettings.Instance.VoiceName );
+                          m_profiles[m_selProfile], AppSettings.Instance.VoiceName, AppSettings.Instance.FRecorder );
 
       // reread after config change
       SetupKeyboardHook( AppSettings.Instance.KeyboardHook );

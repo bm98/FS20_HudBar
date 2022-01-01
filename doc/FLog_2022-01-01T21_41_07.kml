@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+  <Document>
+    <name>HudBar KML Flight Logs</name>
+    <Snippet>Created Sat, 01 Jan 2022 21:41:18 GMT</Snippet>
+    <open>1</open>
+    <Style id="globeIcon"><IconStyle>
+     <Icon><href>http://maps.google.com/mapfiles/kml/pal3/icon19.png</href></Icon>
+     </IconStyle><LineStyle><width>2</width></LineStyle>
+     </Style>
+    <Style id="flapsIcon"><IconStyle>
+     <Icon><href>http://maps.gstatic.com/mapfiles/markers2/marker_greenF.png</href></Icon>
+     </IconStyle><LineStyle><width>2</width></LineStyle>
+     </Style>
+    <Style id="gearIcon"><IconStyle>
+     <Icon><href>http://maps.gstatic.com/mapfiles/markers2/marker_greenG.png</href></Icon>
+     </IconStyle><LineStyle><width>2</width></LineStyle>
+     </Style>
+    <Style id="yellowLineGreenPoly"><LineStyle><color>7f00ffff</color><width>4</width></LineStyle>
+     <PolyStyle><color>7f00ff00</color></PolyStyle>
+     <IconStyle><Icon><href>https://maps.gstatic.com/mapfiles/ms2/micons/plane.png</href></Icon></IconStyle></Style>
+    <Style id="redLineGrayPoly"><LineStyle><color>af0000ff</color></LineStyle>
+     <PolyStyle><color>7f333333</color></PolyStyle></Style>
+    <Style id="blueLineGrayPoly"><LineStyle><color>afff7700</color></LineStyle>
+     <PolyStyle><color>7f333333</color></PolyStyle></Style>
+    <Schema id="logSchema">
+      <gx:SimpleArrayField name="alt" type = "int"><displayName>ALT ft</displayName></gx:SimpleArrayField>
+      <gx:SimpleArrayField name="ias" type = "int"><displayName>IAS kt</displayName></gx:SimpleArrayField>
+      <gx:SimpleArrayField name="gs" type = "int"><displayName>GS kt</displayName></gx:SimpleArrayField>
+      <gx:SimpleArrayField name="vs" type = "int"><displayName>VS fpm</displayName></gx:SimpleArrayField>
+      <gx:SimpleArrayField name="oat" type = "int"><displayName>OAT °C</displayName></gx:SimpleArrayField>
+      <gx:SimpleArrayField name="baro" type = "int"><displayName>BARO hPa</displayName></gx:SimpleArrayField>
+      <gx:SimpleArrayField name="flaps" type = "int"><displayName>Flaps %</displayName></gx:SimpleArrayField>
+      <gx:SimpleArrayField name="gear" type = "int"><displayName>Gear %</displayName></gx:SimpleArrayField>
+    </Schema >
+    <Folder>
+    <name>FLog_2022-01-01T21_41_07</name>
+      <Placemark>
+        <name>FLog_2022-01-01T21_41_07</name>
+        <visibility>1</visibility>
+        <LookAt>
+          <longitude>139.780210417149</longitude>
+          <latitude>35.5513229123051</latitude>
+          <altitude>20</altitude>
+          <heading>74</heading>
+          <tilt>55</tilt>
+          <range>10000</range>
+        </LookAt>
+        <styleUrl>#redLineGrayPoly</styleUrl>
+        <LineString>
+          <extrude>1</extrude>
+          <tessellate>1</tessellate>
+          <altitudeMode>absolute</altitudeMode>
+          <coordinates>
+            139.780210417149,35.5513229123051,20
+            139.780210417149,35.5513229123051,20
+          </coordinates>
+        </LineString>
+      </Placemark>
+      <Placemark>
+        <name>BM-98CH</name>
+        <visibility>1</visibility>
+        <styleUrl>#yellowLineGreenPoly</styleUrl>
+        <gx:Track>
+          <altitudeMode>absolute</altitudeMode>
+          <extrude>1</extrude>
+          <tessellate>1</tessellate>
+          <when>2022-01-01T01:26:31Z</when>
+          <when>2022-01-01T01:26:36Z</when>
+          <gx:coord>139.780210417149 35.5513229123051 20</gx:coord>
+          <gx:coord>139.780210417149 35.5513229123051 20</gx:coord>
+          <gx:angles>74 0 0</gx:angles>
+          <gx:angles>74 0 0</gx:angles>
+          <ExtendedData>
+            <SchemaData schemaUrl="#logSchema">
+              <gx:SimpleArrayData name="alt">
+                <gx:value>67</gx:value>
+                <gx:value>67</gx:value>
+              </gx:SimpleArrayData>
+              <gx:SimpleArrayData name="ias">
+                <gx:value>0</gx:value>
+                <gx:value>0</gx:value>
+              </gx:SimpleArrayData>
+              <gx:SimpleArrayData name="gs">
+                <gx:value>0</gx:value>
+                <gx:value>0</gx:value>
+              </gx:SimpleArrayData>
+              <gx:SimpleArrayData name="vs">
+                <gx:value>0</gx:value>
+                <gx:value>0</gx:value>
+              </gx:SimpleArrayData>
+              <gx:SimpleArrayData name="oat">
+                <gx:value>14</gx:value>
+                <gx:value>14</gx:value>
+              </gx:SimpleArrayData>
+              <gx:SimpleArrayData name="baro">
+                <gx:value>1013</gx:value>
+                <gx:value>1013</gx:value>
+              </gx:SimpleArrayData>
+              <gx:SimpleArrayData name="flaps">
+                <gx:value>0</gx:value>
+                <gx:value>0</gx:value>
+              </gx:SimpleArrayData>
+              <gx:SimpleArrayData name="gear">
+                <gx:value>100</gx:value>
+                <gx:value>100</gx:value>
+              </gx:SimpleArrayData>
+            </SchemaData>
+          </ExtendedData>
+        </gx:Track>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>

@@ -99,6 +99,8 @@ namespace FS20_HudBar.GUI.Templates
             this.Text = c_6; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
           case Steps.P7:
             this.Text = c_7; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
+          case Steps.PEnd:
+            this.Text = c_Dn; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
 
           case Steps.OnOK:
             this.Text = c_OnOK; this.ItemForeColor = GUI_Colors.ColorType.cOK; break;

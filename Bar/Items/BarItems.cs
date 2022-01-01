@@ -131,6 +131,8 @@ namespace FS20_HudBar.Bar.Items
     ZULU,         // Zulu Time (Sim)
     CTIME,        // Computer Time
     XPDR,         // Transponder
+
+    LOG,          // Flight Log
   }
 
 
@@ -145,6 +147,7 @@ namespace FS20_HudBar.Bar.Items
     Ad = 0,   // MSFS connection status...
     SimRate,  // simulation rate
     FPS,          // FPS value
+    LOG,          // Flight Log
 
     ACFT_ID,      // aircraft ID
 
@@ -332,7 +335,6 @@ namespace FS20_HudBar.Bar.Items
     E2_MIX_LEV,    // Mixture Lever Engine 2
     E1_PROP_LEV,   // Propeller Lever Engine 1
     E2_PROP_LEV,   // Propeller Lever Engine 2
-
   }
 
 }

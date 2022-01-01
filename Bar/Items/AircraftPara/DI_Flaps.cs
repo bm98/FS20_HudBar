@@ -56,7 +56,7 @@ namespace FS20_HudBar.Bar.Items
           return Steps.Up;
         }
         else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == SC.SimConnectClient.Instance.HudBarModule.NumberOfFlapsPositions ) {
-          return Steps.Down;
+          return Steps.PEnd;
         }
 
         else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 1 ) {

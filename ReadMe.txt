@@ -1,5 +1,5 @@
-FS20_HudBar V 0.39 - Build 35 BETA
-(c) M. Burri - 12-Dec-2021
+FS20_HudBar V 0.40 - Build 36 BETA
+(c) M. Burri - 19-Dec-2021
 
 Contains files:
 
@@ -37,6 +37,13 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.40-B36
+- Add Flight Recorder to create a KML and JSON flight logfile
+- Add Mouse wheel Inc/Dec for ERA-Trims (also extend to 0.1% readout)
+- Add Spoilers Voice Out
+- Update Spoilers and Flaps indication for the End position (out) is now Blue
+- Fix Spoiler indication (was not active)
+
 V 0.39-B35
 - Update Allow for configuration of Keyboard Hotkeys
 - Update Gear availability included in Aircraft merges

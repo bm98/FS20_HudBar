@@ -20,13 +20,13 @@ namespace FS20_HudBar.GUI
     /// </summary>
     Up,
     /// <summary>
-    /// Down and OK (Gear, Flaps)
+    /// Down and OK (Gear)
     /// </summary>
     Down,
     /// <summary>
-    /// Positional Levels (Flaps)
+    /// Positional Levels (Flaps, Spoiler)
     /// </summary>
-    P1, P2, P3, P4, P5, P6, P7,
+    P1, P2, P3, P4, P5, P6, P7, PEnd,
 
     /// <summary>
     /// On and OK - counter part is OffWarn

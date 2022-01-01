@@ -92,6 +92,7 @@ namespace FS20_HudBar.Config
       this.txHkProfile3 = new System.Windows.Forms.TextBox();
       this.txHkProfile4 = new System.Windows.Forms.TextBox();
       this.chkInGame = new System.Windows.Forms.CheckBox();
+      this.cbxFlightRecorder = new System.Windows.Forms.CheckBox();
       this.tlp.SuspendLayout();
       this.flp1.SuspendLayout();
       this.flp2.SuspendLayout();
@@ -161,6 +162,7 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.txHkProfile3, 2, 3);
       this.tlp.Controls.Add(this.txHkProfile4, 3, 3);
       this.tlp.Controls.Add(this.chkInGame, 5, 5);
+      this.tlp.Controls.Add(this.cbxFlightRecorder, 3, 9);
       this.tlp.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tlp.Location = new System.Drawing.Point(0, 0);
       this.tlp.Name = "tlp";
@@ -752,7 +754,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxVoice.Location = new System.Drawing.Point(159, 742);
+      this.cbxVoice.Location = new System.Drawing.Point(159, 740);
       this.cbxVoice.Name = "cbxVoice";
       this.cbxVoice.Size = new System.Drawing.Size(150, 23);
       this.cbxVoice.TabIndex = 25;
@@ -816,7 +818,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxASave.Location = new System.Drawing.Point(315, 742);
+      this.cbxASave.Location = new System.Drawing.Point(315, 740);
       this.cbxASave.Name = "cbxASave";
       this.cbxASave.Size = new System.Drawing.Size(150, 23);
       this.cbxASave.TabIndex = 29;
@@ -904,6 +906,17 @@ namespace FS20_HudBar.Config
       this.chkInGame.TabIndex = 31;
       this.chkInGame.Text = "MSFS Hotkeys";
       this.chkInGame.UseVisualStyleBackColor = false;
+      // 
+      // cbxFlightRecorder
+      // 
+      this.cbxFlightRecorder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.cbxFlightRecorder.AutoSize = true;
+      this.cbxFlightRecorder.Location = new System.Drawing.Point(471, 744);
+      this.cbxFlightRecorder.Name = "cbxFlightRecorder";
+      this.cbxFlightRecorder.Size = new System.Drawing.Size(128, 19);
+      this.cbxFlightRecorder.TabIndex = 44;
+      this.cbxFlightRecorder.Text = "Use Flight Recorder";
+      this.cbxFlightRecorder.UseVisualStyleBackColor = true;
       // 
       // frmConfig
       // 
@@ -1006,5 +1019,6 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.TextBox txHkProfile3;
     private System.Windows.Forms.TextBox txHkProfile4;
     private System.Windows.Forms.TextBox txHkProfile5;
+    private System.Windows.Forms.CheckBox cbxFlightRecorder;
   }
 }

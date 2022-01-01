@@ -9,6 +9,9 @@ using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.GUI.Templates
 {
+  /// <summary>
+  /// Percent with +- 3 digits
+  /// </summary>
   class V_Prct : V_Base
   {
     /// <summary>
@@ -24,7 +27,7 @@ namespace FS20_HudBar.GUI.Templates
     }
 
     /// <summary>
-    /// Set the value of the Control - formatted as +NN'NN0ft
+    /// Set the value of the Control - formatted as +NN0%
     /// </summary>
     override public float? Value {
       set {

@@ -52,31 +52,31 @@ namespace FS20_HudBar.Bar.Items
       get {
         if ( !SC.SimConnectClient.Instance.IsConnected ) return Steps.Up; // cannot calculate anything
 
-        if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex < 0.05 ) {
+        if ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.05 ) {
           return Steps.Up;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex < 0.15 ) {
+        else if ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.15 ) {
           return Steps.P1;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex < 0.25 ) {
+        else if ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.25 ) {
           return Steps.P2;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex < 0.35 ) {
+        else if ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.35 ) {
           return Steps.P3;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex < 0.45 ) {
+        else if ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.45 ) {
           return Steps.P4;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex < 0.55 ) {
+        else if ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.55 ) {
           return Steps.P5;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex < 0.65 ) {
+        else if ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.65 ) {
           return Steps.P6;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex < 0.75 ) {
+        else if ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.75 ) {
           return Steps.P7;
         }
-        return Steps.Down;
+        return Steps.PEnd;
       }
     }
 

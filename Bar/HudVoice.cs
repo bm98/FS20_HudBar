@@ -29,6 +29,7 @@ namespace FS20_HudBar.Bar
     private T_OAT v_airTemp;
     private T_WarnFuel v_warnFuel;
     private T_IAS_Rotate v_rotate;
+    private T_Spoilers v_spoilers;
 
     /// <summary>
     /// Provide the list of installed Voice Triggers
@@ -53,6 +54,7 @@ namespace FS20_HudBar.Bar
       v_airTemp = new T_OAT(speaker); m_triggerList.Add( v_airTemp );
       v_warnFuel = new T_WarnFuel( speaker ); m_triggerList.Add( v_warnFuel );
       v_rotate = new T_IAS_Rotate( speaker ); m_triggerList.Add( v_rotate );
+      v_spoilers = new T_Spoilers( speaker ); m_triggerList.Add( v_spoilers );
 
       // load from settings
       string profile = AppSettings.Instance.VoiceCalloutProfile;

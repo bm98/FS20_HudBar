@@ -214,6 +214,7 @@ namespace FS20_HudBar.Config
       if ( ProfilesRef?.Count < c_NumProfiles ) return;// sanity ..
 
       cbxUnits.Checked = HudBarRef.ShowUnits;
+      cbxFlightRecorder.Checked = HudBarRef.FlightRecorder;
 
       PopulateASave( cbxASave ); //20211204
       cbxASave.SelectedIndex = (int)HudBarRef.FltAutoSave;
@@ -280,6 +281,7 @@ namespace FS20_HudBar.Config
       // update from edits
       // live update to HUD
       HudBarRef.SetShowUnits( cbxUnits.Checked );
+      HudBarRef.SetFlightRecorder( cbxFlightRecorder.Checked );
 
       HudBarRef.SetHotkeys( _hotkeys );
       HudBarRef.SetKeyboardHook( chkKeyboard.Checked );

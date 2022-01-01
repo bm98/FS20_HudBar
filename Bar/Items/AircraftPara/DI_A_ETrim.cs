@@ -38,6 +38,7 @@ namespace FS20_HudBar.Bar.Items
     private readonly B_Base _label;
     private readonly V_Base _value1;
 
+    private const float c_incPerWheel = 0.001f; // Get 0.1% per mouse inc
     private const int c_aETrim_sec = 20; // sec  AutoETrim active time when clicked
     private DateTime  _endTime = DateTime.Now; // to switch AET off when expired
 
@@ -52,8 +53,22 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       _label.ButtonClicked += _label_ButtonClicked;
+      _label.MouseWheel += _label_MouseWheel;
+      _label.Cursor = Cursors.SizeNS;
 
       SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+    }
+
+    private void _label_MouseWheel( object sender, MouseEventArgs e )
+    {
+      if ( e.Delta > 0 ) {
+        // Wheel Up - nose down
+        SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct -= c_incPerWheel;
+      }
+      else if ( e.Delta < 0 ) {
+        // Wheel Down
+        SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct += c_incPerWheel;
+      }
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )

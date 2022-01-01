@@ -180,6 +180,13 @@ namespace FS20_HudBar
       set { this["InGameHook"] = value; }
     }
 
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "False" )]
+    public bool FRecorder {
+      get { return (bool)this["FRecorder"]; }
+      set { this["FRecorder"] = value; }
+    }
+
     // Obsolete - no longer used - replaced with FltAutoSaveATC
     [UserScopedSetting( )]
     [DefaultSettingValue( "False" )]
