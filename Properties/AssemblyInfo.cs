@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "" )]
 [assembly: AssemblyProduct( "FS20_HudBar" )]
-[assembly: AssemblyCopyright( "Copyright ©  2021 M.Burri" )]
+[assembly: AssemblyCopyright( "Copyright ©  2022 M.Burri" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion( "0.39.0.35" )]
-[assembly: AssemblyFileVersion( "0.39.0.35" )]
+[assembly: AssemblyVersion( "0.40.0.36" )]
+[assembly: AssemblyFileVersion( "0.40.0.36" )]
