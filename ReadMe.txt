@@ -44,6 +44,7 @@ V 0.40-B36
 - Update Spoilers and Flaps indication for the End position (out) is now a blue icon (was green)
 - Fix Spoiler indication (was not active)
 - Update FP Capture and Save disabled when on ground
+- Fix numeric issue with Alt@WP
 - Update QuickGuide
 
 V 0.39-B35

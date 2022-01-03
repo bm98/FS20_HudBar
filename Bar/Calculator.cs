@@ -209,12 +209,12 @@ namespace FS20_HudBar.Bar
     /// <returns>The altitude at target with current GS and VS from current Alt</returns>
     public static float AltitudeAtTgt( float tgtDist )
     {
-      if ( tgtDist <= 0.0f ) return 0; // avoid Div0 and cannot calc backwards 
-      if ( m_gs <= 0.0f ) return 0;      // avoid Div0 and cannot calc with GS <=0
+      if ( tgtDist <= 0.0f ) return m_alt; // cannot calc backwards aiming
+      if ( m_gs <= 1f ) return m_alt;      // should not calc with GS <=1
 
       float minToTgt = tgtDist / NmPerMin( m_gs );
       float dAlt = m_vs * minToTgt;
-      return (int)Math.Round( ( m_alt + dAlt ) / 100f ) * 100;
+      return (int)Math.Round( ( m_alt + dAlt ) / 100f ) * 100; // fix at 100 steps
     }
 
     #endregion
