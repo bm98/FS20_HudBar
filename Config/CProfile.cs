@@ -20,7 +20,7 @@ namespace FS20_HudBar.Config
     private int m_pNumber = 0; // Profile Number 1...
 
     private Dictionary<LItem, bool> m_profile = new Dictionary<LItem, bool>();   // true to show the item
-    private Dictionary<LItem, bool> m_flowBreak = new Dictionary<LItem, bool>(); // true to break the flow
+    private Dictionary<LItem, GUI.BreakType> m_flowBreak = new Dictionary<LItem, GUI.BreakType>(); // true to break the flow
     private Dictionary<LItem, int> m_sequence = new Dictionary<LItem, int>();    // display position 0...
 
     private GUI.FontSize m_fontSize = GUI.FontSize.Regular;
@@ -34,14 +34,77 @@ namespace FS20_HudBar.Config
     /// The string divider char
     /// </summary>
     public const char Divider = ';';
+
+    #region Break Handling Helpers
+
     /// <summary>
     /// The tag to indicate a flow break
     /// </summary>
-    public const char NoBreakTag = '\0';
+    public static readonly char NoBreakTag = BreakTagFromEnum( GUI.BreakType.None );
     /// <summary>
     /// The tag to indicate a flow break
     /// </summary>
-    public const char FlowBreakTag = '1';
+    public static readonly char FlowBreakTag = BreakTagFromEnum( GUI.BreakType.FlowBreak );
+    /// <summary>
+    /// The tag to indicate a div break Type 1
+    /// </summary>
+    public static readonly char DivBreakTag1 = BreakTagFromEnum( GUI.BreakType.DivBreak1 );
+    /// <summary>
+    /// The tag to indicate a div break Type 2
+    /// </summary>
+    public static readonly char DivBreakTag2 = BreakTagFromEnum( GUI.BreakType.DivBreak2 );
+
+    /// <summary>
+    /// Returns the Break Tag from its Enum
+    /// </summary>
+    /// <param name="breakType">The BreakType Enum</param>
+    /// <returns>A Break Tag</returns>
+    public static char BreakTagFromEnum( GUI.BreakType breakType )
+    {
+      return Convert.ToChar( Convert.ToByte( '0' ) + (byte)breakType );
+    }
+
+    /// <summary>
+    /// Returns the BreakEnum from a Tag
+    /// </summary>
+    /// <param name="breakTag">A BreakTag</param>
+    /// <returns>A Break Enum</returns>
+    public static GUI.BreakType EnumFromBreakTag( char breakTag )
+    {
+      if ( breakTag == FlowBreakTag ) return GUI.BreakType.FlowBreak;
+      if ( breakTag == DivBreakTag1 ) return GUI.BreakType.DivBreak1;
+      if ( breakTag == DivBreakTag2 ) return GUI.BreakType.DivBreak2;
+      return GUI.BreakType.None;
+    }
+
+    /// <summary>
+    /// Returns the BreakEnum from a Tag String
+    /// </summary>
+    /// <param name="breakTag">A BreakTag</param>
+    /// <returns>A Break Enum</returns>
+    public static GUI.BreakType EnumFromBreakTagString( string breakTag )
+    {
+      if ( breakTag == FlowBreakTag.ToString( ) ) return GUI.BreakType.FlowBreak;
+      if ( breakTag == DivBreakTag1.ToString( ) ) return GUI.BreakType.DivBreak1;
+      if ( breakTag == DivBreakTag2.ToString( ) ) return GUI.BreakType.DivBreak2;
+      return GUI.BreakType.None;
+    }
+
+    /// <summary>
+    /// Returns the Break Tag Color from its Enum
+    /// </summary>
+    /// <param name="breakType">The BreakType Enum</param>
+    /// <returns>A Break Tag Color</returns>
+    public static Color BreakColorFromEnum( GUI.BreakType breakType )
+    {
+      if ( breakType == GUI.BreakType.FlowBreak ) return GUI.GUI_Colors.c_FBCol;
+      if ( breakType == GUI.BreakType.DivBreak1 ) return GUI.GUI_Colors.c_DB1Col;
+      if ( breakType == GUI.BreakType.DivBreak2 ) return GUI.GUI_Colors.c_DB2Col;
+      return GUI.GUI_Colors.c_NBCol;
+    }
+
+
+    #endregion
 
     /// <summary>
     /// The Profile name
@@ -155,11 +218,11 @@ namespace FS20_HudBar.Config
             // store along the Enum sequence
             m_sequence[i] = pos;
             m_profile[i] = cb.Checked;
-            m_flowBreak[i] = (char)cb.Tag == FlowBreakTag;
+            m_flowBreak[i] = EnumFromBreakTag( (char)cb.Tag );
           }
         }
         catch {
-          m_sequence[i] = (int)i; m_profile[i] = true; m_flowBreak[i] = false; // dummys anyway - DEBUG STOP
+          m_sequence[i] = (int)i; m_profile[i] = true; m_flowBreak[i] = GUI.BreakType.None; // dummys anyway - DEBUG STOP
         }
       }
     }
@@ -284,13 +347,13 @@ namespace FS20_HudBar.Config
         m_profile.Add( i, show );
       }
 
-      // Get the flow break  status for each item
+      // Get the flow break status for each item
       e = flowBreak.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
       m_flowBreak.Clear( );
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
-        bool fbreak = false; // default OFF
+        GUI.BreakType fbreak = GUI.BreakType.None; // default OFF
         if ( e.Length > (int)i ) {
-          fbreak = e[(int)i] == "1"; // found an element in the string
+          fbreak = EnumFromBreakTagString( e[(int)i] ); // found an element in the string
         }
         m_flowBreak.Add( i, fbreak );
       }
@@ -334,14 +397,59 @@ namespace FS20_HudBar.Config
     }
 
     /// <summary>
-    /// Returns the FlowBreak state of an item
+    /// Returns the True for a FlowBreak
     /// </summary>
     /// <param name="item">An item</param>
     /// <returns>True if it breaks</returns>
     public bool BreakItem( LItem item )
     {
       try {
-        return m_flowBreak[item];
+        return m_flowBreak[item] == GUI.BreakType.FlowBreak;
+      }
+      catch {
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// Returns True for a Divider/Separator Break Type 1 OR 2
+    /// </summary>
+    /// <param name="item">An item</param>
+    /// <returns>True if it a separator is needed</returns>
+    public bool DivItem( LItem item )
+    {
+      try {
+        return (m_flowBreak[item] == GUI.BreakType.DivBreak1) || ( m_flowBreak[item] == GUI.BreakType.DivBreak2 );
+      }
+      catch {
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// Returns True for a Divider/Separator Break Type 1
+    /// </summary>
+    /// <param name="item">An item</param>
+    /// <returns>True if it a separator is needed</returns>
+    public bool DivItem1( LItem item )
+    {
+      try {
+        return m_flowBreak[item] == GUI.BreakType.DivBreak1;
+      }
+      catch {
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// Returns True for a Divider/Separator Break Type 2
+    /// </summary>
+    /// <param name="item">An item</param>
+    /// <returns>True if it a separator is needed</returns>
+    public bool DivItem2( LItem item )
+    {
+      try {
+        return m_flowBreak[item] == GUI.BreakType.DivBreak2;
       }
       catch {
         return false;
@@ -403,7 +511,7 @@ namespace FS20_HudBar.Config
       string ret="";
 
       foreach ( var kv in m_flowBreak ) {
-        ret += ( kv.Value ? "1" : "0" ) + Divider;
+        ret += BreakTagFromEnum( kv.Value ).ToString( ) + Divider;
       }
       return ret;
     }

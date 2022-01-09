@@ -754,7 +754,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxVoice.Location = new System.Drawing.Point(159, 740);
+      this.cbxVoice.Location = new System.Drawing.Point(159, 742);
       this.cbxVoice.Name = "cbxVoice";
       this.cbxVoice.Size = new System.Drawing.Size(150, 23);
       this.cbxVoice.TabIndex = 25;
@@ -818,7 +818,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxASave.Location = new System.Drawing.Point(315, 740);
+      this.cbxASave.Location = new System.Drawing.Point(315, 742);
       this.cbxASave.Name = "cbxASave";
       this.cbxASave.Size = new System.Drawing.Size(150, 23);
       this.cbxASave.TabIndex = 29;

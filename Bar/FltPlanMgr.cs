@@ -14,7 +14,7 @@ namespace FS20_HudBar.Bar
   /// Handles the FLT File to get some more information other than SimConnect
   /// As we can only interface to one FLT file this is build as static entity
   /// </summary>
-  internal static class FltMgr
+  internal static class FltPlanMgr
   {
 //    private static FS20FltFile m_fltFile = null;
     private static int m_currentHash = 0;
@@ -76,7 +76,7 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// cTor:
     /// </summary>
-    static FltMgr( )
+    static FltPlanMgr( )
     {
       // receive FLT updates
       SC.SimConnectClient.Instance.FltSave += Instance_FltSave;

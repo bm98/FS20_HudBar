@@ -37,20 +37,21 @@ namespace FS20_HudBar.Triggers
 
       var ds = SC.SimConnectClient.Instance.HudBarModule;
 
-      if ( SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) {
-        // Rotate is only triggered while OnGround
-        var rotSpeed =  ds.DesingSpeedMinRotation_kt;
-        if ( rotSpeed < 10 ) return; // not properly set or otherwise not meaningful value from SIM
+      // Rotate is only triggered while OnGround and accelerating (else it calls on touchdown)
+      if ( !ds.Sim_OnGround ) return; // not on ground
+      if ( ds.Accel_AcftZ_fps2 < 0.1f ) return; // not accelerating (enough..)
 
-        _detectionIAS = rotSpeed - 5f; // put the detection/reset level below the trigger level-offset
-        this.m_actions.ElementAt( 0 ).Value.TriggerStateF.Level = rotSpeed; // set the trigger level
-        _smooth.Add( ds.IAS_kt ); // smoothen
-        DetectStateChange( _smooth.GetFloat );
+      var rotSpeed =  ds.DesingSpeedMinRotation_kt;
+      if ( rotSpeed < 10 ) return; // not properly set or otherwise not meaningful value from SIM
 
-        // reset when again on ground and below detection limit - Rotate will only trigger if within limits +-2
-        if ( ds.IAS_kt < _detectionIAS ) {
-          this.Reset( );
-        }
+      _detectionIAS = rotSpeed - 5f; // put the detection/reset level below the trigger level-offset
+      this.m_actions.ElementAt( 0 ).Value.TriggerStateF.Level = rotSpeed; // set the trigger level
+      _smooth.Add( ds.IAS_kt ); // smoothen
+      DetectStateChange( _smooth.GetFloat );
+
+      // reset when again on ground and below detection limit - Rotate will only trigger if within limits +-2
+      if ( ds.IAS_kt < _detectionIAS ) {
+        this.Reset( );
       }
     }
 

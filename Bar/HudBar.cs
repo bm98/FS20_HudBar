@@ -37,7 +37,7 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// The current ATC Flightplan (actually a copy of it)
     /// </summary>
-    public static FlightPlan AtcFlightPlan => FltMgr.FlightPlan;
+    public static FlightPlan AtcFlightPlan => FltPlanMgr.FlightPlan;
 
 
     /// <summary>
@@ -146,7 +146,7 @@ namespace FS20_HudBar.Bar
     /// Show Units if true
     /// </summary>
     public bool ShowUnits { get; private set; } = false;
-    
+
     /// <summary>
     /// The Configured Hotkeys
     /// </summary>
@@ -492,7 +492,7 @@ namespace FS20_HudBar.Bar
       // ATC Airport
       AirportMgr.Update( AtcFlightPlan.Destination ); // maintain APT (we should always have a Destination here)
                                                       // Load Remaining Plan if the WYP or Flightplan has changed
-      if ( WPTracker.HasChanged || FltMgr.HasChanged ) {
+      if ( WPTracker.HasChanged || FltPlanMgr.HasChanged ) {
         string tt = AtcFlightPlan.RemainingPlan( WPTracker.Read( ) );
         this.ToolTipFP.SetToolTip( this.DispItem( LItem.GPS_WYP ).Label, tt );
         this.DispItem( LItem.GPS_WYP ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
@@ -509,9 +509,30 @@ namespace FS20_HudBar.Bar
         this.ToolTipFP.SetToolTip( this.DispItem( LItem.ATC_ALT_HDG ).Label, tt );
         this.DispItem( LItem.ATC_ALT_HDG ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
         // commit that we read the changes of the Flight Plan
-        FltMgr.Read( );
+        FltPlanMgr.Read( );
       }
 
+      if ( FltStateMgr.HasChanged ) {
+        string tt="";
+        if ( FltStateMgr.IsInFlight ) {
+          var ds = SC.SimConnectClient.Instance.HudBarModule;
+          tt = $"Aircraft Type:     {ds.AcftConfigFile}\n\n"
+             + $"Cruise Altitude:   {ds.DesingCruiseAlt_ft:##,##0} ft\n"
+             + $"Vc  Cruise Speed:  {ds.DesingSpeedVC_kt:##0} kt\n"
+             + $"Vy  Climb Speed    {ds.DesingSpeedClimb_kt:##0} kt\n"
+             + $"Vmu Takeoff Speed: {ds.DesingSpeedTakeoff_kt:##0} kt\n"
+             + $"Vr  Min Rotation:  {ds.DesingSpeedMinRotation_kt:##0} kt\n"
+             + $"Vs1 Stall Speed:   {ds.DesingSpeedVS1_kt:##0} kt\n"
+             + $"Vs0 Stall Speed:   {ds.DesingSpeedVS0_kt:##0} kt\n";
+        }
+        this.ToolTipFP.SetToolTip( this.DispItem( LItem.IAS ).Label, tt );
+        this.DispItem( LItem.IAS ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+        FltStateMgr.Read( );
+
+        // re-read if we get an early call and the data was not available
+        if ( string.IsNullOrEmpty( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile ) ) FltStateMgr.Reset( ); 
+
+      }
     }
 
 
@@ -530,7 +551,7 @@ namespace FS20_HudBar.Bar
     /// <param name="hotkeys"></param>
     public void SetHotkeys( WinHotkeyCat hotkeys )
     {
-      Hotkeys = hotkeys.Copy( );      
+      Hotkeys = hotkeys.Copy( );
     }
 
     /// <summary>

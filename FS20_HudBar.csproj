@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>36</ApplicationRevision>
-    <ApplicationVersion>0.40.0.36</ApplicationVersion>
+    <ApplicationRevision>37</ApplicationRevision>
+    <ApplicationVersion>0.41.0.37</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -114,6 +114,7 @@
     <Compile Include="AApp\AppSettings.cs" />
     <Compile Include="Bar\Calculator.cs" />
     <Compile Include="Bar\DispItemCat.cs" />
+    <Compile Include="Bar\FltStateMgr.cs" />
     <Compile Include="Bar\Items\AircraftPara\DI_A_ETrim.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -169,6 +170,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AircraftPara\DI_Spoilers.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\DI_Separator.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\SimPara\DI_FlightLog.cs">
@@ -424,7 +428,7 @@
     <Compile Include="Config\ProfileStore.cs" />
     <Compile Include="Config\CProfile.cs" />
     <Compile Include="AApp\AirportMgr.cs" />
-    <Compile Include="Bar\FltMgr.cs" />
+    <Compile Include="Bar\FltPlanMgr.cs" />
     <Compile Include="AApp\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -671,6 +675,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AApp\3x3dot.png" />
+    <None Include="AApp\3x3void.png" />
     <Content Include="Fonts\ShareTechMono-Regular-OFL.txt" />
     <Content Include="HudBar.ico" />
     <Content Include="Microsoft.FlightSimulator.SimConnect.dll">

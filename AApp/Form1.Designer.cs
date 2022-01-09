@@ -45,15 +45,15 @@ namespace FS20_HudBar
       this.maBright = new System.Windows.Forms.ToolStripMenuItem();
       this.maDimm = new System.Windows.Forms.ToolStripMenuItem();
       this.maDark = new System.Windows.Forms.ToolStripMenuItem();
-      this.mConfig = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+      this.mConfig = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
       this.mExit = new System.Windows.Forms.ToolStripMenuItem();
       this.signProto = new System.Windows.Forms.Label();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
-      this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
       this.cMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -64,7 +64,7 @@ namespace FS20_HudBar
       this.lblProto.BackColor = System.Drawing.Color.Transparent;
       this.lblProto.Font = new System.Drawing.Font("Bahnschrift", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.lblProto.ForeColor = System.Drawing.Color.Silver;
-      this.lblProto.Location = new System.Drawing.Point(510, 35);
+      this.lblProto.Location = new System.Drawing.Point(510, 44);
       this.lblProto.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
       this.lblProto.Name = "lblProto";
       this.lblProto.Size = new System.Drawing.Size(44, 16);
@@ -93,7 +93,7 @@ namespace FS20_HudBar
       this.valueProto.BackColor = System.Drawing.Color.Transparent;
       this.valueProto.Font = new System.Drawing.Font("Lucida Console", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.valueProto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.valueProto.Location = new System.Drawing.Point(586, 35);
+      this.valueProto.Location = new System.Drawing.Point(586, 44);
       this.valueProto.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.valueProto.Name = "valueProto";
       this.valueProto.Size = new System.Drawing.Size(56, 25);
@@ -207,6 +207,11 @@ namespace FS20_HudBar
       this.maDark.Text = "Dark";
       this.maDark.Click += new System.EventHandler(this.maDark_Click);
       // 
+      // toolStripSeparator2
+      // 
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
+      // 
       // mConfig
       // 
       this.mConfig.Name = "mConfig";
@@ -214,10 +219,10 @@ namespace FS20_HudBar
       this.mConfig.Text = "Configure...";
       this.mConfig.Click += new System.EventHandler(this.mConfig_Click);
       // 
-      // toolStripSeparator2
+      // toolStripSeparator3
       // 
-      this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
+      this.toolStripSeparator3.Name = "toolStripSeparator3";
+      this.toolStripSeparator3.Size = new System.Drawing.Size(157, 6);
       // 
       // mExit
       // 
@@ -232,7 +237,7 @@ namespace FS20_HudBar
       this.signProto.AutoSize = true;
       this.signProto.Font = new System.Drawing.Font("Wingdings", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
       this.signProto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.signProto.Location = new System.Drawing.Point(761, 35);
+      this.signProto.Location = new System.Drawing.Point(761, 44);
       this.signProto.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.signProto.Name = "signProto";
       this.signProto.Size = new System.Drawing.Size(106, 29);
@@ -254,7 +259,7 @@ namespace FS20_HudBar
       this.value2Proto.BackColor = System.Drawing.Color.Transparent;
       this.value2Proto.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Bold);
       this.value2Proto.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.value2Proto.Location = new System.Drawing.Point(677, 38);
+      this.value2Proto.Location = new System.Drawing.Point(677, 47);
       this.value2Proto.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.value2Proto.Name = "value2Proto";
       this.value2Proto.Size = new System.Drawing.Size(47, 21);
@@ -272,7 +277,7 @@ namespace FS20_HudBar
       this.B.FlatAppearance.BorderSize = 0;
       this.B.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.B.ForeColor = System.Drawing.Color.Coral;
-      this.B.Location = new System.Drawing.Point(734, 12);
+      this.B.Location = new System.Drawing.Point(734, 21);
       this.B.Name = "B";
       this.B.Size = new System.Drawing.Size(26, 26);
       this.B.TabIndex = 4;
@@ -287,7 +292,7 @@ namespace FS20_HudBar
       this.label1.BackColor = System.Drawing.Color.Transparent;
       this.label1.Font = new System.Drawing.Font("Share Tech Mono", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label1.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.label1.Location = new System.Drawing.Point(681, 3);
+      this.label1.Location = new System.Drawing.Point(681, 12);
       this.label1.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
       this.label1.Name = "label1";
       this.label1.Size = new System.Drawing.Size(43, 24);
@@ -297,17 +302,12 @@ namespace FS20_HudBar
       this.label1.UseCompatibleTextRendering = true;
       this.label1.Visible = false;
       // 
-      // toolStripSeparator3
-      // 
-      this.toolStripSeparator3.Name = "toolStripSeparator3";
-      this.toolStripSeparator3.Size = new System.Drawing.Size(157, 6);
-      // 
       // frmMain
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
       this.BackColor = System.Drawing.Color.Black;
       this.CausesValidation = false;
-      this.ClientSize = new System.Drawing.Size(872, 72);
+      this.ClientSize = new System.Drawing.Size(872, 81);
       this.ContextMenuStrip = this.cMenu;
       this.Controls.Add(this.label1);
       this.Controls.Add(this.flpMAIN);

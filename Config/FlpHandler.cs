@@ -23,7 +23,7 @@ namespace FS20_HudBar.Config
     private FlowLayoutPanel m_flp = null;
 
     private Dictionary<LItem, bool> m_profile = new Dictionary<LItem, bool>();   // true to show the item
-    private Dictionary<LItem, bool> m_flowBreak = new Dictionary<LItem, bool>(); // true to break the flow
+    private Dictionary<LItem, GUI.BreakType> m_flowBreak = new Dictionary<LItem, GUI.BreakType>(); // true to break the flow
     private Dictionary<LItem, int> m_sequence = new Dictionary<LItem, int>();    // display position 0...
 
     /// <summary>
@@ -71,7 +71,7 @@ namespace FS20_HudBar.Config
         var cb = new CheckBox(){
           Name =Key(i),
           Text = hudBar.CfgName( i ),
-          Tag = m_flowBreak[i] ? FlowBreakTag : NoBreakTag, // use TAG as string 0 / 1
+          Tag = BreakTagFromEnum( m_flowBreak[i] ),
           Margin = new Padding(3,0,3,0),
           Anchor = AnchorStyles.Left,
           AutoSize = true,
@@ -80,7 +80,7 @@ namespace FS20_HudBar.Config
          // Cursor = Cursors.NoMoveVert,
         };
         cb.Checked = m_profile[i];
-        cb.BackColor = m_flowBreak[i] ? GUI.GUI_Colors.c_FBCol : m_flp.BackColor; // FBs have a different BGCol
+        cb.BackColor = BreakColorFromEnum( m_flowBreak[i] );
         // Mouse Handlers
         cb.MouseDown += Cb_MouseDown;
         cb.MouseUp += Cb_MouseUp;
@@ -189,17 +189,27 @@ namespace FS20_HudBar.Config
     private void Cb_MouseDown( object sender, MouseEventArgs e )
     {
       var cb = sender as CheckBox;
-      // RIGHT Button - Toggle the FlowBreak when the RIGHT button is down
+      // RIGHT Button - Cycle the FlowBreak/DivBreak/None when the RIGHT button is down
       if ( e.Button == MouseButtons.Right ) {
         if ( (char)cb.Tag == FlowBreakTag ) {
-          // remove FB
-          cb.BackColor = m_flp.BackColor;
+          // change to DB1
+          cb.BackColor = GUI.GUI_Colors.c_DB1Col;
+          cb.Tag = DivBreakTag1;
+        }
+        else if ( (char)cb.Tag == DivBreakTag1 ) {
+          // change to DB2
+          cb.BackColor = GUI.GUI_Colors.c_DB2Col;
+          cb.Tag = DivBreakTag2;
+        }
+        else if ( (char)cb.Tag == DivBreakTag2 ) {
+          // change to none
+          cb.BackColor = GUI.GUI_Colors.c_NBCol; // m_flp.BackColor;
           cb.Tag = NoBreakTag;
         }
         else {
-          // add FB
-          cb.BackColor = Color.PaleGreen;
-          cb.Tag = FlowBreakTag; // FlowBreak 
+          // change to FB
+          cb.BackColor = GUI.GUI_Colors.c_FBCol;
+          cb.Tag = FlowBreakTag;
         }
       }
       // LEFT Button - Start to MOVE a CheckBox
@@ -277,13 +287,13 @@ namespace FS20_HudBar.Config
             // store along the Enum sequence
             sequence += $"{pos}" + Divider;
             profile += ( cb.Checked ? "1" : "0" ) + Divider;
-            flowBreak += ( ( (char)cb.Tag == FlowBreakTag ) ? "1" : "0" ) + Divider; ;
+            flowBreak += BreakTagFromEnum( EnumFromBreakTag( (char)cb.Tag ) ).ToString( ) + Divider; // back and forth conversion - just to ensure defaults if the Tag was not properly maintained
           }
         }
         catch {
           sequence += $"{i}" + +Divider; ;
           profile += "0" + Divider; ;
-          flowBreak += "0" + Divider; ;
+          flowBreak += NoBreakTag.ToString( ) + Divider; ;
         }
       }
       return new ProfileStore( "COPY", profile, sequence, flowBreak );
@@ -363,9 +373,9 @@ namespace FS20_HudBar.Config
       e = flowBreak.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
       m_flowBreak.Clear( );
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
-        bool fbreak = false; // default OFF
+        GUI.BreakType fbreak = GUI.BreakType.None; // default OFF
         if ( e.Length > (int)i ) {
-          fbreak = e[(int)i] == "1"; // found an element in the string
+          fbreak = EnumFromBreakTagString( e[(int)i] ); // found an element in the string
         }
         m_flowBreak.Add( i, fbreak );
       }
@@ -432,7 +442,7 @@ namespace FS20_HudBar.Config
       string ret="";
 
       foreach ( var kv in m_flowBreak ) {
-        ret += ( kv.Value ? "1" : "0" ) + Divider;
+        ret += BreakTagFromEnum( kv.Value ).ToString( ) + Divider;
       }
       return ret;
     }

@@ -733,6 +733,25 @@ namespace FS20_HudBar
         if ( di != null && HUD.ShowItem( key ) ) {
           // if the item is checked, i.e. to be shown only
           if ( di.Controls.Count > 0 ) {
+            // the flowbreak causes the tagged item to be on the same line and then to break for the next one
+            // Not so intuitive for the user - so we mark the one that goes on the next line but need to attach the FB then to the prev one
+            if ( HUD.Profile.BreakItem( key ) && prevDi != null ) {
+              // We set the FlowBreak to the item before the marked one
+              flp.SetFlowBreak( prevDi, true );
+            }
+            // separator must be set before the newly added item
+            if ( HUD.Profile.DivItem( key ) ) {
+              DI_Separator dSep = new DI_Separator( HUD.Profile.DivItem2( key )? ColorType.cDivBG2: ColorType.cDivBG1 ); // select Color Type of the separator
+              // need some fiddling to make it fit
+              if ( ( HUD.Placement == GUI.Placement.Bottom ) || ( HUD.Placement == GUI.Placement.Top ) ) {
+                dSep.Dock = DockStyle.Left;// horizontal Bar
+              }
+              else {
+                dSep.Dock = DockStyle.Top;// vertical Bar
+              }
+              GUI.GUI_Colors.Register( dSep ); // register for color management
+              flp.Controls.Add( dSep ); // add it to the Main FlowPanel
+            }
             // add it to the Main FlowPanel when we have to show something
             flp.Controls.Add( di );
             /*
@@ -740,12 +759,6 @@ namespace FS20_HudBar
               m_toolTip.SetToolTip( di.Label, di.TText );
             }
             */
-            // the flowbreak causes the tagged item to be on the same line and then to break for the next one
-            // Not so intuitive for the user - so we mark the one that goes on the next line but need to attach the FB then to the prev one
-            if ( HUD.Profile.BreakItem( key ) && prevDi != null ) {
-              // We set the FlowBreak to the item before the marked one
-              flp.SetFlowBreak( prevDi, true );
-            }
             // collect max dimensions derived from each DispItem while loading the panel (loading also layouts them)
             int h = di.Top+di.Height;
             maxHeight = ( h > maxHeight ) ? h : maxHeight;

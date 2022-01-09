@@ -123,12 +123,15 @@ namespace FS20_HudBar.GUI
       /// </summary>
       cMetK,
 
-  }
+      // Separator Back
+      cDivBG1, // type 1 darker blueish
+      cDivBG2, // type 2 brighter yellowish
+    }
 
-  /// <summary>
-  /// Color Sets to choose from
-  /// </summary>
-  public enum ColorSet
+    /// <summary>
+    /// Color Sets to choose from
+    /// </summary>
+    public enum ColorSet
     {
       BrightSet=0,
       DimmedSet,
@@ -173,6 +176,12 @@ namespace FS20_HudBar.GUI
       { ColorType.cMetR, Color.Crimson },// METAR Red
       { ColorType.cMetM, Color.DarkViolet },// METAR Magenta
       { ColorType.cMetK, Color.DarkOrange },// METAR Black (SUB ILS)
+
+      { ColorType.cDivBG1, Color.FromArgb(46,56,107) },// Separator Background Blueish
+      { ColorType.cDivBG2, Color.FromArgb(217,216,160) },// Separator Background Yellowish bright
+      //{ ColorType.cDivBG, Dimm( Color.LightSteelBlue, 50) },// Separator Background
+      //{ ColorType.cDivBG, Color.FromArgb(79,83,43) },// Separator Background Yellowish
+      //{ ColorType.cDivBG, Color.FromArgb(130,142,193) },// Separator Background Blueish bright
     };
 
     // dimmed foreground colors; based on Bright Colors
@@ -205,6 +214,8 @@ namespace FS20_HudBar.GUI
       { ColorType.cMetR, Color.Crimson },// METAR Red
       { ColorType.cMetM, Color.DarkViolet },// METAR Magenta
       { ColorType.cMetK, Color.DarkOrange },// METAR Black (SUB ILS)
+      { ColorType.cDivBG1, Dimm( c_brightColors[ColorType.cDivBG1] ) },// Separator Background
+      { ColorType.cDivBG2, Dimm( c_brightColors[ColorType.cDivBG2] ) },// Separator Background
     };
 
     // colors assuming a brighter background; fore colors cannot be white or blue
@@ -237,6 +248,9 @@ namespace FS20_HudBar.GUI
       { ColorType.cMetR, Color.Crimson },// METAR Red
       { ColorType.cMetM, Color.DarkViolet },// METAR Magenta
       { ColorType.cMetK, Color.DarkOrange },// METAR Black (SUB ILS)
+
+      { ColorType.cDivBG1, Dimm(Color.DeepSkyBlue, 50) },// Separator Background type 1
+      { ColorType.cDivBG2, Color.FromArgb(217,216,160) },// Separator Background Yellowish bright
     };
 
 
@@ -256,7 +270,7 @@ namespace FS20_HudBar.GUI
     /// </summary>
     private static void UpdateRegisteredItems( )
     {
-      foreach(var ci in m_registeredCtrls ) {
+      foreach ( var ci in m_registeredCtrls ) {
         ci.UpdateColor( );
       }
     }
@@ -266,9 +280,8 @@ namespace FS20_HudBar.GUI
     /// <summary>
     /// Get;Set the ForeGround Colors to use 
     /// </summary>
-    public static ColorSet Colorset 
-      { 
-      get => m_currentColorSet; 
+    public static ColorSet Colorset {
+      get => m_currentColorSet;
       set {
         m_currentColorSet = value;
         UpdateRegisteredItems( );
@@ -281,7 +294,7 @@ namespace FS20_HudBar.GUI
     /// </summary>
     /// <param name="csValue">A numeric value to convert</param>
     /// <returns>The corresponding ColorSet (or Bright if the value is undef)</returns>
-    public static ColorSet ToColorSet(int csValue )
+    public static ColorSet ToColorSet( int csValue )
     {
       if ( Enum.IsDefined( typeof( ColorSet ), csValue ) ) {
         return (ColorSet)csValue;
@@ -306,7 +319,7 @@ namespace FS20_HudBar.GUI
     /// </summary>
     /// <param name="colorType">A ColorType</param>
     /// <returns>A Color</returns>
-    public static Color ItemColor(ColorType colorType )
+    public static Color ItemColor( ColorType colorType )
     {
       return c_colors[Colorset][colorType];
     }
@@ -334,33 +347,12 @@ namespace FS20_HudBar.GUI
 
     // Background items with static colors
     public static readonly Color c_WinBG = Color.FromArgb(0,1,12); // Window background (slight blueish)
-    public static readonly Color c_FBCol =  Color.PaleGreen;  // FlowBreak Background in Configuration
     public static readonly Color c_ActPressed = Color.Indigo;      // Actionable Items Background - pressed
 
-
-    // Item Colors Foreground
-    //  public static readonly Color c_Info = c_colors[Colorset][ColorType.cInfo]; // Info Text (basically white)
-    //  public static readonly Color c_OK = c_colors[Colorset][ColorType.cOK];     // OK Text
-    //  public static readonly Color c_AP = c_colors[Colorset][ColorType.cAP];     // Autopilot, NAV (green)
-    //  public static readonly Color c_Gps = c_colors[Colorset][ColorType.cGps];   // GPS (magenta)
-    //  public static readonly Color c_Set = c_colors[Colorset][ColorType.cSet];   // Set Values (cyan)
-    //  public static readonly Color c_RA = c_colors[Colorset][ColorType.cRA];     // Radio Alt
-    //  public static readonly Color c_Est = c_colors[Colorset][ColorType.cEst];   // Estimates 
-    // those are set in the data receiver part in Main (here to have all in one place)
-    //  public static readonly Color c_SubZero = c_colors[Colorset][ColorType.cSubZero];  // Temp sub zero
-    //  public static readonly Color c_SRATE = c_colors[Colorset][ColorType.cSRATE];      // SimRate != 1
-
-
-    //public static readonly Color c_BG = Color.Transparent;    // regular background for all controls
-    //public static readonly Color c_ActBG = Color.FromArgb(0,0,75); // Actionable Items Background (dark blue)
-    //public static readonly Color c_LiveBG = Color.DarkGreen;  // Live Items Background
-
-
-    //public static readonly Color c_MetG = Color.ForestGreen; 
-    //public static readonly Color c_MetB = Color.Blue;        
-    //public static readonly Color c_MetR = Color.Crimson;      
-    //public static readonly Color c_MetM = Color.DarkViolet;   
-    //public static readonly Color c_MetK = Color.DarkOrange;   
+    public static readonly Color c_FBCol =  Color.PaleGreen;   // FlowBreak Background in Configuration
+    public static readonly Color c_DB1Col =  Color.LightSkyBlue;  // DivBreak Type 1 Background in Configuration
+    public static readonly Color c_DB2Col =  Color.Khaki;  // DivBreak Type 2 Background in Configuration
+    public static readonly Color c_NBCol =  Color.WhiteSmoke;  // NoneBreak Background in Configuration
 
   }
 }

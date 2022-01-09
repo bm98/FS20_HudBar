@@ -1,5 +1,5 @@
-FS20_HudBar V 0.40 - Build 36 BETA
-(c) M. Burri - 03-Jan-2022
+FS20_HudBar V 0.41 - Build 37 BETA
+(c) M. Burri - 08-Jan-2022
 
 Contains files:
 
@@ -37,6 +37,17 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.41-B37
+- Add Available Aircraft Reference Speeds as tooltip to the IAS label
+- Add Divider/Separator Mark for item lists
+- Update Add Aoa,Bank,Pitch data in flight recording
+- Update Add Rotate and Touchdown placemarks in KML out file
+- Update Dynamic flight recording intervals
+- Update Create KMZ (zip archive) instead of KML; as per guidance for larger files
+- Update Bundle JSON file into KMZ
+- Update Show active Freq. when NAV1/2 has no ID (Info Color)
+- Update QuickGuide
+
 V 0.40-B36
 - Add Flight Recorder to create a KML and JSON flight logfile
 - Add Mouse wheel Inc/Dec for ERA-Trims (also extend to 0.1% readout)

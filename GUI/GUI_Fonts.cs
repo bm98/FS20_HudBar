@@ -52,6 +52,17 @@ namespace FS20_HudBar.GUI
   }
 
   /// <summary>
+  /// Flow Break types
+  /// </summary>
+  public enum BreakType //202220107
+  {
+    None=0,
+    FlowBreak=1,
+    DivBreak1=2, // Type 1
+    DivBreak2=3, // Type 2
+  }
+
+  /// <summary>
   /// Display Transparency of the Bar
   /// </summary>
   public enum Transparent  //20211003

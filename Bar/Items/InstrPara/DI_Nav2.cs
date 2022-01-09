@@ -42,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.NAV2_ID;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_ICAO_L( valueProto ) { ItemForeColor = cNav };
+      _value1 = new V_ICAO_L( valueProto ) { ItemForeColor = cInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.NAV2_BRG;
@@ -64,6 +64,7 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         this.Label.Text = SC.SimConnectClient.Instance.NavModule.Nav2_hasLOC ? "LOC 2" : "NAV 2";
         if ( SC.SimConnectClient.Instance.NavModule.Nav2_Ident != "" ) {
+          _value1.ItemForeColor = cNav;
           _value1.Text = Calculator.NAV2_ID;
 
           var brg = (float)Geo.Wrap360( SC.SimConnectClient.Instance.NavModule.Nav2_Radial_degm - 180 ); // direction towards the station 
@@ -89,7 +90,8 @@ namespace FS20_HudBar.Bar.Items
           }
         }
         else {
-          _value1.Text = null;
+          _value1.ItemForeColor = cInfo;
+          _value1.Text = SC.SimConnectClient.Instance.HudBarModule.NAV2_active_mhz;
           _value2.Value = null;
           _value3.Value = null;
         }

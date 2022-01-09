@@ -61,7 +61,7 @@ namespace FS20_HudBar.Bar.Items.Base
       this.Dock = DockStyle.Bottom;
       this.Cursor = Cursors.Default; // avoid the movement cross on the item controls
       this.BackColor = GUI_Colors.ItemColor(GUI_Colors.ColorType.cBG); // default (should be transparent - ex. for debugging)
-      //this.BackColor = Color.Pink; // DEBUG color
+     // this.BackColor = Color.SteelBlue; // DEBUG color
     }
 
     /// <summary>

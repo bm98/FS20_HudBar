@@ -1,13 +1,15 @@
-# MSFS HudBar V 0.40.0.36
+# MSFS HudBar V 0.41.0.37
 
 ### Display essential Information as Bar or Tile at any side of the primary screen or as Window anywhere you like  
 
 
-* Displays essential aircraft and flight information as Bar or Tile
+* Displays more than 70 essential aircraft and flight information items as Bar, Tile or Window
 * Supports 1 and 2 engine aircrafts (Prop/Engine RPM, FuelFlow for each)
 * Provides 5 different content profiles which are fully configurable
-* The pilot can directly activate Autopilot commands
+* The pilot can directly activate Autopilot and other commands
 * Auto Elevator Trim on a click
+* Saves FLT backup file
+* Records the flight as KML and Json data file
 * Bottom/Top Bars work best with wide screen monitors
 
 
@@ -15,6 +17,8 @@
 
 
 ![FS20_HudBar scale 50%](https://raw.githubusercontent.com/bm98/FS20_HudBar/main/doc/HudBar-halfsize.jpg "HudBar 1/2 size")
+
+![FS20_HudBar KML recording](https://raw.githubusercontent.com/bm98/FS20_HudBar/main/doc/HudBar-Log-1.jpg "HudBar KML")
 
 -----
 
@@ -25,6 +29,10 @@ https://www.youtube.com/c/JayDeeGaming/about
 -----
 
 ## Usage 
+
+### See Quick Guide in Doc section
+https://github.com/bm98/FS20_HudBar/tree/main/doc/MSFS_HudBar-QuickGuide.pdf
+
 
 * Deploy the release zip content in a folder (no installer provided or needed)
 
@@ -47,25 +55,6 @@ Also note that the bar is shown on the ++PRIMARY monitor++ at the bottom of the 
     * Tile: a window sized to accommodate the selected items
 A Tile can be moved freely along the side where it is attached to   
 
-Note: the previous Splitter is no longer available – use Tile and move the tile wherever you want.
-<br>
-![FS20_HudBar Overview](https://raw.githubusercontent.com/bm98/FS20_HudBar/main/doc/HudBar-overview.jpg "HudBar Overview")
-<br>
-Autopilot commands that accept mouse clicks to toggle have a dark blue background and show a hand while hovering the active area  
-* AP,HDG,ALT,VS,FLC,NAV and APR can be directly toggled
-* BARO set to current (keyboard B button)
-<br>
-* ETrim - Elevator Trim: clicking the ETrim label will activate the Auto Elevator Trim module for about 20 seconds. 
-It will display ETrim in green color while active - clicking the active module again will switch it off   
-Note: the module controls the Elevator Trim in a way to level the aircraft towards zero vertical speed.
-It may or may not work to your expectation.. so use it only if you feel comfortable with.
-<br>
-* Calculated fields when a "Next Waypoint" is available:
-  * Estimate VS to WYP@ALT (WP-VS):   
-  Calculated VS to reach the next Waypoint at the proposed Altitude with the current GS and DIST (ALTP when purple or Setting Alt when blue)
-  * Estimate ALT@WYP (WP-ALT):   
-  Calculated Altitude at next Waypoint using the actual GS, VS and DIST
-
 ### Configuration
 
 Find more information in the QuickGuide here:
@@ -82,7 +71,10 @@ My FlightSim Libraries (included in the release package)
 * FS20_AptLib                 -- An MSFS Airport Database 
 * MetarLib                    -- A METAR access library 
 * CoordLib                    -- A coord. handling library (https://github.com/bm98/CoordLib)
+* FS20_AptLib.dll             -- MSFS2020 Airport DB (new since V0.29)
+* SpeechLib.dll               -- A voice synth lib using Win10 TTS facilities (new since V0.35)
 <br>
+
 From Google Fonts Library embedded:
   Share_Tech_Mono			(Used as condensed font)
 <br>
