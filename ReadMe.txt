@@ -40,6 +40,7 @@ Changelog:
 V 0.41-B37
 - Add Available Aircraft Reference Speeds as tooltip to the IAS label
 - Add Divider/Separator Mark for item lists
+- Update Use NewLine and Separator also from currently not visible items (NewLine is prioritized)
 - Update Add Aoa,Bank,Pitch data in flight recording
 - Update Add Rotate and Touchdown placemarks in KML out file
 - Update Dynamic flight recording intervals

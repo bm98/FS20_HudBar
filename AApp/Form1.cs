@@ -725,24 +725,44 @@ namespace FS20_HudBar
       int maxHeight = 0;
       int maxWidth = 0;
       DispItem prevDi = null;
+      GUI.BreakType registeredBreak = GUI.BreakType.None; ;
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         // using the enum index only to count from 0..max items
         var key = HUD.Profile.ItemKeyFromPos( (int)i);
         // The DispItem is a FlowPanel containing the Label and maybe some Values
         var di = HUD.DispItem( key );
-        if ( di != null && HUD.ShowItem( key ) ) {
-          // if the item is checked, i.e. to be shown only
+        if ( di != null ) {
           if ( di.Controls.Count > 0 ) {
-            // the flowbreak causes the tagged item to be on the same line and then to break for the next one
-            // Not so intuitive for the user - so we mark the one that goes on the next line but need to attach the FB then to the prev one
-            if ( HUD.Profile.BreakItem( key ) && prevDi != null ) {
-              // We set the FlowBreak to the item before the marked one
-              flp.SetFlowBreak( prevDi, true );
+            // check and register breaks for 2nd up items if there is no break registered (FlowBreak takes priority over DivBreaks)
+            // this takes breaks from not visible items too
+            if ( registeredBreak == GUI.BreakType.None ) {
+              // take any
+              registeredBreak = HUD.Profile.BreakItem( key ) ? GUI.BreakType.FlowBreak :
+                                HUD.Profile.DivItem1( key ) ? GUI.BreakType.DivBreak1 :
+                                HUD.Profile.DivItem2( key ) ? GUI.BreakType.DivBreak2 : GUI.BreakType.None;
             }
-            // separator must be set before the newly added item
-            if ( HUD.Profile.DivItem( key ) ) {
-              DI_Separator dSep = new DI_Separator( HUD.Profile.DivItem2( key )? ColorType.cDivBG2: ColorType.cDivBG1 ); // select Color Type of the separator
-              // need some fiddling to make it fit
+            else if ( registeredBreak == GUI.BreakType.FlowBreak ) {
+              // take no further
+              ; // NOP
+            }
+            else {
+              // override DivBreaks with FlowBrake only
+              registeredBreak = HUD.Profile.BreakItem( key ) ? GUI.BreakType.FlowBreak : registeredBreak;
+            }
+          }
+          // process shown items
+          if ( HUD.ShowItem( key ) ) {
+            // apply breaks if there are any
+            if ( registeredBreak == GUI.BreakType.FlowBreak && prevDi != null ) {
+              // the flowbreak causes the tagged item to be on the same line and then to break for the next one
+              // Not so intuitive for the user - so we mark the one that goes on the next line but need to attach the FB then to the prev one
+              flp.SetFlowBreak( prevDi, true );
+              registeredBreak = GUI.BreakType.None; // reset
+            }
+            else if ( registeredBreak == GUI.BreakType.DivBreak1 || registeredBreak == GUI.BreakType.DivBreak2 ) {
+              // separator must be set before the newly added item
+              DI_Separator dSep = new DI_Separator((registeredBreak== GUI.BreakType.DivBreak2)? ColorType.cDivBG2: ColorType.cDivBG1 ); // select Color Type of the separator
+              // need some fiddling to make it fit in either direction
               if ( ( HUD.Placement == GUI.Placement.Bottom ) || ( HUD.Placement == GUI.Placement.Top ) ) {
                 dSep.Dock = DockStyle.Left;// horizontal Bar
               }
@@ -751,8 +771,9 @@ namespace FS20_HudBar
               }
               GUI.GUI_Colors.Register( dSep ); // register for color management
               flp.Controls.Add( dSep ); // add it to the Main FlowPanel
+              registeredBreak = GUI.BreakType.None; // reset
             }
-            // add it to the Main FlowPanel when we have to show something
+            // add the item 
             flp.Controls.Add( di );
             /*
             if ( !string.IsNullOrEmpty( di.TText ) ) {
@@ -767,9 +788,10 @@ namespace FS20_HudBar
 
             prevDi = di; // store for FlowBreak attachment for valid and visible ones if the next one is tagged
           }
-        }
-        else {
-          if ( di != null ) di.Visible = false;
+          // don't show
+          else {
+            di.Visible = false;
+          }
         }
       }
 
@@ -910,7 +932,7 @@ namespace FS20_HudBar
         // setup the event monitor before connecting (will be handled in the Timer Event)
         m_awaitingEvent = true;
         m_scGracePeriod = 3; // about 3*5 secs to get an event
-        // try to connect
+                             // try to connect
         if ( SC.SimConnectClient.Instance.Connect( ) ) {
           HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
           // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated

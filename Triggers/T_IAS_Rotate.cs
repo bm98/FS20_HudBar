@@ -13,9 +13,6 @@ namespace FS20_HudBar.Triggers
 {
   class T_IAS_Rotate : TriggerFloat
   {
-    // the IAS we start processing
-    private float _detectionIAS = 10f;
-
     private TSmoother _smooth = new TSmoother();
 
     /// <summary>
@@ -39,18 +36,18 @@ namespace FS20_HudBar.Triggers
 
       // Rotate is only triggered while OnGround and accelerating (else it calls on touchdown)
       if ( !ds.Sim_OnGround ) return; // not on ground
-      if ( ds.Accel_AcftZ_fps2 < 0.1f ) return; // not accelerating (enough..)
+      if ( ds.Accel_AcftZ_fps2 < 0.1f ) return; // not accelerating (enough to be considered as takeoff..)
 
       var rotSpeed =  ds.DesingSpeedMinRotation_kt;
+      if ( rotSpeed < 10 )  rotSpeed = ds.DesingSpeedTakeoff_kt; // try takeoff speed (some don't have Rot..)
       if ( rotSpeed < 10 ) return; // not properly set or otherwise not meaningful value from SIM
 
-      _detectionIAS = rotSpeed - 5f; // put the detection/reset level below the trigger level-offset
       this.m_actions.ElementAt( 0 ).Value.TriggerStateF.Level = rotSpeed; // set the trigger level
       _smooth.Add( ds.IAS_kt ); // smoothen
       DetectStateChange( _smooth.GetFloat );
 
-      // reset when again on ground and below detection limit - Rotate will only trigger if within limits +-2
-      if ( ds.IAS_kt < _detectionIAS ) {
+      // reset when again on ground and below 10 kt - Rotate will only trigger if within limits +-2
+      if ( ds.IAS_kt < 10 ) {
         this.Reset( );
       }
     }
