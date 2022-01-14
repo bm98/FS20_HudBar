@@ -478,6 +478,9 @@ namespace FS20_HudBar.Bar
 
     #region Update Content and Settings
 
+    // track RefSpeed changes
+    int _RefSpeedsTTHash = 0; 
+
     /// <summary>
     /// Update from values from Sim which are not part of the Item content update 
     /// </summary>
@@ -512,9 +515,10 @@ namespace FS20_HudBar.Bar
         FltPlanMgr.Read( );
       }
 
-      if ( FltStateMgr.HasChanged ) {
+      // check for the Ref Speeds every 30 sec - there is no event which let's us know that the acft or Ref Speeds have changed..
+      if ( ( SC.SimConnectClient.Instance.HudBarModule.SimTime_zulu_sec % 30 ) == 0 ) {
         string tt="";
-        if ( FltStateMgr.IsInFlight ) {
+        if ( !string.IsNullOrWhiteSpace( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile ) ) {
           var ds = SC.SimConnectClient.Instance.HudBarModule;
           tt = $"Aircraft Type:     {ds.AcftConfigFile}\n\n"
              + $"Cruise Altitude:   {ds.DesingCruiseAlt_ft:##,##0} ft\n"
@@ -525,13 +529,12 @@ namespace FS20_HudBar.Bar
              + $"Vs1 Stall Speed:   {ds.DesingSpeedVS1_kt:##0} kt\n"
              + $"Vs0 Stall Speed:   {ds.DesingSpeedVS0_kt:##0} kt\n";
         }
-        this.ToolTipFP.SetToolTip( this.DispItem( LItem.IAS ).Label, tt );
+        // has it changed?
+        if ( _RefSpeedsTTHash != tt.GetHashCode( ) ) {
+          this.ToolTipFP.SetToolTip( this.DispItem( LItem.IAS ).Label, tt );
+          _RefSpeedsTTHash = tt.GetHashCode( );
+        }
         this.DispItem( LItem.IAS ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
-        FltStateMgr.Read( );
-
-        // re-read if we get an early call and the data was not available
-        if ( string.IsNullOrEmpty( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile ) ) FltStateMgr.Reset( ); 
-
       }
     }
 
