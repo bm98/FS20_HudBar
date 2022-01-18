@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -364,7 +365,7 @@ namespace FS20_HudBar.Config
       foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
         int idx = (int)i; // default Enum Sequence
         if ( e.Length > idx ) {
-          if ( int.TryParse( e[idx], out int iPos ) ) {
+          if ( int.TryParse( e[idx], NumberStyles.Integer, CultureInfo.InvariantCulture, out int iPos ) ) {
             if ( iPos < m_profile.Count )
               m_sequence.Add( i, iPos ); // found an integer
             else

@@ -1,5 +1,5 @@
-FS20_HudBar V 0.41 - Build 37 BETA
-(c) M. Burri - 14-Jan-2022
+FS20_HudBar V 0.42 - Build 38 BETA
+(c) M. Burri - 18-Jan-2022
 
 Contains files:
 
@@ -37,6 +37,9 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+V 0.42-B38
+- Fix KML Number formatting when the locale decimal separator is not a point (#4)
+
 V 0.41-B37
 - Add Available Aircraft Reference Speeds as tooltip to the IAS label
 - Add Divider/Separator Mark for item lists
