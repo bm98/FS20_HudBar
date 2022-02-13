@@ -68,7 +68,7 @@ namespace FS20_HudBar.Bar.Items
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
       if ( SC.SimConnectClient.Instance.IsConnected ) {
-        SC.SimConnectClient.Instance.AP_G1000Module.FLC_active = true; // toggles independent of the set value
+        SC.SimConnectClient.Instance.AP_G1000Module.FLChold_active = true; // toggles independent of the set value
       }
     }
 
@@ -78,7 +78,7 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.FLC_active ? cAP : cLabel;
+        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.FLChold_active ? cAP : cLabel;
         _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt;
       }
     }

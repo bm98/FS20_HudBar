@@ -52,7 +52,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
-          _value1.Value = SC.SimConnectClient.Instance.GpsModule.WYP_dist;
+          _value1.Value = SC.SimConnectClient.Instance.GpsModule.WYP_Dist;
         }
         else {
           // No SIM GPS - Flightplan active

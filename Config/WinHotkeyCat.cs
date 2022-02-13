@@ -14,7 +14,8 @@ namespace FS20_HudBar.Config
   public enum Hotkeys
   {
     Show_Hide=0,
-    Profile_1, Profile_2, Profile_3, Profile_4, Profile_5
+    Profile_1, Profile_2, Profile_3, Profile_4, Profile_5,
+    FlightBag
   }
 
   /// <summary>

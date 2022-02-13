@@ -1,18 +1,22 @@
-FS20_HudBar V 0.42 - Build 38 BETA
-(c) M. Burri - 18-Jan-2022
+FS20_HudBar V 0.43 - Build 39 BETA
+(c) M. Burri - 08-Feb-2022
 
 Contains files:
 
 FS20_HudBar.exe               The program
 
+.\DemoBag                   Contains some images to showcase the Flight Bag (new since V0.43))
+
 - All libraries below MUST be in the same folder as the Exe file
+bm98_Album.dll              A UserControl for displaying images (zoom & drag new since V0.43)
+SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new since V0.35)
+MetarLib.dll				A METAR access library (new since V0.29)
+
+FS20_AptLib.dll             MSFS2020 Airport DB (new since V0.29)
 FSimClientIF.dll            Generic FSim Client interface definition (updated)
 FSimIF.dll                  Generic FSim interface definition (updated)
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
-MetarLib.dll				A METAR access library (new since V0.29)
 CoordLib.dll				A coord. handling library (new since V0.29)
-FS20_AptLib.dll             MSFS2020 Airport DB (new since V0.29)
-SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new since V0.35)
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg
@@ -37,6 +41,16 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.43-B39
+- Add 'Flight Bag light' as feature (display image documents with zoom and drag)
+- Add FontSize +18,20,24,28
+- Update Added Apt-ALT to ATC Airport Item
+- Fix Wind Dir @ Speed values corrected
+- Fix Reduce 'Not recording' label to 'Not rec.' (avoiding column size changes)
+- Update Support Libs / Added SpeechLib and MetarLib to the solution
+- Update QuickGuide
+
 V 0.42-B38
 - Fix KML Number formatting when the locale decimal separator is not a point (#4)
 

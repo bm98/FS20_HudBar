@@ -33,11 +33,12 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "ATC Airport and distance nm";
+    public static readonly string Desc = "ATC Airport, Dist. and Alt";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;
     private readonly V_Base _value2;
+    private readonly V_Base _value3;
 
     // A HudBar standard ToolTip for the Metar Display
     private ToolTip_Base _toolTip = new ToolTip_Base();
@@ -52,9 +53,13 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_ICAO_L( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      item = VItem.ATC_DIST;
+      item = VItem.ATC_APT_DIST;
       _value2 = new V_Dist( value2Proto, showUnits );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
+
+      item = VItem.ATC_APT_ALT;
+      _value3 = new V_Alt( value2Proto, showUnits );
+      this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
       _label.ButtonClicked += _label_ButtonClicked;
 
@@ -98,14 +103,16 @@ namespace FS20_HudBar.Bar.Items
         // Distance to Destination
         if ( HudBar.AtcFlightPlan.HasFlightPlan ) {
           _value2.Value = HudBar.AtcFlightPlan.RemainingDist_nm(
-            SC.SimConnectClient.Instance.GpsModule.WYP_next,
-            SC.SimConnectClient.Instance.GpsModule.WYP_dist );
+            SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
+            SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
         }
         else {
           // calc straight distance if we don't have an ATC flightplan with waypoints
           var latLon = new LatLon( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon );
           _value2.Value = AirportMgr.Distance_nm( latLon );
         }
+
+        _value3.Value = AirportMgr.IsAvailable ? Conversions.FtFromM( AirportMgr.Location.Altitude ) : float.NaN;
       }
     }
 

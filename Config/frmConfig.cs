@@ -87,6 +87,7 @@ namespace FS20_HudBar.Config
       _tooltip.SetToolTip( txHkProfile3, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
       _tooltip.SetToolTip( txHkProfile4, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
       _tooltip.SetToolTip( txHkProfile5, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
+      _tooltip.SetToolTip( txHkShelf, "Hotkey to toggle the Flight Bag\nDouble click to edit the Hotkey" );
 
       // indexed access for profile controls
       m_flps[0] = flp1; m_flps[1] = flp2; m_flps[2] = flp3; m_flps[3] = flp4; m_flps[4] = flp5;
@@ -129,6 +130,11 @@ namespace FS20_HudBar.Config
       cbx.Items.Add( GUI.FontSize.Minus_4 + " Font Size" );
       cbx.Items.Add( GUI.FontSize.Plus_12 + " Font Size" );
       cbx.Items.Add( GUI.FontSize.Plus_14 + " Font Size" );
+      // added 20220212
+      cbx.Items.Add( GUI.FontSize.Plus_18 + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Plus_20 + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Plus_24 + " Font Size" );
+      cbx.Items.Add( GUI.FontSize.Plus_28 + " Font Size" );
     }
 
     private void PopulatePlacement( ComboBox cbx )
@@ -179,6 +185,7 @@ namespace FS20_HudBar.Config
       txHkProfile3.Text = _hotkeys.ContainsKey( Hotkeys.Profile_3 ) ? _hotkeys[Hotkeys.Profile_3].AsString : "";
       txHkProfile4.Text = _hotkeys.ContainsKey( Hotkeys.Profile_4 ) ? _hotkeys[Hotkeys.Profile_4].AsString : "";
       txHkProfile5.Text = _hotkeys.ContainsKey( Hotkeys.Profile_5 ) ? _hotkeys[Hotkeys.Profile_5].AsString : "";
+      txHkShelf.Text = _hotkeys.ContainsKey( Hotkeys.FlightBag ) ? _hotkeys[Hotkeys.FlightBag].AsString : "";
     }
 
 
@@ -252,6 +259,8 @@ namespace FS20_HudBar.Config
         if ( SelectedProfile == p ) {
           m_pName[p].BackColor = Color.LimeGreen;
         }
+
+        txShelfFolder.Text = HudBarRef.ShelfFolder; // 20220212
       }
 
 #if DEBUG
@@ -306,6 +315,8 @@ namespace FS20_HudBar.Config
         ProfilesRef[p].GetCondFromCombo( m_pCondensed[p] );
         ProfilesRef[p].GetTramsFromCombo( m_pTransparency[p] );
       }
+
+      HudBarRef.SetShelfFolder( txShelfFolder.Text );
 
       this.DialogResult = DialogResult.OK;
       this.Close( );
@@ -431,6 +442,7 @@ namespace FS20_HudBar.Config
       txHkProfile3.Visible = chkKeyboard.Checked;
       txHkProfile4.Visible = chkKeyboard.Checked;
       txHkProfile5.Visible = chkKeyboard.Checked;
+      txHkShelf.Visible = chkKeyboard.Checked;
     }
 
     // Handle the hotkey entry for the given Key item
@@ -505,6 +517,12 @@ namespace FS20_HudBar.Config
       txHkProfile5.Select( 0, 0 );
     }
 
+    private void txHkShelf_DoubleClick( object sender, EventArgs e )
+    {
+      txHkShelf.Text = HandleHotkey( Hotkeys.FlightBag );
+      txHkShelf.Select( 0, 0 );
+    }
+
     #endregion
 
 
@@ -530,6 +548,25 @@ namespace FS20_HudBar.Config
           sw.WriteLine( ProfilesRef[p].ItemPosString( ) );
           sw.WriteLine( ProfilesRef[p].FlowBreakString( ) );
         }
+      }
+    }
+
+    #endregion
+
+    #region Shelf Config
+
+    private void btShelfFolder_Click( object sender, EventArgs e )
+    {
+      if ( Directory.Exists( txShelfFolder.Text ) ) {
+        FBD.SelectedPath = Path.GetFullPath( txShelfFolder.Text );
+      }
+      else {
+        FBD.SelectedPath = "";
+        FBD.RootFolder = Environment.SpecialFolder.MyDocuments;
+      }
+
+      if ( FBD.ShowDialog(this)== DialogResult.OK ) {
+        txShelfFolder.Text = FBD.SelectedPath;
       }
     }
 

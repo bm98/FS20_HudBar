@@ -45,6 +45,9 @@ namespace FS20_HudBar
     private frmGui m_frmGui;
     private FlowLayoutPanel flp;
 
+    // The Flightbag
+    private Shelf.frmShelf m_shelf;
+
     // A HudBar standard ToolTip for the Button Helpers
     private ToolTip_Base m_toolTip = new ToolTip_Base();
 
@@ -57,6 +60,7 @@ namespace FS20_HudBar
     {
       Show_Hide=0, // toggle show/hide of the bar
       Profile_1, Profile_2, Profile_3, Profile_4, Profile_5, // Profile selection
+      FlightBag,
     }
 
     // Handles the RawInput from HID Keyboards
@@ -138,6 +142,8 @@ namespace FS20_HudBar
           _fsInputCat[Hooks.Profile_4].InputArrived += FSInput_InputArrived;
           _fsInputCat.Add( Hooks.Profile_5, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_06 ) );
           _fsInputCat[Hooks.Profile_5].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hooks.FlightBag, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_07 ) );
+          _fsInputCat[Hooks.FlightBag].InputArrived += FSInput_InputArrived;
         }
       }
       else {
@@ -168,6 +174,7 @@ namespace FS20_HudBar
       else if ( e.ActionName == _fsInputCat[Hooks.Profile_3].Inputname ) mP3_Click( null, new EventArgs( ) );
       else if ( e.ActionName == _fsInputCat[Hooks.Profile_4].Inputname ) mP4_Click( null, new EventArgs( ) );
       else if ( e.ActionName == _fsInputCat[Hooks.Profile_5].Inputname ) mP5_Click( null, new EventArgs( ) );
+      else if ( e.ActionName == _fsInputCat[Hooks.FlightBag].Inputname ) mShelf_Click( null, new EventArgs( ) );
     }
 
     /// <summary>
@@ -211,6 +218,7 @@ namespace FS20_HudBar
         if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_3 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_3], Hooks.Profile_3.ToString( ), OnHookKey );
         if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_4 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_4], Hooks.Profile_4.ToString( ), OnHookKey );
         if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_5 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_5], Hooks.Profile_5.ToString( ), OnHookKey );
+        if ( HUD.Hotkeys.ContainsKey( Hotkeys.FlightBag ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.FlightBag], Hooks.FlightBag.ToString( ), OnHookKey );
 
         _keyHook.KeyHandling( true );
       }
@@ -232,6 +240,7 @@ namespace FS20_HudBar
       else if ( tag == Hooks.Profile_3.ToString( ) ) mP3_Click( null, new EventArgs( ) );
       else if ( tag == Hooks.Profile_4.ToString( ) ) mP4_Click( null, new EventArgs( ) );
       else if ( tag == Hooks.Profile_5.ToString( ) ) mP5_Click( null, new EventArgs( ) );
+      else if ( tag == Hooks.FlightBag.ToString( ) ) mShelf_Click( null, new EventArgs( ) );
     }
 
     #endregion
@@ -292,6 +301,19 @@ namespace FS20_HudBar
       m_frmGui.Show( );
       SynchGUI( );
       flp = m_frmGui.flp;
+
+      // Setup the Shelf
+      m_shelf = new Shelf.frmShelf {
+        Size = AppSettings.Instance.ShelfSize,
+        Location = AppSettings.Instance.ShelfLocation
+      };
+      if ( !IsOnScreen( new Rectangle( m_shelf.Location, m_shelf.Size ) ) ) {
+        m_shelf.Location = new Point( 100, 100 );
+      }
+      //  on init only
+      if ( !m_shelf.SetShelfFolder( AppSettings.Instance.ShelfFolder ) ) {
+        m_shelf.SetShelfFolder( @".\DemoBag" ); // the one in our Deployment
+      }
 
       // Find and hold the Primary Screen
       Screen[] screens = Screen.AllScreens;
@@ -373,6 +395,8 @@ namespace FS20_HudBar
     // Fired when about to Close
     private void frmMain_FormClosing( object sender, FormClosingEventArgs e )
     {
+      m_shelf?.Hide( );
+      
       // Save all Settings
       AppSettings.Instance.SelProfile = m_selProfile;
       AppSettings.Instance.Save( );
@@ -405,6 +429,9 @@ namespace FS20_HudBar
     {
       // don't handle timer while in Config
       timer1.Enabled = false;
+      // hide the Shelf while in config
+      m_shelf.Hide( );
+
       // Config must use the current environment 
       CFG.HudBarRef = HUD;
       CFG.ProfilesRef = m_profiles;
@@ -422,14 +449,17 @@ namespace FS20_HudBar
         AppSettings.Instance.HKProfile3 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_3 );
         AppSettings.Instance.HKProfile4 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_4 );
         AppSettings.Instance.HKProfile5 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_5 );
+        AppSettings.Instance.HKShelf = HUD.Hotkeys.HotkeyString( Hotkeys.FlightBag );
         AppSettings.Instance.KeyboardHook = HUD.KeyboardHook;
         AppSettings.Instance.InGameHook = HUD.InGameHook;
+
+        AppSettings.Instance.ShelfFolder = HUD.ShelfFolder;
 
         AppSettings.Instance.FltAutoSaveATC = (int)HUD.FltAutoSave;
         AppSettings.Instance.VoiceName = HUD.VoiceName;
 
         AppSettings.Instance.SelProfile = m_selProfile;
-
+        // All Profiles
         AppSettings.Instance.Profile_1_Name = m_profiles[0].PName;
         AppSettings.Instance.Profile_1 = m_profiles[0].ProfileString( );
         AppSettings.Instance.FlowBreak_1 = m_profiles[0].FlowBreakString( );
@@ -480,6 +510,7 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_5_Condensed = m_profiles[4].Condensed;
         AppSettings.Instance.Profile_5_Trans = (int)m_profiles[4].Transparency;
 
+        // Finally Save
         AppSettings.Instance.Save( );
 
         // Restart the GUI 
@@ -551,6 +582,19 @@ namespace FS20_HudBar
       // save as setting
       AppSettings.Instance.Appearance = (int)Colorset;
       AppSettings.Instance.Save( );
+    }
+
+    #endregion
+
+    #region Shelf Selector
+    private void mShelf_Click( object sender, EventArgs e )
+    {
+      if ( m_shelf.Visible ) {
+        m_shelf.Hide( );
+      }
+      else {
+        m_shelf.Show( );
+      }
     }
 
     #endregion
@@ -666,15 +710,17 @@ namespace FS20_HudBar
       _hotkeycat.AddHotkeyString( Hotkeys.Profile_3, AppSettings.Instance.HKProfile3 );
       _hotkeycat.AddHotkeyString( Hotkeys.Profile_4, AppSettings.Instance.HKProfile4 );
       _hotkeycat.AddHotkeyString( Hotkeys.Profile_5, AppSettings.Instance.HKProfile5 );
+      _hotkeycat.AddHotkeyString( Hotkeys.FlightBag, AppSettings.Instance.HKShelf );
       // start from scratch
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
                           AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook, _hotkeycat,
-                          AppSettings.Instance.FltAutoSaveATC,
+                          AppSettings.Instance.FltAutoSaveATC, AppSettings.Instance.ShelfFolder,
                           m_profiles[m_selProfile], AppSettings.Instance.VoiceName, AppSettings.Instance.FRecorder );
 
       // reread after config change
       SetupKeyboardHook( AppSettings.Instance.KeyboardHook );
       SetupInGameHook( AppSettings.Instance.InGameHook );
+      m_shelf?.SetShelfFolder( AppSettings.Instance.ShelfFolder );
 
       // prepare to create the content as bar or tile (may be switch to Window later if needed)
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc.
@@ -980,6 +1026,7 @@ namespace FS20_HudBar
     }
 
     #endregion
+
 
   }
 }

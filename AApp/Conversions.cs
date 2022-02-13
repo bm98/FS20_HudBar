@@ -12,15 +12,26 @@ namespace FS20_HudBar
   class Conversions
   {
     private const float c_nmPerM = 5.399568e-4f;
+    private const float c_ftPerM = 3.280839895013123f;
     private const float c_degF = 9f/5f;
     /// <summary>
     /// Nautical Miles from Meters
     /// </summary>
     /// <param name="meter">Meter</param>
     /// <returns>Nautical Miles</returns>
-    public static float NmFromM( float meter )
+    public static float NmFromM( double meter )
     {
-      return meter * c_nmPerM;
+      return (float)( meter * c_nmPerM );
+    }
+
+    /// <summary>
+    /// Foot from Meters
+    /// </summary>
+    /// <param name="meter">Meter</param>
+    /// <returns>Foot</returns>
+    public static float FtFromM( double meter )
+    {
+      return (float)( meter * c_ftPerM );
     }
 
     /// <summary>
@@ -28,9 +39,9 @@ namespace FS20_HudBar
     /// </summary>
     /// <param name="degC"></param>
     /// <returns>Temp in deg F</returns>
-    public static float DegCtoF( float degC )
+    public static float DegCtoF( double degC )
     {
-      return ( degC * c_degF ) + 32.0f;
+      return (float)( ( degC * c_degF ) + 32.0f );
     }
 
     /// <summary>

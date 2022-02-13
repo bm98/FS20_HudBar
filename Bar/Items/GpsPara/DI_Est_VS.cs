@@ -52,7 +52,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
-          float tgtAlt = SC.SimConnectClient.Instance.GpsModule.WYP_alt;
+          float tgtAlt = SC.SimConnectClient.Instance.GpsModule.WYP_Alt;
           // Estimates use WYP ALT if >0 (there is no distinction if a WYP ALT is given - it is 0 if not)
           ColorType estCol = cEst;
           if ( tgtAlt == 0 ) {
@@ -60,7 +60,7 @@ namespace FS20_HudBar.Bar.Items
             tgtAlt = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
             estCol = cSet;
           }
-          _value1.Value = Calculator.VSToTgt_AtAltitude( tgtAlt, SC.SimConnectClient.Instance.GpsModule.WYP_dist );
+          _value1.Value = Calculator.VSToTgt_AtAltitude( tgtAlt, SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
           _value1.ItemForeColor = estCol;
         }
         else {

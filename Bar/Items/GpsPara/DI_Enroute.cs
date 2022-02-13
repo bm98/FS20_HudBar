@@ -69,8 +69,8 @@ namespace FS20_HudBar.Bar.Items
       if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
         // WP Enroute Tracker
         WPTracker.Track(
-          SC.SimConnectClient.Instance.GpsModule.WYP_prev,
-          SC.SimConnectClient.Instance.GpsModule.WYP_next,
+          SC.SimConnectClient.Instance.GpsModule.WYP_prevID,
+          SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
           SC.SimConnectClient.Instance.HudBarModule.SimTime_loc_sec,
           SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround
         );

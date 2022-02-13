@@ -191,6 +191,13 @@ namespace FS20_HudBar.Bar
     }
 
     /// <summary>
+    /// The used FlightBag Folder
+    /// </summary>
+    public string ShelfFolder { get; private set; } = "";
+
+
+
+    /// <summary>
     /// Returns the Show state of an item
     /// </summary>
     /// <param name="item">A Label item</param>
@@ -247,7 +254,7 @@ namespace FS20_HudBar.Bar
     /// <param name="fRecorder">FlightRecorder Enabled</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
                       bool showUnits, bool keyboardHook, bool inGameHook, WinHotkeyCat hotkeys,
-                      int autoSave, CProfile cProfile, string voiceName, bool fRecorder )
+                      int autoSave, string shelfFolder, CProfile cProfile, string voiceName, bool fRecorder )
     {
       // just save them in the HUD mainly for config purpose
       m_profile = cProfile;
@@ -260,6 +267,7 @@ namespace FS20_HudBar.Bar
       VoiceName = voiceName;
       FlightRecorder = fRecorder;
       _ = m_speech.SetVoice( VoiceName );
+      ShelfFolder = shelfFolder;
 
       // Reset the observers as we rebuild the GUI now 
       SC.SimConnectClient.Instance.ClearAllObservers( );
@@ -600,6 +608,15 @@ namespace FS20_HudBar.Bar
     public void SetVoiceName( string voiceName )
     {
       VoiceName = voiceName;
+    }
+
+    /// <summary>
+    /// Set the current Flight Bag Folder
+    /// </summary>
+    /// <param name="folder"></param>
+    public void SetShelfFolder( string folder )
+    {
+      ShelfFolder = folder;
     }
 
     #endregion

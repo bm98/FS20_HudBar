@@ -75,7 +75,7 @@ namespace FS20_HudBar.Bar.Items
           _value1.ItemForeColor = cLabel;
         }
         else {
-          _value1.Text = ( SC.SimConnectClient.Instance.FlightLogModule.LogMode == FlightLogMode.Off ) ? "not recording" : "recording";
+          _value1.Text = ( SC.SimConnectClient.Instance.FlightLogModule.LogMode == FlightLogMode.Off ) ? "not rec." : "recording";
           _value1.ItemForeColor = ( SC.SimConnectClient.Instance.FlightLogModule.LogMode == FlightLogMode.Off ) ? cWarn : cOK;
         }
       }

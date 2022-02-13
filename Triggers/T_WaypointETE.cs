@@ -40,7 +40,7 @@ namespace FS20_HudBar.Triggers
 
         var ds = SC.SimConnectClient.Instance.GpsModule;
       if ( ds.IsGpsFlightplan_active ) {
-        DetectStateChange( ds.WYP_ete );
+        DetectStateChange( ds.WYP_Ete );
       }
     }
 

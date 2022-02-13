@@ -321,7 +321,8 @@ namespace FS20_HudBar.Bar.Items
     ATC_RWY_LAT,  // Lateral displacement ft
     ATC_RWY_ALT,  // Height displacement ft
     ATC_RWY_LON,  // Longitudinal displacement nm
-    ATC_DIST,     // Distance from ATC Apt nm (lat lon based)
+    ATC_APT_DIST, // Distance from ATC Apt nm (lat lon based)
+    ATC_APT_ALT,  // Altitude of the ATC Apt ft MSL
     ATC_ALT,      // ATC assigned ALT ft
     ATC_HDG,      // ATC assigned HDG °
     ATC_WYP,      // ATC next Wyp

@@ -54,7 +54,7 @@ namespace FS20_HudBar.Bar.Items
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
       if ( SC.SimConnectClient.Instance.IsConnected ) {
-        SC.SimConnectClient.Instance.AP_G1000Module.APR_hold = true; // toggles independent of the set value
+        SC.SimConnectClient.Instance.AP_G1000Module.APRhold_active = true; // toggles independent of the set value
       }
     }
 
@@ -64,10 +64,10 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.APR_hold ? cAP : cLabel;
-        _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? "►GP◄" : "►GS◄";
-        _value1.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GS_active ? cAP :
-                                      ( SC.SimConnectClient.Instance.AP_G1000Module.GS_armed ? cInfo : cLabel);
+        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.APRhold_active ? cAP : cLabel;
+        _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.IsGPS_active ? "►GP◄" : "►GS◄";
+        _value1.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.IsGS_active ? cAP :
+                                      ( SC.SimConnectClient.Instance.AP_G1000Module.IsGShold_active ? cInfo : cLabel);
         
       }
     }

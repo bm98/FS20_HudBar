@@ -27,6 +27,11 @@ namespace FS20_HudBar.GUI
     Minus_4,
     Plus_12,
     Plus_14,
+    // added 20220212
+    Plus_18,
+    Plus_20,
+    Plus_24,
+    Plus_28,
   }
 
   /// <summary>
@@ -203,6 +208,12 @@ namespace FS20_HudBar.GUI
         case FontSize.Plus_10: return 10;
         case FontSize.Plus_12: return 12;
         case FontSize.Plus_14: return 14;
+        // added 20220212
+        case FontSize.Plus_18: return 18;
+        case FontSize.Plus_20: return 20;
+        case FontSize.Plus_24: return 24;
+        case FontSize.Plus_28: return 28;
+
         case FontSize.Minus_2: return -2;
         case FontSize.Minus_4: return -4;
         default: return 0;

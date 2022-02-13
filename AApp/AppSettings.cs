@@ -118,6 +118,34 @@ namespace FS20_HudBar
       set { this["FormLocation"] = value; }
     }
 
+    // Shelf Settings
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "10, 10" )]
+    public Point ShelfLocation {
+      get { return (Point)this["ShelfLocation"]; }
+      set { this["ShelfLocation"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "450, 280" )]
+    public Size ShelfSize {
+      get { return (Size)this["ShelfSize"]; }
+      set { this["ShelfSize"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( @".\DemoBag" )]
+    public string ShelfFolder {
+      get { return (string)this["ShelfFolder"]; }
+      set { this["ShelfFolder"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string HKShelf {
+      get { return (string)this["HKShelf"]; }
+      set { this["HKShelf"] = value; }
+    }
+
     // User Config Settings
 
     [UserScopedSetting( )]

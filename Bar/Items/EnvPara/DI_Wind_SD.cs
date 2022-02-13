@@ -57,8 +57,8 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-          _value1.Value = SC.SimConnectClient.Instance.HudBarModule.WindSpeed_kt;
-          _value2.Value = SC.SimConnectClient.Instance.HudBarModule.WindDirection_deg;
+          _value1.Value = SC.SimConnectClient.Instance.HudBarModule.WindDirection_deg;
+          _value2.Value = SC.SimConnectClient.Instance.HudBarModule.WindSpeed_kt;
       }
     }
 

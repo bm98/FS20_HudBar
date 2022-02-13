@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>38</ApplicationRevision>
-    <ApplicationVersion>0.42.0.38</ApplicationVersion>
+    <ApplicationRevision>39</ApplicationRevision>
+    <ApplicationVersion>0.43.0.39</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -37,6 +37,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,6 +47,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -86,17 +88,11 @@
     <Reference Include="FSimIF">
       <HintPath>..\..\Redist\FSimIF.dll</HintPath>
     </Reference>
-    <Reference Include="MetarLib">
-      <HintPath>..\..\Redist\MetarLib.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <HintPath>..\..\Redist\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
     <Reference Include="SimConnectClient">
       <HintPath>..\..\Redist\SimConnectClient.dll</HintPath>
-    </Reference>
-    <Reference Include="SpeechLib">
-      <HintPath>..\..\Redist\SpeechLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -603,6 +599,12 @@
     <Compile Include="AApp\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AApp\Conversions.cs" />
+    <Compile Include="Shelf\frmShelf.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Shelf\frmShelf.Designer.cs">
+      <DependentUpon>frmShelf.cs</DependentUpon>
+    </Compile>
     <Compile Include="Triggers\Base\EventProcBinary.cs" />
     <Compile Include="Triggers\Base\EventProc.cs" />
     <Compile Include="Triggers\Base\EventProcFloat.cs" />
@@ -658,6 +660,10 @@
     <EmbeddedResource Include="Fonts\ShareTechMono-Regular.ttf" />
     <EmbeddedResource Include="Config\EngineMerge.csv" />
     <EmbeddedResource Include="Config\DefaultProfiles.csv" />
+    <EmbeddedResource Include="Shelf\frmShelf.resx">
+      <DependentUpon>frmShelf.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -698,6 +704,19 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="bm98_Album\bm98_Album.csproj">
+      <Project>{b4c756a8-1d36-4565-9337-8678123a2d98}</Project>
+      <Name>bm98_Album</Name>
+    </ProjectReference>
+    <ProjectReference Include="MetarLib\MetarLib.csproj">
+      <Project>{c24160dd-849c-440e-ae8b-def83a2d3e88}</Project>
+      <Name>MetarLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="SpeechLib\SpeechLib.csproj">
+      <Project>{3a9d8798-2c07-44be-bbd8-083fc4ecb25c}</Project>
+      <Name>SpeechLib</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

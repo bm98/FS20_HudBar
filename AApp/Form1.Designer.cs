@@ -45,7 +45,6 @@ namespace FS20_HudBar
       this.maBright = new System.Windows.Forms.ToolStripMenuItem();
       this.maDimm = new System.Windows.Forms.ToolStripMenuItem();
       this.maDark = new System.Windows.Forms.ToolStripMenuItem();
-      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.mConfig = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
       this.mExit = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,6 +53,9 @@ namespace FS20_HudBar
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
+      this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+      this.mShelf = new System.Windows.Forms.ToolStripMenuItem();
       this.cMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -111,11 +113,13 @@ namespace FS20_HudBar
             this.mProfile,
             this.mAppearance,
             this.toolStripSeparator2,
+            this.mShelf,
+            this.toolStripSeparator4,
             this.mConfig,
             this.toolStripSeparator3,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(161, 135);
+      this.cMenu.Size = new System.Drawing.Size(181, 185);
       // 
       // mSelProfile
       // 
@@ -127,7 +131,7 @@ namespace FS20_HudBar
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(157, 6);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
       // 
       // mProfile
       // 
@@ -138,7 +142,7 @@ namespace FS20_HudBar
             this.mP4,
             this.mP5});
       this.mProfile.Name = "mProfile";
-      this.mProfile.Size = new System.Drawing.Size(160, 22);
+      this.mProfile.Size = new System.Drawing.Size(180, 22);
       this.mProfile.Text = "Select Profile";
       // 
       // mP1
@@ -183,7 +187,7 @@ namespace FS20_HudBar
             this.maDimm,
             this.maDark});
       this.mAppearance.Name = "mAppearance";
-      this.mAppearance.Size = new System.Drawing.Size(160, 22);
+      this.mAppearance.Size = new System.Drawing.Size(180, 22);
       this.mAppearance.Text = "Appearance";
       // 
       // maBright
@@ -207,27 +211,22 @@ namespace FS20_HudBar
       this.maDark.Text = "Dark";
       this.maDark.Click += new System.EventHandler(this.maDark_Click);
       // 
-      // toolStripSeparator2
-      // 
-      this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
-      // 
       // mConfig
       // 
       this.mConfig.Name = "mConfig";
-      this.mConfig.Size = new System.Drawing.Size(160, 22);
+      this.mConfig.Size = new System.Drawing.Size(180, 22);
       this.mConfig.Text = "Configure...";
       this.mConfig.Click += new System.EventHandler(this.mConfig_Click);
       // 
       // toolStripSeparator3
       // 
       this.toolStripSeparator3.Name = "toolStripSeparator3";
-      this.toolStripSeparator3.Size = new System.Drawing.Size(157, 6);
+      this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
       // 
       // mExit
       // 
       this.mExit.Name = "mExit";
-      this.mExit.Size = new System.Drawing.Size(160, 22);
+      this.mExit.Size = new System.Drawing.Size(180, 22);
       this.mExit.Text = "Exit";
       this.mExit.Click += new System.EventHandler(this.mExit_Click);
       // 
@@ -302,6 +301,23 @@ namespace FS20_HudBar
       this.label1.UseCompatibleTextRendering = true;
       this.label1.Visible = false;
       // 
+      // toolStripSeparator4
+      // 
+      this.toolStripSeparator4.Name = "toolStripSeparator4";
+      this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+      // 
+      // toolStripSeparator2
+      // 
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+      // 
+      // mShelf
+      // 
+      this.mShelf.Name = "mShelf";
+      this.mShelf.Size = new System.Drawing.Size(180, 22);
+      this.mShelf.Text = "Flight Bag...";
+      this.mShelf.Click += new System.EventHandler(this.mShelf_Click);
+      // 
       // frmMain
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -370,8 +386,10 @@ namespace FS20_HudBar
     private System.Windows.Forms.ToolStripMenuItem maBright;
     private System.Windows.Forms.ToolStripMenuItem maDimm;
     private System.Windows.Forms.ToolStripMenuItem maDark;
-    private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+    private System.Windows.Forms.ToolStripMenuItem mShelf;
   }
 }
 
