@@ -41,6 +41,16 @@ namespace FS20_HudBar.Bar
 
 
     /// <summary>
+    /// The Ping Library
+    /// </summary>
+    public static PingLib.Loops PingLoop => m_ping;
+    private static readonly PingLib.Loops m_ping = new PingLib.Loops(); // Ping, Tone=0 will be Silence
+    private static readonly PingLib.SoundBite _silentLoop = new PingLib.SoundBite( PingLib.Melody.Silence,0,0,0f); // Use this Sound to set to Silence
+
+    public static PingLib.SoundBite LoopSound => _soundLoop;
+    private static readonly PingLib.SoundBite _soundLoop = new PingLib.SoundBite( PingLib.Melody.Synth_3,0,0.33333f,0,0.2f); // Use this Sound to ping
+
+    /// <summary>
     /// The Speech Library
     /// </summary>
     public static GUI_Speech SpeechLib => m_speech;
@@ -79,10 +89,11 @@ namespace FS20_HudBar.Bar
       {LItem.EGT_C, DI_Egt_C.Desc },          {LItem.EGT_F, DI_Egt_F.Desc },
       {LItem.CHT_C, DI_Cht_C.Desc },          {LItem.CHT_F, DI_Cht_F.Desc },
       {LItem.LOAD_P, DI_Load_prct.Desc },
-      {LItem.FFlow_pph, DI_FFlow_PPH.Desc },  {LItem.FFlow_gph, DI_FFlow_GPH.Desc },
-      {LItem.FUEL_LR_gal, DI_Fuel_LR_Gal.Desc },     {LItem.FUEL_LR_lb, DI_Fuel_LR_Lb.Desc },
-      {LItem.FUEL_C_gal, DI_Fuel_C_Gal.Desc },       {LItem.FUEL_C_lb, DI_Fuel_C_Lb.Desc },
-      {LItem.FUEL_TOT_gal, DI_Fuel_Total_Gal.Desc }, {LItem.FUEL_TOT_lb, DI_Fuel_Total_Lb.Desc },
+
+      {LItem.FFlow_gph, DI_FFlow_GPH.Desc },         {LItem.FFlow_pph, DI_FFlow_PPH.Desc },      {LItem.FFlow_kgh, DI_FFlow_KGH.Desc },
+      {LItem.FUEL_LR_gal, DI_Fuel_LR_Gal.Desc },     {LItem.FUEL_LR_lb, DI_Fuel_LR_Lb.Desc },    {LItem.FUEL_LR_kg, DI_Fuel_LR_Kg.Desc },
+      {LItem.FUEL_C_gal, DI_Fuel_C_Gal.Desc },       {LItem.FUEL_C_lb, DI_Fuel_C_Lb.Desc },      {LItem.FUEL_C_kg, DI_Fuel_C_Kg.Desc },
+      {LItem.FUEL_TOT_gal, DI_Fuel_Total_Gal.Desc }, {LItem.FUEL_TOT_lb, DI_Fuel_Total_Lb.Desc },{LItem.FUEL_TOT_kg, DI_Fuel_Total_Kg.Desc },
 
       {LItem.GPS_WYP, DI_Gps_WYP.Desc },
       {LItem.GPS_WP_DIST, DI_Gps_WP_Dist.Desc },
@@ -103,7 +114,8 @@ namespace FS20_HudBar.Bar
       {LItem.TAS, DI_Tas.Desc },
       {LItem.MACH, DI_Mach.Desc },
       {LItem.VS, DI_Vs.Desc },                {LItem.VS_PM, DI_Vs_PM.Desc },
-      {LItem.AOA, DI_Aoa.Desc },
+      {LItem.VARIO_MPS, DI_VarioTE_mps_PM.Desc }, {LItem.VARIO_KTS, DI_VarioTE_kts_PM.Desc },
+      {LItem.AOA, DI_Aoa.Desc },              {LItem.FP_ANGLE, DI_FPAngle.Desc },
       {LItem.GFORCE, DI_GForce.Desc },        {LItem.GFORCE_MM, DI_Gforce_MM.Desc },
 
       {LItem.AP, DI_Ap.Desc },
@@ -116,6 +128,7 @@ namespace FS20_HudBar.Bar
       {LItem.AP_APR_GS, DI_Ap_AprGs.Desc },
       {LItem.AP_YD, DI_Ap_YD.Desc },
       {LItem.AP_LVL, DI_Ap_LVL.Desc },
+      {LItem.AP_APR_INFO, DI_Ap_ApproachMode.Desc },
 
       {LItem.NAV1, DI_Nav1.Desc },            {LItem.NAV2, DI_Nav2.Desc },
       {LItem.NAV1_NAME, DI_Nav1_Name.Desc },  {LItem.NAV2_NAME, DI_Nav2_Name.Desc },
@@ -269,6 +282,8 @@ namespace FS20_HudBar.Bar
       _ = m_speech.SetVoice( VoiceName );
       ShelfFolder = shelfFolder;
 
+      PingLoop.PlayAsync( _silentLoop ); // use a default Silence Sound (to kill any ping) when restarting
+
       // Reset the observers as we rebuild the GUI now 
       SC.SimConnectClient.Instance.ClearAllObservers( );
 
@@ -338,14 +353,19 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Cht_C( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Cht_F( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Load_prct( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      // Fuel
       m_dispItems.AddDisp( new DI_FFlow_PPH( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_FFlow_GPH( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_FFlow_KGH( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_LR_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_LR_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Fuel_LR_Kg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_C_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_C_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Fuel_C_Kg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_Total_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_Total_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Fuel_Total_Kg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       // Trim
       m_dispItems.AddDisp( new DI_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_A_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -378,7 +398,10 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Mach( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Vs( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Vs_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_VarioTE_mps_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_VarioTE_kts_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Aoa( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_FPAngle( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_GForce( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Gforce_MM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Nav1( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -396,6 +419,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Ap_AprGs( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_YD( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_LVL( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ap_ApproachMode( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // ATC
       m_dispItems.AddDisp( new DI_Atc_APT( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Atc_RWY( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -487,7 +511,7 @@ namespace FS20_HudBar.Bar
     #region Update Content and Settings
 
     // track RefSpeed changes
-    int _RefSpeedsTTHash = 0; 
+    int _RefSpeedsTTHash = 0;
 
     /// <summary>
     /// Update from values from Sim which are not part of the Item content update 

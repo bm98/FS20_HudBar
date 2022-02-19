@@ -62,7 +62,6 @@ namespace FS20_HudBar.Shelf
       this.Text = "HudBar - Flight Bag";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmShelf_FormClosing);
       this.Load += new System.EventHandler(this.frmShelf_Load);
-      this.VisibleChanged += new System.EventHandler(this.frmShelf_VisibleChanged);
       this.ResumeLayout(false);
 
     }

@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeechLib", "SpeechLib\Spee
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetarLib", "MetarLib\MetarLib.csproj", "{C24160DD-849C-440E-AE8B-DEF83A2D3E88}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PingLib", "PingLib\PingLib.csproj", "{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,14 @@ Global
 		{C24160DD-849C-440E-AE8B-DEF83A2D3E88}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C24160DD-849C-440E-AE8B-DEF83A2D3E88}.Release|x64.ActiveCfg = Release|Any CPU
 		{C24160DD-849C-440E-AE8B-DEF83A2D3E88}.Release|x64.Build.0 = Release|Any CPU
+		{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}.Debug|x64.Build.0 = Debug|Any CPU
+		{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}.Release|x64.ActiveCfg = Release|Any CPU
+		{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

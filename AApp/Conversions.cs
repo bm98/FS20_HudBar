@@ -11,17 +11,31 @@ namespace FS20_HudBar
   /// </summary>
   class Conversions
   {
-    private const float c_nmPerM = 5.399568e-4f;
-    private const float c_ftPerM = 3.280839895013123f;
-    private const float c_degF = 9f/5f;
+    private const double c_mPNm = 1852.0;
+    private const double c_nmPm = 1.0/c_mPNm;
+
+    private const double c_mPFt = 0.3048;
+    private const double c_ftPm = 1.0 / c_mPFt;
+
+    private const double c_degF = 9f/5f;
+
     /// <summary>
     /// Nautical Miles from Meters
     /// </summary>
     /// <param name="meter">Meter</param>
     /// <returns>Nautical Miles</returns>
-    public static float NmFromM( double meter )
+    public static float Nm_From_M( double meter )
     {
-      return (float)( meter * c_nmPerM );
+      return (float)( meter * c_nmPm );
+    }
+    /// <summary>
+    /// Meters from Nautical Miles
+    /// </summary>
+    /// <param name="meter">Nautical Miles</param>
+    /// <returns>Meter</returns>
+    public static float M_From_Nm( double nm )
+    {
+      return (float)( nm * c_mPNm );
     }
 
     /// <summary>
@@ -29,17 +43,46 @@ namespace FS20_HudBar
     /// </summary>
     /// <param name="meter">Meter</param>
     /// <returns>Foot</returns>
-    public static float FtFromM( double meter )
+    public static float Ft_From_M( double meter )
     {
-      return (float)( meter * c_ftPerM );
+      return (float)( meter * c_ftPm );
+    }
+    /// <summary>
+    /// Meters from Foot
+    /// </summary>
+    /// <param name="ft">Foot</param>
+    /// <returns><Meter/returns>
+    public static float M_From_Ft( double ft )
+    {
+      return (float)( ft * c_mPFt );
     }
 
     /// <summary>
-    /// Converst from DegC to DegF ((DEG°C * 9/5) + 32 = 32°F)
+    /// Returns Meter/Sec from Foot/Min
     /// </summary>
-    /// <param name="degC"></param>
+    /// <param name="fpm">A foot/minute value</param>
+    /// <returns>The meter/second value</returns>
+    public static float Mps_From_Ftpm( float fpm )
+    {
+      return (float)( fpm * c_mPFt / 60.0 );
+    }
+
+    /// <summary>
+    /// Returns kts from m/sec
+    /// </summary>
+    /// <param name="mps">Meter per sec value</param>
+    /// <returns>Converted Knots value</returns>
+    public static float Kt_From_Mps( float mps )
+    {
+      return (float)( mps * 3600f * c_nmPm );
+    }
+
+    /// <summary>
+    /// Returns DegF from DegC ((DEG°C * 9/5) + 32 = 32°F)
+    /// </summary>
+    /// <param name="degC">Temp deg C</param>
     /// <returns>Temp in deg F</returns>
-    public static float DegCtoF( double degC )
+    public static float DegF_From_DegC( double degC )
     {
       return (float)( ( degC * c_degF ) + 32.0f );
     }
@@ -71,5 +114,8 @@ namespace FS20_HudBar
     {
       return (float)( Math.Round( number / quant ) * quant );
     }
+
+
+
   }
 }

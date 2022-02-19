@@ -54,16 +54,5 @@ namespace FS20_HudBar.Shelf
       }
     }
 
-    // the Shelf gets TopMost while visible
-    private void frmShelf_VisibleChanged( object sender, EventArgs e )
-    {
-      if ( this.Visible ) {
-        this.TopMost = true;
-      }
-      else {
-        this.TopMost = false;
-      }
-    }
-
   }
 }

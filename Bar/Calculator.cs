@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using SC = SimConnectClient;
 using FS20_HudBar.GUI;
+using static FS20_HudBar.Conversions;
 
 namespace FS20_HudBar.Bar
 {
@@ -14,35 +15,61 @@ namespace FS20_HudBar.Bar
   /// </summary>
   internal static class Calculator
   {
+    // Timing infrastructure
+    private static double _LastTick = 0;
+    private static double _tick = 0;
+    private static double _deltaT_s = 0;
+
     /// <summary>
     /// Pacer to calculate some averages from the running data
     ///  Should be called whenever the Sim Updates the data
     /// </summary>
     public static void PaceCalculator( )
     {
-      // list all methods which need to constantly readout SimData here
-      FuelFlowTotalSampler( );
+      double newTick = SC.SimConnectClient.Instance.HudBarModule.SimTime_zulu_Dsec;
+      if ( newTick < ( _LastTick - 1.0 ) ) {
+        // new Tick is in the past (change in SimTime?? or midnight ZULU)
+        _LastTick = newTick; // try to recover next round
+      }
+      else if ( newTick > _LastTick ) {
+        // only when time passed...
+        _tick = newTick;
+        _deltaT_s = _tick - _LastTick;
+        _LastTick = _tick;
+
+        // list all methods which need to constantly readout SimData here
+        FuelFlowTotalSampler( );
+        TE_RateSampler( );
+      }
     }
 
-
-    #region AVG Module
+    #region AVG Modules
 
     /// <summary>
     /// Class to support Average calculations
+    ///  Calculates 'real' average of the samples provided
+    ///  Take care: Long chains may have performance penalties..
     /// </summary>
     private class AvgModule
     {
-      private int m_nSamples = 1;
-      private Queue<float> m_samples;
+      // full resolution numbers
+      private double m_currentValue = 0;
+      private double m_prevValue = 0 ;
+
+      private ushort m_nSamples = 1;
+      private ushort m_precision = 3;
+      private Queue<double> m_samples;
 
       /// <summary>
       /// cTor: init with the sample size
       /// </summary>
-      /// <param name="numSamples"></param>
-      public AvgModule( int numSamples = 5 )
+      /// <param name="numSamples">Length of the number chain to average (default=5)</param>
+      /// <param name="precision">Outgoing number of Digits (default=3)</param>
+      public AvgModule( ushort numSamples = 5, ushort precision = 3 )
       {
         m_nSamples = numSamples;
-        m_samples = new Queue<float>( m_nSamples + 1 );
+        m_precision = precision;
+        m_samples = new Queue<double>( m_nSamples + 1 );
       }
       /// <summary>
       /// Add one sample
@@ -50,19 +77,83 @@ namespace FS20_HudBar.Bar
       /// <param name="value">A sample</param>
       public void Sample( float value )
       {
-        m_samples.Enqueue( value );
+        m_prevValue = m_currentValue;
+        m_samples.Enqueue( value / m_nSamples ); // store scaled, so we only use the Sum for returning the value
         while ( m_samples.Count > m_nSamples ) {
           m_samples.Dequeue( );
         }
+        m_currentValue = ( m_samples.Count <= 0 ) ? 0 : m_samples.Sum( );
       }
 
       /// <summary>
       /// Returns the Average
       /// </summary>
-      public float Avg => ( m_samples.Count <= 0 ) ? 0 : m_samples.Average( );
-
+      public float Avg => (float)Math.Round( m_currentValue, m_precision );
+      /// <summary>
+      /// Returns the Previous Average
+      /// </summary>
+      public float AvgPrev => (float)Math.Round( m_prevValue, m_precision );
+      /// <summary>
+      /// Returns the Direction from Prev to Current Value (1: going up; -1 going down; 0: stay)
+      /// </summary>
+      public int Direction => ( Avg > AvgPrev ) ? 1 : ( Avg < AvgPrev ) ? -1 : 0;
     }
 
+
+    /// <summary>
+    /// Class to support Rolling Average calculations
+    ///  Adds a new value with 1/length weight to calculate the new value
+    /// </summary>
+    private class AvgModule_Rolling
+    {
+      // full resolution numbers
+      private double m_currentValue = 0;
+      private double m_prevValue = 0 ;
+
+      private ushort m_nSamples = 1; // lenght of accumulation
+      private ushort m_precision = 3;
+
+      private double m_scaleCurrent = 1;  // precalc: the weight of the current value
+      private double m_scaleNew = 1;      // precalc: the weight of the to be added value (sum of scales should be 1.0)
+
+      /// <summary>
+      /// cTor: init with the sample size
+      /// </summary>
+      /// <param name="numSamples">Length of the number chain to average (default=5)</param>
+      /// <param name="precision">Outgoing number of Digits (default=3)</param>
+      public AvgModule_Rolling( ushort numSamples = 5, ushort precision = 3 )
+      {
+        m_nSamples = numSamples;
+        m_precision = precision;
+        // precalc scales
+        m_scaleNew = 1.0 / m_nSamples;
+        m_scaleCurrent = 1.0 - m_scaleNew;
+      }
+      /// <summary>
+      /// Add one sample
+      /// </summary>
+      /// <param name="value">A sample</param>
+      public void Sample( float value )
+      {
+        m_prevValue = m_currentValue;
+        m_currentValue = m_scaleCurrent * m_currentValue + m_scaleNew * value;
+      }
+
+      /// <summary>
+      /// Returns the Average
+      /// </summary>
+      public float Avg => (float)Math.Round( m_currentValue, m_precision );
+      /// <summary>
+      /// Returns the Previous Average
+      /// </summary>
+      public float AvgPrev => (float)Math.Round( m_prevValue, m_precision );
+
+      /// <summary>
+      /// Returns the Direction from Prev to Current Value (1: going up; -1 going down; 0: stay)
+      /// </summary>
+      public int Direction => ( Avg > AvgPrev ) ? 1 : ( Avg < AvgPrev ) ? -1 : 0;
+
+    }
 
     #endregion
 
@@ -328,5 +419,100 @@ namespace FS20_HudBar.Bar
     }
     #endregion
 
+    #region Variometer Calculations
+
+    // Credit: https://xp-soaring.github.io/instruments/index.html
+
+    private const double _g = 9.80665; // Gravity Const m/s2
+    private const double _g_ft = 32.174048556; // Gravity Const ft/s2
+    private const double _mPerFt = 0.3048;
+    private const double _mPerNm = 1852.0;
+
+
+    private static float _prevAlt_m = 0;
+    private static float _alt_m = 0;
+    private static float _prevGs_mPs = 0;
+    private static float _gs_mPs = 0;
+    private static float _teReading_mPs = 0;
+
+    private static AvgModule_Rolling _varioAvg = new AvgModule_Rolling(10, 2); // about 2 sec.. with 2 dec digits
+
+    private static void TE_RateSampler( )
+    {
+      _alt_m = (float)( SC.SimConnectClient.Instance.HudBarModule.AltMsl_ft * _mPerFt ); // ft
+      _gs_mPs = (float)( SC.SimConnectClient.Instance.HudBarModule.Groundspeed_kt * _mPerNm / 3600.0 ); // Kt -> Nm/h
+      // TE reading = ((h2 - h1) + (v2^2 - v1^2)/(2 * g)) / t,
+      //where g = 9.81, h in meters, v in m / s, TE reading in m / s.
+      _teReading_mPs = (float)( ( ( _alt_m - _prevAlt_m ) + ( _gs_mPs * _gs_mPs - _prevGs_mPs * _prevGs_mPs ) / ( 2 * _g ) ) / _deltaT_s );
+
+      // Average
+      _varioAvg.Sample( _teReading_mPs );
+
+      // prep next round
+      _prevAlt_m = _alt_m;
+      _prevGs_mPs = _gs_mPs;
+    }
+
+    /// <summary>
+    /// Total Energy Variometer [m/s]
+    /// </summary>
+    public static float TE_Rate_mps => _teReading_mPs;
+    /// <summary>
+    /// Total Energy Variometer [kt]
+    /// </summary>
+    public static float TE_Rate_kt => Kt_From_Mps( TE_Rate_mps );
+
+    /// <summary>
+    /// Total Energy Variometer Average [m/s]
+    /// </summary>
+    public static float TE_RateAvg_mPs => _varioAvg.Avg;
+    /// <summary>
+    /// Total Energy Variometer Average [kts]
+    /// </summary>
+    public static float TE_RateAvg_kts => Kt_From_Mps( TE_RateAvg_mPs );
+
+    /// <summary>
+    /// Returns the Direction from Prev to Current Value (1: going up; -1 going down; 0: stay)
+    /// </summary>
+    public static int TR_RateDirection => _varioAvg.Direction;
+
+
+    // Vario Ping
+
+    private const float c_straight = 0.05f; // no tone cutoff when straight
+    private const float c_limit = 6.0f;    // +- limit for Lowest and Highest Pitch
+
+    private const uint c_plusLo = 38;  // low Tone for the smallest Positive rate
+    private const uint c_minusHi = 25; // high Tone for the smallest Negative rate
+    private const uint c_steps = 20;   // ensure c_plusLo + c_steps <= 60 and c_minusHi-c_steps >=1 !!!
+
+    private const float c_scale = (float)c_steps/c_limit; // mult to get a roundable Int stepOffset 0..c_steps within the bounds
+
+    /// <summary>
+    /// Get the Variometer Tone from a VS [m/sec]
+    /// </summary>
+    /// <param name="vs"></param>
+    /// <returns>A Tone [0..60]</returns>
+    public static uint ToneFromVS( float vs )
+    {
+      // Ping Tones are between 1..60, leaving a remarkable gap we use 20 steps low ..25 and high 36..
+      // Between -c_straight and +c_straight there is no Sound
+      // limit the pitch of the tone at +-c_limit
+
+      // Above 0.2 the ping gets one Note higher per 0.2 increment
+      // Below -0.2 the ping gets one Note lower per 0.2 decrement
+
+      uint tone = 0; // start with Silence..
+      if ( vs > c_straight ) {
+        tone = ( ( vs > c_limit ) ? c_steps : (uint)Math.Round( vs * c_scale ) ) + c_plusLo;       // 10 Tones
+      }
+      else if ( vs < -c_straight ) {
+        tone = (uint)( c_minusHi + ( ( vs < -c_limit ) ? -c_steps : Math.Round( vs * c_scale ) ) ); // 10 Tones
+      }
+
+      return tone;
+    }
+
+    #endregion
   }
 }

@@ -18,6 +18,8 @@ namespace FS20_HudBar.Config
   /// </summary>
   class CProfile
   {
+    public const int c_numProfiles = 5; // Supported number of profiles
+
     private int m_pNumber = 0; // Profile Number 1...
 
     private Dictionary<LItem, bool> m_profile = new Dictionary<LItem, bool>();   // true to show the item

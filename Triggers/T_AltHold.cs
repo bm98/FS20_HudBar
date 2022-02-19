@@ -13,10 +13,9 @@ namespace FS20_HudBar.Triggers
 {
   /// <summary>
   /// ALT Hold Trigger: a binary trigger where ALT Hold Active => True, else=> False
+  ///  ALT hold can be the Set Alt or the current Alt dependin whether it is
+  ///   triggered by the ALT capture or manually hitting the ALT hold.
   /// 
-  ///  detects a change in the Glideslope Capture
-  ///  triggers one event each time it changed
-  ///  
   ///  One need to add BinaryEventProc for True and False
   /// </summary>
   class T_AltHold : TriggerBinary
@@ -27,6 +26,18 @@ namespace FS20_HudBar.Triggers
     public override void RegisterObserver( )
     {
       SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( m_name, OnDataArrival );
+    }
+
+    // Returns either feet or flightlevel
+    // Transition is not known or fixed - we use 8000 feet...
+    private string AltText( float alt )
+    {
+      if ( alt < 8000 ) {
+        return $"Holding {( (int)( alt / 100 ) ) * 100} feet"; // get it to hundreds else it is talking way to long
+      }
+      else {
+        return $"Holding Flightlevel {(int)( alt / 100 ) }";
+      }
     }
 
     /// <summary>
@@ -41,13 +52,25 @@ namespace FS20_HudBar.Triggers
 
       var ds = SC.SimConnectClient.Instance.AP_G1000Module;
 
-      if ( ds.ALT_setting_ft < 8000 ) {
-        m_actions.First( ).Value.Text = $"Holding {(int)ds.ALT_setting_ft } feet";
+      // if capturing ALT
+      if ( ds.ALThold_active && ( ds.AP_mode == FSimClientIF.APMode.On) ) {
+        // find out what ALT we are holding - if at all
+        // ALT hold gets active while approaching the target Alt in ALTS mode
+        // or holds the current ALT if the pilot hits the ALT hold button.
+        // If the Setting is more than 500ft away from the current ALT we assume the pilot pushed the ALT hold button (best guess...)
+        float altHolding = ds.ALT_setting_ft; // target ALT
+        if ( altHolding > ( SC.SimConnectClient.Instance.HudBarModule.Altimeter_ft + 500f ) ) {
+          // seems ALT button was pressed on the way UP to SET ALT
+          altHolding = (int)Math.Ceiling( SC.SimConnectClient.Instance.HudBarModule.Altimeter_ft / 100f ) * 100; // round current ALT UP 
+        }
+        else if ( altHolding < ( SC.SimConnectClient.Instance.HudBarModule.Altimeter_ft - 500f ) ) {
+          // seems ALT button was pressed on the way DOWN to SET ALT
+          altHolding = (int)Math.Floor( SC.SimConnectClient.Instance.HudBarModule.Altimeter_ft / 100f ) * 100; // round current ALT DOWN
+        }
+        m_actions.First( ).Value.Text = AltText( altHolding );
       }
-      else {
-        m_actions.First( ).Value.Text = $"Holding Flightlevel {(int)( ds.ALT_setting_ft / 100 ) }";
-      }
-      // only if AP is On
+
+      // trigger Once and only if AP and ALT Hold is On
       DetectStateChange( ( ds.AP_mode == FSimClientIF.APMode.On ) && ds.ALThold_active );
       if ( ds.ALThold_active == false )
         m_lastTriggered = false; // RESET if no longer captured

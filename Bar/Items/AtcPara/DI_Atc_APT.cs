@@ -112,7 +112,7 @@ namespace FS20_HudBar.Bar.Items
           _value2.Value = AirportMgr.Distance_nm( latLon );
         }
 
-        _value3.Value = AirportMgr.IsAvailable ? Conversions.FtFromM( AirportMgr.Location.Altitude ) : float.NaN;
+        _value3.Value = AirportMgr.IsAvailable ? Conversions.Ft_From_M( AirportMgr.Location.Altitude ) : float.NaN;
       }
     }
 

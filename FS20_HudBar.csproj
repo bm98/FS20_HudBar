@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>39</ApplicationRevision>
-    <ApplicationVersion>0.43.0.39</ApplicationVersion>
+    <ApplicationRevision>40</ApplicationRevision>
+    <ApplicationVersion>0.43.0.40</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -166,6 +166,30 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AircraftPara\DI_Spoilers.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_ApproachMode.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_VarioTE_kts_PM.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_VarioTE_mps_PM.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_FFlow_KGH.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_FPAngle.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Fuel_C_Kg.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Fuel_LR_Kg.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_Fuel_Total_Kg.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\DI_Separator.cs">
@@ -452,6 +476,12 @@
     <Compile Include="GUI\Templates\Base\ToolTip_Base.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GUI\Templates\Base\X_Label.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\V_Flow_kgh.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\Templates\V_Fps.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -504,6 +534,9 @@
     <Compile Include="GUI\Templates\V_ICAO_L.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GUI\Templates\V_Kilograms.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\Templates\V_LatDist.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -538,6 +571,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Templates\V_VSpeedPM.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\V_VSpeed_ktPM.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\V_VSpeed_mPsPM.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Templates\V_Wind_HT.cs">
@@ -597,6 +636,7 @@
     <Compile Include="Bar\HudBar.cs" />
     <Compile Include="Bar\HudMetar.cs" />
     <Compile Include="AApp\Program.cs" />
+    <Compile Include="GUI\Units.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AApp\Conversions.cs" />
     <Compile Include="Shelf\frmShelf.cs">
@@ -712,6 +752,10 @@
     <ProjectReference Include="MetarLib\MetarLib.csproj">
       <Project>{c24160dd-849c-440e-ae8b-def83a2d3e88}</Project>
       <Name>MetarLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="PingLib\PingLib.csproj">
+      <Project>{6ad5de08-d31b-4567-bca8-b6da8a73a22c}</Project>
+      <Name>PingLib</Name>
     </ProjectReference>
     <ProjectReference Include="SpeechLib\SpeechLib.csproj">
       <Project>{3a9d8798-2c07-44be-bbd8-083fc4ecb25c}</Project>

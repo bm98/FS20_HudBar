@@ -45,15 +45,13 @@ namespace FS20_HudBar
     private frmGui m_frmGui;
     private FlowLayoutPanel flp;
 
-    // The Flightbag
-    private Shelf.frmShelf m_shelf;
-
     // A HudBar standard ToolTip for the Button Helpers
     private ToolTip_Base m_toolTip = new ToolTip_Base();
 
     // The profiles
     private List<CProfile> m_profiles = new List<CProfile>();
     private int m_selProfile = 0;
+    private ToolStripMenuItem[] m_profileMenu; // enable array access for the MenuItems
 
     // Our interaction hooks 
     private enum Hooks
@@ -66,8 +64,11 @@ namespace FS20_HudBar
     // Handles the RawInput from HID Keyboards
     Win.HotkeyController _keyHook;
 
-    // FS Input handlers
+    // MSFS Input handlers
     private Dictionary<Hooks, SC.Input.InputHandler> _fsInputCat = new Dictionary<Hooks, SC.Input.InputHandler>();
+
+    // The Flightbag
+    private Shelf.frmShelf m_shelf;
 
     // Configuration Dialog
     private readonly frmConfig CFG = new frmConfig( );
@@ -292,6 +293,8 @@ namespace FS20_HudBar
 
       m_selProfile = AppSettings.Instance.SelProfile;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
+      // collect the Menus for the profiles
+      m_profileMenu = new ToolStripMenuItem[] { mP1, mP2, mP3, mP4, mP5 };
 
       Colorset = ToColorSet( AppSettings.Instance.Appearance );
 
@@ -302,7 +305,7 @@ namespace FS20_HudBar
       SynchGUI( );
       flp = m_frmGui.flp;
 
-      // Setup the Shelf
+      // Setup the Shelf and put it somewhere we can see it (either last location or default)
       m_shelf = new Shelf.frmShelf {
         Size = AppSettings.Instance.ShelfSize,
         Location = AppSettings.Instance.ShelfLocation
@@ -310,7 +313,7 @@ namespace FS20_HudBar
       if ( !IsOnScreen( new Rectangle( m_shelf.Location, m_shelf.Size ) ) ) {
         m_shelf.Location = new Point( 100, 100 );
       }
-      //  on init only
+      //  set from Saved default - if not found, set our default
       if ( !m_shelf.SetShelfFolder( AppSettings.Instance.ShelfFolder ) ) {
         m_shelf.SetShelfFolder( @".\DemoBag" ); // the one in our Deployment
       }
@@ -327,20 +330,20 @@ namespace FS20_HudBar
     }
 
 
-
     private void frmMain_Load( object sender, EventArgs e )
     {
-      // prepare the GUI 
+      // prepare the GUI On Form Load
 
       // The FlowPanel in Design is not docked - do it here
       flp.Dock = DockStyle.Fill;
       // flp.BorderStyle = BorderStyle.FixedSingle; // DEBUG to see where the FLPanel is
       flp.WrapContents = true; // Needs to wrap around
+      // attach mouse handlers
       flp.MouseDown += frmMain_MouseDown;
       flp.MouseUp += frmMain_MouseUp;
       flp.MouseMove += frmMain_MouseMove;
 
-      // Window Props
+      // Window Props - major ones - the rest will be set in InitGUI()
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc. to begin with
       this.TopMost = true; // make sure we float on top
       this.BackColor = c_WinBG;
@@ -395,8 +398,8 @@ namespace FS20_HudBar
     // Fired when about to Close
     private void frmMain_FormClosing( object sender, FormClosingEventArgs e )
     {
-      m_shelf?.Hide( );
-      
+      m_shelf?.Hide( ); // Hide the Flight Bag
+
       // Save all Settings
       AppSettings.Instance.SelProfile = m_selProfile;
       AppSettings.Instance.Save( );
@@ -437,6 +440,10 @@ namespace FS20_HudBar
       CFG.ProfilesRef = m_profiles;
       CFG.SelectedProfile = m_selProfile;
 
+      // Kill any Pings in Config - will restablish after getting back
+      var muted = HudBar.PingLoop.Mute;
+      HudBar.PingLoop.Mute = true;
+
       // Show and see if the user Accepts the changes
       if ( CFG.ShowDialog( this ) == DialogResult.OK ) {
         // Save all configuration properties
@@ -460,55 +467,56 @@ namespace FS20_HudBar
 
         AppSettings.Instance.SelProfile = m_selProfile;
         // All Profiles
-        AppSettings.Instance.Profile_1_Name = m_profiles[0].PName;
-        AppSettings.Instance.Profile_1 = m_profiles[0].ProfileString( );
-        AppSettings.Instance.FlowBreak_1 = m_profiles[0].FlowBreakString( );
-        AppSettings.Instance.Sequence_1 = m_profiles[0].ItemPosString( );
-        AppSettings.Instance.Profile_1_FontSize = (int)m_profiles[0].FontSize;
-        AppSettings.Instance.Profile_1_Placement = (int)m_profiles[0].Placement;
-        AppSettings.Instance.Profile_1_Kind = (int)m_profiles[0].Kind;
-        AppSettings.Instance.Profile_1_Condensed = m_profiles[0].Condensed;
-        AppSettings.Instance.Profile_1_Trans = (int)m_profiles[0].Transparency;
-
-        AppSettings.Instance.Profile_2_Name = m_profiles[1].PName;
-        AppSettings.Instance.Profile_2 = m_profiles[1].ProfileString( );
-        AppSettings.Instance.FlowBreak_2 = m_profiles[1].FlowBreakString( );
-        AppSettings.Instance.Sequence_2 = m_profiles[1].ItemPosString( );
-        AppSettings.Instance.Profile_2_FontSize = (int)m_profiles[1].FontSize;
-        AppSettings.Instance.Profile_2_Placement = (int)m_profiles[1].Placement;
-        AppSettings.Instance.Profile_2_Kind = (int)m_profiles[1].Kind;
-        AppSettings.Instance.Profile_2_Condensed = m_profiles[1].Condensed;
-        AppSettings.Instance.Profile_2_Trans = (int)m_profiles[1].Transparency;
-
-        AppSettings.Instance.Profile_3_Name = m_profiles[2].PName;
-        AppSettings.Instance.Profile_3 = m_profiles[2].ProfileString( );
-        AppSettings.Instance.FlowBreak_3 = m_profiles[2].FlowBreakString( );
-        AppSettings.Instance.Sequence_3 = m_profiles[2].ItemPosString( );
-        AppSettings.Instance.Profile_3_FontSize = (int)m_profiles[2].FontSize;
-        AppSettings.Instance.Profile_3_Placement = (int)m_profiles[2].Placement;
-        AppSettings.Instance.Profile_3_Kind = (int)m_profiles[2].Kind;
-        AppSettings.Instance.Profile_3_Condensed = m_profiles[2].Condensed;
-        AppSettings.Instance.Profile_3_Trans = (int)m_profiles[2].Transparency;
-
-        AppSettings.Instance.Profile_4_Name = m_profiles[3].PName;
-        AppSettings.Instance.Profile_4 = m_profiles[3].ProfileString( );
-        AppSettings.Instance.FlowBreak_4 = m_profiles[3].FlowBreakString( );
-        AppSettings.Instance.Sequence_4 = m_profiles[3].ItemPosString( );
-        AppSettings.Instance.Profile_4_FontSize = (int)m_profiles[3].FontSize;
-        AppSettings.Instance.Profile_4_Placement = (int)m_profiles[3].Placement;
-        AppSettings.Instance.Profile_4_Kind = (int)m_profiles[3].Kind;
-        AppSettings.Instance.Profile_4_Condensed = m_profiles[3].Condensed;
-        AppSettings.Instance.Profile_4_Trans = (int)m_profiles[3].Transparency;
-
-        AppSettings.Instance.Profile_5_Name = m_profiles[4].PName;
-        AppSettings.Instance.Profile_5 = m_profiles[4].ProfileString( );
-        AppSettings.Instance.FlowBreak_5 = m_profiles[4].FlowBreakString( );
-        AppSettings.Instance.Sequence_5 = m_profiles[4].ItemPosString( );
-        AppSettings.Instance.Profile_5_FontSize = (int)m_profiles[4].FontSize;
-        AppSettings.Instance.Profile_5_Placement = (int)m_profiles[4].Placement;
-        AppSettings.Instance.Profile_5_Kind = (int)m_profiles[4].Kind;
-        AppSettings.Instance.Profile_5_Condensed = m_profiles[4].Condensed;
-        AppSettings.Instance.Profile_5_Trans = (int)m_profiles[4].Transparency;
+        int pIndex = 0; // use an index avoiding copy and paste mishaps...
+        AppSettings.Instance.Profile_1_Name = m_profiles[pIndex].PName;
+        AppSettings.Instance.Profile_1 = m_profiles[pIndex].ProfileString( );
+        AppSettings.Instance.FlowBreak_1 = m_profiles[pIndex].FlowBreakString( );
+        AppSettings.Instance.Sequence_1 = m_profiles[pIndex].ItemPosString( );
+        AppSettings.Instance.Profile_1_FontSize = (int)m_profiles[pIndex].FontSize;
+        AppSettings.Instance.Profile_1_Placement = (int)m_profiles[pIndex].Placement;
+        AppSettings.Instance.Profile_1_Kind = (int)m_profiles[pIndex].Kind;
+        AppSettings.Instance.Profile_1_Condensed = m_profiles[pIndex].Condensed;
+        AppSettings.Instance.Profile_1_Trans = (int)m_profiles[pIndex].Transparency;
+        pIndex++;
+        AppSettings.Instance.Profile_2_Name = m_profiles[pIndex].PName;
+        AppSettings.Instance.Profile_2 = m_profiles[pIndex].ProfileString( );
+        AppSettings.Instance.FlowBreak_2 = m_profiles[pIndex].FlowBreakString( );
+        AppSettings.Instance.Sequence_2 = m_profiles[pIndex].ItemPosString( );
+        AppSettings.Instance.Profile_2_FontSize = (int)m_profiles[pIndex].FontSize;
+        AppSettings.Instance.Profile_2_Placement = (int)m_profiles[pIndex].Placement;
+        AppSettings.Instance.Profile_2_Kind = (int)m_profiles[pIndex].Kind;
+        AppSettings.Instance.Profile_2_Condensed = m_profiles[pIndex].Condensed;
+        AppSettings.Instance.Profile_2_Trans = (int)m_profiles[pIndex].Transparency;
+        pIndex++;
+        AppSettings.Instance.Profile_3_Name = m_profiles[pIndex].PName;
+        AppSettings.Instance.Profile_3 = m_profiles[pIndex].ProfileString( );
+        AppSettings.Instance.FlowBreak_3 = m_profiles[pIndex].FlowBreakString( );
+        AppSettings.Instance.Sequence_3 = m_profiles[pIndex].ItemPosString( );
+        AppSettings.Instance.Profile_3_FontSize = (int)m_profiles[pIndex].FontSize;
+        AppSettings.Instance.Profile_3_Placement = (int)m_profiles[pIndex].Placement;
+        AppSettings.Instance.Profile_3_Kind = (int)m_profiles[pIndex].Kind;
+        AppSettings.Instance.Profile_3_Condensed = m_profiles[pIndex].Condensed;
+        AppSettings.Instance.Profile_3_Trans = (int)m_profiles[pIndex].Transparency;
+        pIndex++;
+        AppSettings.Instance.Profile_4_Name = m_profiles[pIndex].PName;
+        AppSettings.Instance.Profile_4 = m_profiles[pIndex].ProfileString( );
+        AppSettings.Instance.FlowBreak_4 = m_profiles[pIndex].FlowBreakString( );
+        AppSettings.Instance.Sequence_4 = m_profiles[pIndex].ItemPosString( );
+        AppSettings.Instance.Profile_4_FontSize = (int)m_profiles[pIndex].FontSize;
+        AppSettings.Instance.Profile_4_Placement = (int)m_profiles[pIndex].Placement;
+        AppSettings.Instance.Profile_4_Kind = (int)m_profiles[pIndex].Kind;
+        AppSettings.Instance.Profile_4_Condensed = m_profiles[pIndex].Condensed;
+        AppSettings.Instance.Profile_4_Trans = (int)m_profiles[pIndex].Transparency;
+        pIndex++;
+        AppSettings.Instance.Profile_5_Name = m_profiles[pIndex].PName;
+        AppSettings.Instance.Profile_5 = m_profiles[pIndex].ProfileString( );
+        AppSettings.Instance.FlowBreak_5 = m_profiles[pIndex].FlowBreakString( );
+        AppSettings.Instance.Sequence_5 = m_profiles[pIndex].ItemPosString( );
+        AppSettings.Instance.Profile_5_FontSize = (int)m_profiles[pIndex].FontSize;
+        AppSettings.Instance.Profile_5_Placement = (int)m_profiles[pIndex].Placement;
+        AppSettings.Instance.Profile_5_Kind = (int)m_profiles[pIndex].Kind;
+        AppSettings.Instance.Profile_5_Condensed = m_profiles[pIndex].Condensed;
+        AppSettings.Instance.Profile_5_Trans = (int)m_profiles[pIndex].Transparency;
 
         // Finally Save
         AppSettings.Instance.Save( );
@@ -516,6 +524,8 @@ namespace FS20_HudBar
         // Restart the GUI 
         InitGUI( ); // redraw changes
       }
+      // Dialog Cancelled, nothing changed
+      HudBar.PingLoop.Mute = muted;
 
       // reset out float above others each time we redo the GUI, could get lost when using Config
       this.TopMost = true;
@@ -584,15 +594,26 @@ namespace FS20_HudBar
       AppSettings.Instance.Save( );
     }
 
+    private void mAppearance_DropDownOpening( object sender, EventArgs e )
+    {
+      // set the selected item as checked
+      maBright.Checked = ( Colorset == ColorSet.BrightSet );
+      maDimm.Checked = ( Colorset == ColorSet.DimmedSet );
+      maDark.Checked = ( Colorset == ColorSet.DarkSet );
+    }
+
     #endregion
 
     #region Shelf Selector
     private void mShelf_Click( object sender, EventArgs e )
     {
+      if ( m_shelf == null ) return; // sanity check 
+
       if ( m_shelf.Visible ) {
         m_shelf.Hide( );
       }
       else {
+        m_shelf.TopMost = true;
         m_shelf.Show( );
       }
     }
@@ -694,12 +715,13 @@ namespace FS20_HudBar
       AirportMgr.Reset( );
 
       // Update profile selection items
-      mP1.Text = m_profiles[0].PName;
-      mP2.Text = m_profiles[1].PName;
-      mP3.Text = m_profiles[2].PName;
-      mP4.Text = m_profiles[3].PName;
-      mP5.Text = m_profiles[4].PName;
+      for ( int i = 0; i < CProfile.c_numProfiles; i++ ) {
+        m_profileMenu[i].Text = m_profiles[i].PName;
+        m_profileMenu[i].Checked = false;
+      }
+      m_profileMenu[m_selProfile].Checked = true;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
+      // Set the Window Title
       this.Text = ( string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance ) + $" HudBar: {m_profiles[m_selProfile].PName}          - by bm98ch";
 
       // create a catalog from Settings (serialized as item strings..)
@@ -711,6 +733,7 @@ namespace FS20_HudBar
       _hotkeycat.AddHotkeyString( Hotkeys.Profile_4, AppSettings.Instance.HKProfile4 );
       _hotkeycat.AddHotkeyString( Hotkeys.Profile_5, AppSettings.Instance.HKProfile5 );
       _hotkeycat.AddHotkeyString( Hotkeys.FlightBag, AppSettings.Instance.HKShelf );
+
       // start from scratch
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
                           AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook, _hotkeycat,
@@ -767,7 +790,7 @@ namespace FS20_HudBar
           break;
       }
 
-      // Walk all DispItems and add the ones to be shown
+      // Walk all DispItems and add the ones to be shown to the Flow Panel
       int maxHeight = 0;
       int maxWidth = 0;
       DispItem prevDi = null;
@@ -821,7 +844,7 @@ namespace FS20_HudBar
             }
             // add the item 
             flp.Controls.Add( di );
-            /*
+            /* Code to add tooltips to the Label Part of an item - NOT IN USE RIGHT NOW
             if ( !string.IsNullOrEmpty( di.TText ) ) {
               m_toolTip.SetToolTip( di.Label, di.TText );
             }
@@ -1025,8 +1048,8 @@ namespace FS20_HudBar
       }
     }
 
-    #endregion
 
+    #endregion
 
   }
 }

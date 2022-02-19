@@ -1,15 +1,16 @@
-FS20_HudBar V 0.43 - Build 39 BETA
-(c) M. Burri - 08-Feb-2022
+FS20_HudBar V 0.43 - Build 40 BETA
+(c) M. Burri - 15-Feb-2022
 
 Contains files:
 
 FS20_HudBar.exe               The program
 
-.\DemoBag                   Contains some images to showcase the Flight Bag (new since V0.43))
+.\DemoBag                   Contains some images to showcase the Flight Bag (new since V0.43)
 
 - All libraries below MUST be in the same folder as the Exe file
 bm98_Album.dll              A UserControl for displaying images (zoom & drag new since V0.43)
 SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new since V0.35)
+PingLib.dll                 An audio lib using Win10 Audio facilities (new since V0.43)
 MetarLib.dll				A METAR access library (new since V0.29)
 
 FS20_AptLib.dll             MSFS2020 Airport DB (new since V0.29)
@@ -42,12 +43,18 @@ github@mail.burri-web.org
 
 Changelog:
 
-V 0.43-B39
+V 0.43-B40
 - Add 'Flight Bag light' as feature (display image documents with zoom and drag)
+- Add Variometer (Total Energy Type) item for m/s and kts with Ping
+- Add Item AP/GPS Approach information (Apr.type and phase)
+- Add Item Flight Path Angle (FPA = Pitch - Aoa)
+- Add for all Fuel properties add kilogram items (Airbus unit)
+- Add Apt-ALT to ATC Airport Item
 - Add FontSize +18,20,24,28
-- Update Added Apt-ALT to ATC Airport Item
 - Fix Wind Dir @ Speed values corrected
+- Fix ALT holding voiceout if not going for ALTS but the ALT button was pressed (guesswork...)
 - Fix Reduce 'Not recording' label to 'Not rec.' (avoiding column size changes)
+- Update Context Menu shows current selection as Checked Item (Profile, Appearance)
 - Update Support Libs / Added SpeechLib and MetarLib to the solution
 - Update QuickGuide
 

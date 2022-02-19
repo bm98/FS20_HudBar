@@ -11,7 +11,7 @@ namespace SpeechLib
   /// <summary>
   /// Implements an Background thread which does the voice output
   /// so the calling entity is able to proceed with working
-  ///  Words ( < 10sec chunks assumed..) will be queued and serialized voice output is generated
+  ///  Words ( less than 10sec chunks assumed..) will be queued and serialized voice output is generated
   ///  - Provides a list of installed voices
   ///  - Accepts to set the Voice from the Installed ones
   ///  - InitSpeaker() before start adding Words

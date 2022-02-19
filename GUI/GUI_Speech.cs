@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//using System.Speech.Synthesis;
 using SpeechLib; // instead of the above .Net lib (provides all installed voices)
 
 namespace FS20_HudBar.GUI

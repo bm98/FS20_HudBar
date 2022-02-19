@@ -133,6 +133,15 @@ namespace FS20_HudBar.Bar.Items
     XPDR,         // Transponder
 
     LOG,          // Flight Log
+
+    AP_APR_INFO,  // AP/GPS Approach Info
+    FP_ANGLE,     // Flight Path Angle
+    FFlow_kgh,    // Fuel Flow kg/h
+    FUEL_LR_kg,   // Fuel quantity LR kilograms
+    FUEL_C_kg,    // Fuel quantity C kilograms
+    FUEL_TOT_kg,  // Fuel quantity Total kilograms
+    VARIO_MPS,    // Total Energy Variometer m/sec with +-
+    VARIO_KTS,    // Total Energy Variometer kts with +-
   }
 
 
@@ -222,6 +231,9 @@ namespace FS20_HudBar.Bar.Items
     E1_FFlow_gph,   // Fuel1 Flow gph
     E2_FFlow_gph,   // Fuel2 Flow gph
 
+    E1_FFlow_kgh,   // Fuel1 Flow kg
+    E2_FFlow_kgh,   // Fuel2 Flow kg
+
     FUEL_L_gal,     // Fuel quantity Left Gallons
     FUEL_R_gal,     // Fuel quantity Right Gallons
     FUEL_C_gal,     // Fuel quantity Center Gallons
@@ -233,6 +245,12 @@ namespace FS20_HudBar.Bar.Items
     FUEL_C_lb,      // Fuel quantity Center Pounds
     FUEL_TOT_lb,    // Fuel quantity Total Pounds
     FUEL_REACH_lb,  // Fuel reach in seconds for the Pounds Readout
+
+    FUEL_L_kg,      // Fuel quantity Left Kilograms
+    FUEL_R_kg,      // Fuel quantity Right Kilograms
+    FUEL_C_kg,      // Fuel quantity Center Kilograms
+    FUEL_TOT_kg,    // Fuel quantity Total Kilograms
+    FUEL_REACH_kg,  // Fuel reach in seconds for the Kilograms Readout
 
     // GPS
     GPS_PWYP,     // GPS Prev Waypoint
@@ -264,10 +282,15 @@ namespace FS20_HudBar.Bar.Items
     MACH,         // Mach speed indication
     VS,           // Vertical Speed +-0000 fpm
     VS_PM,        // Vertical Speed with +- fpm
+    VARIO_MPS,    // Total Energy Variometer m/sec with +-
+    VARIO_MPS_AVG, // Total Energy Variometer Average m/sec with +-
+    VARIO_KTS,    // Total Energy Variometer kts with +-
+    VARIO_KTS_AVG, // Total Energy Variometer Average kts with +-
     AOA,          // Angle of attack deg
-    GFORCE_Cur,    // GForce Current
-    GFORCE_Min,    // GForce Minimum
-    GFORCE_Max,    // GForce Maximum
+    FP_ANGLE,     // Flight Path Angle
+    GFORCE_Cur,   // GForce Current
+    GFORCE_Min,   // GForce Minimum
+    GFORCE_Max,   // GForce Maximum
 
     // AVIONICS NAV
     NAV1_ID,      // NAV1 ID
@@ -304,6 +327,7 @@ namespace FS20_HudBar.Bar.Items
     AP_GS,        // AP GS  hold active
     AP_YD,        // Yaw Damper signal
     AP_LVL,       // Wing Leveler signal
+    AP_APR_INFO,   // AP/GPS Approach Information
 
     // TIMER
     M_Elapsed1,   // Time elapsed since start of CP1
