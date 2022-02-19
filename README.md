@@ -3,7 +3,7 @@
 ### Display essential Information as Bar or Tile at any side of the primary screen or as Window anywhere you like  
 
 
-* Displays more than 70 essential aircraft and flight information items as Bar, Tile or Window
+* Displays more than 100 essential aircraft and flight information items as Bar, Tile or Window
 * Supports 1 and 2 engine aircrafts (Prop/Engine RPM, FuelFlow for each)
 * Provides 5 different content profiles which are fully configurable
 * The pilot can directly activate Autopilot and other commands
@@ -11,7 +11,7 @@
 * Saves FLT backup file
 * Records the flight as KML and Json data file
 * Bottom/Top Bars work best with wide screen monitors
-
+* Flight Bag 'light' - display image documents with zoom and drag
 
 ![FS20_HudBar wide screen view](https://raw.githubusercontent.com/bm98/FS20_HudBar/main/doc/HudBar-screen.jpg "Wide Screen view")
 
@@ -65,14 +65,17 @@ https://github.com/bm98/FS20_HudBar/tree/main/doc/MSFS_HudBar-QuickGuide.pdf
 -----
 
 My FlightSim Libraries (included in the release package)
+<br>
+* SpeechLib.dll               -- A voice synth lib using Win10 TTS facilities (new since V0.35)
+* PingLib.dll                 -- An audio lib using Win10 Audio facilities (new since V0.43)
+* MetarLib.dll                -- A METAR access library 
+* bm98_Album.dll              -- A UserControl for displaying images (zoom & drag new since V0.43)
+<br>
 * SimConnectClient.dll        -- FlightSim interface to MSFS2020 SimConnect
 * FSimClientIF.dll            -- Generic FSim Client interface definition
 * FSimIF.dll                  -- Generic FSim interface definition
-* FS20_AptLib                 -- An MSFS Airport Database 
-* MetarLib                    -- A METAR access library 
-* CoordLib                    -- A coord. handling library (https://github.com/bm98/CoordLib)
 * FS20_AptLib.dll             -- MSFS2020 Airport DB (new since V0.29)
-* SpeechLib.dll               -- A voice synth lib using Win10 TTS facilities (new since V0.35)
+* CoordLib.dll                -- A coord. handling library (https://github.com/bm98/CoordLib)
 <br>
 
 From Google Fonts Library embedded:
@@ -83,11 +86,13 @@ From MSFS2020 Developer Kit for convenience included:
 * Microsoft.FlightSimulator.SimConnect.dll 
 * SimConnect.dll
   
+.\DemoBag                   Contains some images to showcase the Flight Bag (new since V0.43)
+
 -----
 
 ### General note for builders
 The Project files expect referenced Libraries which have no NuGet package reference in a Solution directory  "Redist"  
 To integrate with MSFS2020 SimConnect the solution must be built as x64 binary!   
 
-So far the sources from the used Libraries are not on GitHub (yet)
+So far the sources for some of the used Libraries are not on GitHub (yet)
   
