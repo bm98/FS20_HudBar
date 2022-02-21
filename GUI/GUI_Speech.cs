@@ -64,7 +64,10 @@ namespace FS20_HudBar.GUI
     /// Enable or disable the Voice Out
     ///  Default DISABLED
     /// </summary>
-    public bool Enabled { get => m_enabled; set => m_enabled=value; }
+    public bool Enabled {
+      get => m_enabled;
+      set => m_enabled = value;
+    }
 
     /// <summary>
     /// Set the Voice for Speach output

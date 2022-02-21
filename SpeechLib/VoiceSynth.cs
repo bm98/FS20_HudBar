@@ -63,13 +63,16 @@ namespace SpeechLib
     private bool _voiceAvailable = false;
     private bool _speaking = false; // true while speaking
 
+
+    private bool _canSpeak = false; // true when all infrastructure is OK
+
     // Init Synth and get the default Voice
     private void InitVoice( )
     {
       // Speech
       if ( _synthesizer != null ) {
         // cleanup existing items
-        _synthesizer.Dispose( );
+        _synthesizer?.Dispose( );
         _synthesizer = null;
       }
 
@@ -95,8 +98,9 @@ namespace SpeechLib
     //  despite the Aync methods - this will exec synchronously to get the InitPhase  only get done when all is available 
     private void InitAudioGraph( )
     {
+      _canSpeak = false;
       // MUST WAIT UNTIL all items are created, else one may call Speak too early...
-      Console.WriteLine( "SpeechLib: InitAudioGraph" );
+      Console.WriteLine( "SpeechLib-VoiceSynth: InitAudioGraph" );
       // cleanup existing items
       if ( _mediaSourceInputNode != null ) {
         if ( _deviceOutputNode != null ) _mediaSourceInputNode.RemoveOutgoingConnection( _deviceOutputNode );
@@ -108,17 +112,19 @@ namespace SpeechLib
 
       // Create an AudioGraph
       AudioGraphSettings settings = new AudioGraphSettings( Windows.Media.Render.AudioRenderCategory.Speech ) {
-        PrimaryRenderDevice = null // If PrimaryRenderDevice is null, the default playback device will be used.
+        PrimaryRenderDevice = null, // If PrimaryRenderDevice is null, the default playback device will be used.
+        MaxPlaybackSpeedFactor = 1, // should preserve some memory
       };
       // We await here the execution without providing an async method ...
       var resultAG = WindowsRuntimeSystemExtensions.AsTask( AudioGraph.CreateAsync(settings));
       resultAG.Wait( );
       if ( resultAG.Result.Status != AudioGraphCreationStatus.Success ) {
-        Console.WriteLine( "SpeechLib: AudioGraph creation error: " + resultAG.Status.ToString( ) );
+        Console.WriteLine( $"SpeechLib-VoiceSynth: ERROR - AudioGraph creation error: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
+          + $"\nExtError: {resultAG.Result.ExtendedError}");
         return;
       }
       _audioGraph = resultAG.Result.Graph;
-      Console.WriteLine( $"SpeechLib: AudioGraph: [{_audioGraph}]" );
+      Console.WriteLine( $"SpeechLib-VoiceSynth: AudioGraph: [{_audioGraph.EncodingProperties}]" );
 
       // Create a device output node
       // The output node uses the PrimaryRenderDevice of the audio graph.
@@ -127,13 +133,15 @@ namespace SpeechLib
       resultDO.Wait( );
       if ( resultDO.Result.Status != AudioDeviceNodeCreationStatus.Success ) {
         // Cannot create device output node
-        Console.WriteLine( "SpeechLib: DeviceOutputNode creation error: " + resultDO.Status.ToString( ) );
+        Console.WriteLine( $"SpeechLib-VoiceSynth: ERROR - DeviceOutputNode creation error: {resultDO.Result.Status}, TaskStatus: {resultDO.Status}"
+          + $"\nExtError: {resultDO.Result.ExtendedError}");
         return;
       }
       _deviceOutputNode = resultDO.Result.DeviceOutputNode;
-      Console.WriteLine( $"SpeechLib: DeviceOutputNode: [{_deviceOutputNode}]" );
-      Console.WriteLine( "SpeechLib: InitAudioGraph-END" );
+      Console.WriteLine( $"SpeechLib-VoiceSynth: DeviceOutputNode: [{_deviceOutputNode.Device}]" );
 
+      Console.WriteLine( $"SpeechLib-VoiceSynth: InitAudioGraph-END" );
+      _canSpeak = true;
     }
 
 
@@ -152,8 +160,9 @@ namespace SpeechLib
       _speaking = true; // locks additional calls for Speak until finished talking this bit
 
       // Speech
-      if ( _synthesizer == null || _audioGraph == null || _deviceOutputNode == null ) {
-        Console.WriteLine( $"SpeechLib: Synthesizer or AudioGraph does not exist: cannot speak..\n[{_synthesizer}] [{_audioGraph}] [{_deviceOutputNode}]" );
+      if ( !_canSpeak 
+            || _synthesizer == null || _audioGraph == null || _deviceOutputNode == null ) {
+        Console.WriteLine( $"SpeechLib-Speak: ERROR - Synthesizer or AudioGraph does not exist: cannot speak..\n[{_synthesizer}] [{_audioGraph}] [{_deviceOutputNode}]" );
         EndOfSpeak( );
         return;
       }
@@ -174,9 +183,9 @@ namespace SpeechLib
       var resultMS = await _audioGraph.CreateMediaSourceAudioInputNodeAsync( _mediaSource );
       if ( resultMS.Status != MediaSourceAudioInputNodeCreationStatus.Success ) {
         // Cannot create input node
-        Console.WriteLine( "SpeechLib: MediaSourceAudioInputNode creation error: " + resultMS.Status.ToString( ) );
+        Console.WriteLine( $"SpeechLib-Speak: MediaSourceAudioInputNode creation error: {resultMS.Status}\nExtError: {resultMS.ExtendedError}" );
         EndOfSpeak( );
-        return;
+        return; // cannot speak
       }
       _mediaSourceInputNode = resultMS.Node;
       // add a handler to stop and signale when finished
@@ -189,8 +198,8 @@ namespace SpeechLib
     // will be called when speaking has finished
     private void MediaSourceInputNode_MediaSourceCompleted( MediaSourceAudioInputNode sender, object args )
     {
-      _audioGraph.Stop( );
-      _deviceOutputNode.Start( ); // restart output - needed ??
+      _audioGraph?.Stop( );
+      _deviceOutputNode?.Start( ); // restart output - needed ??
 
       EndOfSpeak( );
     }
@@ -239,6 +248,7 @@ namespace SpeechLib
     public async Task SpeakAsync( string text )
     {
       if ( !_voiceAvailable ) return; // Cannot
+      if ( !_canSpeak ) return; // Cannot
       if ( _speaking ) return; // no concurrent talking
 
       await SpeakAsyncLow( text );
@@ -271,7 +281,7 @@ namespace SpeechLib
           // dispose managed state (managed objects)
           // cleanup existing items
           _synthesizer?.Dispose( );
-          if ( _mediaSourceInputNode != null ) _mediaSourceInputNode?.RemoveOutgoingConnection( _deviceOutputNode );
+          _mediaSourceInputNode?.RemoveOutgoingConnection( _deviceOutputNode );
           _mediaSourceInputNode?.Dispose( );
           _deviceOutputNode?.Dispose( );
           _audioGraph?.Dispose( );

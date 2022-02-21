@@ -227,7 +227,8 @@ namespace FS20_HudBar.Config
       cbxASave.SelectedIndex = (int)HudBarRef.FltAutoSave;
       PopulateVoice( cbxVoice );// 20211006
       LoadVoice( cbxVoice );
-      speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
+      _speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
+      _speech.Enabled = true;
 
       PopulateVoiceCallouts( ); // 20211018
 
@@ -275,6 +276,7 @@ namespace FS20_HudBar.Config
       for ( int p = 0; p < c_NumProfiles; p++ ) {
         m_pName[p].BackColor = this.BackColor;
       }
+      _speech.Enabled = false;
     }
 
     // CANCEL - leave unchanged
@@ -323,17 +325,17 @@ namespace FS20_HudBar.Config
     }
 
     // local instance for tests
-    private GUI.GUI_Speech speech = new GUI.GUI_Speech();
+    private GUI.GUI_Speech _speech = new GUI.GUI_Speech();
 
     private void cbxVoice_SelectedIndexChanged( object sender, EventArgs e )
     {
-      speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
+      _speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
     }
     private void cbxVoice_MouseClick( object sender, MouseEventArgs e )
     {
       if ( cbxVoice.DroppedDown ) return;
-      speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
-      speech.SaySynched( 100 );
+      _speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
+      _speech.SaySynched( 100 );
     }
 
     private void clbVoice_SelectedIndexChanged( object sender, EventArgs e )
@@ -343,7 +345,7 @@ namespace FS20_HudBar.Config
       if ( !initDone ) return; // don't talk at startup
 
       // Test when checked
-      HudBarRef.VoicePack.Triggers[clbVoice.SelectedIndex].Test( speech );
+      HudBarRef.VoicePack.Triggers[clbVoice.SelectedIndex].Test( _speech );
     }
 
 
@@ -572,5 +574,16 @@ namespace FS20_HudBar.Config
 
     #endregion
 
+    private void frmConfig_VisibleChanged( object sender, EventArgs e )
+    {
+      ;
+    }
+
+    private void timer1_Tick( object sender, EventArgs e )
+    {
+      this.BringToFront( );
+      
+      ;
+    }
   }
 }

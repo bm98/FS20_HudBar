@@ -431,26 +431,29 @@ namespace FS20_HudBar.Bar
 
     private static float _prevAlt_m = 0;
     private static float _alt_m = 0;
-    private static float _prevGs_mPs = 0;
-    private static float _gs_mPs = 0;
+    private static float _prevTas_mPs = 0;
+    private static float _tas_mPs = 0;
     private static float _teReading_mPs = 0;
 
-    private static AvgModule_Rolling _varioAvg = new AvgModule_Rolling(10, 2); // about 2 sec.. with 2 dec digits
+    private static AvgModule_Rolling _varioAvg = new AvgModule_Rolling(20, 2); // about 4 sec.. with 2 dec digits
 
     private static void TE_RateSampler( )
     {
       _alt_m = (float)( SC.SimConnectClient.Instance.HudBarModule.AltMsl_ft * _mPerFt ); // ft
-      _gs_mPs = (float)( SC.SimConnectClient.Instance.HudBarModule.Groundspeed_kt * _mPerNm / 3600.0 ); // Kt -> Nm/h
+      _tas_mPs = (float)( SC.SimConnectClient.Instance.HudBarModule.TAS_kt * _mPerNm / 3600.0 ); // Kt -> Nm/h
       // TE reading = ((h2 - h1) + (v2^2 - v1^2)/(2 * g)) / t,
       //where g = 9.81, h in meters, v in m / s, TE reading in m / s.
-      _teReading_mPs = (float)( ( ( _alt_m - _prevAlt_m ) + ( _gs_mPs * _gs_mPs - _prevGs_mPs * _prevGs_mPs ) / ( 2 * _g ) ) / _deltaT_s );
+      _teReading_mPs = (float)( ( ( _alt_m - _prevAlt_m ) + ( _tas_mPs * _tas_mPs - _prevTas_mPs * _prevTas_mPs ) / ( 2 * _g ) ) / _deltaT_s );
+
+      // safeguard the range of this value (on init it can go overboard...) 50 m/sec is plenty (about 10'000 ft/min...)
+      _teReading_mPs = ( Math.Abs( _teReading_mPs ) < 50f ) ? _teReading_mPs : 0;
 
       // Average
       _varioAvg.Sample( _teReading_mPs );
 
       // prep next round
       _prevAlt_m = _alt_m;
-      _prevGs_mPs = _gs_mPs;
+      _prevTas_mPs = _tas_mPs;
     }
 
     /// <summary>

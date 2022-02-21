@@ -16,6 +16,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.Bar.Items;
 using FS20_HudBar.Bar;
 using FS20_HudBar.Config;
+using System.Threading;
 
 namespace FS20_HudBar
 {
@@ -304,6 +305,10 @@ namespace FS20_HudBar
       m_frmGui.Show( );
       SynchGUI( );
       flp = m_frmGui.flp;
+      /* DEBUG ONLY
+      flp.Layout += Flp_Layout;
+      flp.SizeChanged += Flp_SizeChanged;
+      */
 
       // Setup the Shelf and put it somewhere we can see it (either last location or default)
       m_shelf = new Shelf.frmShelf {
@@ -329,7 +334,20 @@ namespace FS20_HudBar
       }
     }
 
+  /* DEBUG ONLY
+  int lct = 0;
+  int sct = 0;
 
+  private void Flp_SizeChanged( object sender, EventArgs e )
+  {
+    sct++;
+  }
+
+  private void Flp_Layout( object sender, LayoutEventArgs e )
+  {
+    lct++;
+  }
+  */
     private void frmMain_Load( object sender, EventArgs e )
     {
       // prepare the GUI On Form Load
@@ -338,7 +356,7 @@ namespace FS20_HudBar
       flp.Dock = DockStyle.Fill;
       // flp.BorderStyle = BorderStyle.FixedSingle; // DEBUG to see where the FLPanel is
       flp.WrapContents = true; // Needs to wrap around
-      // attach mouse handlers
+                               // attach mouse handlers
       flp.MouseDown += frmMain_MouseDown;
       flp.MouseUp += frmMain_MouseUp;
       flp.MouseMove += frmMain_MouseMove;
@@ -747,8 +765,9 @@ namespace FS20_HudBar
 
       // prepare to create the content as bar or tile (may be switch to Window later if needed)
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc.
-      // Prepare FLPanel to load controls
+                                                   // Prepare FLPanel to load controls
       flp.Controls.Clear( ); // reload
+      // DON'T Suspend the Layout else the calculations below will not be valid, the form is invisible and no painting is done here
       // release dock to allow the bar to autosize
       flp.Dock = DockStyle.None;
       flp.AutoSize = true;
@@ -831,7 +850,7 @@ namespace FS20_HudBar
             else if ( registeredBreak == GUI.BreakType.DivBreak1 || registeredBreak == GUI.BreakType.DivBreak2 ) {
               // separator must be set before the newly added item
               DI_Separator dSep = new DI_Separator((registeredBreak== GUI.BreakType.DivBreak2)? ColorType.cDivBG2: ColorType.cDivBG1 ); // select Color Type of the separator
-              // need some fiddling to make it fit in either direction
+                                                                                                                                        // need some fiddling to make it fit in either direction
               if ( ( HUD.Placement == GUI.Placement.Bottom ) || ( HUD.Placement == GUI.Placement.Top ) ) {
                 dSep.Dock = DockStyle.Left;// horizontal Bar
               }
@@ -953,7 +972,6 @@ namespace FS20_HudBar
         HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cAlert;
       }
 
-      // this.Visible = true; // Unhide when finished
       SynchGUIVisible( true ); // Unhide when finished
       SynchGUI( );
 
@@ -1024,6 +1042,9 @@ namespace FS20_HudBar
     /// <param name="e"></param>
     private void timer1_Tick( object sender, EventArgs e )
     {
+      //Console.WriteLine( $"LCT count {lct,-6:###0}; SCT count {sct,-6:###0}; " );
+
+
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         // handle the situation where Sim is connected but could not hookup to events
         // Happens when HudBar is running when the Sim is starting only.

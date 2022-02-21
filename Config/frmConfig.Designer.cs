@@ -81,8 +81,6 @@ namespace FS20_HudBar.Config
       this.cbxTrans5 = new System.Windows.Forms.ComboBox();
       this.cbxVoice = new System.Windows.Forms.ComboBox();
       this.textBox1 = new System.Windows.Forms.TextBox();
-      this.btCancel = new System.Windows.Forms.Button();
-      this.btAccept = new System.Windows.Forms.Button();
       this.clbVoice = new System.Windows.Forms.CheckedListBox();
       this.cbxASave = new System.Windows.Forms.ComboBox();
       this.btDumpConfigs = new System.Windows.Forms.Button();
@@ -93,10 +91,13 @@ namespace FS20_HudBar.Config
       this.txHkProfile4 = new System.Windows.Forms.TextBox();
       this.chkInGame = new System.Windows.Forms.CheckBox();
       this.cbxFlightRecorder = new System.Windows.Forms.CheckBox();
+      this.btCancel = new System.Windows.Forms.Button();
+      this.btAccept = new System.Windows.Forms.Button();
       this.txHkShelf = new System.Windows.Forms.TextBox();
       this.txShelfFolder = new System.Windows.Forms.TextBox();
       this.btShelfFolder = new System.Windows.Forms.Button();
       this.FBD = new System.Windows.Forms.FolderBrowserDialog();
+      this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.tlp.SuspendLayout();
       this.flp1.SuspendLayout();
       this.flp2.SuspendLayout();
@@ -762,7 +763,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxVoice.Location = new System.Drawing.Point(159, 700);
+      this.cbxVoice.Location = new System.Drawing.Point(159, 702);
       this.cbxVoice.Name = "cbxVoice";
       this.cbxVoice.Size = new System.Drawing.Size(150, 23);
       this.cbxVoice.TabIndex = 25;
@@ -780,31 +781,6 @@ namespace FS20_HudBar.Config
       this.textBox1.Size = new System.Drawing.Size(148, 23);
       this.textBox1.TabIndex = 26;
       this.textBox1.Text = "Voice Callouts";
-      // 
-      // btCancel
-      // 
-      this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.btCancel.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCancel.Location = new System.Drawing.Point(825, 738);
-      this.btCancel.Name = "btCancel";
-      this.btCancel.Size = new System.Drawing.Size(106, 25);
-      this.btCancel.TabIndex = 6;
-      this.btCancel.Text = "Cancel";
-      this.btCancel.UseVisualStyleBackColor = true;
-      this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
-      // 
-      // btAccept
-      // 
-      this.btAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.btAccept.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btAccept.Location = new System.Drawing.Point(671, 738);
-      this.btAccept.Name = "btAccept";
-      this.btAccept.Size = new System.Drawing.Size(106, 25);
-      this.btAccept.TabIndex = 7;
-      this.btAccept.Text = "Accept";
-      this.btAccept.UseVisualStyleBackColor = true;
-      this.btAccept.Click += new System.EventHandler(this.btAccept_Click);
       // 
       // clbVoice
       // 
@@ -826,7 +802,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxASave.Location = new System.Drawing.Point(315, 700);
+      this.cbxASave.Location = new System.Drawing.Point(315, 702);
       this.cbxASave.Name = "cbxASave";
       this.cbxASave.Size = new System.Drawing.Size(150, 23);
       this.cbxASave.TabIndex = 29;
@@ -926,6 +902,31 @@ namespace FS20_HudBar.Config
       this.cbxFlightRecorder.Text = "Use Flight Recorder";
       this.cbxFlightRecorder.UseVisualStyleBackColor = true;
       // 
+      // btCancel
+      // 
+      this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+      this.btCancel.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btCancel.Location = new System.Drawing.Point(825, 738);
+      this.btCancel.Name = "btCancel";
+      this.btCancel.Size = new System.Drawing.Size(106, 25);
+      this.btCancel.TabIndex = 6;
+      this.btCancel.Text = "Cancel";
+      this.btCancel.UseVisualStyleBackColor = true;
+      this.btCancel.Click += new System.EventHandler(this.btCancel_Click);
+      // 
+      // btAccept
+      // 
+      this.btAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btAccept.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btAccept.Location = new System.Drawing.Point(671, 738);
+      this.btAccept.Name = "btAccept";
+      this.btAccept.Size = new System.Drawing.Size(106, 25);
+      this.btAccept.TabIndex = 7;
+      this.btAccept.Text = "Accept";
+      this.btAccept.UseVisualStyleBackColor = true;
+      this.btAccept.Click += new System.EventHandler(this.btAccept_Click);
+      // 
       // txHkShelf
       // 
       this.txHkShelf.BackColor = System.Drawing.Color.Honeydew;
@@ -966,6 +967,12 @@ namespace FS20_HudBar.Config
       this.FBD.Description = "Select Flight Bag Folder";
       this.FBD.ShowNewFolderButton = false;
       // 
+      // timer1
+      // 
+      this.timer1.Enabled = true;
+      this.timer1.Interval = 5000;
+      this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+      // 
       // frmConfig
       // 
       this.AcceptButton = this.btAccept;
@@ -981,12 +988,12 @@ namespace FS20_HudBar.Config
       this.MinimizeBox = false;
       this.MinimumSize = new System.Drawing.Size(950, 680);
       this.Name = "frmConfig";
-      this.ShowInTaskbar = false;
       this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Hud Bar - Configuration";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmConfig_FormClosing);
       this.Load += new System.EventHandler(this.frmConfig_Load);
+      this.VisibleChanged += new System.EventHandler(this.frmConfig_VisibleChanged);
       this.tlp.ResumeLayout(false);
       this.tlp.PerformLayout();
       this.flp1.ResumeLayout(false);
@@ -1072,5 +1079,6 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.TextBox txShelfFolder;
     private System.Windows.Forms.Button btShelfFolder;
     private System.Windows.Forms.FolderBrowserDialog FBD;
+    private System.Windows.Forms.Timer timer1;
   }
 }

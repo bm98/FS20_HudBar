@@ -22,9 +22,13 @@ namespace FS20_HudBar.GUI.Templates
     : base( proto, showUnit )
     {
       m_unit = "kts";
-      m_default = DefaultString( "±__.__ " ); // ±NN.NN
+      m_default = DefaultString( "±__.__↑" ); // ±NN.NN
       Text = UnitString( m_default );
     }
+
+    private string c_up = "↑";
+    private string c_do = "↓";
+    private string c_flat = " ";
 
     /// <summary>
     /// Set the value of the Control
@@ -38,7 +42,15 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,6:+#0.00;-#0.00} " ); // show + and - signs, add a blank for alignment
+          if ( value <= -0.02 ) {
+            this.Text = UnitString( $"{value,6:+#0.00;-#0.00}{c_do}" ); // show + and - signs
+          }
+          else if ( value >= 0.02 ) {
+            this.Text = UnitString( $"{value,6:+#0.00;-#0.00}{c_up}" ); // show + and - signs
+          }
+          else {
+            this.Text = UnitString( $"{value,6:+#0.00;-#0.00}{c_flat}" ); // show + and - signs
+          }
         }
       }
     }

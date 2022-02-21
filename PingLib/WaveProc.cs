@@ -64,12 +64,15 @@ namespace PingLib
 
     private bool _playing = false; // true while playing
 
+    private bool _canPlay = false; // true when all infrastructure is OK
+
 
     // Init the AudioGraph
     //  despite the Aync methods - this will exec synchronously to get the InitPhase  only get done when all is available 
     private void InitAudioGraph( )
     {
-      // MUST WAIT UNTIL all items are created, else one may call Speak too early...
+      _canPlay = false;
+      // MUST WAIT UNTIL all items are created, else one may call Play too early...
       Console.WriteLine( "PingLib-WaveProc: InitAudioGraph" );
       // cleanup existing items
       if ( _deviceOutputNode != null ) { _deviceOutputNode.Dispose( ); _deviceOutputNode = null; }
@@ -78,20 +81,18 @@ namespace PingLib
       // Create an AudioGraph
       AudioGraphSettings settings = new AudioGraphSettings ( Windows.Media.Render.AudioRenderCategory.SoundEffects) {
         PrimaryRenderDevice = null, // If PrimaryRenderDevice is null, the default playback device will be used.
-        QuantumSizeSelectionMode = QuantumSizeSelectionMode.ClosestToDesired,
-        DesiredRenderDeviceAudioProcessing = Windows.Media.AudioProcessing.Raw,
-        DesiredSamplesPerQuantum = 128,
-        MaxPlaybackSpeedFactor = 4,
+        MaxPlaybackSpeedFactor = 2, // should preserve some memory
       };
       // We await here the execution without providing an async method ...
       var resultAG = WindowsRuntimeSystemExtensions.AsTask( AudioGraph.CreateAsync(settings));
       resultAG.Wait( );
       if ( resultAG.Result.Status != AudioGraphCreationStatus.Success ) {
-        Console.WriteLine( "PingLib-WaveProc: ERROR - AudioGraph creation error: " + resultAG.Status.ToString( ) );
+        Console.WriteLine( $"PingLib-WaveProc: ERROR - AudioGraph creation error: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
+          + $"\nExtError: {resultAG.Result.ExtendedError}" );
         return;
       }
       _audioGraph = resultAG.Result.Graph;
-      Console.WriteLine( $"PingLib-WaveProc: AudioGraph: [{_audioGraph}]" );
+      Console.WriteLine( $"PingLib-WaveProc: AudioGraph: [{_audioGraph.EncodingProperties}]" );
 
       // Create a device output node
       // The output node uses the PrimaryRenderDevice of the audio graph.
@@ -100,12 +101,15 @@ namespace PingLib
       resultDO.Wait( );
       if ( resultDO.Result.Status != AudioDeviceNodeCreationStatus.Success ) {
         // Cannot create device output node
-        Console.WriteLine( "PingLib-WaveProc: ERROR - DeviceOutputNode creation error: " + resultDO.Status.ToString( ) );
+        Console.WriteLine( $"PingLib-WaveProc: ERROR - DeviceOutputNode creation error: {resultDO.Result.Status}, TaskStatus: {resultDO.Status}"
+          + $"\nExtError: {resultDO.Result.ExtendedError}" );
         return;
       }
       _deviceOutputNode = resultDO.Result.DeviceOutputNode;
-      Console.WriteLine( $"PingLib-WaveProc: DeviceOutputNode: [{_deviceOutputNode}]" );
+      Console.WriteLine( $"PingLib-WaveProc: DeviceOutputNode: [{_deviceOutputNode.Device}]" );
+
       Console.WriteLine( "PingLib-WaveProc: InitAudioGraph-END" );
+      _canPlay = true;
     }
 
 
@@ -154,7 +158,8 @@ namespace PingLib
     {
       _playing = true; // locks additional calls for Speak until finished talking this bit
 
-      if ( _audioGraph == null || _deviceOutputNode == null ) {
+      if (!_canPlay
+            || _audioGraph == null || _deviceOutputNode == null ) {
         Console.WriteLine( $"PingLib-WaveProc: ERROR - AudioGraph does not exist: cannot play..\n [{_audioGraph}] [{_deviceOutputNode}]" );
         await EndOfSound( );
         return;
@@ -175,13 +180,17 @@ namespace PingLib
         _sound = _installedSounds.Where( x => x.Melody == soundBite.Melody ).FirstOrDefault( );
         if ( _sound == null ) {
           Console.WriteLine( $"PingLib-WaveProc: ERROR - Melody has no Audiofile: {soundBite.Melody} - cannot play" );
+          await EndOfSound( );
           return;
         }
         StorageFile file = await StorageFile.CreateStreamedFileAsync($"{_sound.Id}.{_sound.SType}", StreamedFileWriter, null);
         // create the InputNode
         var resultAF = await _audioGraph.CreateFileInputNodeAsync(file);
         if ( resultAF.Status != AudioFileNodeCreationStatus.Success ) {
-          Console.WriteLine( "PingLib-WaveProc: ERROR - AudioFileNodeCreationStatus creation error" + resultAF.Status.ToString( ) );
+          Console.WriteLine( $"PingLib-WaveProc: ERROR - AudioFileNodeCreationStatus creation error: {resultAF.Status}" 
+            + $"\nExtError: {resultAF.ExtendedError}");
+          await EndOfSound( );
+          return;
         }
         _fileInputNode = resultAF.FileInputNode;
         _fileInputNode.FileCompleted += _fileInputNode_FileCompleted;
@@ -192,6 +201,7 @@ namespace PingLib
         _soundInUse = _sound.AsCopy( );
       }
 
+      // we capture problems through Exceptions here - the settings and restrictions seem not complete in the Docs
       try {
         // Play it
         // cannot start after prev end - so set it null and seek to start of file
@@ -209,7 +219,7 @@ namespace PingLib
         //_audioGraph.Start( );
       }
       catch ( Exception e ) {
-        Console.WriteLine( "PingLib-WaveProc: ERROR - Sample Setup caused an Exception" + e.Message );
+        Console.WriteLine( $"PingLib-WaveProc: ERROR - Sample Setup caused an Exception\n{e.Message}" );
         await EndOfSound( );
       }
     }
@@ -220,9 +230,6 @@ namespace PingLib
       if ( _fileInputNode.LoopCount > 0 ) return; // track the loop count down and wait until the end -murks MS will get here twice with 0  when the loopCount is used
 
       _fileInputNode.Stop( );
-
-      //_audioGraph.Stop( );
-      //_deviceOutputNode.Start( ); // restart output - needed ??
       await EndOfSound( );
     }
 
@@ -249,6 +256,7 @@ namespace PingLib
     /// <param name="soundBite">The SoundBite to play</param>
     public async Task PlayAsync( SoundBite soundBite )
     {
+      if ( !_canPlay ) return; // Cannot
       if ( _playing ) return; // no concurrent playing
 
       await PlayAsyncLow( soundBite );
@@ -271,9 +279,13 @@ namespace PingLib
     /// <param name="muted"></param>
     public void Mute( bool muted )
     {
-      if ( _deviceOutputNode == null ) Console.WriteLine( "PingLib-WaveProc: ERROR - Cannot Mute, DeviceOutput was null ??" );
+      if ( !_canPlay ) return; // Cannot
 
-      _deviceOutputNode.ConsumeInput= !muted;
+      if ( _deviceOutputNode == null ) {
+        Console.WriteLine( "PingLib-WaveProc: ERROR - Cannot Mute, DeviceOutput was null ??" );
+        return;
+      }
+      _deviceOutputNode.ConsumeInput = !muted;
     }
 
 

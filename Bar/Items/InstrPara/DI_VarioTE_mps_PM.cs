@@ -29,7 +29,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "Tot.Energy Vario m/s (+- signs)";
+    public static readonly string Desc = "TE-Vario + Avg [m/s]";
 
     private readonly B_Base _label;
     private readonly V_Base _value1;
@@ -45,7 +45,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.VARIO_MPS_AVG;
-      _value2 = new V_VSpeed_mPsPM( valueProto, showUnits );
+      _value2 = new V_VSpeed_mPsPM( value2Proto, showUnits ) { ItemForeColor = cAvg };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );

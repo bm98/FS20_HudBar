@@ -49,7 +49,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.A_ETRIM;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Prct( value2Proto );
+      _value1 = new V_Prct_999( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       _label.ButtonClicked += _label_ButtonClicked;

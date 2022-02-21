@@ -119,7 +119,7 @@ namespace FS20_HudBar
             this.toolStripSeparator3,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(181, 185);
+      this.cMenu.Size = new System.Drawing.Size(161, 163);
       // 
       // mSelProfile
       // 
@@ -131,7 +131,7 @@ namespace FS20_HudBar
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(157, 6);
       // 
       // mProfile
       // 
@@ -142,7 +142,7 @@ namespace FS20_HudBar
             this.mP4,
             this.mP5});
       this.mProfile.Name = "mProfile";
-      this.mProfile.Size = new System.Drawing.Size(180, 22);
+      this.mProfile.Size = new System.Drawing.Size(160, 22);
       this.mProfile.Text = "Select Profile";
       // 
       // mP1
@@ -187,64 +187,64 @@ namespace FS20_HudBar
             this.maDimm,
             this.maDark});
       this.mAppearance.Name = "mAppearance";
-      this.mAppearance.Size = new System.Drawing.Size(180, 22);
+      this.mAppearance.Size = new System.Drawing.Size(160, 22);
       this.mAppearance.Text = "Appearance";
       this.mAppearance.DropDownOpening += new System.EventHandler(this.mAppearance_DropDownOpening);
       // 
       // maBright
       // 
       this.maBright.Name = "maBright";
-      this.maBright.Size = new System.Drawing.Size(180, 22);
+      this.maBright.Size = new System.Drawing.Size(120, 22);
       this.maBright.Text = "Bright";
       this.maBright.Click += new System.EventHandler(this.maBright_Click);
       // 
       // maDimm
       // 
       this.maDimm.Name = "maDimm";
-      this.maDimm.Size = new System.Drawing.Size(180, 22);
+      this.maDimm.Size = new System.Drawing.Size(120, 22);
       this.maDimm.Text = "Dimmed";
       this.maDimm.Click += new System.EventHandler(this.maDimm_Click);
       // 
       // maDark
       // 
       this.maDark.Name = "maDark";
-      this.maDark.Size = new System.Drawing.Size(180, 22);
+      this.maDark.Size = new System.Drawing.Size(120, 22);
       this.maDark.Text = "Dark";
       this.maDark.Click += new System.EventHandler(this.maDark_Click);
       // 
       // toolStripSeparator2
       // 
       this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+      this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
       // 
       // mShelf
       // 
       this.mShelf.Name = "mShelf";
-      this.mShelf.Size = new System.Drawing.Size(180, 22);
+      this.mShelf.Size = new System.Drawing.Size(160, 22);
       this.mShelf.Text = "Flight Bag...";
       this.mShelf.Click += new System.EventHandler(this.mShelf_Click);
       // 
       // toolStripSeparator4
       // 
       this.toolStripSeparator4.Name = "toolStripSeparator4";
-      this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+      this.toolStripSeparator4.Size = new System.Drawing.Size(157, 6);
       // 
       // mConfig
       // 
       this.mConfig.Name = "mConfig";
-      this.mConfig.Size = new System.Drawing.Size(180, 22);
+      this.mConfig.Size = new System.Drawing.Size(160, 22);
       this.mConfig.Text = "Configure...";
       this.mConfig.Click += new System.EventHandler(this.mConfig_Click);
       // 
       // toolStripSeparator3
       // 
       this.toolStripSeparator3.Name = "toolStripSeparator3";
-      this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+      this.toolStripSeparator3.Size = new System.Drawing.Size(157, 6);
       // 
       // mExit
       // 
       this.mExit.Name = "mExit";
-      this.mExit.Size = new System.Drawing.Size(180, 22);
+      this.mExit.Size = new System.Drawing.Size(160, 22);
       this.mExit.Text = "Exit";
       this.mExit.Click += new System.EventHandler(this.mExit_Click);
       // 

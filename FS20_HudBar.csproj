@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>40</ApplicationRevision>
-    <ApplicationVersion>0.43.0.40</ApplicationVersion>
+    <ApplicationRevision>41</ApplicationRevision>
+    <ApplicationVersion>0.44.0.41</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>

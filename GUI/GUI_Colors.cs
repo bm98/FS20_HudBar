@@ -63,6 +63,10 @@ namespace FS20_HudBar.GUI
       /// </summary>
       cEst,
       /// <summary>
+      /// Average Items color
+      /// </summary>
+      cAvg,
+      /// <summary>
       /// OAT Freezing color
       /// </summary>
       cSubZero,
@@ -160,6 +164,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cSet, Color.Cyan },
       { ColorType.cRA, Color.Orange },
       { ColorType.cEst, Color.Plum },
+      { ColorType.cAvg, Dimm( Color.Yellow )}, // toned down yellow
       { ColorType.cSubZero, Color.DeepSkyBlue },
       { ColorType.cSRATE, Color.Goldenrod },
       { ColorType.cStep, Color.LightBlue },
@@ -198,6 +203,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cSet, Dimm( c_brightColors[ColorType.cSet] )},
       { ColorType.cRA, Dimm( c_brightColors[ColorType.cRA] )},
       { ColorType.cEst, Dimm( c_brightColors[ColorType.cEst] )},
+      { ColorType.cAvg, Dimm( c_brightColors[ColorType.cAvg] )},
       { ColorType.cSubZero, Dimm( c_brightColors[ColorType.cSubZero] )},
       { ColorType.cSRATE, Dimm( c_brightColors[ColorType.cSRATE] )},
       { ColorType.cStep, Color.LightBlue },
@@ -232,6 +238,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cSet, Color.DarkBlue },
       { ColorType.cRA, Color.FromArgb(156, 88, 0) }, // orange
       { ColorType.cEst, Color.DarkOrchid },
+      { ColorType.cAvg, Color.FromArgb(90, 90, 0) }, // dark Yellow
       { ColorType.cSubZero, Color.DarkBlue },
       { ColorType.cSRATE, Color.Orange },
       { ColorType.cStep, Color.DeepSkyBlue },
