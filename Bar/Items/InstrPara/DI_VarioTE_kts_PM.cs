@@ -78,7 +78,7 @@ namespace FS20_HudBar.Bar.Items
       }
 
       // color if enabled, else default BG
-      _label.ItemBackColor = ( _volume == EVolume.V_Silent ) ? cActBG : (_volume== EVolume.V_PlusMinus)? cMetB : cLiveBG;
+      _label.ItemBackColor = ( _volume == EVolume.V_Silent ) ? cActBG : ( _volume == EVolume.V_PlusMinus ) ? cMetB : cLiveBG;
     }
 
     /// <summary>
@@ -87,11 +87,12 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = (float)( Math.Round( Calculator.TE_Rate_kt * 20.0 ) / 20.0 ); // 0.05 increments only
-        _value2.Value = (float)( Math.Round( Calculator.TE_RateAvg_kts * 10.0 ) / 10.0 ); // 0.10 increments only
+        var rate = SC.SimConnectClient.Instance.HudBarModule.VARIO_te_mps; 
+        _value1.Value = (float)( Math.Round( Conversions.Kt_From_Mps( rate ) * 20.0 ) / 20.0 ); // 0.05 increments only
+        _value2.Value = (float)( Math.Round( Conversions.Kt_From_Mps( SC.SimConnectClient.Instance.HudBarModule.VARIO_Avg_te_mps ) * 10.0 ) / 10.0 ); // 0.10 increments only
 
         // Get the new Value and Change the Player if needed
-        if ( ModNote( Calculator.TE_Rate_mps, _soundBite ) ) {
+        if ( ModNote( rate, _soundBite ) ) {
           HudBar.PingLoop.PlayAsync( _soundBite ); // this will change the note if needed
         }
       }

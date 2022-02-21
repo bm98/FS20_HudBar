@@ -39,7 +39,7 @@ namespace FS20_HudBar.Bar
 
         // list all methods which need to constantly readout SimData here
         FuelFlowTotalSampler( );
-        TE_RateSampler( );
+        // TE_RateSampler( );
       }
     }
 
@@ -420,66 +420,7 @@ namespace FS20_HudBar.Bar
     #endregion
 
     #region Variometer Calculations
-
-    // Credit: https://xp-soaring.github.io/instruments/index.html
-
-    private const double _g = 9.80665; // Gravity Const m/s2
-    private const double _g_ft = 32.174048556; // Gravity Const ft/s2
-    private const double _mPerFt = 0.3048;
-    private const double _mPerNm = 1852.0;
-
-
-    private static float _prevAlt_m = 0;
-    private static float _alt_m = 0;
-    private static float _prevTas_mPs = 0;
-    private static float _tas_mPs = 0;
-    private static float _teReading_mPs = 0;
-
-    private static AvgModule_Rolling _varioAvg = new AvgModule_Rolling(20, 2); // about 4 sec.. with 2 dec digits
-
-    private static void TE_RateSampler( )
-    {
-      _alt_m = (float)( SC.SimConnectClient.Instance.HudBarModule.AltMsl_ft * _mPerFt ); // ft
-      _tas_mPs = (float)( SC.SimConnectClient.Instance.HudBarModule.TAS_kt * _mPerNm / 3600.0 ); // Kt -> Nm/h
-      // TE reading = ((h2 - h1) + (v2^2 - v1^2)/(2 * g)) / t,
-      //where g = 9.81, h in meters, v in m / s, TE reading in m / s.
-      _teReading_mPs = (float)( ( ( _alt_m - _prevAlt_m ) + ( _tas_mPs * _tas_mPs - _prevTas_mPs * _prevTas_mPs ) / ( 2 * _g ) ) / _deltaT_s );
-
-      // safeguard the range of this value (on init it can go overboard...) 50 m/sec is plenty (about 10'000 ft/min...)
-      _teReading_mPs = ( Math.Abs( _teReading_mPs ) < 50f ) ? _teReading_mPs : 0;
-
-      // Average
-      _varioAvg.Sample( _teReading_mPs );
-
-      // prep next round
-      _prevAlt_m = _alt_m;
-      _prevTas_mPs = _tas_mPs;
-    }
-
-    /// <summary>
-    /// Total Energy Variometer [m/s]
-    /// </summary>
-    public static float TE_Rate_mps => _teReading_mPs;
-    /// <summary>
-    /// Total Energy Variometer [kt]
-    /// </summary>
-    public static float TE_Rate_kt => Kt_From_Mps( TE_Rate_mps );
-
-    /// <summary>
-    /// Total Energy Variometer Average [m/s]
-    /// </summary>
-    public static float TE_RateAvg_mPs => _varioAvg.Avg;
-    /// <summary>
-    /// Total Energy Variometer Average [kts]
-    /// </summary>
-    public static float TE_RateAvg_kts => Kt_From_Mps( TE_RateAvg_mPs );
-
-    /// <summary>
-    /// Returns the Direction from Prev to Current Value (1: going up; -1 going down; 0: stay)
-    /// </summary>
-    public static int TR_RateDirection => _varioAvg.Direction;
-
-
+    /**/
     // Vario Ping
 
     private const float c_straight = 0.05f; // no tone cutoff when straight

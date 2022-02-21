@@ -1,5 +1,5 @@
 FS20_HudBar V 0.44 - Build 41 BETA
-(c) M. Burri - 20-Feb-2022
+(c) M. Burri - 21-Feb-2022
 
 Contains files:
 
@@ -47,10 +47,12 @@ V 0.44-B41
 - Fix Sound Library issues for certain Output Devices (caused unhandled Exception)
 - Fix Config Dialog can be revived with Alt-Tab (before the App seemed to be no longer running)
 - Fix Test Voices are back in Config
+- Fix Issue in KML Coordinate formatting (GEarth is confused by blanks..)
 - Fix VARIO uses correct speed (TAS) to get the TE-Rate
 - Fix Limit VARIO output (was way out when the Sim is providing unsreasonable numbers on startup)
 - Update Add Arrows to VARIO numbers (should be easier to comprehend)
 - Update VARIO Average (second value) is now yellow text
+- Update Add TAS, VARIO, Spoiler (value and Placemark) to KML/JSON recording
 
 V 0.43-B40
 - Add 'Flight Bag light' as feature (display image documents with zoom and drag)

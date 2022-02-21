@@ -31,7 +31,7 @@ namespace FS20_HudBar
     /// <summary>
     /// Meters from Nautical Miles
     /// </summary>
-    /// <param name="meter">Nautical Miles</param>
+    /// <param name="nm">Nautical Miles</param>
     /// <returns>Meter</returns>
     public static float M_From_Nm( double nm )
     {
@@ -51,7 +51,7 @@ namespace FS20_HudBar
     /// Meters from Foot
     /// </summary>
     /// <param name="ft">Foot</param>
-    /// <returns><Meter/returns>
+    /// <returns>Meter</returns>
     public static float M_From_Ft( double ft )
     {
       return (float)( ft * c_mPFt );
