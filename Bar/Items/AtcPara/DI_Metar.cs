@@ -53,7 +53,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
     }
 
     private void _metar_MetarDataEvent( object sender, MetarLib.MetarTafDataEventArgs e )
@@ -85,6 +85,12 @@ namespace FS20_HudBar.Bar.Items
           this.ColorType.ItemBackColor = _metar.ConditionColor;
         }
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

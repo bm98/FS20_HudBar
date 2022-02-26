@@ -166,9 +166,10 @@ namespace FS20_HudBar.Bar
       get {
         if ( !SC.SimConnectClient.Instance.IsConnected ) return false; // cannot calculate anything
 
-        var imbalanceGal
-          =  Math.Abs( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal - SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal);
-        if ( imbalanceGal > ( SC.SimConnectClient.Instance.HudBarModule.FuelCapacityTotal_gal * 0.15 ) ) {
+        var imbalanceGal =  Math.Abs( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal 
+                                      - SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal);
+        var min = Math.Min(SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal , SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal);
+        if ( imbalanceGal > ( min * 0.15 ) ) {
           //Imbalance > 15% Total Fuel
           return true;
         }

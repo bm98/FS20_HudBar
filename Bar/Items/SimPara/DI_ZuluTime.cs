@@ -42,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_TimeHHMMSS( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -55,5 +55,10 @@ namespace FS20_HudBar.Bar.Items
       }
     }
 
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
+    }
   }
 }

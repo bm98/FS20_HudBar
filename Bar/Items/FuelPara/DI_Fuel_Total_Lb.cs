@@ -16,38 +16,38 @@ using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.Bar.Items
 {
-  class DI_FFlow_GPH : DispItem
+  class DI_Fuel_Total_Lb : DispItem
   {
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.FFlow_gph;
+    public static readonly LItem LItem = LItem.FUEL_TOT_lb;
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static readonly string Short = "FFLOW";
+    public static readonly string Short = "F-TOT";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "Fuel Flow gph";
+    public static readonly string Desc = "Fuel Total Lb";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    public DI_FFlow_GPH( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Fuel_Total_Lb( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
       LabelID = LItem;
-      var item = VItem.E1_FFlow_gph;
+      var item = VItem.FUEL_TOT_lb;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Flow_gph( value2Proto, showUnits );
+      _value1 = new V_Pounds( value2Proto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      item = VItem.E2_FFlow_gph;
-      _value2 = new V_Flow_gph( value2Proto, showUnits );
+      item = VItem.FUEL_REACH_lb;
+      _value2 = new V_TimeHHMM( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -56,10 +56,17 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.Engine1_FuelFlow_galPh;
-        _value2.Value = SC.SimConnectClient.Instance.HudBarModule.Engine2_FuelFlow_galPh;
-        _value2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );
+        // Fuel Tot & Reach
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityTotal_lb;
+        _value2.Value = Calculator.FuelReach_sec( );
+        _value2.ItemForeColor = Calculator.FuelReachAlert ? cAlert : ( Calculator.FuelReachWarn ? cWarn : cInfo );
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

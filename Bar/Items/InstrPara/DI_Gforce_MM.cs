@@ -50,7 +50,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_GForce( value2Proto, showUnits ) { ItemForeColor = cLabel };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     private void DI_Gforce_MM_ButtonClicked( object sender, ClickedEventArgs e )
@@ -69,6 +69,12 @@ namespace FS20_HudBar.Bar.Items
         _value1.Value = SC.SimConnectClient.Instance.HudBarModule.GForceMin_g;
         _value2.Value = SC.SimConnectClient.Instance.HudBarModule.GForceMax_g;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

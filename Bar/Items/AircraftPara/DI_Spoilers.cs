@@ -21,7 +21,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.SPOILERS;
+    public static readonly LItem LItem = LItem.SPOILER;
     /// <summary>
     /// The GUI Name
     /// </summary>
@@ -37,12 +37,12 @@ namespace FS20_HudBar.Bar.Items
     public DI_Spoilers( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
-      var item = VItem.SPOLIERS;
+      var item = VItem.SPOLIER;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Steps( signProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -88,6 +88,12 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         _value1.Step = SpoilerState;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

@@ -342,7 +342,6 @@ namespace FS20_HudBar
       this.Name = "frmMain";
       this.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
       this.ShowIcon = false;
-      this.ShowInTaskbar = false;
       this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
       this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
       this.Text = "HudBar by bm98ch";

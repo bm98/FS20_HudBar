@@ -76,24 +76,30 @@ namespace FS20_HudBar.Bar
       {LItem.WIND_SD, DI_Wind_SD.Desc },      {LItem.WIND_XY, DI_Wind_XY.Desc },
       {LItem.BARO_HPA, DI_Baro_HPA.Desc },    {LItem.BARO_InHg, DI_Baro_InHg.Desc },
       {LItem.GEAR, DI_Gear.Desc },            {LItem.BRAKES, DI_Brakes.Desc },
-      {LItem.FLAPS, DI_Flaps.Desc },          {LItem.SPOILERS, DI_Spoilers.Desc },
+      {LItem.FLAPS, DI_Flaps.Desc },          {LItem.SPOILER, DI_Spoilers.Desc },
+      {LItem.FLAPS_ANI, DI_FlapsGraph.Desc }, {LItem.SPOILER_ANI, DI_SpoilersGraph.Desc },
       {LItem.Lights, DI_Lights.Desc },
       {LItem.XPDR, DI_Xpdr.Desc },
 
       {LItem.MAN, DI_Man.Desc },
-      {LItem.TORQ, DI_Torq.Desc },            {LItem.TORQP, DI_TorqP.Desc },
+      {LItem.TORQ, DI_Torq.Desc },            {LItem.TORQP, DI_TorqP.Desc },        {LItem.TORQP_ANI, DI_TorqPGraph.Desc },
       {LItem.PRPM, DI_PRpm.Desc },            {LItem.ERPM, DI_ERpm.Desc },
+      {LItem.PRPM_ANI, DI_PRpmGraph.Desc },   {LItem.ERPM_ANI, DI_ERpmGraph.Desc },
       {LItem.N1, DI_N1.Desc },                {LItem.N2, DI_N2.Desc },
-      {LItem.AFTB, DI_Afterburner.Desc },
+      {LItem.N1_ANI, DI_N1Graph.Desc },       {LItem.N2_ANI, DI_N2Graph.Desc },
+      {LItem.AFTB, DI_Afterburner.Desc },     {LItem.AFTB_ANI, DI_AfterburnerGraph.Desc },
       {LItem.ITT, DI_Itt_C.Desc },
       {LItem.EGT_C, DI_Egt_C.Desc },          {LItem.EGT_F, DI_Egt_F.Desc },
       {LItem.CHT_C, DI_Cht_C.Desc },          {LItem.CHT_F, DI_Cht_F.Desc },
       {LItem.LOAD_P, DI_Load_prct.Desc },
+      {LItem.COWL_ANI, DI_CowlFlapsGraph.Desc },
 
       {LItem.FFlow_gph, DI_FFlow_GPH.Desc },         {LItem.FFlow_pph, DI_FFlow_PPH.Desc },      {LItem.FFlow_kgh, DI_FFlow_KGH.Desc },
       {LItem.FUEL_LR_gal, DI_Fuel_LR_Gal.Desc },     {LItem.FUEL_LR_lb, DI_Fuel_LR_Lb.Desc },    {LItem.FUEL_LR_kg, DI_Fuel_LR_Kg.Desc },
       {LItem.FUEL_C_gal, DI_Fuel_C_Gal.Desc },       {LItem.FUEL_C_lb, DI_Fuel_C_Lb.Desc },      {LItem.FUEL_C_kg, DI_Fuel_C_Kg.Desc },
       {LItem.FUEL_TOT_gal, DI_Fuel_Total_Gal.Desc }, {LItem.FUEL_TOT_lb, DI_Fuel_Total_Lb.Desc },{LItem.FUEL_TOT_kg, DI_Fuel_Total_Kg.Desc },
+
+      {LItem.FUEL_ANI, DI_FuelGraph.Desc },
 
       {LItem.GPS_WYP, DI_Gps_WYP.Desc },
       {LItem.GPS_WP_DIST, DI_Gps_WP_Dist.Desc },
@@ -114,7 +120,7 @@ namespace FS20_HudBar.Bar
       {LItem.TAS, DI_Tas.Desc },
       {LItem.MACH, DI_Mach.Desc },
       {LItem.VS, DI_Vs.Desc },                {LItem.VS_PM, DI_Vs_PM.Desc },
-      {LItem.VARIO_MPS, DI_VarioTE_mps_PM.Desc }, {LItem.VARIO_KTS, DI_VarioTE_kts_PM.Desc },
+      {LItem.VARIO_MPS, DI_VarioTE_mps_PM.Desc }, {LItem.VARIO_KTS, DI_VarioTE_kts_PM.Desc }, {LItem.VARIO_ANI, DI_VarioGraph.Desc },
       {LItem.AOA, DI_Aoa.Desc },              {LItem.FP_ANGLE, DI_FPAngle.Desc },
       {LItem.GFORCE, DI_GForce.Desc },        {LItem.GFORCE_MM, DI_Gforce_MM.Desc },
 
@@ -336,23 +342,32 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Gear( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Brakes( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Flaps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_FlapsGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_Spoilers( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_SpoilersGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_Lights( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Engine
       m_dispItems.AddDisp( new DI_Man( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Torq( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_TorqP( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_TorqPGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_PRpm( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_PRpmGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_ERpm( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_ERpmGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_N1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_N1Graph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_N2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_N2Graph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_Afterburner( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_AfterburnerGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_Itt_C( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Egt_C( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Egt_F( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Cht_C( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Cht_F( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Load_prct( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_CowlFlapsGraph( m_valueItems, lblProto ) );
       // Fuel
       m_dispItems.AddDisp( new DI_FFlow_PPH( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_FFlow_GPH( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -366,6 +381,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Fuel_Total_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_Total_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Fuel_Total_Kg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_FuelGraph( m_valueItems, lblProto ) );
       // Trim
       m_dispItems.AddDisp( new DI_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_A_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -400,6 +416,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Vs_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_VarioTE_mps_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_VarioTE_kts_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_VarioGraph( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Aoa( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_FPAngle( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_GForce( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -472,15 +489,17 @@ namespace FS20_HudBar.Bar
         Queue<int> max1ValueWidthList = new Queue<int>();
         foreach ( var lItem in Profile.ItemPosList( ) ) {
           var dix = DispItem( lItem );
-          maxLabelWidth = ( dix.Controls[0].Width > maxLabelWidth ) ? dix.Controls[0].Width : maxLabelWidth;
-          // collect per column
-          if ( Profile.BreakItem( lItem ) ) {
-            max1ValueWidthList.Enqueue( max1ValueWidth );
-            max1ValueWidth = 0;
-          }
-          // eval the Single Value items
-          if ( dix.Controls.Count == 2 ) {
-            max1ValueWidth = ( dix.Controls[1].Width > max1ValueWidth ) ? dix.Controls[1].Width : max1ValueWidth;
+          if ( dix != null ) {
+            maxLabelWidth = ( dix.Controls[0].Width > maxLabelWidth ) ? dix.Controls[0].Width : maxLabelWidth;
+            // collect per column
+            if ( Profile.BreakItem( lItem ) ) {
+              max1ValueWidthList.Enqueue( max1ValueWidth );
+              max1ValueWidth = 0;
+            }
+            // eval the Single Value items
+            if ( dix.Controls.Count == 2 ) {
+              max1ValueWidth = ( dix.Controls[1].Width > max1ValueWidth ) ? dix.Controls[1].Width : max1ValueWidth;
+            }
           }
         }
         max1ValueWidthList.Enqueue( max1ValueWidth ); // last width
@@ -489,18 +508,20 @@ namespace FS20_HudBar.Bar
         max1ValueWidth = max1ValueWidthList.Dequeue( );
         foreach ( var lItem in Profile.ItemPosList( ) ) {
           var dix = DispItem( lItem );
-          // get the next column width
-          if ( Profile.BreakItem( lItem ) ) {
-            max1ValueWidth = max1ValueWidthList.Dequeue( );
-          }
-          if ( dix.Controls.Count == 2 && !( dix.Controls[1] is V_Steps ) && !( dix.Controls[1] is V_Text ) ) {
-            dix.Controls[0].Padding = new Padding( 0, 0, maxLabelWidth - dix.Controls[0].Width, 0 );
-            // align single Value ones to the max right (pad left)
-            dix.Controls[1].Padding = new Padding( max1ValueWidth - dix.Controls[1].Width, 0, 0, 0 );
-          }
-          else {
-            // others just column align the label
-            dix.Controls[0].Padding = new Padding( 0, 0, maxLabelWidth - dix.Controls[0].Width, 0 );
+          if ( dix != null ) {
+            // get the next column width
+            if ( Profile.BreakItem( lItem ) ) {
+              max1ValueWidth = max1ValueWidthList.Dequeue( );
+            }
+            if ( dix.Controls.Count == 2 && !( dix.Controls[1] is V_Steps ) && !( dix.Controls[1] is V_Text ) ) {
+              dix.Controls[0].Padding = new Padding( 0, 0, maxLabelWidth - dix.Controls[0].Width, 0 );
+              // align single Value ones to the max right (pad left)
+              dix.Controls[1].Padding = new Padding( max1ValueWidth - dix.Controls[1].Width, 0, 0, 0 );
+            }
+            else {
+              // others just column align the label
+              dix.Controls[0].Padding = new Padding( 0, 0, maxLabelWidth - dix.Controls[0].Width, 0 );
+            }
           }
         }
       }
@@ -529,20 +550,29 @@ namespace FS20_HudBar.Bar
                                                       // Load Remaining Plan if the WYP or Flightplan has changed
       if ( WPTracker.HasChanged || FltPlanMgr.HasChanged ) {
         string tt = AtcFlightPlan.RemainingPlan( WPTracker.Read( ) );
-        this.ToolTipFP.SetToolTip( this.DispItem( LItem.GPS_WYP ).Label, tt );
-        this.DispItem( LItem.GPS_WYP ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
-
+        var di = this.DispItem( LItem.GPS_WYP );
+        if ( di != null ) {
+          this.ToolTipFP.SetToolTip( di.Label, tt );
+          di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+        }
         tt = AtcFlightPlan.WaypointByName( WPTracker.PrevWP ).PrettyDetailed;
-        this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_PWYP ), tt );
-        this.ValueControl( VItem.GPS_PWYP ).Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
-
+        var vc = this.ValueControl( VItem.GPS_PWYP );
+        if ( vc != null ) {
+          this.ToolTipFP.SetToolTip( vc, tt );
+          vc.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+        }
         tt = AtcFlightPlan.WaypointByName( WPTracker.NextWP ).PrettyDetailed;
-        this.ToolTipFP.SetToolTip( this.ValueControl( VItem.GPS_NWYP ), tt );
-        this.ValueControl( VItem.GPS_NWYP ).Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
-
+        vc = this.ValueControl( VItem.GPS_NWYP );
+        if ( vc != null ) {
+          this.ToolTipFP.SetToolTip( vc, tt );
+          vc.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+        }
         tt = AtcFlightPlan.Pretty;
-        this.ToolTipFP.SetToolTip( this.DispItem( LItem.ATC_ALT_HDG ).Label, tt );
-        this.DispItem( LItem.ATC_ALT_HDG ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+        di = this.DispItem( LItem.ATC_ALT_HDG );
+        if ( di != null ) {
+          this.ToolTipFP.SetToolTip( di.Label, tt );
+          di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+        }
         // commit that we read the changes of the Flight Plan
         FltPlanMgr.Read( );
       }
@@ -562,11 +592,14 @@ namespace FS20_HudBar.Bar
              + $"Vs0 Stall Speed:   {ds.DesingSpeedVS0_kt:##0} kt\n";
         }
         // has it changed?
-        if ( _RefSpeedsTTHash != tt.GetHashCode( ) ) {
-          this.ToolTipFP.SetToolTip( this.DispItem( LItem.IAS ).Label, tt );
-          _RefSpeedsTTHash = tt.GetHashCode( );
+        var di = this.DispItem( LItem.IAS );
+        if ( di != null ) {
+          if ( _RefSpeedsTTHash != tt.GetHashCode( ) ) {
+            this.ToolTipFP.SetToolTip( di.Label, tt );
+            _RefSpeedsTTHash = tt.GetHashCode( );
+          }
+          di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
         }
-        this.DispItem( LItem.IAS ).Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
       }
     }
 
@@ -656,7 +689,9 @@ namespace FS20_HudBar.Bar
     public IValue Value( VItem item )
     {
       try {
-        return m_valueItems[item].Value;
+        var vi = m_valueItems[item];
+        if ( ( vi == null ) || ( vi.Ctrl == null ) || vi.Ctrl.IsDisposed ) return null;
+        return vi.Value;
       }
       catch {
         return null;
@@ -672,7 +707,9 @@ namespace FS20_HudBar.Bar
     public IColorType ColorType( VItem item )
     {
       try {
-        return m_valueItems[item].ColorType;
+        var vi = m_valueItems[item];
+        if ( ( vi == null ) || ( vi.Ctrl == null ) || vi.Ctrl.IsDisposed ) return null;
+        return vi.ColorType;
       }
       catch {
         return null;
@@ -688,7 +725,9 @@ namespace FS20_HudBar.Bar
     public Control ValueControl( VItem item )
     {
       try {
-        return m_valueItems[item].Ctrl;
+        var vi = m_valueItems[item];
+        if ( ( vi == null ) || ( vi.Ctrl == null ) || vi.Ctrl.IsDisposed ) return null;
+        return vi.Ctrl;
       }
       catch {
         return null;
@@ -703,7 +742,9 @@ namespace FS20_HudBar.Bar
     public DispItem DispItem( LItem item )
     {
       try {
-        return m_dispItems[item];
+        var di = m_dispItems[item];
+        if ( ( di == null ) || di.IsDisposed ) return null;
+        return di;
       }
       catch {
         return null;

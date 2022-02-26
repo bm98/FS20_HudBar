@@ -334,20 +334,20 @@ namespace FS20_HudBar
       }
     }
 
-  /* DEBUG ONLY
-  int lct = 0;
-  int sct = 0;
+    /* DEBUG ONLY
+    int lct = 0;
+    int sct = 0;
 
-  private void Flp_SizeChanged( object sender, EventArgs e )
-  {
-    sct++;
-  }
+    private void Flp_SizeChanged( object sender, EventArgs e )
+    {
+      sct++;
+    }
 
-  private void Flp_Layout( object sender, LayoutEventArgs e )
-  {
-    lct++;
-  }
-  */
+    private void Flp_Layout( object sender, LayoutEventArgs e )
+    {
+      lct++;
+    }
+    */
     private void frmMain_Load( object sender, EventArgs e )
     {
       // prepare the GUI On Form Load
@@ -444,6 +444,8 @@ namespace FS20_HudBar
     {
       this.Close( ); // just call the main Close
     }
+
+    #region Config Menu
 
     // Menu Config Event
     private void mConfig_Click( object sender, EventArgs e )
@@ -550,6 +552,8 @@ namespace FS20_HudBar
       // pacer is finally back
       timer1.Enabled = true;
     }
+
+    #endregion
 
     #region Profile Selectors
 
@@ -849,8 +853,9 @@ namespace FS20_HudBar
             }
             else if ( registeredBreak == GUI.BreakType.DivBreak1 || registeredBreak == GUI.BreakType.DivBreak2 ) {
               // separator must be set before the newly added item
-              DI_Separator dSep = new DI_Separator((registeredBreak== GUI.BreakType.DivBreak2)? ColorType.cDivBG2: ColorType.cDivBG1 ); // select Color Type of the separator
-                                                                                                                                        // need some fiddling to make it fit in either direction
+              // select Color Type of the separator
+              DI_Separator dSep = new DI_Separator((registeredBreak== GUI.BreakType.DivBreak2)? ColorType.cDivBG2: ColorType.cDivBG1 );
+              // need some fiddling to make it fit in either direction
               if ( ( HUD.Placement == GUI.Placement.Bottom ) || ( HUD.Placement == GUI.Placement.Top ) ) {
                 dSep.Dock = DockStyle.Left;// horizontal Bar
               }
@@ -879,6 +884,8 @@ namespace FS20_HudBar
           // don't show
           else {
             di.Visible = false;
+            // Dispose these items to get some memory back and not having invisible ones to be processed
+            di.Dispose( );
           }
         }
       }

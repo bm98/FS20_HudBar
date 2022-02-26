@@ -48,7 +48,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Wind_HT( value2Proto, showUnits );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -60,6 +60,12 @@ namespace FS20_HudBar.Bar.Items
         _value1.Value = SC.SimConnectClient.Instance.HudBarModule.Wind_AcftX_kt;
         _value2.Value = SC.SimConnectClient.Instance.HudBarModule.Wind_AcftZ_kt;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

@@ -56,7 +56,7 @@ namespace FS20_HudBar.Bar.Items
       _label.MouseWheel += _label_MouseWheel;
       _label.Cursor = Cursors.SizeNS;
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     private void _label_MouseWheel( object sender, MouseEventArgs e )
@@ -93,6 +93,12 @@ namespace FS20_HudBar.Bar.Items
       if ( SC.SimConnectClient.Instance.AutoETrimModule.Enabled && ( DateTime.Now > _endTime ) ) {
         SC.SimConnectClient.Instance.AutoETrimModule.Enabled = false;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

@@ -41,8 +41,8 @@ namespace FS20_HudBar.Bar.Items
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_TimeHHMMSS( value2Proto ) { ItemForeColor = cLabel };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
-
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      // just need a ping to update - not taking data from the Module
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -51,8 +51,14 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value =(int)DateTime.Now.TimeOfDay.TotalSeconds;
+        _value1.Value = (int)DateTime.Now.TimeOfDay.TotalSeconds;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

@@ -42,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_VSpeed( valueProto, showUnits ) { ItemForeColor = cEst };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -67,6 +67,12 @@ namespace FS20_HudBar.Bar.Items
           _value1.Value = null; // cannot if we don't have a WYP to aim at
         }
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.GpsModule.RemoveObserver( m_observerID );
     }
 
   }

@@ -41,7 +41,7 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.AP;
       _label = new B_Text( item, value2Proto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += DI_Ap_ButtonClicked;
-      SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
     }
 
     private void DI_Ap_ButtonClicked( object sender, ClickedEventArgs e )
@@ -59,6 +59,12 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.AP_mode == FSimClientIF.APMode.On ? cAP : cLabel;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.AP_G1000Module.RemoveObserver( m_observerID );
     }
 
   }

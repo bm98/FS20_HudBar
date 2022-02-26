@@ -46,7 +46,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival ); // get updates with the HudBar pace
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival ); // get updates with the HudBar pace
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
@@ -79,6 +79,12 @@ namespace FS20_HudBar.Bar.Items
           _value1.ItemForeColor = ( SC.SimConnectClient.Instance.FlightLogModule.LogMode == FlightLogMode.Off ) ? cWarn : cOK;
         }
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

@@ -130,6 +130,14 @@ namespace FS20_HudBar.GUI
       // Separator Back
       cDivBG1, // type 1 darker blueish
       cDivBG2, // type 2 brighter yellowish
+
+      // Color Scale e.g. Wind
+      cScale0,  // lowest
+      cScale1,
+      cScale2,
+      cScale3,
+      cScale4,
+      cScale5,  // highest
     }
 
     /// <summary>
@@ -184,6 +192,14 @@ namespace FS20_HudBar.GUI
 
       { ColorType.cDivBG1, Color.FromArgb(46,56,107) },// Separator Background Blueish
       { ColorType.cDivBG2, Color.FromArgb(217,216,160) },// Separator Background Yellowish bright
+
+      { ColorType.cScale0, Color.MintCream }, // Color Scale light greenish .. Magenta
+      { ColorType.cScale1, Color.LawnGreen }, // Color Scale light greenish .. Magenta
+      { ColorType.cScale2, Color.Gold }, // Color Scale light greenish .. Magenta
+      { ColorType.cScale3, Color.Orange }, // Color Scale light greenish .. Magenta
+      { ColorType.cScale4, Color.Red }, // Color Scale light greenish .. Magenta
+      { ColorType.cScale5, Color.Magenta }, // Color Scale light greenish .. Magenta
+
       //{ ColorType.cDivBG, Dimm( Color.LightSteelBlue, 50) },// Separator Background
       //{ ColorType.cDivBG, Color.FromArgb(79,83,43) },// Separator Background Yellowish
       //{ ColorType.cDivBG, Color.FromArgb(130,142,193) },// Separator Background Blueish bright
@@ -222,6 +238,14 @@ namespace FS20_HudBar.GUI
       { ColorType.cMetK, Color.DarkOrange },// METAR Black (SUB ILS)
       { ColorType.cDivBG1, Dimm( c_brightColors[ColorType.cDivBG1] ) },// Separator Background
       { ColorType.cDivBG2, Dimm( c_brightColors[ColorType.cDivBG2] ) },// Separator Background
+
+      { ColorType.cScale0, Dimm( c_brightColors[ColorType.cScale0] ) },// Color Scale
+      { ColorType.cScale1, Dimm( c_brightColors[ColorType.cScale1] ) },// Color Scale
+      { ColorType.cScale2, Dimm( c_brightColors[ColorType.cScale2] ) },// Color Scale
+      { ColorType.cScale3, Dimm( c_brightColors[ColorType.cScale3] ) },// Color Scale
+      { ColorType.cScale4, Dimm( c_brightColors[ColorType.cScale4] ) },// Color Scale
+      { ColorType.cScale5, Dimm( c_brightColors[ColorType.cScale5] ) },// Color Scale
+
     };
 
     // colors assuming a brighter background; fore colors cannot be white or blue
@@ -258,6 +282,14 @@ namespace FS20_HudBar.GUI
 
       { ColorType.cDivBG1, Dimm(Color.DeepSkyBlue, 50) },// Separator Background type 1
       { ColorType.cDivBG2, Color.FromArgb(217,216,160) },// Separator Background Yellowish bright
+
+      { ColorType.cScale0, Dimm( c_dimColors[ColorType.cScale0] ) },// Color Scale
+      { ColorType.cScale1, Dimm( c_dimColors[ColorType.cScale1] ) },// Color Scale
+      { ColorType.cScale2, Dimm( c_dimColors[ColorType.cScale2] ) },// Color Scale
+      { ColorType.cScale3, Dimm( c_dimColors[ColorType.cScale3] ) },// Color Scale
+      { ColorType.cScale4, Dimm( c_dimColors[ColorType.cScale4] ) },// Color Scale
+      { ColorType.cScale5, Dimm( c_dimColors[ColorType.cScale5] ) },// Color Scale
+
     };
 
 
@@ -348,6 +380,15 @@ namespace FS20_HudBar.GUI
       // don't bother with duplicate registration
       try {
         m_registeredCtrls.Add( ctrlInterface );
+      }
+      catch { }
+    }
+
+    public static void Unregister( IColorType ctrlInterface )
+    {
+      // don't bother with unknown registration
+      try {
+        m_registeredCtrls.Remove( ctrlInterface );
       }
       catch { }
     }

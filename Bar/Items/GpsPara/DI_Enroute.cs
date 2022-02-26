@@ -35,6 +35,8 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
+    private int _obs2;
+
     public DI_Enroute( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       TText = "Time since last Waypoint - Time since restart\nClick to restart the Enroute timers";
@@ -51,8 +53,8 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
-      SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      _obs2 = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
@@ -93,6 +95,13 @@ namespace FS20_HudBar.Bar.Items
           _value2.Value = null;
         }
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
+      SC.SimConnectClient.Instance.GpsModule.RemoveObserver( _obs2 );
     }
 
   }

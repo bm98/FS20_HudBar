@@ -47,7 +47,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Longitude( value2Proto ) { ItemForeColor = cGps };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -59,6 +59,12 @@ namespace FS20_HudBar.Bar.Items
         _value1.Value = (float)SC.SimConnectClient.Instance.GpsModule.LAT;
         _value2.Value = (float)SC.SimConnectClient.Instance.GpsModule.LON;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.GpsModule.RemoveObserver( m_observerID );
     }
 
   }

@@ -53,7 +53,7 @@ namespace FS20_HudBar.Bar.Items
       _value3 = new V_Alt( value2Proto, showUnits );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
     }
 
     /// <summary>
@@ -80,6 +80,12 @@ namespace FS20_HudBar.Bar.Items
           _value3.Value = null;
         }
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

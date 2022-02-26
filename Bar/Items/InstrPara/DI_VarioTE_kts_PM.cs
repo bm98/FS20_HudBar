@@ -48,7 +48,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_VSpeed_ktPM( value2Proto, showUnits ) { ItemForeColor = cAvg };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     // The Ping Part
@@ -97,6 +97,12 @@ namespace FS20_HudBar.Bar.Items
         }
       }
     }
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
+    }
+
 
     // Set the value dependent Note in the soundBite
     // Returns true if the note has changed

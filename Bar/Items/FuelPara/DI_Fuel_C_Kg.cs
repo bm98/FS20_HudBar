@@ -16,12 +16,12 @@ using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.Bar.Items
 {
-  class DI_Fuel_C_Lb : DispItem
+  class DI_Fuel_C_Kg : DispItem
   {
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.FUEL_C_lb;
+    public static readonly LItem LItem = LItem.FUEL_C_kg;
     /// <summary>
     /// The GUI Name
     /// </summary>
@@ -29,20 +29,20 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "Fuel Center Lb";
+    public static readonly string Desc = "Fuel Center kg";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
 
-    public DI_Fuel_C_Lb( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Fuel_C_Kg( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
       LabelID = LItem;
-      var item = VItem.FUEL_C_lb;
+      var item = VItem.FUEL_C_kg;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Pounds( value2Proto, showUnits );
+      _value1 = new V_Kilograms( value2Proto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -51,9 +51,16 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityCenter_lb;
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityCenter_kg;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }
 }
+

@@ -43,7 +43,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Text( value2Proto ) { ItemForeColor = cInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -64,6 +64,12 @@ namespace FS20_HudBar.Bar.Items
           _value1.Text = null;
         }
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.NavModule.RemoveObserver( m_observerID );
     }
 
   }

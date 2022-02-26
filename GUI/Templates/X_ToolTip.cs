@@ -74,6 +74,10 @@ namespace FS20_HudBar.GUI.Templates
     /// <param name="caption">The string to show as TTip Caption</param>
     new public void SetToolTip( Control control, string caption )
     {
+      // Sanity checks - as we don't check when calling this one
+      if ( control == null ) return;
+      if ( control.IsDisposed ) return;
+
       // measure the string to be drawn and store it per control
       Size size = new Size(100,100);
       using ( var g = control.CreateGraphics( ) ) {

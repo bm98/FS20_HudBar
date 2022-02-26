@@ -13,6 +13,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using System.Drawing;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -33,6 +34,7 @@ namespace FS20_HudBar.Bar.Items
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
+    private readonly A_WindArrow _wind;
     private readonly V_Base _value2;
 
     public DI_Wind_SD( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
@@ -48,7 +50,11 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Speed( value2Proto, showUnits );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      item = VItem.WIND_DIRA;
+      _wind = new A_WindArrow( ) { BorderStyle = BorderStyle.FixedSingle, AutoSizeWidth = true, ItemForeColor = cScale0 };
+      this.AddItem( _wind ); vCat.AddLbl( item, _wind );
+
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -57,10 +63,29 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-          _value1.Value = SC.SimConnectClient.Instance.HudBarModule.WindDirection_deg;
-          _value2.Value = SC.SimConnectClient.Instance.HudBarModule.WindSpeed_kt;
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.WindDirection_deg;
+        _wind.DirectionFrom = (int)SC.SimConnectClient.Instance.HudBarModule.WindDirection_deg;
+        _wind.Heading = (int)SC.SimConnectClient.Instance.NavModule.HDG_true_deg;
+        _wind.ItemForeColor = WindColor( SC.SimConnectClient.Instance.HudBarModule.WindSpeed_kt );
+        _value2.Value = SC.SimConnectClient.Instance.HudBarModule.WindSpeed_kt;
       }
     }
 
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
+    }
+
+    // Get a Color for the Arrow (Beaufort scale based)
+    private ColorType WindColor (float knots )
+    {
+      if ( knots <= 1 ) return cScale0;   // Beaufort <=1
+      if ( knots <= 7 ) return cScale1;   // Beaufort >1 <=3
+      if ( knots <= 16 ) return cScale2;  // Beaufort >3 <=5
+      if ( knots <= 28 ) return cScale3;  // Beaufort >5 <=7
+      if ( knots <= 41 ) return cScale4;  // Beaufort >7 <=9
+      return cScale5;                     // Beaufort >9
+    }
   }
 }

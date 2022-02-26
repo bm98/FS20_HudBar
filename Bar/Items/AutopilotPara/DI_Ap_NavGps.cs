@@ -33,6 +33,7 @@ namespace FS20_HudBar.Bar.Items
 
     private readonly B_Base _label;
     private readonly V_Base _value1;
+    private readonly int _obs2;
 
     public DI_Ap_NavGps( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
@@ -48,8 +49,8 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
-      SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
+      _obs2 = SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
@@ -70,6 +71,13 @@ namespace FS20_HudBar.Bar.Items
             ( SC.SimConnectClient.Instance.NavModule.NavSource_current == FSimClientIF.NavSource.NAV1 ? "NAV1" : "NAV2" );
         _value1.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.IsGPS_active ? cGps : cNav;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.AP_G1000Module.RemoveObserver( m_observerID );
+      SC.SimConnectClient.Instance.NavModule.RemoveObserver( _obs2 );
     }
 
   }

@@ -171,25 +171,58 @@
     <Compile Include="Bar\Items\AutopilotPara\DI_Ap_ApproachMode.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_FlapsGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_SpoilersGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_AfterburnerGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_TorqPGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_CowlFlapsGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_ERpmGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_N2Graph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_PRpmGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_N1Graph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_VarioGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\FuelPara\DI_FuelGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\InstrPara\DI_VarioTE_kts_PM.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\InstrPara\DI_VarioTE_mps_PM.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_FFlow_KGH.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_FFlow_KGH.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AircraftPara\DI_FPAngle.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_Fuel_C_Kg.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_Fuel_C_Kg.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_Fuel_LR_Kg.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_Fuel_LR_Kg.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_Fuel_Total_Kg.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_Fuel_Total_Kg.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\DI_Separator.cs">
@@ -210,10 +243,10 @@
     <Compile Include="Bar\Items\SimPara\DI_ZuluTime.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_Fuel_C_Gal.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_Fuel_C_Gal.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_Fuel_C_Lb.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_Fuel_C_Lb.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\InstrPara\DI_Gforce_MM.cs">
@@ -231,10 +264,10 @@
     <Compile Include="Bar\Items\InstrPara\DI_Nav2_Name.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_Fuel_LR_Lb.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_Fuel_LR_Lb.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_Fuel_Total_Lb.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_Fuel_Total_Lb.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\EnginePara\DI_N2.cs">
@@ -348,10 +381,10 @@
     <Compile Include="Bar\Items\GpsPara\DI_Gps_XTK.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_FFlow_GPH.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_FFlow_GPH.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_FFlow_PPH.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_FFlow_PPH.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\HudVoice.cs" />
@@ -386,10 +419,10 @@
     <Compile Include="Bar\Items\AircraftPara\DI_Flaps.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_Fuel_LR_Gal.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_Fuel_LR_Gal.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\EnginePara\DI_Fuel_Total_Gal.cs">
+    <Compile Include="Bar\Items\FuelPara\DI_Fuel_Total_Gal.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AircraftPara\DI_Gear.cs">
@@ -469,6 +502,19 @@
     </Compile>
     <Compile Include="Bar\Items\SimPara\DI_SimRate.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\IAlign.cs" />
+    <Compile Include="GUI\Templates\A_BiScale.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\A_TwinScale.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\A_WindArrow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\A_Scale.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="GUI\Templates\Base\B_Base.cs">
       <SubType>Component</SubType>
@@ -748,6 +794,10 @@
     <ProjectReference Include="bm98_Album\bm98_Album.csproj">
       <Project>{b4c756a8-1d36-4565-9337-8678123a2d98}</Project>
       <Name>bm98_Album</Name>
+    </ProjectReference>
+    <ProjectReference Include="bm98_hbControls\bm98_hbControls.csproj">
+      <Project>{d843beaf-7f22-408d-821f-514f622552ae}</Project>
+      <Name>bm98_hbControls</Name>
     </ProjectReference>
     <ProjectReference Include="MetarLib\MetarLib.csproj">
       <Project>{c24160dd-849c-440e-ae8b-def83a2d3e88}</Project>

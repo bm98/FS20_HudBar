@@ -43,7 +43,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Dist( value2Proto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -54,6 +54,12 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         _value1.Value = Conversions.Nm_From_M( SC.SimConnectClient.Instance.HudBarModule.Visibility_m );
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

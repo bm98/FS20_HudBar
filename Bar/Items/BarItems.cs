@@ -63,70 +63,70 @@ namespace FS20_HudBar.Bar.Items
 
     MAN,          // MAN Pressure inHg
 
-    GPS_BRGm,  // GPS BRG to Waypoint 000°
-    GPS_DTRK,  // GPS Desired Track to Waypoint 000°
-    GPS_XTK,   // GPS CrossTrack Error nm
+    GPS_BRGm,     // GPS BRG to Waypoint 000°
+    GPS_DTRK,     // GPS Desired Track to Waypoint 000°
+    GPS_XTK,      // GPS CrossTrack Error nm
 
-    AOA,      // Angle of attack deg
-    TAS,      // true airspeed kt
-    ACFT_ID,  // aircraft ID
+    AOA,          // Angle of attack deg
+    TAS,          // true airspeed kt
+    ACFT_ID,      // aircraft ID
 
-    WIND_SD,  // Wind Speed and Direction
-    WIND_XY,  // Wind X and Y Component
+    WIND_SD,      // Wind Speed and Direction
+    WIND_XY,      // Wind X and Y Component
 
-    Lights,   // Lights indication
-    FUEL_LR_gal,    // Fuel quantity Left/Right
+    Lights,       // Lights indication
+    FUEL_LR_gal,  // Fuel quantity Left/Right
     FUEL_TOT_gal, // Fuel quantity Total Gallons
 
-    MACH,       // Mach speed indication
+    MACH,         // Mach speed indication
 
-    VIS,        // Visibility
-    TIME,       // Time of Day
-    HDGt,       // True heading
-    AP_BC,      // AP BC signal
-    AP_YD,      // Yaw Damper
-    AP_LVL,     // Wing Leveler
+    VIS,          // Visibility
+    TIME,         // Time of Day
+    HDGt,         // True heading
+    AP_BC,        // AP BC signal
+    AP_YD,        // Yaw Damper
+    AP_LVL,       // Wing Leveler
 
-    ENROUTE,    // Enroute Times
-    ATC_APT,    // ATC assigned Apt arrives as TT.AIRPORTLR.ICAO.name
-    ATC_RWY,    // ATC assigned RWY displacement
-    GPS_ETE,    // GPS Time to Destination
+    ENROUTE,      // Enroute Times
+    ATC_APT,      // ATC assigned Apt arrives as TT.AIRPORTLR.ICAO.name
+    ATC_RWY,      // ATC assigned RWY displacement
+    GPS_ETE,      // GPS Time to Destination
 
-    GPS_LAT_LON,// Lat and Lon from GPS
-    METAR,      // METAR close to Lat and Lon
-    ALT_INST,   // Instrument Altitude
+    GPS_LAT_LON,  // Lat and Lon from GPS
+    METAR,        // METAR close to Lat and Lon
+    ALT_INST,     // Instrument Altitude
 
-    ATC_ALT_HDG, // ATC assigned ALT and HDG
+    ATC_ALT_HDG,  // ATC assigned ALT and HDG
 
-    VS_PM,      // Vertical Speed with +-
+    VS_PM,        // Vertical Speed with +-
 
     RA_VOICE,     // Radio Altitude with voice output
 
-    NAV1,       // NAV1
-    NAV2,       // NAV2
+    NAV1,         // NAV1
+    NAV2,         // NAV2
 
-    NAV1_NAME,  // NAV1
-    NAV2_NAME,  // NAV2
+    NAV1_NAME,    // NAV1
+    NAV2_NAME,    // NAV2
 
-    THR_LEV,    // Throttle Lever
-    MIX_LEV,    // Mixture Lever
-    PROP_LEV,   // Propeller Lever
+    THR_LEV,      // Throttle Lever
+    MIX_LEV,      // Mixture Lever
+    PROP_LEV,     // Propeller Lever
 
-    OAT_F,      // OAT in °F
-    EGT_F,      // EGT in °F
-    CHT_C,      // CHT in °C
-    CHT_F,      // CHT in °F
-    LOAD_P,     // LOAD %
-    N2,         // Turbine N2 %
-    FUEL_LR_lb,    // Fuel quantity Left/Right  Pounds
-    FUEL_TOT_lb, // Fuel quantity Total Pounds
+    OAT_F,        // OAT in °F
+    EGT_F,        // EGT in °F
+    CHT_C,        // CHT in °C
+    CHT_F,        // CHT in °F
+    LOAD_P,       // LOAD %
+    N2,           // Turbine N2 %
+    FUEL_LR_lb,   // Fuel quantity Left/Right  Pounds
+    FUEL_TOT_lb,  // Fuel quantity Total Pounds
 
     FUEL_C_gal,   // Fuel quantity Center  Gallons
     FUEL_C_lb,    // Fuel quantity Center  Pounds
     GFORCE,       // GForce
     GFORCE_MM,    // GForce Min Max
     AFTB,         // Afterburner
-    SPOILERS,     // Spoiler/Speedbrakes
+    SPOILER,      // Spoiler/Speedbrakes
     FPS,          // FPS value
     ZULU,         // Zulu Time (Sim)
     CTIME,        // Computer Time
@@ -142,6 +142,18 @@ namespace FS20_HudBar.Bar.Items
     FUEL_TOT_kg,  // Fuel quantity Total kilograms
     VARIO_MPS,    // Total Energy Variometer m/sec with +-
     VARIO_KTS,    // Total Energy Variometer kts with +-
+
+    FUEL_ANI,     // Fuel Graph
+    VARIO_ANI,    // Vario Graph
+    N1_ANI,       // N1 Graph
+    N2_ANI,       // N2 Graph
+    ERPM_ANI,     // Engine RPM Graph
+    PRPM_ANI,     // Prop RPM Graph
+    COWL_ANI,     // Cowl Flaps Graph
+    TORQP_ANI,    // Turbine Torque Percent Graph
+    AFTB_ANI,     // Afterburner % Graph
+    FLAPS_ANI,    // Flaps Graph
+    SPOILER_ANI,  // Spoilers Graph
   }
 
 
@@ -170,6 +182,7 @@ namespace FS20_HudBar.Bar.Items
     BARO_InHg,    // Altimeter Setting InHg
     VIS,          // Visibility nm
     WIND_DIR,     // Wind direction °
+    WIND_DIRA,    // Wind direction ° Arrow
     WIND_SPEED,   // Wind speed kt
     WIND_LAT,     // Wind lateral comp kt
     WIND_LON,     // Wind longitudinal comp kt
@@ -184,14 +197,20 @@ namespace FS20_HudBar.Bar.Items
     GEAR,         // Gear Up/Down
     BRAKES,       // Brakes On Off
     FLAPS,        // Flaps N level 
-    SPOLIERS,     // Spoilers / Speedbrakes
+    FLAPS_ANI,    // Flaps Graph
+    SPOLIER,      // Spoilers / Speedbrakes
+    SPOILER_ANI,  // Spoilers Graph
     LIGHTS,       // Lights indication
 
     // RPMs
     P1_RPM,       // Prop1 RPM
     P2_RPM,       // Prop2 RPM
+    PRPM_ANI_1,   // Prop RPM Graph Single Engine
+    PRPM_ANI_2,   // Prop RPM Graph Twin Engine
     E1_RPM,       // Engine1 RPM
     E2_RPM,       // Engine2 RPM
+    ERPM_ANI_1,   // Engine RPM Graph Single Engine
+    ERPM_ANI_2,   // Engine RPM Graph Twin Engine
 
     // ENGINE
     E1_MAN,       // Engine1 MAN Pressure InHg
@@ -211,6 +230,8 @@ namespace FS20_HudBar.Bar.Items
 
     E1_TORQP,     // Engine1 Torque %
     E2_TORQP,     // Engine2 Torque %
+    TORQP_ANI_1,  // Turbine Torque Percent Graph Single Engine
+    TORQP_ANI_2,  // Turbine Torque Percent Graph Twin Engine
     E1_TORQ,      // Engine1 Torque ft/lb
     E2_TORQ,      // Engine2 Torque ft/lb
 
@@ -219,10 +240,19 @@ namespace FS20_HudBar.Bar.Items
 
     E1_N1,        // Engine1 N1 %
     E2_N1,        // Engine2 N1 %
+    E_N1_ANI_1,   // Engine N1 Graph Single Engine
+    E_N1_ANI_2,   // Engine N1 Graph Twin Engine
     E1_N2,        // Engine1 N2 %
     E2_N2,        // Engine2 N2 %
+    E_N2_ANI_1,   // Engine N2 Graph Single Engine
+    E_N2_ANI_2,   // Engine N2 Graph Twin Engine
     E1_AFTB,      // Engine1 Afterburner %
     E2_AFTB,      // Engine2 Afterburner %
+    AFTB_ANI_1,   // Afterburner % Graph Single Engine
+    AFTB_ANI_2,   // Afterburner % Graph Twin Engine
+
+    E_COWL_ANI_1, // Cowl Flaps Graph Single Engine
+    E_COWL_ANI_2, // Cowl Flaps Graph Twin Engine
 
     // FUEL
     E1_FFlow_pph,   // Fuel1 Flow pph
@@ -251,6 +281,9 @@ namespace FS20_HudBar.Bar.Items
     FUEL_C_kg,      // Fuel quantity Center Kilograms
     FUEL_TOT_kg,    // Fuel quantity Total Kilograms
     FUEL_REACH_kg,  // Fuel reach in seconds for the Kilograms Readout
+
+    FUEL_ANI_LR,    // Fuel Graph Left Right
+    FUEL_ANI_C,     // Fuel Graph Center
 
     // GPS
     GPS_PWYP,     // GPS Prev Waypoint
@@ -286,6 +319,8 @@ namespace FS20_HudBar.Bar.Items
     VARIO_MPS_AVG, // Total Energy Variometer Average m/sec with +-
     VARIO_KTS,    // Total Energy Variometer kts with +-
     VARIO_KTS_AVG, // Total Energy Variometer Average kts with +-
+    VARIO_ANI,    // Vario Graph
+    VARIO_ANI_AVG, // Vario Graph AVG text
     AOA,          // Angle of attack deg
     FP_ANGLE,     // Flight Path Angle
     GFORCE_Cur,   // GForce Current

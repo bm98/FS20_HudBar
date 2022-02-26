@@ -1,5 +1,5 @@
-FS20_HudBar V 0.44 - Build 41 BETA
-(c) M. Burri - 21-Feb-2022
+FS20_HudBar V 0.45 - Build 42 BETA
+(c) M. Burri - 26-Feb-2022
 
 Contains files:
 
@@ -9,6 +9,7 @@ FS20_HudBar.exe               The program
 
 - All libraries below MUST be in the same folder as the Exe file
 bm98_Album.dll              A UserControl for displaying images (zoom & drag new since V0.43)
+bm98_hb_Controls.dll        UserControls for displaying graphs (new since V0.45)
 SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new since V0.35)
 PingLib.dll                 An audio lib using Win10 Audio facilities (new since V0.43)
 MetarLib.dll				A METAR access library (new since V0.29)
@@ -42,6 +43,14 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.45-B42
+- Add Graphs for many of % items and others where ranges are known
+- Add Wind arrow for the Wind Dir@Speed item (Wind direction the Acft will see)
+- Update Set HudBar visible in Windows Taskbar
+- Fix Flight Path Angle calculation 
+- Refacturing disposal of not shown items
+- Update QuickGuide
 
 V 0.44-B41
 - Fix Sound Library issues for certain Output Devices (caused unhandled Exception)

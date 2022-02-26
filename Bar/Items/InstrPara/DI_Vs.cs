@@ -42,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_VSpeed( valueProto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -53,6 +53,12 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         _value1.Value = Conversions.Round( SC.SimConnectClient.Instance.HudBarModule.VS_ftPmin, 20 ); // steps 20
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

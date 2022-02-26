@@ -50,7 +50,7 @@ namespace FS20_HudBar.Bar.Items
       _label.MouseWheel += _label_MouseWheel;
       _label.Cursor = Cursors.SizeNS;
 
-      SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
     }
 
     private void _label_MouseWheel( object sender, MouseEventArgs e )
@@ -81,6 +81,12 @@ namespace FS20_HudBar.Bar.Items
         this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.FLChold_active ? cAP : cLabel;
         _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.AP_G1000Module.RemoveObserver( m_observerID );
     }
 
   }

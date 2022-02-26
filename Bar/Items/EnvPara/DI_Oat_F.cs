@@ -43,7 +43,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Temp_F( value2Proto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -55,6 +55,12 @@ namespace FS20_HudBar.Bar.Items
         _value1.Value = SC.SimConnectClient.Instance.HudBarModule.OutsideTemperature_degC;
         _value1.ItemForeColor = Calculator.IcingCondition ? cSubZero : cInfo;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

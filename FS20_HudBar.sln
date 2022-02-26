@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetarLib", "MetarLib\MetarL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PingLib", "PingLib\PingLib.csproj", "{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bm98_hbControls", "bm98_hbControls\bm98_hbControls.csproj", "{D843BEAF-7F22-408D-821F-514F622552AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,14 @@ Global
 		{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}.Release|x64.ActiveCfg = Release|Any CPU
 		{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}.Release|x64.Build.0 = Release|Any CPU
+		{D843BEAF-7F22-408D-821F-514F622552AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D843BEAF-7F22-408D-821F-514F622552AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D843BEAF-7F22-408D-821F-514F622552AE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D843BEAF-7F22-408D-821F-514F622552AE}.Debug|x64.Build.0 = Debug|Any CPU
+		{D843BEAF-7F22-408D-821F-514F622552AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D843BEAF-7F22-408D-821F-514F622552AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D843BEAF-7F22-408D-821F-514F622552AE}.Release|x64.ActiveCfg = Release|Any CPU
+		{D843BEAF-7F22-408D-821F-514F622552AE}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

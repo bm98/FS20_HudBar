@@ -93,7 +93,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     // Calibrate the Load% per Engine 
@@ -148,6 +148,12 @@ namespace FS20_HudBar.Bar.Items
         _value2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );
         this.ColorType.ItemBackColor = s_calibrated ? cActBG : cWarnBG; // change to live once established
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }

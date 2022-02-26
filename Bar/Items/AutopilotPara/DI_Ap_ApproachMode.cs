@@ -43,7 +43,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Text( value2Proto ) { ItemForeColor = cInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -66,6 +66,12 @@ namespace FS20_HudBar.Bar.Items
         _value1.Text = info;
         _value1.ItemForeColor = fCol;
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.GpsModule.RemoveObserver( m_observerID );
     }
 
   }

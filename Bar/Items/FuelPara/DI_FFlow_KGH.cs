@@ -16,38 +16,38 @@ using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.Bar.Items
 {
-  class DI_Fuel_LR_Gal : DispItem
+  class DI_FFlow_KGH : DispItem
   {
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.FUEL_LR_gal;
+    public static readonly LItem LItem = LItem.FFlow_kgh;
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static readonly string Short = "F-LR";
+    public static readonly string Short = "FFLOW";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "Fuel Left/Right Gal";
+    public static readonly string Desc = "Fuel Flow kg/h";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    public DI_Fuel_LR_Gal( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_FFlow_KGH( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
       LabelID = LItem;
-      var item = VItem.FUEL_L_gal;
+      var item = VItem.E1_FFlow_kgh;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Gallons( value2Proto, showUnits );
+      _value1 = new V_Flow_kgh( value2Proto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      item = VItem.FUEL_R_gal;
-      _value2 = new V_Gallons( value2Proto, showUnits );
+      item = VItem.E2_FFlow_kgh;
+      _value2 = new V_Flow_kgh( value2Proto, showUnits );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -56,19 +56,18 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal;
-        _value2.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal;
-        // Color when there is a substantial unbalance
-        if ( Calculator.HasFuelImbalance ) {
-          _value1.ItemForeColor = cWarn;
-          _value2.ItemForeColor = cWarn;
-        }
-        else {
-          _value1.ItemForeColor = cInfo;
-          _value2.ItemForeColor = cInfo;
-        }
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.Engine1_FuelFlow_kgPh;
+        _value2.Value = SC.SimConnectClient.Instance.HudBarModule.Engine2_FuelFlow_kgPh;
+        _value2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );
       }
+    }
+
+    // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
 
   }
 }
+
