@@ -897,7 +897,7 @@ namespace FS20_HudBar
         case GUI.Placement.Bottom:
           this.Height = maxHeight + 5;
           if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) || ( HUD.Profile.Kind == GUI.Kind.WindowBL ) ) {
-            this.Width = flp.Width + 5;
+            this.Width = flp.Width + 10;
             this.Location = new Point( HUD.Profile.Location.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
           }
           else { // Bar
@@ -930,7 +930,7 @@ namespace FS20_HudBar
         case GUI.Placement.Top:
           this.Height = maxHeight + 5;
           if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) || ( HUD.Profile.Kind == GUI.Kind.WindowBL ) ) {
-            this.Width = flp.Width + 5;
+            this.Width = flp.Width + 10;
             this.Location = new Point( HUD.Profile.Location.X, m_mainScreen.Bounds.Y );
           }
           else { // Bar

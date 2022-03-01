@@ -121,7 +121,7 @@ namespace FS20_HudBar.Bar
       {LItem.MACH, DI_Mach.Desc },
       {LItem.VS, DI_Vs.Desc },                {LItem.VS_PM, DI_Vs_PM.Desc },
       {LItem.VARIO_MPS, DI_VarioTE_mps_PM.Desc }, {LItem.VARIO_KTS, DI_VarioTE_kts_PM.Desc }, {LItem.VARIO_ANI, DI_VarioGraph.Desc },
-      {LItem.AOA, DI_Aoa.Desc },              {LItem.FP_ANGLE, DI_FPAngle.Desc },
+      {LItem.AOA, DI_Aoa.Desc },              {LItem.FP_ANGLE, DI_FPAngle.Desc },             {LItem.ESI_ANI, DI_ESIGraph.Desc },
       {LItem.GFORCE, DI_GForce.Desc },        {LItem.GFORCE_MM, DI_Gforce_MM.Desc },
 
       {LItem.AP, DI_Ap.Desc },
@@ -419,6 +419,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_VarioGraph( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Aoa( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_FPAngle( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_ESIGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_GForce( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Gforce_MM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Nav1( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -589,7 +590,11 @@ namespace FS20_HudBar.Bar
              + $"Vmu Takeoff Speed: {ds.DesingSpeedTakeoff_kt:##0} kt\n"
              + $"Vr  Min Rotation:  {ds.DesingSpeedMinRotation_kt:##0} kt\n"
              + $"Vs1 Stall Speed:   {ds.DesingSpeedVS1_kt:##0} kt\n"
-             + $"Vs0 Stall Speed:   {ds.DesingSpeedVS0_kt:##0} kt\n";
+             + $"Vs0 Stall Speed:   {ds.DesingSpeedVS0_kt:##0} kt\n"
+             + $"Empty Weight:      {ds.EmptyAcftWeight_lbs:##0} lbs\n"
+             + $"Max. Weight:       {ds.MaxAcftWeight_lbs:##0} lbs\n"
+             + $"TOTAL Weight:      {ds.TotalAcftWeight_lbs:##0} lbs\n"
+             ;
         }
         // has it changed?
         var di = this.DispItem( LItem.IAS );

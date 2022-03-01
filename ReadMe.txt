@@ -1,5 +1,5 @@
 FS20_HudBar V 0.45 - Build 42 BETA
-(c) M. Burri - 26-Feb-2022
+(c) M. Burri - 01-Mar-2022
 
 Contains files:
 
@@ -45,11 +45,16 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.45-B42
-- Add Graphs for many of % items and others where ranges are known
+- Add Graph items for many of % items and others where ranges are known
+- Add 'ESI' graphical item (Attitude/FPA)
 - Add Wind arrow for the Wind Dir@Speed item (Wind direction the Acft will see)
+- Add Cowl Flaps as % Graph
 - Update Set HudBar visible in Windows Taskbar
+- Update IAS text gets Orange (5kt before) and Red (Stall) when approaching Config Stall Speed 
 - Fix Flight Path Angle calculation 
+- Fix Layout issue with Trim items
 - Refacturing disposal of not shown items
+- SU8 Compatibility Check
 - Update QuickGuide
 
 V 0.44-B41

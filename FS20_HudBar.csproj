@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>41</ApplicationRevision>
-    <ApplicationVersion>0.44.0.41</ApplicationVersion>
+    <ApplicationRevision>42</ApplicationRevision>
+    <ApplicationVersion>0.45.0.42</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -175,6 +175,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AircraftPara\DI_SpoilersGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_ESIGraph.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\EnginePara\DI_AfterburnerGraph.cs">
@@ -504,7 +507,13 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\IAlign.cs" />
+    <Compile Include="GUI\Templates\A_AHor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="GUI\Templates\A_BiScale.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\A_FPA.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="GUI\Templates\A_TwinScale.cs">

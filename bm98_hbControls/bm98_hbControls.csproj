@@ -43,6 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Damper.cs" />
+    <Compile Include="UC_AHor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_AHor.Designer.cs">
+      <DependentUpon>UC_AHor.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_Label.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -74,9 +80,18 @@
       <DependentUpon>UC_WindArrow.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UC_FPA.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_FPA.Designer.cs">
+      <DependentUpon>UC_FPA.cs</DependentUpon>
+    </Compile>
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="UC_AHor.resx">
+      <DependentUpon>UC_AHor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UC_Label.resx">
       <DependentUpon>UC_Label.cs</DependentUpon>
     </EmbeddedResource>
@@ -91,6 +106,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UC_WindArrow.resx">
       <DependentUpon>UC_WindArrow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_FPA.resx">
+      <DependentUpon>UC_FPA.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

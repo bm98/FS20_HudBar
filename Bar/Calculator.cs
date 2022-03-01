@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SC = SimConnectClient;
 using FS20_HudBar.GUI;
 using static FS20_HudBar.Conversions;
+using static FS20_HudBar.GUI.GUI_Colors;
 
 namespace FS20_HudBar.Bar
 {
@@ -457,6 +458,11 @@ namespace FS20_HudBar.Bar
 
       return tone;
     }
+
+    #endregion
+
+    #region IAS limits
+
 
     #endregion
   }

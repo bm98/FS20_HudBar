@@ -154,6 +154,7 @@ namespace FS20_HudBar.Bar.Items
     AFTB_ANI,     // Afterburner % Graph
     FLAPS_ANI,    // Flaps Graph
     SPOILER_ANI,  // Spoilers Graph
+    ESI_ANI,      // ESI & FPA Visual
   }
 
 
@@ -323,6 +324,8 @@ namespace FS20_HudBar.Bar.Items
     VARIO_ANI_AVG, // Vario Graph AVG text
     AOA,          // Angle of attack deg
     FP_ANGLE,     // Flight Path Angle
+    ATT_ANI,      // Attitude Visual
+    FPA_ANI,      // FPA Visual
     GFORCE_Cur,   // GForce Current
     GFORCE_Min,   // GForce Minimum
     GFORCE_Max,   // GForce Maximum
