@@ -40,7 +40,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.ATT_ANI;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _scale1 = new A_AHor( ) { Minimum = -6, Maximum = 6, ItemForeColor = cOK };
+      _scale1 = new A_AHor( ) { Minimum = -10, Maximum = 10, ItemForeColor = cOK };
       this.AddItem( _scale1 ); vCat.AddLbl( item, _scale1 );
 
       item = VItem.FPA_ANI;

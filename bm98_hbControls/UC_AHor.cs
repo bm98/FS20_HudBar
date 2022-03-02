@@ -30,7 +30,7 @@ namespace bm98_hbControls
     private const float c_penSize = 2;
 
     private Pen _pen = new Pen(Color.Green, c_penSize);
-    private Size _border = new Size( -2, -2); // internal border for the scale drawn rectangle
+    private Size _border = new Size( -2, 0); // internal border for the scale drawn rectangle
     float _uScale = 1;
 
     private PointF _drawCenter = new PointF(0,0);
@@ -156,26 +156,37 @@ namespace bm98_hbControls
       var rect = this.ClientRectangle;
       rect.Inflate( _border );
 
-      float pitch = Math.Sign(-PitchAngle) * (Math.Abs( PitchAngle) % 180 ); // The Pitch is Inversed for scale movement
+      float pitch = -PitchAngle; // The Pitch is Inversed for scale movement
       var XC = rect.Width/2;
-      var YC = rect.Height/2;
-      var offset = (int)( rect.Height / 3 );
+      var YC = rect.Height/2-1;
 
       // Set world transform of graphics object to translate.
       g.TranslateTransform( -XC, -YC );
       g.RotateTransform( BankAngle, MatrixOrder.Append ); // turns along its master BANK Angle
       g.TranslateTransform( rect.X + XC, rect.Y + YC, MatrixOrder.Append );
 
-      // Background
-      var part = pitch / Maximum;
-
-      g.TranslateTransform( 0, offset * part );
+      // Background Pitch Shift
+      g.TranslateTransform( 0, pitch * _uScale );
 
       Brush gradSky = new LinearGradientBrush(new Rectangle( 0, YC, rect.Width, -rect.Height * 5), Color.RoyalBlue, Color.Navy,  LinearGradientMode.Vertical);
       Brush gradGround = new LinearGradientBrush(new Rectangle( 0, YC, rect.Width, rect.Height * 5), Color.Peru, Color.Maroon,  LinearGradientMode.Vertical);
 
       g.FillRectangle( gradSky, -rect.Width * 2, -rect.Height * 4, rect.Width * 5, rect.Height * 4.5f );
       g.FillRectangle( gradGround, -rect.Width * 2, YC, rect.Width * 5, rect.Height * 4.5f );
+      // scale lines
+      var lx = XC - rect.Width / 5 / _aspect;
+      var rx = XC + rect.Width / 5 / _aspect;
+      g.DrawLine( Pens.LightPink, lx, YC - rect.Height, rx, YC - rect.Height );
+      g.DrawLine( Pens.LightPink, lx + 5, YC - rect.Height * 3 / 4, rx - 5, YC - rect.Height * 3 / 4 );
+      g.DrawLine( Pens.White, lx, YC - rect.Height / 2, rx, YC - rect.Height / 2 );
+      g.DrawLine( Pens.White, lx + 5, YC - rect.Height / 4, rx - 5, YC - rect.Height / 4 );
+
+      g.DrawLine( Pens.White, lx, YC, rx, YC );
+
+      g.DrawLine( Pens.White, lx + 5, YC + rect.Height / 4, rx - 5, YC + rect.Height / 4 );
+      g.DrawLine( Pens.White, lx, YC + rect.Height / 2, rx, YC + rect.Height / 2 );
+      g.DrawLine( Pens.LightPink, lx + 5, YC + rect.Height * 3 / 4, rx - 5, YC + rect.Height * 3 / 4 );
+      g.DrawLine( Pens.LightPink, lx, YC + rect.Height, rx, YC + rect.Height );
 
       gradSky.Dispose( );
       gradGround.Dispose( );
@@ -224,7 +235,7 @@ namespace bm98_hbControls
       // for scaling we reduce the size
       rect.Inflate( _border );
       _uScale = rect.Height / ( Maximum - Minimum );
-      _drawCenter = new PointF( rect.Left + rect.Width / 2.0f, rect.Top + rect.Height/2.0f );
+      _drawCenter = new PointF( rect.Left + rect.Width / 2.0f, rect.Top + rect.Height / 2.0f );
     }
 
   }
