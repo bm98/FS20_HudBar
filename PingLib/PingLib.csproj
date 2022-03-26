@@ -98,6 +98,9 @@
   <ItemGroup>
     <None Include="Sounds\Synth3_VBR50Q48kHz.wma" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Sounds\TSynth_VBR50Q48kHz.wma" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

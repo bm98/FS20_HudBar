@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using SC = SimConnectClient;
 using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
+using static FS20_HudBar.Bar.Calculator;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
@@ -51,17 +52,6 @@ namespace FS20_HudBar.Bar.Items
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
-    // The Ping Part
-    private enum EVolume
-    {
-      V_Silent=0,
-      // audible ones
-      V_Plus,
-      V_PlusMinus,
-      // Can use the audible levels above
-      V_LAST,
-    }
-
     private EVolume _volume= EVolume.V_Silent;
     private PingLib.SoundBite _soundBite = new PingLib.SoundBite(HudBar.LoopSound);
 
@@ -93,34 +83,17 @@ namespace FS20_HudBar.Bar.Items
         _value2.Value = (float)( Math.Round( SC.SimConnectClient.Instance.HudBarModule.VARIO_Avg_te_mps * 10.0 ) / 10.0 ); // 0.10 increments only
 
         // Get the new Value and Change the Player if needed
-        if ( ModNote( rate, _soundBite ) ) {
+        if ( ModNote( _volume, rate, _soundBite ) ) {
           HudBar.PingLoop.PlayAsync( _soundBite ); // this will change the note if needed
         }
       }
     }
+
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
       SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
     }
-
-
-    // Set the value dependent Note in the soundBite
-    // Returns true if the note has changed
-    private bool ModNote( float value, PingLib.SoundBite soundBite )
-    {
-      uint note = 0; // default is silent
-      if ( ( _volume == EVolume.V_Plus ) && ( value > 0 ) ) {
-        note = Calculator.ToneFromVS( value );
-      }
-      else if ( _volume == EVolume.V_PlusMinus ) {
-        note = Calculator.ToneFromVS( value );
-      }
-      bool changed = soundBite.Tone!= note;
-      soundBite.Tone = note;
-      return changed;
-    }
-
 
   }
 }

@@ -76,12 +76,6 @@ namespace FS20_HudBar.Bar.Items
           SC.SimConnectClient.Instance.HudBarModule.SimTime_loc_sec,
           SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround
         );
-        // Update Estimate Calculation with Acf data
-        Calculator.UpdateValues(
-          SC.SimConnectClient.Instance.HudBarModule.Groundspeed_kt,
-          SC.SimConnectClient.Instance.HudBarModule.AltMsl_ft,
-          SC.SimConnectClient.Instance.HudBarModule.VS_ftPmin
-        );
       }
 
       if ( this.Visible ) {

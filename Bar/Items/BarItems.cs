@@ -155,6 +155,8 @@ namespace FS20_HudBar.Bar.Items
     FLAPS_ANI,    // Flaps Graph
     SPOILER_ANI,  // Spoilers Graph
     ESI_ANI,      // ESI & FPA Visual
+
+    TXT,          // Free Text
   }
 
 
@@ -170,6 +172,7 @@ namespace FS20_HudBar.Bar.Items
     SimRate,  // simulation rate
     FPS,          // FPS value
     LOG,          // Flight Log
+    TXT,          // Free Text
 
     ACFT_ID,      // aircraft ID
 

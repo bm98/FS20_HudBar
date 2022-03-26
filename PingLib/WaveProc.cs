@@ -37,6 +37,7 @@ namespace PingLib
       _installedSounds.Add( new SoundInfo( "Synth_3", "Syth Tone 3 Smooth In", "Synth3_VBR50Q48kHz", Melody.Synth_3, SoundType.wma, 1, 0.3f, 61 ) );  // Tone 0 = Silence
       _installedSounds.Add( new SoundInfo( "Woodblocks_1", "Woodblock Sound 1", "Wood1_VBR50Q48kHz", Melody.Wood_1, SoundType.wma, 1, 0.4f, 61 ) );   // Tone 0 = Silence
       _installedSounds.Add( new SoundInfo( "Bell_1", "Bell Sound 1", "Bell1_VBR50Q48kHz", Melody.Bell_1, SoundType.wma, 3, 2.95f, 61 ) );             // Tone 0 = Silence
+      _installedSounds.Add( new SoundInfo( "TSynth", "Triangle  Wave", "TSynth_VBR50Q48kHz", Melody.TSynth, SoundType.wma, 0.45f, 0.3f, 5 ) );         // Tone 0 = Silence
     }
 
     /// <summary>
@@ -158,7 +159,7 @@ namespace PingLib
     {
       _playing = true; // locks additional calls for Speak until finished talking this bit
 
-      if (!_canPlay
+      if ( !_canPlay
             || _audioGraph == null || _deviceOutputNode == null ) {
         Console.WriteLine( $"PingLib-WaveProc: ERROR - AudioGraph does not exist: cannot play..\n [{_audioGraph}] [{_deviceOutputNode}]" );
         await EndOfSound( );
@@ -187,8 +188,8 @@ namespace PingLib
         // create the InputNode
         var resultAF = await _audioGraph.CreateFileInputNodeAsync(file);
         if ( resultAF.Status != AudioFileNodeCreationStatus.Success ) {
-          Console.WriteLine( $"PingLib-WaveProc: ERROR - AudioFileNodeCreationStatus creation error: {resultAF.Status}" 
-            + $"\nExtError: {resultAF.ExtendedError}");
+          Console.WriteLine( $"PingLib-WaveProc: ERROR - AudioFileNodeCreationStatus creation error: {resultAF.Status}"
+            + $"\nExtError: {resultAF.ExtendedError}" );
           await EndOfSound( );
           return;
         }

@@ -17,7 +17,30 @@ namespace FS20_HudBar
     private const double c_mPFt = 0.3048;
     private const double c_ftPm = 1.0 / c_mPFt;
 
+    private const double c_lbsPkg = 2.204622621848776;
+    private const double c_kgPlbs = 1.0 / c_lbsPkg;
+
     private const double c_degF = 9f/5f;
+
+    /// <summary>
+    /// Kilograms from Pounds
+    /// </summary>
+    /// <param name="kg">Kilograms</param>
+    /// <returns>Pound</returns>
+    public static float Lbs_From_Kg( double kg )
+    {
+      return (float)( kg * c_lbsPkg );
+    }
+
+    /// <summary>
+    /// Kilograms from Pounds
+    /// </summary>
+    /// <param name="lbs">Pound</param>
+    /// <returns>Kilograms</returns>
+    public static float Kg_From_Lbs( double lbs )
+    {
+      return (float)( lbs * c_kgPlbs );
+    }
 
     /// <summary>
     /// Nautical Miles from Meters

@@ -113,7 +113,7 @@ namespace SpeechLib
       // Create an AudioGraph
       AudioGraphSettings settings = new AudioGraphSettings( Windows.Media.Render.AudioRenderCategory.Speech ) {
         PrimaryRenderDevice = null, // If PrimaryRenderDevice is null, the default playback device will be used.
-        MaxPlaybackSpeedFactor = 1, // should preserve some memory
+        //MaxPlaybackSpeedFactor = 1, // should preserve some memory
       };
       // We await here the execution without providing an async method ...
       var resultAG = WindowsRuntimeSystemExtensions.AsTask( AudioGraph.CreateAsync(settings));

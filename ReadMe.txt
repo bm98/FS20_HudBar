@@ -1,5 +1,5 @@
-FS20_HudBar V 0.45 - Build 42 BETA
-(c) M. Burri - 02-Mar-2022
+FS20_HudBar V 0.46 - Build 43 BETA
+(c) M. Burri - 27-Mar-2022
 
 Contains files:
 
@@ -14,7 +14,7 @@ SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new si
 PingLib.dll                 An audio lib using Win10 Audio facilities (new since V0.43)
 MetarLib.dll				A METAR access library (new since V0.29)
 
-FS20_AptLib.dll             MSFS2020 Airport DB (new since V0.29)
+FS20_AptLib.dll             MSFS2020 Airport DB (updated)
 FSimClientIF.dll            Generic FSim Client interface definition (updated)
 FSimIF.dll                  Generic FSim interface definition (updated)
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
@@ -43,6 +43,15 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.46-B43
+- Add Ability to set Fonts in Config
+- Add Free Text Field
+- Update VARIO sound (more like a real one - but still not pleasant..)
+- Updated Airport DB from SU8
+- Fix issue with WPalt calculation
+- Fix Improve layout procedure for some items
+- Update QuickGuide
 
 V 0.45-B42
 - Add Graph items for many of % items and others where ranges are known

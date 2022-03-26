@@ -44,7 +44,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _scale1 ); vCat.AddLbl( item, _scale1 );
 
       item = VItem.ERPM_ANI_2;
-      _scale2 = new A_TwinScale( ) { Minimum = 0, Maximum = 110, AlertValue = 101, ItemForeColor_Alert = cAlert, ItemForeColor = cOK, ItemForeColor_LScale = cOK };
+      _scale2 = new A_TwinScale( ) { Visible = false, Minimum = 0, Maximum = 110, AlertValue = 101, ItemForeColor_Alert = cAlert, ItemForeColor = cOK, ItemForeColor_LScale = cOK };
       this.AddItem( _scale2 ); vCat.AddLbl( item, _scale2 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );

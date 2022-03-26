@@ -98,6 +98,7 @@ namespace FS20_HudBar.Config
       this.btShelfFolder = new System.Windows.Forms.Button();
       this.FBD = new System.Windows.Forms.FolderBrowserDialog();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
+      this.btFonts = new System.Windows.Forms.Button();
       this.tlp.SuspendLayout();
       this.flp1.SuspendLayout();
       this.flp2.SuspendLayout();
@@ -158,7 +159,6 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.textBox1, 5, 0);
       this.tlp.Controls.Add(this.clbVoice, 5, 1);
       this.tlp.Controls.Add(this.cbxASave, 2, 9);
-      this.tlp.Controls.Add(this.btDumpConfigs, 5, 8);
       this.tlp.Controls.Add(this.txHkShowHide, 5, 3);
       this.tlp.Controls.Add(this.txHkProfile1, 0, 3);
       this.tlp.Controls.Add(this.txHkProfile2, 1, 3);
@@ -171,6 +171,8 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.txHkShelf, 3, 10);
       this.tlp.Controls.Add(this.txShelfFolder, 1, 10);
       this.tlp.Controls.Add(this.btShelfFolder, 0, 10);
+      this.tlp.Controls.Add(this.btDumpConfigs, 5, 9);
+      this.tlp.Controls.Add(this.btFonts, 5, 7);
       this.tlp.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tlp.Location = new System.Drawing.Point(0, 0);
       this.tlp.Name = "tlp";
@@ -763,7 +765,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxVoice.Location = new System.Drawing.Point(159, 702);
+      this.cbxVoice.Location = new System.Drawing.Point(159, 700);
       this.cbxVoice.Name = "cbxVoice";
       this.cbxVoice.Size = new System.Drawing.Size(150, 23);
       this.cbxVoice.TabIndex = 25;
@@ -802,7 +804,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxASave.Location = new System.Drawing.Point(315, 702);
+      this.cbxASave.Location = new System.Drawing.Point(315, 700);
       this.cbxASave.Name = "cbxASave";
       this.cbxASave.Size = new System.Drawing.Size(150, 23);
       this.cbxASave.TabIndex = 29;
@@ -810,7 +812,7 @@ namespace FS20_HudBar.Config
       // btDumpConfigs
       // 
       this.btDumpConfigs.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btDumpConfigs.Location = new System.Drawing.Point(783, 669);
+      this.btDumpConfigs.Location = new System.Drawing.Point(783, 699);
       this.btDumpConfigs.Name = "btDumpConfigs";
       this.btDumpConfigs.Size = new System.Drawing.Size(133, 24);
       this.btDumpConfigs.TabIndex = 28;
@@ -973,6 +975,17 @@ namespace FS20_HudBar.Config
       this.timer1.Interval = 5000;
       this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
       // 
+      // btFonts
+      // 
+      this.btFonts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btFonts.Location = new System.Drawing.Point(825, 640);
+      this.btFonts.Name = "btFonts";
+      this.btFonts.Size = new System.Drawing.Size(106, 23);
+      this.btFonts.TabIndex = 49;
+      this.btFonts.Text = "Fonts...";
+      this.btFonts.UseVisualStyleBackColor = true;
+      this.btFonts.Click += new System.EventHandler(this.btFonts_Click);
+      // 
       // frmConfig
       // 
       this.AcceptButton = this.btAccept;
@@ -1080,5 +1093,6 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.Button btShelfFolder;
     private System.Windows.Forms.FolderBrowserDialog FBD;
     private System.Windows.Forms.Timer timer1;
+    private System.Windows.Forms.Button btFonts;
   }
 }

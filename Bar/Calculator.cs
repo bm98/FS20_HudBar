@@ -41,6 +41,14 @@ namespace FS20_HudBar.Bar
         // list all methods which need to constantly readout SimData here
         FuelFlowTotalSampler( );
         // TE_RateSampler( );
+
+        // Update Estimate Calculation with Acf data
+        UpdateValues(
+          SC.SimConnectClient.Instance.HudBarModule.Groundspeed_kt,
+          SC.SimConnectClient.Instance.HudBarModule.AltMsl_ft,
+          SC.SimConnectClient.Instance.HudBarModule.VS_ftPmin
+        );
+
       }
     }
 
@@ -167,7 +175,7 @@ namespace FS20_HudBar.Bar
       get {
         if ( !SC.SimConnectClient.Instance.IsConnected ) return false; // cannot calculate anything
 
-        var imbalanceGal =  Math.Abs( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal 
+        var imbalanceGal =  Math.Abs( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal
                                       - SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal);
         var min = Math.Min(SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal , SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal);
         if ( imbalanceGal > ( min * 0.15 ) ) {
@@ -421,8 +429,81 @@ namespace FS20_HudBar.Bar
     }
     #endregion
 
-    #region Variometer Calculations
-    /**/
+    #region Variometer Sounds
+
+    /* NEW - only hi,lo and direction change */
+
+    public enum EVolume
+    {
+      V_Silent=0,
+      // audible ones
+      V_Plus,
+      V_PlusMinus,
+      // Can use the audible levels above
+      V_LAST,
+    }
+
+    // Const built for TSynth Sound
+    private const uint n_silence = 0;
+    private const uint n_negative = 1;
+    private const uint n_turnPos = 2;
+    private const uint n_positive = 3;
+    private const uint n_turnNeg = 4;
+
+    private static float _prevVal =0;
+    private static int _direction =0;
+
+    /// <summary>
+    /// Get the Variometer Tone from a value
+    /// </summary>
+    /// <param name="value">The new value</param>
+    /// <param name="currentNote">The current Note</param>
+    /// <returns>A Tone [0..60]</returns>
+    private static uint ToneFromVS( float value, uint currentNote, bool positiveOnly )
+    {
+      uint note = n_silence;
+
+      if ( value > _prevVal ) {
+        // higher than before
+        note = ( _direction == 1 ) ? n_positive  // was going up, still positive
+                                   : ( _direction == -1 ) ? n_turnPos // was going down, turning now
+                                   : ( currentNote == n_positive ) ? n_positive : n_turnPos; // was level, same as before or turn
+        _direction = 1;
+      }
+      else if ( value < _prevVal ) {
+        // lower than before
+        note = ( _direction == 1 ) ? n_turnNeg  // was going up, turning now
+                                   : ( _direction == -1 ) ? n_negative // was going down, still negative
+                                   : ( currentNote == n_negative ) ? n_negative : n_turnNeg; // was level, same as before or turn
+        _direction = -1;
+      }
+      else {
+        // level (float ??)
+        note = ( _direction == 1 ) ? n_positive  // was going up, still positive
+                                   : ( _direction == -1 ) ? n_negative // was going down, still negative
+                                   : currentNote; // was level, same as before
+        _direction = 0;
+      }
+      _prevVal = value;
+
+      return ( positiveOnly && ( value < 0 ) ) ? n_silence : note; // return a sound only if the asked for it
+    }
+
+    // Set the value dependent Note in the soundBite
+    // Returns true if the note has changed
+    public static bool ModNote(EVolume volume, float value, PingLib.SoundBite soundBite )
+    {
+      uint note = 0; // default is silent
+      if ( volume != EVolume.V_Silent ) {
+        note = ToneFromVS( value, soundBite.Tone, volume == EVolume.V_Plus );
+      }
+      bool changed = soundBite.Tone!= note;
+      soundBite.Tone = note;
+      return changed;
+    }
+
+
+    /* OLD - SOUND pitch acording to rate
     // Vario Ping
 
     private const float c_straight = 0.05f; // no tone cutoff when straight
@@ -458,7 +539,7 @@ namespace FS20_HudBar.Bar
 
       return tone;
     }
-
+    */
     #endregion
 
     #region IAS limits

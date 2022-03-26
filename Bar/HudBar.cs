@@ -24,16 +24,13 @@ namespace FS20_HudBar.Bar
   /// Instance of the current HudBar
   /// will initialize from profile settings
   /// </summary>
-  internal class HudBar
+  internal sealed class HudBar : IDisposable
   {
     #region STATIC PART
 
     // this part is maintaned only once for all HudBar Instances (there is only One Instance at any given time - else it breaks...)
 
     // FLT ATC Flightplan
-    //private static FlightPlan m_atcFlightPlan = new FlightPlan(); // empty one
-
-
     /// <summary>
     /// The current ATC Flightplan (actually a copy of it)
     /// </summary>
@@ -45,10 +42,10 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static PingLib.Loops PingLoop => m_ping;
     private static readonly PingLib.Loops m_ping = new PingLib.Loops(); // Ping, Tone=0 will be Silence
-    private static readonly PingLib.SoundBite _silentLoop = new PingLib.SoundBite( PingLib.Melody.Silence,0,0,0f); // Use this Sound to set to Silence
+    private static readonly PingLib.SoundBite _silentLoop = new PingLib.SoundBite( PingLib.Melody.Silence, 0, 0, 0f); // Use this Sound to set to Silence
 
     public static PingLib.SoundBite LoopSound => _soundLoop;
-    private static readonly PingLib.SoundBite _soundLoop = new PingLib.SoundBite( PingLib.Melody.Synth_3,0,0.33333f,0,0.2f); // Use this Sound to ping
+    private static readonly PingLib.SoundBite _soundLoop = new PingLib.SoundBite( PingLib.Melody.TSynth, 0, -1f, 0, 0.2f); // Use this Sound to ping
 
     /// <summary>
     /// The Speech Library
@@ -65,6 +62,7 @@ namespace FS20_HudBar.Bar
       {LItem.MSFS, DI_MsFS.Desc },
       {LItem.SimRate, DI_SimRate.Desc },      {LItem.FPS, DI_Fps.Desc },
       {LItem.LOG, DI_FlightLog.Desc },
+      {LItem.TXT, DI_Text.Desc },
       {LItem.ACFT_ID, DI_Acft_ID.Desc },
       {LItem.TIME, DI_Time.Desc },            {LItem.ZULU, DI_ZuluTime.Desc },  {LItem.CTIME, DI_CompTime.Desc },
 
@@ -244,6 +242,26 @@ namespace FS20_HudBar.Bar
     public X_ToolTip ToolTipFP => m_toolTipFP;
     private X_ToolTip m_toolTipFP = new X_ToolTip();     // Our Custom Mono ToolTip for the Flight path
 
+    // The Font provider used internally and for Config
+    private GUI_Fonts FONTS = null;
+    /// <summary>
+    /// Config Access for the used FONT provider
+    /// </summary>
+    public GUI_Fonts FontRef => FONTS;
+
+    /// <summary>
+    /// Ref for the Proto Label (used by config)
+    /// </summary>
+    public Label ProtoLabelRef { get; private set; }
+    /// <summary>
+    /// Ref for the Proto Value (used by config)
+    /// </summary>
+    public Label ProtoValueRef { get; private set; }
+    /// <summary>
+    /// Ref for the Proto Value2 (used by config)
+    /// </summary>
+    public Label ProtoValue2Ref { get; private set; }
+
 
     // maintain collections of the created Controls to do the processing
     // One collection contains the actionable interface
@@ -255,8 +273,6 @@ namespace FS20_HudBar.Bar
     // Value Items (updated from Sim, some may change colors based on conditions)
     private ValueItemCat m_valueItems = new ValueItemCat();
 
-    // The Font provider
-    private static GUI_Fonts FONTS = null; // handle fonts as static item to not waste resources
 
     /// <summary>
     /// cTor: Of a completely new HudBar
@@ -270,10 +286,12 @@ namespace FS20_HudBar.Bar
     /// <param name="showUnits">Showing units flag</param>
     /// <param name="cProfile">The current Profile</param>
     /// <param name="voiceName">The current VoiceName</param>
+    /// <param name="userFonts">User Fonts as ConfigString</param>
     /// <param name="fRecorder">FlightRecorder Enabled</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
                       bool showUnits, bool keyboardHook, bool inGameHook, WinHotkeyCat hotkeys,
-                      int autoSave, string shelfFolder, CProfile cProfile, string voiceName, bool fRecorder )
+                      int autoSave, string shelfFolder, CProfile cProfile, string voiceName, string userFonts,
+                      bool fRecorder )
     {
       // just save them in the HUD mainly for config purpose
       m_profile = cProfile;
@@ -287,6 +305,9 @@ namespace FS20_HudBar.Bar
       FlightRecorder = fRecorder;
       _ = m_speech.SetVoice( VoiceName );
       ShelfFolder = shelfFolder;
+      ProtoLabelRef = lblProto;
+      ProtoValueRef = valueProto;
+      ProtoValue2Ref = value2Proto;
 
       PingLoop.PlayAsync( _silentLoop ); // use a default Silence Sound (to kill any ping) when restarting
 
@@ -301,30 +322,40 @@ namespace FS20_HudBar.Bar
 
       // init the Fontprovider from the submitted labels
       FONTS = new GUI_Fonts( m_profile.Condensed ); // get all fonts from built in
+      FONTS.FromConfigString( userFonts ); // and load from AppSettings
+
       // set desired size
       FONTS.SetFontsize( m_profile.FontSize );
 
       // and prepare the prototype Controls used below - not really clever but handier to have all label defaults ....
-      lblProto.Font = FONTS.LabelFont;
-      valueProto.Font = FONTS.ValueFont;
-      value2Proto.Font = FONTS.Value2Font;
-      signProto.Font = FONTS.SignFont;
+      lblProto.Font = (Font)FONTS.LabelFont.Clone( );   // need to use a Clone, else the Controls throw Parameter Error on Height ?? 
+      valueProto.Font = (Font)FONTS.ValueFont.Clone( ); // seems due to Fonts are treated in WinForm Controls
+      value2Proto.Font = (Font)FONTS.Value2Font.Clone( );
+      signProto.Font = (Font)FONTS.SignFont.Clone( );
 
+      /* not really needed - TODO delete for the next release
       // reset all Catalogs before creating this Instance
       m_valueItems.Clear( );
       m_dispItems.Clear( );
+      */
 
       // The pattern below repeats, create the display group and add it to the group list
       // All visual handling is done in the respective Class Implementation
       // Data Update is triggered by subscribing with the SimUpdate from the created object
 
       // Add all Display Items with prepared prototype labels (sequence does not matter)
+      // While loading them into the GUI later, the ones not shown will be Disposed
+      // We need all as there might be Breaks assigned to some that are not currently visible but 
+      // we take those and realize the Breaks at the proper location
 
       // Sim Status
       m_dispItems.AddDisp( new DI_MsFS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_SimRate( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Fps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_FlightLog( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      // Free Text (we set the Initial Text from Settings here)
+      m_dispItems.AddDisp( new DI_Text( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      this.Value( VItem.TXT ).Text = AppSettings.Instance.FreeText;
       // Environment
       m_dispItems.AddDisp( new DI_Time( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ZuluTime( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -528,12 +559,14 @@ namespace FS20_HudBar.Bar
       }
       // VoicePack Data Registration (as we cleared all above..)
       m_voicePack.RegisterObservers( );
+      // we want to know when an Aircraft is changed
+      SC.SimConnectClient.Instance.AircraftChange += Instance_AircraftChange;
     }
 
     #region Update Content and Settings
 
-    // track RefSpeed changes
-    int _RefSpeedsTTHash = 0;
+    // track Aircraft changes
+    private bool _aircraftChanged = true; // trigger this one on Load
 
     /// <summary>
     /// Update from values from Sim which are not part of the Item content update 
@@ -578,8 +611,7 @@ namespace FS20_HudBar.Bar
         FltPlanMgr.Read( );
       }
 
-      // check for the Ref Speeds every 30 sec - there is no event which let's us know that the acft or Ref Speeds have changed..
-      if ( ( SC.SimConnectClient.Instance.HudBarModule.SimTime_zulu_sec % 30 ) == 0 ) {
+      if ( _aircraftChanged ) {
         string tt="";
         if ( !string.IsNullOrWhiteSpace( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile ) ) {
           var ds = SC.SimConnectClient.Instance.HudBarModule;
@@ -590,24 +622,26 @@ namespace FS20_HudBar.Bar
              + $"Vmu Takeoff Speed: {ds.DesingSpeedTakeoff_kt:##0} kt\n"
              + $"Vr  Min Rotation:  {ds.DesingSpeedMinRotation_kt:##0} kt\n"
              + $"Vs1 Stall Speed:   {ds.DesingSpeedVS1_kt:##0} kt\n"
-             + $"Vs0 Stall Speed:   {ds.DesingSpeedVS0_kt:##0} kt\n"
-             + $"Empty Weight:      {ds.EmptyAcftWeight_lbs:##0} lbs\n"
-             + $"Max. Weight:       {ds.MaxAcftWeight_lbs:##0} lbs\n"
-             + $"TOTAL Weight:      {ds.TotalAcftWeight_lbs:##0} lbs\n"
+             + $"Vs0 Stall Speed:   {ds.DesingSpeedVS0_kt:##0} kt\n\n"
+             + $"Empty Weight:      {ds.EmptyAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.EmptyAcftWeight_lbs ):###,##0} kg)\n"
+             + $"Max. Weight:       {ds.MaxAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs(ds.MaxAcftWeight_lbs):###,##0} kg)\n"
+             + $"TOTAL Weight:      {ds.TotalAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.TotalAcftWeight_lbs ):###,##0} kg)\n"
              ;
         }
-        // has it changed?
         var di = this.DispItem( LItem.IAS );
         if ( di != null ) {
-          if ( _RefSpeedsTTHash != tt.GetHashCode( ) ) {
-            this.ToolTipFP.SetToolTip( di.Label, tt );
-            _RefSpeedsTTHash = tt.GetHashCode( );
-          }
+          this.ToolTipFP.SetToolTip( di.Label, tt );
           di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
         }
+        _aircraftChanged = false; // no longer
       }
     }
 
+    // Handle Acft Change Event from SimConnectClient
+    private void Instance_AircraftChange( object sender, EventArgs e )
+    {
+      _aircraftChanged = true; // will be handled in the GUIUpdate procedure
+    }
 
     /// <summary>
     /// Set the current show unit flag communicated by the HUD
@@ -769,6 +803,42 @@ namespace FS20_HudBar.Bar
       catch {
         return $"Cfg Name undef {item}";
       }
+    }
+
+    #endregion
+
+
+    #region DISPOSE
+
+    private bool disposedValue;
+
+    private void Dispose( bool disposing )
+    {
+      if ( !disposedValue ) {
+        if ( disposing ) {
+          // TODO: dispose managed state (managed objects)
+          SC.SimConnectClient.Instance.AircraftChange -= Instance_AircraftChange;
+          FONTS.Dispose( );
+        }
+
+        // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+        // TODO: set large fields to null
+        disposedValue = true;
+      }
+    }
+
+    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    // ~HudBar()
+    // {
+    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+    //     Dispose(disposing: false);
+    // }
+
+    public void Dispose( )
+    {
+      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+      Dispose( disposing: true );
+      GC.SuppressFinalize( this );
     }
 
     #endregion

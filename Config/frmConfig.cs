@@ -49,10 +49,14 @@ namespace FS20_HudBar.Config
     private ComboBox[] m_pTransparency = new ComboBox[c_NumProfiles];
 
     // internal temporary list only
-    private WinHotkeyCat _hotkeys = new WinHotkeyCat();
-    private FrmHotkey HK = new FrmHotkey();
+    private WinHotkeyCat m_hotkeys = new WinHotkeyCat();
+    private FrmHotkey HKdialog = new FrmHotkey();
 
-    private ToolTip_Base _tooltip = new ToolTip_Base();
+    private FrmFonts FONTSdialog;
+    private GUI.GUI_Fonts m_configFonts;
+    private bool m_applyFontChanges = false;
+
+    private ToolTip_Base m_tooltip = new ToolTip_Base();
 
     // concurency avoidance
     private bool initDone = false;
@@ -79,15 +83,15 @@ namespace FS20_HudBar.Config
       menu = new ToolStripMenuItem( "Default Profiles" );
       ctxMenu.Items.Add( menu );
       DefaultProfiles.AddMenuItems( menu, ctxDP_Click );
-      _tooltip.ReshowDelay = 100; // pop a bit faster
-      _tooltip.InitialDelay = 300; // pop a bit faster
-      _tooltip.SetToolTip( txHkShowHide, "Hotkey to Show/Hide the Bar\nDouble click to edit the Hotkey" );
-      _tooltip.SetToolTip( txHkProfile1, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
-      _tooltip.SetToolTip( txHkProfile2, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
-      _tooltip.SetToolTip( txHkProfile3, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
-      _tooltip.SetToolTip( txHkProfile4, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
-      _tooltip.SetToolTip( txHkProfile5, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
-      _tooltip.SetToolTip( txHkShelf, "Hotkey to toggle the Flight Bag\nDouble click to edit the Hotkey" );
+      m_tooltip.ReshowDelay = 100; // pop a bit faster
+      m_tooltip.InitialDelay = 300; // pop a bit faster
+      m_tooltip.SetToolTip( txHkShowHide, "Hotkey to Show/Hide the Bar\nDouble click to edit the Hotkey" );
+      m_tooltip.SetToolTip( txHkProfile1, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
+      m_tooltip.SetToolTip( txHkProfile2, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
+      m_tooltip.SetToolTip( txHkProfile3, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
+      m_tooltip.SetToolTip( txHkProfile4, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
+      m_tooltip.SetToolTip( txHkProfile5, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
+      m_tooltip.SetToolTip( txHkShelf, "Hotkey to toggle the Flight Bag\nDouble click to edit the Hotkey" );
 
       // indexed access for profile controls
       m_flps[0] = flp1; m_flps[1] = flp2; m_flps[2] = flp3; m_flps[3] = flp4; m_flps[4] = flp5;
@@ -97,6 +101,7 @@ namespace FS20_HudBar.Config
       m_pKind[0] = cbxKindP1; m_pKind[1] = cbxKindP2; m_pKind[2] = cbxKindP3; m_pKind[3] = cbxKindP4; m_pKind[4] = cbxKindP5;
       m_pCondensed[0] = cbxCondP1; m_pCondensed[1] = cbxCondP2; m_pCondensed[2] = cbxCondP3; m_pCondensed[3] = cbxCondP4; m_pCondensed[4] = cbxCondP5;
       m_pTransparency[0] = cbxTrans1; m_pTransparency[1] = cbxTrans2; m_pTransparency[2] = cbxTrans3; m_pTransparency[3] = cbxTrans4; m_pTransparency[4] = cbxTrans5;
+
     }
 
     // fill the list with items and check them from the Instance
@@ -135,6 +140,8 @@ namespace FS20_HudBar.Config
       cbx.Items.Add( GUI.FontSize.Plus_20 + " Font Size" );
       cbx.Items.Add( GUI.FontSize.Plus_24 + " Font Size" );
       cbx.Items.Add( GUI.FontSize.Plus_28 + " Font Size" );
+      // added 20220304
+      cbx.Items.Add( GUI.FontSize.Plus_32 + " Font Size" );
     }
 
     private void PopulatePlacement( ComboBox cbx )
@@ -179,13 +186,13 @@ namespace FS20_HudBar.Config
 
     private void PopulateHotkeys( )
     {
-      txHkShowHide.Text = _hotkeys.ContainsKey( Hotkeys.Show_Hide ) ? _hotkeys[Hotkeys.Show_Hide].AsString : "";
-      txHkProfile1.Text = _hotkeys.ContainsKey( Hotkeys.Profile_1 ) ? _hotkeys[Hotkeys.Profile_1].AsString : "";
-      txHkProfile2.Text = _hotkeys.ContainsKey( Hotkeys.Profile_2 ) ? _hotkeys[Hotkeys.Profile_2].AsString : "";
-      txHkProfile3.Text = _hotkeys.ContainsKey( Hotkeys.Profile_3 ) ? _hotkeys[Hotkeys.Profile_3].AsString : "";
-      txHkProfile4.Text = _hotkeys.ContainsKey( Hotkeys.Profile_4 ) ? _hotkeys[Hotkeys.Profile_4].AsString : "";
-      txHkProfile5.Text = _hotkeys.ContainsKey( Hotkeys.Profile_5 ) ? _hotkeys[Hotkeys.Profile_5].AsString : "";
-      txHkShelf.Text = _hotkeys.ContainsKey( Hotkeys.FlightBag ) ? _hotkeys[Hotkeys.FlightBag].AsString : "";
+      txHkShowHide.Text = m_hotkeys.ContainsKey( Hotkeys.Show_Hide ) ? m_hotkeys[Hotkeys.Show_Hide].AsString : "";
+      txHkProfile1.Text = m_hotkeys.ContainsKey( Hotkeys.Profile_1 ) ? m_hotkeys[Hotkeys.Profile_1].AsString : "";
+      txHkProfile2.Text = m_hotkeys.ContainsKey( Hotkeys.Profile_2 ) ? m_hotkeys[Hotkeys.Profile_2].AsString : "";
+      txHkProfile3.Text = m_hotkeys.ContainsKey( Hotkeys.Profile_3 ) ? m_hotkeys[Hotkeys.Profile_3].AsString : "";
+      txHkProfile4.Text = m_hotkeys.ContainsKey( Hotkeys.Profile_4 ) ? m_hotkeys[Hotkeys.Profile_4].AsString : "";
+      txHkProfile5.Text = m_hotkeys.ContainsKey( Hotkeys.Profile_5 ) ? m_hotkeys[Hotkeys.Profile_5].AsString : "";
+      txHkShelf.Text = m_hotkeys.ContainsKey( Hotkeys.FlightBag ) ? m_hotkeys[Hotkeys.FlightBag].AsString : "";
     }
 
 
@@ -233,7 +240,7 @@ namespace FS20_HudBar.Config
       PopulateVoiceCallouts( ); // 20211018
 
       // Hotkeys // 20211211
-      _hotkeys = HudBarRef.Hotkeys.Copy( );
+      m_hotkeys = HudBarRef.Hotkeys.Copy( );
       PopulateHotkeys( );
       chkKeyboard.Checked = HudBarRef.KeyboardHook; // 20211208
       chkInGame.Checked = HudBarRef.InGameHook; // 20211208
@@ -267,6 +274,11 @@ namespace FS20_HudBar.Config
 #if DEBUG
       btDumpConfigs.Visible = true; // way to dump the configuration
 #endif
+
+      // use a Config Copy to allow Cancel changes
+      FONTSdialog = new FrmFonts( );
+      m_configFonts = new GUI.GUI_Fonts( HudBarRef.FontRef );
+
       initDone = true;
     }
 
@@ -277,6 +289,7 @@ namespace FS20_HudBar.Config
         m_pName[p].BackColor = this.BackColor;
       }
       _speech.Enabled = false;
+      FONTSdialog.Dispose( );
     }
 
     // CANCEL - leave unchanged
@@ -294,7 +307,7 @@ namespace FS20_HudBar.Config
       HudBarRef.SetShowUnits( cbxUnits.Checked );
       HudBarRef.SetFlightRecorder( cbxFlightRecorder.Checked );
 
-      HudBarRef.SetHotkeys( _hotkeys );
+      HudBarRef.SetHotkeys( m_hotkeys );
       HudBarRef.SetKeyboardHook( chkKeyboard.Checked );
       HudBarRef.SetInGameHook( chkInGame.Checked );
 
@@ -319,6 +332,11 @@ namespace FS20_HudBar.Config
       }
 
       HudBarRef.SetShelfFolder( txShelfFolder.Text );
+
+      // Update global fonts
+      if ( m_applyFontChanges ) {
+        HudBarRef.FontRef.FromConfigString( m_configFonts.AsConfigString( ) );
+      }
 
       this.DialogResult = DialogResult.OK;
       this.Close( );
@@ -451,31 +469,31 @@ namespace FS20_HudBar.Config
     private string HandleHotkey( Hotkeys hotkey )
     {
       // Setup of the Input Form
-      if ( _hotkeys.ContainsKey( hotkey ) )
-        HK.Hotkey = _hotkeys[hotkey];
+      if ( m_hotkeys.ContainsKey( hotkey ) )
+        HKdialog.Hotkey = m_hotkeys[hotkey];
       else
-        HK.Hotkey = new Win.WinHotkey( ); // not set -> empty
-      var old = HK.Hotkey.AsString;
+        HKdialog.Hotkey = new Win.WinHotkey( ); // not set -> empty
+      var old = HKdialog.Hotkey.AsString;
 
-      HK.ProfileName = $"{hotkey} Hotkey";
-      if ( HK.ShowDialog( this ) == DialogResult.OK ) {
+      HKdialog.ProfileName = $"{hotkey} Hotkey";
+      if ( HKdialog.ShowDialog( this ) == DialogResult.OK ) {
         // OK - save keys
-        if ( _hotkeys.ContainsKey( hotkey ) ) {
+        if ( m_hotkeys.ContainsKey( hotkey ) ) {
           // HK exists
-          if ( HK.Hotkey.isValid ) {
-            _hotkeys[hotkey] = HK.Hotkey.Copy( ); // replace
+          if ( HKdialog.Hotkey.isValid ) {
+            m_hotkeys[hotkey] = HKdialog.Hotkey.Copy( ); // replace
           }
           else {
-            _hotkeys.Remove( hotkey ); // remove
+            m_hotkeys.Remove( hotkey ); // remove
           }
         }
         else {
           // HK does not exist
-          if ( HK.Hotkey.isValid ) {
-            _hotkeys.Add( hotkey, HK.Hotkey.Copy( ) ); // add
+          if ( HKdialog.Hotkey.isValid ) {
+            m_hotkeys.Add( hotkey, HKdialog.Hotkey.Copy( ) ); // add
           }
         }
-        return HK.Hotkey.AsString;
+        return HKdialog.Hotkey.AsString;
       }
       else {
         // cancelled
@@ -567,7 +585,7 @@ namespace FS20_HudBar.Config
         FBD.RootFolder = Environment.SpecialFolder.MyDocuments;
       }
 
-      if ( FBD.ShowDialog(this)== DialogResult.OK ) {
+      if ( FBD.ShowDialog( this ) == DialogResult.OK ) {
         txShelfFolder.Text = FBD.SelectedPath;
       }
     }
@@ -582,8 +600,26 @@ namespace FS20_HudBar.Config
     private void timer1_Tick( object sender, EventArgs e )
     {
       this.BringToFront( );
-      
+
       ;
     }
+
+    private void btFonts_Click( object sender, EventArgs e )
+    {
+      FONTSdialog.ProtoLabelRef = HudBarRef.ProtoLabelRef;
+      FONTSdialog.ProtoValueRef = HudBarRef.ProtoValueRef;
+      FONTSdialog.ProtoValue2Ref = HudBarRef.ProtoValue2Ref;
+      FONTSdialog.Fonts?.Dispose( );
+      FONTSdialog.Fonts = new GUI.GUI_Fonts( m_configFonts ); // let the Config use a clone to apply changes for preview
+
+      if ( FONTSdialog.ShowDialog( this ) == DialogResult.OK ) {
+        // store fonts
+        m_configFonts.Dispose( );
+        m_configFonts = new GUI.GUI_Fonts( FONTSdialog.Fonts ); // maintain the changes
+        m_applyFontChanges = true; // if called multiple times it only stores the Accept one 
+      }
+    }
+
+
   }
 }

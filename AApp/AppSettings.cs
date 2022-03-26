@@ -146,7 +146,21 @@ namespace FS20_HudBar
       set { this["HKShelf"] = value; }
     }
 
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string UserFonts {
+      get { return (string)this["UserFonts"]; }
+      set { this["UserFonts"] = value; }
+    }
+
     // User Config Settings
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "..." )]
+    public string FreeText {
+      get { return (string)this["FreeText"]; }
+      set { this["FreeText"] = value; }
+    }
 
     [UserScopedSetting( )]
     [DefaultSettingValue( "False" )]

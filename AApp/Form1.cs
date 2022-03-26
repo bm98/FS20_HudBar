@@ -485,6 +485,8 @@ namespace FS20_HudBar
         AppSettings.Instance.FltAutoSaveATC = (int)HUD.FltAutoSave;
         AppSettings.Instance.VoiceName = HUD.VoiceName;
 
+        AppSettings.Instance.UserFonts = HUD.FontRef.AsConfigString( );
+
         AppSettings.Instance.SelProfile = m_selProfile;
         // All Profiles
         int pIndex = 0; // use an index avoiding copy and paste mishaps...
@@ -760,7 +762,8 @@ namespace FS20_HudBar
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
                           AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook, _hotkeycat,
                           AppSettings.Instance.FltAutoSaveATC, AppSettings.Instance.ShelfFolder,
-                          m_profiles[m_selProfile], AppSettings.Instance.VoiceName, AppSettings.Instance.FRecorder );
+                          m_profiles[m_selProfile], AppSettings.Instance.VoiceName, AppSettings.Instance.UserFonts,
+                          AppSettings.Instance.FRecorder );
 
       // reread after config change
       SetupKeyboardHook( AppSettings.Instance.KeyboardHook );

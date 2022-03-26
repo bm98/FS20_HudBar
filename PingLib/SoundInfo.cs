@@ -44,6 +44,16 @@ namespace PingLib
     /// Bell - about 3 sec per Tone (Tone 0 -> Silence)
     /// </summary>
     Bell_1,
+    /// <summary>
+    /// Triangle Wave with glide 0.3 sec segments
+    ///  Notes: 
+    ///  0: Silence, 
+    ///  1: Low
+    ///  2: Low to High
+    ///  3: High
+    ///  4: High to Low
+    /// </summary>
+    TSynth,
   }
 
   /// <summary>

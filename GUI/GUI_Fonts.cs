@@ -32,6 +32,8 @@ namespace FS20_HudBar.GUI
     Plus_20,
     Plus_24,
     Plus_28,
+    // added 20220304
+    Plus_32,
   }
 
   /// <summary>
@@ -89,7 +91,7 @@ namespace FS20_HudBar.GUI
   /// <summary>
   /// Font provider
   /// </summary>
-  class GUI_Fonts
+  class GUI_Fonts : IDisposable
   {
     /// <summary>
     /// Embedded Fonts
@@ -102,7 +104,7 @@ namespace FS20_HudBar.GUI
     /// <summary>
     /// The kind of Fonts we maintain here
     /// </summary>
-    private enum FKinds
+    public enum FKinds
     {
       Lbl=0,
       Value,
@@ -113,7 +115,7 @@ namespace FS20_HudBar.GUI
     /// <summary>
     /// Local Font repository
     /// </summary>
-    private class FontDescriptor
+    private class FontDescriptor : IDisposable
     {
       // Regular Descriptor
       public FontFamily RegFamily { get; set; }
@@ -126,10 +128,31 @@ namespace FS20_HudBar.GUI
       public FontStyle CondStyle { get; set; }
 
       private Font m_font = null;
+      private bool disposedValue;
+
       /// <summary>
       /// The current font to use
       /// </summary>
       public Font Font { get => m_font; set { m_font?.Dispose( ); m_font = value; } }  // maintain memory and dispose prev one
+
+      /// <summary>
+      /// cTor: empty
+      /// </summary>
+      public FontDescriptor( ) { }
+
+      /// <summary>
+      /// cTor: Copy
+      /// </summary>
+      /// <param name="other"></param>
+      public FontDescriptor( FontDescriptor other )
+      {
+        this.RegFamily = new FontFamily( other.RegFamily.Name );
+        this.RegSize = other.RegSize;
+        this.RegStyle = other.RegStyle;
+        this.CondFamily = new FontFamily( other.CondFamily.Name );
+        this.CondSize = other.CondSize;
+        this.CondStyle = other.CondStyle;
+      }
 
       /// <summary>
       /// Create the applicable font 
@@ -138,18 +161,40 @@ namespace FS20_HudBar.GUI
       /// <param name="condensed">Condensed Fonts or Regular ones</param>
       public void CreateFont( FontSize fontSize, bool condensed )
       {
-        if ( condensed ) { 
+        if ( condensed ) {
           Font = new Font( CondFamily, CondSize + FontIncrement( fontSize ), CondStyle );
         }
-        else { 
+        else {
           Font = new Font( RegFamily, RegSize + FontIncrement( fontSize ), RegStyle );
         }
       }
+
+      #region FontDescriptor Dispose
+
+      protected virtual void Dispose( bool disposing )
+      {
+        if ( !disposedValue ) {
+          if ( disposing ) {
+            // TODO: dispose managed state (managed objects)
+            m_font?.Dispose( );
+            RegFamily?.Dispose( );
+            CondFamily?.Dispose( );
+          }
+          disposedValue = true;
+        }
+      }
+      public void Dispose( )
+      {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose( disposing: true );
+        GC.SuppressFinalize( this );
+      }
+      #endregion
     }
 
 
-    // Font repo - initialize on create
-    private Dictionary<FKinds, FontDescriptor> m_fontStorage = new Dictionary<FKinds, FontDescriptor>() {
+    // Default Font repo - initialize on create and only used to maintain the original 
+    private Dictionary<FKinds, FontDescriptor> m_fontStorageDefault = new Dictionary<FKinds, FontDescriptor>() {
       { FKinds.Lbl, new FontDescriptor()
         {
           RegFamily = new FontFamily("Bahnschrift"), RegSize = 9.75f, RegStyle = FontStyle.Regular,
@@ -172,9 +217,21 @@ namespace FS20_HudBar.GUI
       } },
     };
 
+    // User Font repo - initialize on create as a copy from Default, then loaded from AppDefault (if there are)
+    private Dictionary<FKinds, FontDescriptor> m_fontStorageUser = new Dictionary<FKinds, FontDescriptor>();
+
     // saved currents
     private FontSize m_fontSize = FontSize.Regular;
     private bool m_condensed = false;
+
+    /// <summary>
+    /// Returns the current Fontsize
+    /// </summary>
+    public FontSize Fontsize => m_fontSize;
+    /// <summary>
+    /// Returns the current Condensed Flag
+    /// </summary>
+    public bool Condensed => m_condensed;
 
 
     private static char c_NSpace =Convert.ToChar(0x2007);  // Number size Space
@@ -213,6 +270,8 @@ namespace FS20_HudBar.GUI
         case FontSize.Plus_20: return 20;
         case FontSize.Plus_24: return 24;
         case FontSize.Plus_28: return 28;
+        // added 20220304
+        case FontSize.Plus_32: return 32;
 
         case FontSize.Minus_2: return -2;
         case FontSize.Minus_4: return -4;
@@ -222,23 +281,24 @@ namespace FS20_HudBar.GUI
 
     // Store embedded Fonts here
     PrivateFontCollection m_privateFonts = new PrivateFontCollection( );
+    private bool disposedValue;
 
     /// <summary>
     /// The Label Font
     /// </summary>
-    public Font LabelFont => m_fontStorage[FKinds.Lbl].Font;
+    public Font LabelFont => m_fontStorageUser[FKinds.Lbl].Font;
     /// <summary>
     /// The Value Item Font
     /// </summary>
-    public Font ValueFont => m_fontStorage[FKinds.Value].Font;
+    public Font ValueFont => m_fontStorageUser[FKinds.Value].Font;
     /// <summary>
     /// A smaller Value Item Font
     /// </summary>
-    public Font Value2Font => m_fontStorage[FKinds.Value2].Font;
+    public Font Value2Font => m_fontStorageUser[FKinds.Value2].Font;
     /// <summary>
     /// The Sign Font
     /// </summary>
-    public Font SignFont => m_fontStorage[FKinds.Sign].Font;
+    public Font SignFont => m_fontStorageUser[FKinds.Sign].Font;
 
 
     /// <summary>
@@ -260,18 +320,70 @@ namespace FS20_HudBar.GUI
           }
         }
         // set new condensed if we were successful
-        m_fontStorage[FKinds.Value].CondFamily?.Dispose( );
-        m_fontStorage[FKinds.Value].CondFamily = m_privateFonts.Families[(int)EFonts.ShareTechMono];
+        m_fontStorageDefault[FKinds.Value].CondFamily?.Dispose( );
+        m_fontStorageDefault[FKinds.Value].CondFamily = m_privateFonts.Families[(int)EFonts.ShareTechMono];
 
-        m_fontStorage[FKinds.Value2].CondFamily?.Dispose( );
-        m_fontStorage[FKinds.Value2].CondFamily = m_privateFonts.Families[(int)EFonts.ShareTechMono];
+        m_fontStorageDefault[FKinds.Value2].CondFamily?.Dispose( );
+        m_fontStorageDefault[FKinds.Value2].CondFamily = m_privateFonts.Families[(int)EFonts.ShareTechMono];
+
       }
       catch {
         ; // DEBUG STOP ONLY
       }
 
+      // get the user fonts from the defaults     
+      ResetUserFonts( );
+      // Get user fonts from AppDefaults
+
       // loading actual fonts for the first time
       SetFontsize( m_fontSize );
+    }
+
+    /// <summary>
+    /// cTor: create a copy 
+    /// </summary>
+    /// <param name="other"></param>
+    public GUI_Fonts( GUI_Fonts other )
+    {
+      m_condensed = other.m_condensed;
+      m_fontSize = other.m_fontSize;
+
+      try {
+        //  Font embedding Ref: https://web.archive.org/web/20141224204810/http://bobpowell.net/embedfonts.aspx
+        // Load a rather condensed embedded font 
+        Stream fontStream = this.GetType().Assembly.GetManifestResourceStream(@"FS20_HudBar.Fonts.ShareTechMono-Regular.ttf");
+        byte[] fontdata = new byte[fontStream.Length];
+        fontStream.Read( fontdata, 0, (int)fontStream.Length );
+        fontStream.Close( );
+        unsafe {
+          fixed ( byte* pFontData = fontdata ) {
+            m_privateFonts.AddMemoryFont( (IntPtr)pFontData, fontdata.Length );
+          }
+        }
+
+      }
+      catch {
+        ; // DEBUG STOP ONLY
+      }
+
+      // copy all from the user
+      foreach ( var fd in other.m_fontStorageUser ) {
+        m_fontStorageUser.Add( fd.Key, new FontDescriptor( fd.Value ) ); // create a copy (not a ref)
+      };
+
+      // loading actual fonts for the first time
+      SetFontsize( m_fontSize );
+    }
+
+
+    /// <summary>
+    /// Set the Condensed mode 
+    /// </summary>
+    /// <param name="condensed">True for condensed fonts</param>
+    public void SetFontCondensed( bool condensed )
+    {
+      m_condensed = condensed;
+      SetFontsize( m_fontSize ); // reload
     }
 
     /// <summary>
@@ -282,10 +394,167 @@ namespace FS20_HudBar.GUI
     {
       m_fontSize = fontSize;
       // alloc each font only once and use it as ref later on
-      foreach ( var fd in m_fontStorage ) {
+      foreach ( var fd in m_fontStorageUser ) {
         fd.Value.CreateFont( m_fontSize, m_condensed );
       }
     }
 
+    /// <summary>
+    /// Set a new User Font
+    /// </summary>
+    /// <param name="fontKind">Kind to set</param>
+    /// <param name="font">The font</param>
+    /// <param name="condensed">True to set the condensed font</param>
+    public void SetUserFont( FKinds fontKind, Font font, FontSize fontSize, bool condensed )
+    {
+      if ( fontKind == FKinds.Sign ) return; // Sign is not user definable
+
+      if ( condensed ) {
+        m_fontStorageUser[fontKind].CondFamily?.Dispose( );
+        m_fontStorageUser[fontKind].CondFamily = new FontFamily( font.FontFamily.Name );
+        m_fontStorageUser[fontKind].CondSize = font.Size - FontIncrement( fontSize ); // normalize
+        if ( fontKind == FKinds.Value2 ) m_fontStorageUser[fontKind].RegSize -= 1f; // Value2 fonts are smaller
+        m_fontStorageUser[fontKind].CondStyle = font.Style;
+      }
+      else {
+        m_fontStorageUser[fontKind].RegFamily?.Dispose( );
+        m_fontStorageUser[fontKind].RegFamily = new FontFamily( font.FontFamily.Name );
+        m_fontStorageUser[fontKind].RegSize = font.Size - FontIncrement( fontSize ); // normalize
+        if ( fontKind == FKinds.Value2 ) m_fontStorageUser[fontKind].RegSize -= 2f; // Value2 fonts are smaller
+        m_fontStorageUser[fontKind].RegStyle = font.Style;
+      }
+      SetFontsize( m_fontSize );
+    }
+
+    /// <summary>
+    /// Set all user fonts to defaults
+    /// </summary>
+    public void ResetUserFonts( )
+    {
+      // remove old user Catalog
+      foreach ( var fd in m_fontStorageUser ) {
+        fd.Value?.Dispose( );
+      }
+      m_fontStorageUser.Clear( );
+
+      // copy all from the default
+      foreach ( var fd in m_fontStorageDefault ) {
+        m_fontStorageUser.Add( fd.Key, new FontDescriptor( fd.Value ) ); // create a copy (not a ref)
+      };
+      SetFontsize( m_fontSize );
+    }
+
+    /// <summary>
+    /// Load the serialized version into User Config
+    /// </summary>
+    public void FromConfigString( string cString )
+    {
+      // remove old user Catalog
+      foreach ( var fd in m_fontStorageUser ) {
+        fd.Value?.Dispose( );
+      }
+      m_fontStorageUser.Clear( );
+      // start loading
+      string[] items = cString.Split(new char[]{ '¦'}, StringSplitOptions.RemoveEmptyEntries );
+      for ( int i = 0; i < items.Length; i++ ) {
+        string[] e = items[i].Split(new char[]{ '¬'} );
+        // decode - we need all 5 elements
+        if ( e.Length >= 7 ) {
+          var newFd = new FontDescriptor();
+          if ( Enum.TryParse( e[0], out FKinds kind ) ) {
+            // regular
+            if ( float.TryParse( e[2], out float rsize ) ) {
+              if ( Enum.TryParse( e[3], out FontStyle rstyle ) ) {
+                var rfFam = e[1];
+                newFd.RegFamily = new FontFamily( rfFam );
+                newFd.RegSize = rsize;
+                newFd.RegStyle = rstyle;
+              }
+            }
+            // condensed
+            if ( float.TryParse( e[5], out float csize ) ) {
+              if ( Enum.TryParse( e[6], out FontStyle cstyle ) ) {
+                var cfFam = e[4];
+                newFd.CondFamily = new FontFamily( cfFam );
+                newFd.CondSize = csize;
+                newFd.CondStyle = cstyle;
+              }
+            }
+          }
+          m_fontStorageUser.Add( kind, newFd );
+        }
+      }
+      // check..
+      if ( m_fontStorageUser.Count == 3 ) {
+        // add the sign from the defaults
+        m_fontStorageUser.Add( FKinds.Sign, new FontDescriptor( m_fontStorageDefault[FKinds.Sign] ) ); // create a copy (not a ref)
+        SetFontsize( m_fontSize );
+      }
+      else {
+        // ISSUE..
+        Console.WriteLine( $"Read Font Config: did not found 4 entries - resetting user fonts to defaults" );
+        ResetUserFonts( );
+      }
+
+    }
+
+    /// <summary>
+    /// Save User Fonts as Config String
+    /// </summary>
+    /// <returns>An AppSettings String</returns>
+    public string AsConfigString( )
+    {
+      /*
+       * Format:
+       * "{FKinds¬FamilyName¬size¬style¬FamilyName¬size¬style¦}3"
+       */
+      var s = "";
+      foreach ( var fd in m_fontStorageUser ) {
+        if ( fd.Key == FKinds.Sign ) continue; // not sign fonts
+        s += $"{fd.Key}¬";
+        s += $"{fd.Value.RegFamily.Name}¬{fd.Value.RegSize:#0.00}¬{fd.Value.RegStyle}¬";
+        s += $"{fd.Value.CondFamily.Name}¬{fd.Value.CondSize:#0.00}¬{fd.Value.CondStyle}¦";
+      }
+      return s;
+    }
+
+
+    #region DISPOSE
+
+    protected virtual void Dispose( bool disposing )
+    {
+      if ( !disposedValue ) {
+        if ( disposing ) {
+          // TODO: dispose managed state (managed objects)
+          // remove old user Catalog
+          foreach ( var fd in m_fontStorageUser ) {
+            fd.Value.Dispose( );
+          }
+          m_fontStorageUser.Clear( );
+          m_privateFonts.Dispose( );
+        }
+
+        // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+        // TODO: set large fields to null
+        disposedValue = true;
+      }
+    }
+
+    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    // ~GUI_Fonts()
+    // {
+    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+    //     Dispose(disposing: false);
+    // }
+
+    public void Dispose( )
+    {
+      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+      Dispose( disposing: true );
+      GC.SuppressFinalize( this );
+    }
+    #endregion
+
   }
 }
+

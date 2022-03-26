@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>42</ApplicationRevision>
-    <ApplicationVersion>0.45.0.42</ApplicationVersion>
+    <ApplicationRevision>43</ApplicationRevision>
+    <ApplicationVersion>0.46.0.43</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -175,6 +175,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AircraftPara\DI_SpoilersGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_Text.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\InstrPara\DI_ESIGraph.cs">
@@ -475,11 +478,23 @@
     <Compile Include="Config\AcftMerges.cs" />
     <Compile Include="Config\DefaultProfiles.cs" />
     <Compile Include="Config\FlpHandler.cs" />
+    <Compile Include="Config\FrmFonts.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\FrmFonts.Designer.cs">
+      <DependentUpon>FrmFonts.cs</DependentUpon>
+    </Compile>
     <Compile Include="Config\FrmHotkey.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Config\FrmHotkey.Designer.cs">
       <DependentUpon>FrmHotkey.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Config\frmText.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\frmText.Designer.cs">
+      <DependentUpon>frmText.cs</DependentUpon>
     </Compile>
     <Compile Include="Config\ProfileStore.cs" />
     <Compile Include="Config\CProfile.cs" />
@@ -739,8 +754,14 @@
     <EmbeddedResource Include="AApp\frmGui.resx">
       <DependentUpon>frmGui.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Config\FrmFonts.resx">
+      <DependentUpon>FrmFonts.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Config\FrmHotkey.resx">
       <DependentUpon>FrmHotkey.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Config\frmText.resx">
+      <DependentUpon>frmText.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -44,7 +44,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _scale1 ); vCat.AddLbl( item, _scale1 );
 
       item = VItem.TORQP_ANI_2;
-      _scale2 = new A_TwinScale( ) { Minimum = 0, Maximum = 110, AlertValue = 101, ItemForeColor_Alert = cAlert, ItemForeColor = cOK, ItemForeColor_LScale = cOK };
+      _scale2 = new A_TwinScale( ) { Visible = false, Minimum = 0, Maximum = 110, AlertValue = 101, ItemForeColor_Alert = cAlert, ItemForeColor = cOK, ItemForeColor_LScale = cOK };
       this.AddItem( _scale2 ); vCat.AddLbl( item, _scale2 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
@@ -64,7 +64,7 @@ namespace FS20_HudBar.Bar.Items
           _scale1.ItemBackColor = ( SC.SimConnectClient.Instance.HudBarModule.Turbine1_Torque_prct > 102 ) ? cWarnBG : cBG;
         }
 
-        if (_scale2.Visible ) {
+        if ( _scale2.Visible ) {
           _scale2.Value = SC.SimConnectClient.Instance.HudBarModule.Turbine1_Torque_prct; // 0..100
           _scale2.ValueLScale = SC.SimConnectClient.Instance.HudBarModule.Turbine2_Torque_prct; // 0..100
 
