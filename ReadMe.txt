@@ -48,8 +48,9 @@ V 0.46-B43
 - Add Ability to set Fonts in Config
 - Add Free Text Field
 - Update VARIO sound (more like a real one - but still not pleasant..)
-- Updated Airport DB from SU8
-- Fix issue with WPalt calculation
+- Updated Airport DB from SU8 + Iberia Update
+- Update Clean Waypoint Names from B21 Soaring Task decorations
+- Fix issue with WP-Alt calculation
 - Fix Improve layout procedure for some items
 - Update QuickGuide
 
