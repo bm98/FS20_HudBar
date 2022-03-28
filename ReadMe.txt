@@ -1,5 +1,5 @@
-FS20_HudBar V 0.46 - Build 43 BETA
-(c) M. Burri - 27-Mar-2022
+FS20_HudBar V 0.47 - Build 44 BETA
+(c) M. Burri - 28-Mar-2022
 
 Contains files:
 
@@ -43,6 +43,9 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.47-B44
+- Fix Startup Error when Share Tech Mono Font is not installed on PC
 
 V 0.46-B43
 - Add Ability to set Fonts in Config

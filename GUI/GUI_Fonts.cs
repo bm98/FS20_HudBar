@@ -112,6 +112,54 @@ namespace FS20_HudBar.GUI
       Sign,
     }
 
+    // Store embedded Fonts here
+    private static PrivateFontCollection s_privateFonts = new PrivateFontCollection( );
+
+    /// <summary>
+    /// cTor: Static, load the memory font(s)
+    /// </summary>
+    static GUI_Fonts( )
+    {
+      try {
+        //  Font embedding Ref: https://web.archive.org/web/20141224204810/http://bobpowell.net/embedfonts.aspx
+        // Load a rather condensed embedded font 
+        Stream fontStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(@"FS20_HudBar.Fonts.ShareTechMono-Regular.ttf");
+        byte[] fontdata = new byte[fontStream.Length];
+        fontStream.Read( fontdata, 0, (int)fontStream.Length );
+        fontStream.Close( );
+        unsafe {
+          fixed ( byte* pFontData = fontdata ) {
+            s_privateFonts.AddMemoryFont( (IntPtr)pFontData, fontdata.Length );
+          }
+        }
+      }
+      catch ( Exception e ) {
+        Console.WriteLine( $"Cannot create Memory Font\n{e.Message}" );
+      }
+    }
+
+    // returns a new Family either from Win or Private
+    private static FontFamily GetFontFamily( string ffName )
+    {
+      FontFamily ret;
+      // try Windows first
+      if ( FontFamily.Families.Where( x => x.Name == ffName ).Count( ) > 0 ) {
+        ret = new FontFamily( ffName );
+      }
+      // then our private store
+      else if ( s_privateFonts.Families.Where( x => x.Name == ffName ).Count( ) > 0 ) {
+        ret = new FontFamily( ffName, s_privateFonts );
+      }
+      // cannot find it anywhere
+      else {
+        // get a generic font
+        ret = FontFamily.GenericSansSerif;
+        Console.WriteLine( $"FontDescriptor - cannot load: {ffName} - using a generic font" );
+      }
+      return ret;
+    }
+
+
     /// <summary>
     /// Local Font repository
     /// </summary>
@@ -146,13 +194,16 @@ namespace FS20_HudBar.GUI
       /// <param name="other"></param>
       public FontDescriptor( FontDescriptor other )
       {
-        this.RegFamily = new FontFamily( other.RegFamily.Name );
+        // regular 
+        this.RegFamily = GetFontFamily( other.RegFamily.Name );
         this.RegSize = other.RegSize;
         this.RegStyle = other.RegStyle;
-        this.CondFamily = new FontFamily( other.CondFamily.Name );
+        // condensed
+        this.CondFamily = GetFontFamily( other.CondFamily.Name );
         this.CondSize = other.CondSize;
         this.CondStyle = other.CondStyle;
       }
+
 
       /// <summary>
       /// Create the applicable font 
@@ -279,9 +330,6 @@ namespace FS20_HudBar.GUI
       }
     }
 
-    // Store embedded Fonts here
-    PrivateFontCollection m_privateFonts = new PrivateFontCollection( );
-    private bool disposedValue;
 
     /// <summary>
     /// The Label Font
@@ -306,31 +354,18 @@ namespace FS20_HudBar.GUI
     /// </summary>
     public GUI_Fonts( bool condensed )
     {
-      m_condensed = condensed;
       try {
-        //  Font embedding Ref: https://web.archive.org/web/20141224204810/http://bobpowell.net/embedfonts.aspx
-        // Load a rather condensed embedded font 
-        Stream fontStream = this.GetType().Assembly.GetManifestResourceStream(@"FS20_HudBar.Fonts.ShareTechMono-Regular.ttf");
-        byte[] fontdata = new byte[fontStream.Length];
-        fontStream.Read( fontdata, 0, (int)fontStream.Length );
-        fontStream.Close( );
-        unsafe {
-          fixed ( byte* pFontData = fontdata ) {
-            m_privateFonts.AddMemoryFont( (IntPtr)pFontData, fontdata.Length );
-          }
-        }
-        // set new condensed if we were successful
         m_fontStorageDefault[FKinds.Value].CondFamily?.Dispose( );
-        m_fontStorageDefault[FKinds.Value].CondFamily = m_privateFonts.Families[(int)EFonts.ShareTechMono];
+        m_fontStorageDefault[FKinds.Value].CondFamily = s_privateFonts.Families[(int)EFonts.ShareTechMono];
 
         m_fontStorageDefault[FKinds.Value2].CondFamily?.Dispose( );
-        m_fontStorageDefault[FKinds.Value2].CondFamily = m_privateFonts.Families[(int)EFonts.ShareTechMono];
-
+        m_fontStorageDefault[FKinds.Value2].CondFamily = s_privateFonts.Families[(int)EFonts.ShareTechMono];
       }
       catch {
         ; // DEBUG STOP ONLY
       }
 
+      m_condensed = condensed;
       // get the user fonts from the defaults     
       ResetUserFonts( );
       // Get user fonts from AppDefaults
@@ -345,27 +380,19 @@ namespace FS20_HudBar.GUI
     /// <param name="other"></param>
     public GUI_Fonts( GUI_Fonts other )
     {
-      m_condensed = other.m_condensed;
-      m_fontSize = other.m_fontSize;
-
       try {
-        //  Font embedding Ref: https://web.archive.org/web/20141224204810/http://bobpowell.net/embedfonts.aspx
-        // Load a rather condensed embedded font 
-        Stream fontStream = this.GetType().Assembly.GetManifestResourceStream(@"FS20_HudBar.Fonts.ShareTechMono-Regular.ttf");
-        byte[] fontdata = new byte[fontStream.Length];
-        fontStream.Read( fontdata, 0, (int)fontStream.Length );
-        fontStream.Close( );
-        unsafe {
-          fixed ( byte* pFontData = fontdata ) {
-            m_privateFonts.AddMemoryFont( (IntPtr)pFontData, fontdata.Length );
-          }
-        }
+        m_fontStorageDefault[FKinds.Value].CondFamily?.Dispose( );
+        m_fontStorageDefault[FKinds.Value].CondFamily = s_privateFonts.Families[(int)EFonts.ShareTechMono];
 
+        m_fontStorageDefault[FKinds.Value2].CondFamily?.Dispose( );
+        m_fontStorageDefault[FKinds.Value2].CondFamily = s_privateFonts.Families[(int)EFonts.ShareTechMono];
       }
       catch {
         ; // DEBUG STOP ONLY
       }
 
+      m_condensed = other.m_condensed;
+      m_fontSize = other.m_fontSize;
       // copy all from the user
       foreach ( var fd in other.m_fontStorageUser ) {
         m_fontStorageUser.Add( fd.Key, new FontDescriptor( fd.Value ) ); // create a copy (not a ref)
@@ -411,14 +438,14 @@ namespace FS20_HudBar.GUI
 
       if ( condensed ) {
         m_fontStorageUser[fontKind].CondFamily?.Dispose( );
-        m_fontStorageUser[fontKind].CondFamily = new FontFamily( font.FontFamily.Name );
+        m_fontStorageUser[fontKind].CondFamily = GetFontFamily( font.FontFamily.Name );
         m_fontStorageUser[fontKind].CondSize = font.Size - FontIncrement( fontSize ); // normalize
         if ( fontKind == FKinds.Value2 ) m_fontStorageUser[fontKind].RegSize -= 1f; // Value2 fonts are smaller
         m_fontStorageUser[fontKind].CondStyle = font.Style;
       }
       else {
         m_fontStorageUser[fontKind].RegFamily?.Dispose( );
-        m_fontStorageUser[fontKind].RegFamily = new FontFamily( font.FontFamily.Name );
+        m_fontStorageUser[fontKind].RegFamily = GetFontFamily( font.FontFamily.Name );
         m_fontStorageUser[fontKind].RegSize = font.Size - FontIncrement( fontSize ); // normalize
         if ( fontKind == FKinds.Value2 ) m_fontStorageUser[fontKind].RegSize -= 2f; // Value2 fonts are smaller
         m_fontStorageUser[fontKind].RegStyle = font.Style;
@@ -466,7 +493,7 @@ namespace FS20_HudBar.GUI
             if ( float.TryParse( e[2], out float rsize ) ) {
               if ( Enum.TryParse( e[3], out FontStyle rstyle ) ) {
                 var rfFam = e[1];
-                newFd.RegFamily = new FontFamily( rfFam );
+                newFd.RegFamily = GetFontFamily( rfFam );
                 newFd.RegSize = rsize;
                 newFd.RegStyle = rstyle;
               }
@@ -475,7 +502,7 @@ namespace FS20_HudBar.GUI
             if ( float.TryParse( e[5], out float csize ) ) {
               if ( Enum.TryParse( e[6], out FontStyle cstyle ) ) {
                 var cfFam = e[4];
-                newFd.CondFamily = new FontFamily( cfFam );
+                newFd.CondFamily = GetFontFamily( cfFam );
                 newFd.CondSize = csize;
                 newFd.CondStyle = cstyle;
               }
@@ -521,6 +548,8 @@ namespace FS20_HudBar.GUI
 
     #region DISPOSE
 
+    private bool disposedValue;
+
     protected virtual void Dispose( bool disposing )
     {
       if ( !disposedValue ) {
@@ -531,7 +560,6 @@ namespace FS20_HudBar.GUI
             fd.Value.Dispose( );
           }
           m_fontStorageUser.Clear( );
-          m_privateFonts.Dispose( );
         }
 
         // TODO: free unmanaged resources (unmanaged objects) and override finalizer
@@ -539,13 +567,6 @@ namespace FS20_HudBar.GUI
         disposedValue = true;
       }
     }
-
-    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    // ~GUI_Fonts()
-    // {
-    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-    //     Dispose(disposing: false);
-    // }
 
     public void Dispose( )
     {
