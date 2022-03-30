@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>43</ApplicationRevision>
-    <ApplicationVersion>0.46.0.43</ApplicationVersion>
+    <ApplicationRevision>45</ApplicationRevision>
+    <ApplicationVersion>0.48.0.45</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -175,6 +175,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AircraftPara\DI_SpoilersGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_ATT.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\SimPara\DI_Text.cs">
@@ -521,6 +524,7 @@
     <Compile Include="Bar\Items\SimPara\DI_SimRate.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="AApp\DebugStart.cs" />
     <Compile Include="GUI\IAlign.cs" />
     <Compile Include="GUI\Templates\A_AHor.cs">
       <SubType>UserControl</SubType>
@@ -828,6 +832,10 @@
     <ProjectReference Include="bm98_hbControls\bm98_hbControls.csproj">
       <Project>{d843beaf-7f22-408d-821f-514f622552ae}</Project>
       <Name>bm98_hbControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="DbgLib\DbgLib.csproj">
+      <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
+      <Name>DbgLib</Name>
     </ProjectReference>
     <ProjectReference Include="MetarLib\MetarLib.csproj">
       <Project>{c24160dd-849c-440e-ae8b-def83a2d3e88}</Project>

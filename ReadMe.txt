@@ -1,4 +1,4 @@
-FS20_HudBar V 0.47 - Build 44 BETA
+FS20_HudBar V 0.48 - Build 45 BETA
 (c) M. Burri - 28-Mar-2022
 
 Contains files:
@@ -43,6 +43,11 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.48-B45
+- Add AP Attitude Hold Item
+- Update Setup for Audio Speech Render Device (VoiceOut)
+- Add Debug module
 
 V 0.47-B44
 - Fix Startup Error when Share Tech Mono Font is not installed on PC

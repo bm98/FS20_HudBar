@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using DbgLib;
+
 using SC = SimConnectClient;
 using static FS20_HudBar.GUI.GUI_Colors;
 
@@ -39,6 +41,13 @@ namespace FS20_HudBar
   /// </summary>
   public partial class frmMain : Form
   {
+    #region STATIC
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+    #endregion
+
     // Handle of the Primary Screen to attach bar and tile
     private readonly Screen m_mainScreen;
 
@@ -257,6 +266,7 @@ namespace FS20_HudBar
       // Load all from AppSettings
       AppSettings.Instance.Reload( );
 
+      LOG.Log( "frmMain: Load Profiles" );
       m_profiles.Add( new CProfile( 1, AppSettings.Instance.Profile_1_Name,
                                        AppSettings.Instance.Profile_1, AppSettings.Instance.FlowBreak_1, AppSettings.Instance.Sequence_1,
                                        AppSettings.Instance.Profile_1_FontSize, AppSettings.Instance.Profile_1_Placement,
@@ -297,9 +307,11 @@ namespace FS20_HudBar
       // collect the Menus for the profiles
       m_profileMenu = new ToolStripMenuItem[] { mP1, mP2, mP3, mP4, mP5 };
 
+      LOG.Log( "frmMain: Load Colors" );
       Colorset = ToColorSet( AppSettings.Instance.Appearance );
 
       // ShowUnits and Opacity are set via HUD in InitGUI
+      LOG.Log( "frmMain: Load GUI Forms" );
       m_frmGui = new frmGui( );
       this.AddOwnedForm( m_frmGui );
       m_frmGui.Show( );
@@ -311,6 +323,7 @@ namespace FS20_HudBar
       */
 
       // Setup the Shelf and put it somewhere we can see it (either last location or default)
+      LOG.Log( "frmMain: Load Shelf" );
       m_shelf = new Shelf.frmShelf {
         Size = AppSettings.Instance.ShelfSize,
         Location = AppSettings.Instance.ShelfLocation
@@ -322,6 +335,7 @@ namespace FS20_HudBar
       if ( !m_shelf.SetShelfFolder( AppSettings.Instance.ShelfFolder ) ) {
         m_shelf.SetShelfFolder( @".\DemoBag" ); // the one in our Deployment
       }
+      LOG.Log( $"frmMain: Shelf Folder is: {AppSettings.Instance.ShelfFolder}" );
 
       // Find and hold the Primary Screen
       Screen[] screens = Screen.AllScreens;
@@ -332,6 +346,8 @@ namespace FS20_HudBar
           m_mainScreen = screen;
         }
       }
+
+      LOG.Log( "frmMain: Init Form Done" );
     }
 
     /* DEBUG ONLY
@@ -350,6 +366,7 @@ namespace FS20_HudBar
     */
     private void frmMain_Load( object sender, EventArgs e )
     {
+      LOG.Log( $"frmMain_Load: Start" );
       // prepare the GUI On Form Load
 
       // The FlowPanel in Design is not docked - do it here
@@ -377,6 +394,8 @@ namespace FS20_HudBar
       // Pacer to connect and may be other chores
       timer1.Interval = 5000; // try to connect in 5 sec intervals
       timer1.Enabled = true;
+
+      LOG.Log( $"frmMain_Load: End" );
     }
 
 
@@ -416,6 +435,8 @@ namespace FS20_HudBar
     // Fired when about to Close
     private void frmMain_FormClosing( object sender, FormClosingEventArgs e )
     {
+      LOG.Log( $"frmMain_FormClosing: Start" );
+
       m_shelf?.Hide( ); // Hide the Flight Bag
 
       // Save all Settings
@@ -437,6 +458,7 @@ namespace FS20_HudBar
         // closure
         SC.SimConnectClient.Instance.Disconnect( );
       }
+      LOG.Log( $"frmMain_FormClosing: End" );
     }
 
     // Menu Exit event
@@ -450,6 +472,8 @@ namespace FS20_HudBar
     // Menu Config Event
     private void mConfig_Click( object sender, EventArgs e )
     {
+      LOG.Log( $"mConfig_Click: Start" );
+
       // don't handle timer while in Config
       timer1.Enabled = false;
       // hide the Shelf while in config
@@ -466,6 +490,7 @@ namespace FS20_HudBar
 
       // Show and see if the user Accepts the changes
       if ( CFG.ShowDialog( this ) == DialogResult.OK ) {
+        LOG.Log( $"mConfig_Click: Dialog OK" );
         // Save all configuration properties
         AppSettings.Instance.ShowUnits = HUD.ShowUnits;
         AppSettings.Instance.FRecorder = HUD.FlightRecorder;
@@ -553,6 +578,8 @@ namespace FS20_HudBar
       this.TopMost = true;
       // pacer is finally back
       timer1.Enabled = true;
+
+      LOG.Log( $"mConfig_Click: End" );
     }
 
     #endregion
@@ -729,26 +756,33 @@ namespace FS20_HudBar
     // initialize the form, the labels and default values
     private void InitGUI( )
     {
+      LOG.Log( $"InitGUI: Start" );
+
       timer1.Enabled = false; // stop asynch events
       m_initDone = false; // stop updating values while reconfiguring
       SynchGUIVisible( false ); // hide, else we see all kind of shaping
 
+      LOG.Log( $"InitGUI: FlightPlanModule Setup" );
       SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode = (FSimClientIF.FlightPlanMode)AppSettings.Instance.FltAutoSaveATC;
       SC.SimConnectClient.Instance.FlightPlanModule.Enabled = ( SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode != FSimClientIF.FlightPlanMode.Disabled );
       SC.SimConnectClient.Instance.FlightLogModule.Enabled = AppSettings.Instance.FRecorder;
+      LOG.Log( $"InitGUI: AirportMgr Reset" );
       AirportMgr.Reset( );
 
       // Update profile selection items
+      LOG.Log( $"InitGUI: Update profile selection" );
       for ( int i = 0; i < CProfile.c_numProfiles; i++ ) {
         m_profileMenu[i].Text = m_profiles[i].PName;
         m_profileMenu[i].Checked = false;
       }
       m_profileMenu[m_selProfile].Checked = true;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
+      LOG.Log( $"InitGUI: Selected profile {mSelProfile.Text}" );
       // Set the Window Title
       this.Text = ( string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance ) + $" HudBar: {m_profiles[m_selProfile].PName}          - by bm98ch";
 
       // create a catalog from Settings (serialized as item strings..)
+      LOG.Log( $"InitGUI: Setup Hotkeys" );
       var _hotkeycat = new WinHotkeyCat();
       _hotkeycat.AddHotkeyString( Hotkeys.Show_Hide, AppSettings.Instance.HKShowHide );
       _hotkeycat.AddHotkeyString( Hotkeys.Profile_1, AppSettings.Instance.HKProfile1 );
@@ -757,8 +791,12 @@ namespace FS20_HudBar
       _hotkeycat.AddHotkeyString( Hotkeys.Profile_4, AppSettings.Instance.HKProfile4 );
       _hotkeycat.AddHotkeyString( Hotkeys.Profile_5, AppSettings.Instance.HKProfile5 );
       _hotkeycat.AddHotkeyString( Hotkeys.FlightBag, AppSettings.Instance.HKShelf );
+      foreach ( var hk in _hotkeycat ) {
+        LOG.Log( $"InitGUI: {hk.Key} - {hk.Value.AsString}" );
+      }
 
       // start from scratch
+      LOG.Log( $"InitGUI: Create HudBar" );
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
                           AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook, _hotkeycat,
                           AppSettings.Instance.FltAutoSaveATC, AppSettings.Instance.ShelfFolder,
@@ -766,10 +804,12 @@ namespace FS20_HudBar
                           AppSettings.Instance.FRecorder );
 
       // reread after config change
+      LOG.Log( $"InitGUI: Reread Config changes" );
       SetupKeyboardHook( AppSettings.Instance.KeyboardHook );
       SetupInGameHook( AppSettings.Instance.InGameHook );
       m_shelf?.SetShelfFolder( AppSettings.Instance.ShelfFolder );
 
+      LOG.Log( $"InitGUI: Reload FlowPanel with Kind: {HUD.Profile.Kind}, Placement: {HUD.Placement}" );
       // prepare to create the content as bar or tile (may be switch to Window later if needed)
       this.FormBorderStyle = FormBorderStyle.None; // no frame etc.
                                                    // Prepare FLPanel to load controls
@@ -896,6 +936,7 @@ namespace FS20_HudBar
       // post proc - allocate the needed height/width/location
       // reduce width/ height for Tiles or Windows
       // A window is essentially a tile with border and will later be positioned at the last stored location
+      LOG.Log( $"InitGUI: Post Processing" );
       switch ( HUD.Placement ) {
         case GUI.Placement.Bottom:
           this.Height = maxHeight + 5;
@@ -981,12 +1022,15 @@ namespace FS20_HudBar
         HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cInfo;
         HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cAlert;
       }
+      LOG.Log( $"InitGUI: SimConnect IsConnected = {SC.SimConnectClient.Instance.IsConnected}" );
 
       SynchGUIVisible( true ); // Unhide when finished
       SynchGUI( );
 
       m_initDone = true;
       timer1.Enabled = true; // and enable pacer
+
+      LOG.Log( $"InitGUI: End" );
     }
 
 
@@ -1016,6 +1060,8 @@ namespace FS20_HudBar
     /// </summary>
     private void SimConnect( )
     {
+      LOG.Log( $"SimConnect: Start" );
+
       HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cInfo;
       HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse;
 
@@ -1024,6 +1070,7 @@ namespace FS20_HudBar
         SetupInGameHook( false );
         SC.SimConnectClient.Instance.FlightPlanModule.Enabled = false;
         SC.SimConnectClient.Instance.Disconnect( );
+        LOG.Log( $"SimConnect: Disconnected now" );
       }
       else {
         // setup the event monitor before connecting (will be handled in the Timer Event)
@@ -1037,9 +1084,11 @@ namespace FS20_HudBar
           SC.SimConnectClient.Instance.FlightPlanModule.Enabled = AppSettings.Instance.FltAutoSave;
           // enable game hooks if newly connected and desired
           SetupInGameHook( AppSettings.Instance.InGameHook );
+          LOG.Log( $"SimConnect: Connected now" );
         }
         else {
           HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Red;
+          LOG.Log( $"SimConnect: Could not connect" );
         }
       }
 
@@ -1064,7 +1113,7 @@ namespace FS20_HudBar
           // No events seen so far
           if ( m_scGracePeriod <= 0 ) {
             // grace period is expired !
-            Console.WriteLine( "HudBar: Did not receive an Event - Restarting Connection" );
+            LOG.Log( "timer1_Tick: Did not receive an Event for 5sec - Restarting Connection" );
             SimConnect( ); // Disconnect if we don't receive Events even the Sim is connected
           }
           m_scGracePeriod--;
@@ -1078,7 +1127,6 @@ namespace FS20_HudBar
         SimConnect( );
       }
     }
-
 
     #endregion
 

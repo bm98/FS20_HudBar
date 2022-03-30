@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DbgLib;
+
 namespace PingLib
 {
 
@@ -17,12 +19,23 @@ namespace PingLib
   {
     #region STATIC
 
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+
+    // Static cTor: Just report the Library to Dbg
+    static Sounds( )
+    {
+      LOG.Log( $"Init Module" );
+    }
+
+
     /// <summary>
     ///  Returns all of the installed sounds.
     /// </summary>
     /// <returns>Returns a read-only collection of the sounds currently available from the library</returns>
     public static IReadOnlyCollection<SoundInfo> InstalledSounds => WaveProc.GetInstalledSounds( );
-
 
     #endregion
 

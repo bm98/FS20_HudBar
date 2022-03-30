@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
+using DbgLib;
+
 namespace FS20_HudBar.Win
 {
   /// <summary>
@@ -16,6 +18,14 @@ namespace FS20_HudBar.Win
   /// </summary>
   internal class GlobalKbdHook : IDisposable
   {
+    #region STATIC
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+    #endregion
+
+
     // Original Comment:
     //Based on https://gist.github.com/Stasonix
 
@@ -121,7 +131,7 @@ namespace FS20_HudBar.Win
         if ( _windowsHookHandle != IntPtr.Zero ) {
           if ( !UnhookWindowsHookEx( _windowsHookHandle ) ) {
             int errorCode = Marshal.GetLastWin32Error();
-            Console.WriteLine( $"GlobalKbdHook: Failed to remove keyboard hooks for '{Process.GetCurrentProcess( ).ProcessName}'. Error {errorCode}: {new Win32Exception( Marshal.GetLastWin32Error( ) ).Message}." );
+            LOG.LogError( $"Dispose: Failed to remove keyboard hooks for '{Process.GetCurrentProcess( ).ProcessName}'. Error {errorCode}: {new Win32Exception( Marshal.GetLastWin32Error( ) ).Message}." );
             // we don't throw in dispose
             // throw new Win32Exception( errorCode, $"Failed to remove keyboard hooks for '{Process.GetCurrentProcess( ).ProcessName}'. Error {errorCode}: {new Win32Exception( Marshal.GetLastWin32Error( ) ).Message}." );
           }
@@ -136,7 +146,7 @@ namespace FS20_HudBar.Win
         if ( !FreeLibrary( _user32LibraryHandle ) ) // reduces reference to library by 1.
         {
           int errorCode = Marshal.GetLastWin32Error();
-          Console.WriteLine( $"GlobalKbdHook: Failed to unload library 'User32.dll'. Error {errorCode}: {new Win32Exception( Marshal.GetLastWin32Error( ) ).Message}." );
+          LOG.LogError( $"Dispose: Failed to unload library 'User32.dll'. Error {errorCode}: {new Win32Exception( Marshal.GetLastWin32Error( ) ).Message}." );
           // we don't throw in dispose
           //throw new Win32Exception( errorCode, $"Failed to unload library 'User32.dll'. Error {errorCode}: {new Win32Exception( Marshal.GetLastWin32Error( ) ).Message}." );
         }
@@ -242,8 +252,6 @@ namespace FS20_HudBar.Win
       /// </summary>
       public IntPtr AdditionalInformation;
     }
-
-
 
     #endregion
 

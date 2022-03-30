@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using DbgLib;
+
 using SC = SimConnectClient;
 using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
@@ -22,6 +24,15 @@ namespace FS20_HudBar.Bar.Items
   /// </summary>
   class DI_Load_prct : DispItem
   {
+    #region STATIC
+
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+
+    #endregion
+
     /// <summary>
     /// The Label ID 
     /// </summary>
@@ -56,7 +67,7 @@ namespace FS20_HudBar.Bar.Items
       var maxHP = Calculator.MaxHPCalibration( torq, erpm ) * 2; // CALIBRATE @ 50% Load
       if ( maxHP > 0 ) {
         s_maxHP[engine - 1] = maxHP;
-        Console.WriteLine( $"HudBar-Load Calibration: engine {engine} max HP {maxHP}" );
+        LOG.Log( $"CalEngine: engine {engine} max HP {maxHP}" );
       }
     }
 
@@ -137,7 +148,7 @@ namespace FS20_HudBar.Bar.Items
           }
           else {
             s_calibrated = false;
-            Console.WriteLine( $"HudBar- Unknown Aircraft :{SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile}" );
+            //LOG.Log( $"OnDataArrival: Unknown Aircraft :{SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile}" );
           }
         }
 

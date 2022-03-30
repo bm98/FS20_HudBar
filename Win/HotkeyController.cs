@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 //using RawInputLib;
 
+using DbgLib;
+
 namespace FS20_HudBar.Win
 {
 
@@ -32,6 +34,13 @@ namespace FS20_HudBar.Win
   /// </summary>
   internal class HotkeyController : IDisposable
   {
+    #region STATIC
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+    #endregion
+
     private bool _kbdAction = false;
 
     // the Hook Handler
@@ -80,9 +89,9 @@ namespace FS20_HudBar.Win
         _kbdHook = new GlobalKbdHook( );
         _kbdHook.KeyboardPressed += _kbdHook_KeyboardPressed;
       }
-      catch {
+      catch (Exception e) {
         _kbdHook = null;
-        Console.WriteLine( "HotkeyController: Cannot establish the Keyboard Hook" );
+        LOG.LogError( $"HotkeyController: Cannot establish the Keyboard Hook\n{e.Message}" );
       }
 
     }

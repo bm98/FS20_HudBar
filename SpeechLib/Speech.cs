@@ -8,6 +8,9 @@ using Windows.Media.Audio;
 using Windows.Media.Core;
 using Windows.Media.SpeechSynthesis;
 
+
+using DbgLib;
+
 namespace SpeechLib
 {
   /// <summary>
@@ -22,18 +25,27 @@ namespace SpeechLib
   {
     #region STATIC
 
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+
+    // Static cTor: Just report the Library to Dbg
+    static Speech( )
+    {
+      LOG.Log( $"Init Module" );
+    }
+
     /// <summary>
     ///  Returns all of the installed speech synthesis (text-to-speech) voices.
     /// </summary>
     /// <returns>Returns a read-only collection of the voices currently installed on the system.</returns>
-    public static IReadOnlyCollection<InstalledVoice> InstalledVoices => VoiceSynth.GetInstalledVoices();
-    
+    public static IReadOnlyCollection<InstalledVoice> InstalledVoices => VoiceSynth.GetInstalledVoices( );
 
     #endregion
+
     // Background worker, Voice Output
     private SpeechWorker _speaker;
-
-
 
     /// <summary>
     /// cTor: Init facility
@@ -41,7 +53,7 @@ namespace SpeechLib
     public Speech( )
     {
       _speaker = new SpeechWorker( );
-      _speaker.InitSpeaker( null );
+      _speaker.InitSpeaker( null ); 
       _speaker.ProgressChanged += _speaker_ProgressChanged;
     }
 

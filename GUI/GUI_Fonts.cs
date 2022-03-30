@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using DbgLib;
+
 namespace FS20_HudBar.GUI
 {
   // Mapped into the Namespace 
@@ -93,6 +95,13 @@ namespace FS20_HudBar.GUI
   /// </summary>
   class GUI_Fonts : IDisposable
   {
+    #region STATIC
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+    #endregion
+
     /// <summary>
     /// Embedded Fonts
     /// </summary>
@@ -134,7 +143,7 @@ namespace FS20_HudBar.GUI
         }
       }
       catch ( Exception e ) {
-        Console.WriteLine( $"Cannot create Memory Font\n{e.Message}" );
+        LOG.LogError( $"static cTor GUI_Fonts: Cannot create Memory Font\n{e.Message}" );
       }
     }
 
@@ -154,7 +163,7 @@ namespace FS20_HudBar.GUI
       else {
         // get a generic font
         ret = FontFamily.GenericSansSerif;
-        Console.WriteLine( $"FontDescriptor - cannot load: {ffName} - using a generic font" );
+        LOG.LogError( $"GetFontFamily: Cannot load: {ffName} - using a generic font" );
       }
       return ret;
     }
@@ -518,8 +527,8 @@ namespace FS20_HudBar.GUI
         SetFontsize( m_fontSize );
       }
       else {
-        // ISSUE..
-        Console.WriteLine( $"Read Font Config: did not found 4 entries - resetting user fonts to defaults" );
+        // ISSUE.. or first start
+        LOG.Log( $"Read Font Config: did not found 4 entries - resetting user fonts to defaults" );
         ResetUserFonts( );
       }
 

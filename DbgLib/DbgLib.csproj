@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6AD5DE08-D31B-4567-BCA8-B6DA8A73A22C}</ProjectGuid>
+    <ProjectGuid>{45F076AB-787B-434D-A4CD-E6B7D0A423DF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PingLib</RootNamespace>
-    <AssemblyName>PingLib</AssemblyName>
+    <RootNamespace>DbgLib</RootNamespace>
+    <AssemblyName>DbgLib</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -29,7 +29,26 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\PingLib.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\DbgLib.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Release\DbgLib.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -42,74 +61,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Loops.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="SoundBite.cs" />
-    <Compile Include="SoundInfo.cs" />
-    <Compile Include="LoopWorker.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sounds.cs" />
+    <Compile Include="Dbg.cs" />
+    <Compile Include="DbgLogger.cs" />
+    <Compile Include="IDbg.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SoundWorker.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WaveProc.cs" />
+    <Compile Include="WinVersion.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
       <Version>10.0.22000.196</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sounds\Wood1_VbrQ50stereo.wma" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sounds\Nylon1_VBR50Q48kHz.wma" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sounds\Nylon2_VBR50Q48kHz.wma" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sounds\Silence_VBR50Q48kHz.wma" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sounds\Synth1_VBR50Q48kHz.wma" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sounds\Wood1_VBR50Q48kHz.wma" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sounds\Synth2_VBR50Q48kHz.wma" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sounds\Bell1_VBR50Q48kHz.wma" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sounds\Synth3_VBR50Q48kHz.wma" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sounds\TSynth_VBR50Q48kHz.wma" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DbgLib\DbgLib.csproj">
-      <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
-      <Name>DbgLib</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>if $(ConfigurationName) == Release copy $(TargetDir)*.* $(SolutionDir)..\Redist\
+if $(ConfigurationName) == Release del $(SolutionDir)..\Redist\*.tmp</PostBuildEvent>
   </PropertyGroup>
 </Project>

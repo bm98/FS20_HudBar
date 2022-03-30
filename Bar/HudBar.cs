@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using DbgLib;
+
 using FSimClientIF.Flightplan;
 using SC = SimConnectClient;
 
@@ -26,6 +28,13 @@ namespace FS20_HudBar.Bar
   /// </summary>
   internal sealed class HudBar : IDisposable
   {
+    #region STATIC
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+    #endregion
+
     #region STATIC PART
 
     // this part is maintaned only once for all HudBar Instances (there is only One Instance at any given time - else it breaks...)
@@ -130,6 +139,7 @@ namespace FS20_HudBar.Bar
       {LItem.AP_BC, DI_Ap_BC.Desc },
       {LItem.AP_NAVg, DI_Ap_NavGps.Desc },
       {LItem.AP_APR_GS, DI_Ap_AprGs.Desc },
+      {LItem.AP_ATT, DI_Ap_ATT.Desc },
       {LItem.AP_YD, DI_Ap_YD.Desc },
       {LItem.AP_LVL, DI_Ap_LVL.Desc },
       {LItem.AP_APR_INFO, DI_Ap_ApproachMode.Desc },
@@ -293,6 +303,7 @@ namespace FS20_HudBar.Bar
                       int autoSave, string shelfFolder, CProfile cProfile, string voiceName, string userFonts,
                       bool fRecorder )
     {
+      LOG.Log( "cTor HudBar: Start" );
       // just save them in the HUD mainly for config purpose
       m_profile = cProfile;
       ShowUnits = showUnits;
@@ -321,6 +332,7 @@ namespace FS20_HudBar.Bar
       ToolTipFP.ResetDrawList( );
 
       // init the Fontprovider from the submitted labels
+      LOG.Log( "cTor HudBar: Init Fontprovider" );
       FONTS = new GUI_Fonts( m_profile.Condensed ); // get all fonts from built in
       FONTS.FromConfigString( userFonts ); // and load from AppSettings
 
@@ -333,12 +345,6 @@ namespace FS20_HudBar.Bar
       value2Proto.Font = (Font)FONTS.Value2Font.Clone( );
       signProto.Font = (Font)FONTS.SignFont.Clone( );
 
-      /* not really needed - TODO delete for the next release
-      // reset all Catalogs before creating this Instance
-      m_valueItems.Clear( );
-      m_dispItems.Clear( );
-      */
-
       // The pattern below repeats, create the display group and add it to the group list
       // All visual handling is done in the respective Class Implementation
       // Data Update is triggered by subscribing with the SimUpdate from the created object
@@ -348,6 +354,7 @@ namespace FS20_HudBar.Bar
       // We need all as there might be Breaks assigned to some that are not currently visible but 
       // we take those and realize the Breaks at the proper location
 
+      LOG.Log( "cTor HudBar: Adding DI Items" );
       // Sim Status
       m_dispItems.AddDisp( new DI_MsFS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_SimRate( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -466,6 +473,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Ap_BC( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_NavGps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_AprGs( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ap_ATT( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_YD( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_LVL( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_ApproachMode( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -484,9 +492,12 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Mix_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Prop_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
 
+      LOG.Log( $"cTor HudBar: {m_dispItems.Count} items loaded" );
+
       // **** post processing
 
       // Apply Unit modifier (shown, not shown) to all Values
+      LOG.Log( $"cTor HudBar: Post Processing" );
       foreach ( var lx in m_valueItems ) {
         lx.Value.Value.ShowUnit = ShowUnits;
       }
@@ -514,6 +525,7 @@ namespace FS20_HudBar.Bar
       }
 
       // Align the Value columns on left and right bound bar or tile
+      LOG.Log( $"cTor HudBar: Aligning DI items" );
       if ( m_profile.Placement == Placement.Left || m_profile.Placement == Placement.Right ) {
         // Determine max width and make them aligned
         int maxLabelWidth = 0;
@@ -558,9 +570,12 @@ namespace FS20_HudBar.Bar
         }
       }
       // VoicePack Data Registration (as we cleared all above..)
+      LOG.Log( $"cTor HudBar: Register Observers" );
       m_voicePack.RegisterObservers( );
       // we want to know when an Aircraft is changed
       SC.SimConnectClient.Instance.AircraftChange += Instance_AircraftChange;
+
+      LOG.Log( $"cTor HudBar: End" );
     }
 
     #region Update Content and Settings
@@ -583,6 +598,7 @@ namespace FS20_HudBar.Bar
       AirportMgr.Update( AtcFlightPlan.Destination ); // maintain APT (we should always have a Destination here)
                                                       // Load Remaining Plan if the WYP or Flightplan has changed
       if ( WPTracker.HasChanged || FltPlanMgr.HasChanged ) {
+        LOG.Log( $"UpdateGUI: WP or FlightPlan has changed" );
         string tt = AtcFlightPlan.RemainingPlan( WPTracker.Read( ) );
         var di = this.DispItem( LItem.GPS_WYP );
         if ( di != null ) {
@@ -612,6 +628,7 @@ namespace FS20_HudBar.Bar
       }
 
       if ( _aircraftChanged ) {
+        LOG.Log( $"UpdateGUI: Aircraft has changed to {SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile}" );
         string tt="";
         if ( !string.IsNullOrWhiteSpace( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile ) ) {
           var ds = SC.SimConnectClient.Instance.HudBarModule;

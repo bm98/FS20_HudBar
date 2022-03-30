@@ -157,6 +157,7 @@ namespace FS20_HudBar.Bar.Items
     ESI_ANI,      // ESI & FPA Visual
 
     TXT,          // Free Text
+    AP_ATT,       // Attitude Hold
   }
 
 
@@ -366,6 +367,7 @@ namespace FS20_HudBar.Bar.Items
     AP_BC,        // AP BC signal
     AP_APR,       // AP APR hold active
     AP_GS,        // AP GS  hold active
+    AP_ATT,       // Attitude Hold
     AP_YD,        // Yaw Damper signal
     AP_LVL,       // Wing Leveler signal
     AP_APR_INFO,   // AP/GPS Approach Information

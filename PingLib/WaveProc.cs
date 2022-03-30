@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using System.Threading;
 
 using Windows.Media.Audio;
-using Windows.Media.Core;
+using Windows.Media.Render;
 using Windows.Storage;
 using System.IO;
+
+using DbgLib;
 
 namespace PingLib
 {
@@ -20,6 +22,11 @@ namespace PingLib
   {
 
     #region STATIC
+
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
 
     private static List<SoundInfo> _installedSounds = new List<SoundInfo>();
 
@@ -65,22 +72,87 @@ namespace PingLib
 
     private bool _playing = false; // true while playing
 
-    private bool _canPlay = false; // true when all infrastructure is OK
+    private bool _canPlay = true; // true when all infrastructure is OK
 
+    #region Render Category
+
+    // Mean to find a render category that works, sometimes the devices are not available for certain categories
+    // Found that Speech may reply 0x8889000A (Device in Use) but not other categories ?? No MS Doc for this
+
+    private const AudioRenderCategory _renderNone = AudioRenderCategory.Alerts; // Alerts is interpreted as NA...
+    private AudioRenderCategory _renderCat = _renderNone;
+
+    // Find a valid AudioGraph RenderCategory
+    // this should leave _renderCat with a valid one or _renderNone
+    private void FindRenderCategory( )
+    {
+      // A list of tryouts for the output rendering
+      Queue<AudioRenderCategory> renderSequence = new Queue<AudioRenderCategory>( new []{
+        AudioRenderCategory.SoundEffects,
+        AudioRenderCategory.GameEffects,
+        AudioRenderCategory.Media,
+        AudioRenderCategory.Other,
+        // Finally the Not Available Cat
+        _renderNone,
+      });
+      _renderCat = renderSequence.Dequeue( );
+
+      // Try a cat that works
+      do {
+        // Create an AudioGraph
+        AudioGraphSettings settings = new AudioGraphSettings( _renderCat ) {
+          PrimaryRenderDevice = null, // If PrimaryRenderDevice is null, the default playback device will be used.
+        };
+        LOG.Log( $"FindRenderCategory: About to test AudioGraph with RenderCategory: {_renderCat}" );
+        // We await here the execution without providing an async method ...
+        var resultAG = WindowsRuntimeSystemExtensions.AsTask( AudioGraph.CreateAsync(settings));
+        resultAG.Wait( );
+        if ( resultAG.Result.Status != AudioGraphCreationStatus.Success ) {
+          LOG.LogError( $"FindRenderCategory: AudioGraph test error: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
+            + $"\nExtError: {resultAG.Result.ExtendedError}" );
+
+          // try next category if there is one left
+          if ( renderSequence.Count > 0 ) {
+            _renderCat = renderSequence.Dequeue( );
+          }
+          else {
+            // sanity - should never happen
+            LOG.LogError( $"FindRenderCategory: Program error - Queue overrun" );
+            _renderCat = _renderNone;
+            return;
+          }
+        }
+        else {
+          resultAG.Result.Graph?.Dispose( ); // not used after tryout
+          LOG.Log( $"FindRenderCategory: Success with RenderCategory: {_renderCat}" );
+          return; // _renderCat contains a successful one
+        }
+      } while ( _renderCat != _renderNone );
+
+      LOG.LogError( $"FindRenderCategory: Failed to find a working RenderCategory - cannot speak" );
+      _canPlay = false;
+      return; // could not resolve - left with _renderNone
+    }
+
+    #endregion
 
     // Init the AudioGraph
     //  despite the Aync methods - this will exec synchronously to get the InitPhase  only get done when all is available 
     private void InitAudioGraph( )
     {
-      _canPlay = false;
+      LOG.Log( "InitAudioGraph: Begin" );
+      if ( !_canPlay ) {
+        LOG.Log( "InitAudioGraph: Canceled with _canPlay = false" );
+        return; // cannot even try..
+      }
+
       // MUST WAIT UNTIL all items are created, else one may call Play too early...
-      Console.WriteLine( "PingLib-WaveProc: InitAudioGraph" );
       // cleanup existing items
       if ( _deviceOutputNode != null ) { _deviceOutputNode.Dispose( ); _deviceOutputNode = null; }
       if ( _audioGraph != null ) { _audioGraph.Dispose( ); _audioGraph = null; }
 
       // Create an AudioGraph
-      AudioGraphSettings settings = new AudioGraphSettings ( Windows.Media.Render.AudioRenderCategory.SoundEffects) {
+      AudioGraphSettings settings = new AudioGraphSettings ( _renderCat ) {
         PrimaryRenderDevice = null, // If PrimaryRenderDevice is null, the default playback device will be used.
         MaxPlaybackSpeedFactor = 2, // should preserve some memory
       };
@@ -88,12 +160,14 @@ namespace PingLib
       var resultAG = WindowsRuntimeSystemExtensions.AsTask( AudioGraph.CreateAsync(settings));
       resultAG.Wait( );
       if ( resultAG.Result.Status != AudioGraphCreationStatus.Success ) {
-        Console.WriteLine( $"PingLib-WaveProc: ERROR - AudioGraph creation error: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
-          + $"\nExtError: {resultAG.Result.ExtendedError}" );
+        LOG.LogError( $"InitAudioGraph: Failed to create AudioGraph with RenderCategory: {_renderCat}" );
+        LOG.LogError( $"InitAudioGraph: AudioGraph creation: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
+                        + $"\nExtError: {resultAG.Result.ExtendedError}" );
+        _canPlay = false;
         return;
       }
       _audioGraph = resultAG.Result.Graph;
-      Console.WriteLine( $"PingLib-WaveProc: AudioGraph: [{_audioGraph.EncodingProperties}]" );
+      LOG.Log( $"InitAudioGraph: AudioGraph: [{_audioGraph.EncodingProperties}]" );
 
       // Create a device output node
       // The output node uses the PrimaryRenderDevice of the audio graph.
@@ -102,15 +176,14 @@ namespace PingLib
       resultDO.Wait( );
       if ( resultDO.Result.Status != AudioDeviceNodeCreationStatus.Success ) {
         // Cannot create device output node
-        Console.WriteLine( $"PingLib-WaveProc: ERROR - DeviceOutputNode creation error: {resultDO.Result.Status}, TaskStatus: {resultDO.Status}"
-          + $"\nExtError: {resultDO.Result.ExtendedError}" );
+        LOG.LogError( $"InitAudioGraph: DeviceOutputNode creation: {resultDO.Result.Status}, TaskStatus: {resultDO.Status}"
+                        + $"\nExtError: {resultDO.Result.ExtendedError}" );
+        _canPlay = false;
         return;
       }
       _deviceOutputNode = resultDO.Result.DeviceOutputNode;
-      Console.WriteLine( $"PingLib-WaveProc: DeviceOutputNode: [{_deviceOutputNode.Device}]" );
-
-      Console.WriteLine( "PingLib-WaveProc: InitAudioGraph-END" );
-      _canPlay = true;
+      LOG.Log( $"InitAudioGraph: DeviceOutputNode: [{_deviceOutputNode.Device}]" );
+      LOG.Log( $"InitAudioGraph: InitAudioGraph-END" );
     }
 
 
@@ -159,9 +232,8 @@ namespace PingLib
     {
       _playing = true; // locks additional calls for Speak until finished talking this bit
 
-      if ( !_canPlay
-            || _audioGraph == null || _deviceOutputNode == null ) {
-        Console.WriteLine( $"PingLib-WaveProc: ERROR - AudioGraph does not exist: cannot play..\n [{_audioGraph}] [{_deviceOutputNode}]" );
+      if ( !_canPlay || _audioGraph == null || _deviceOutputNode == null ) {
+        LOG.LogError( $"PlayAsyncLow: Some items do not exist: cannot play..\n [{_audioGraph}] [{_deviceOutputNode}]" );
         await EndOfSound( );
         return;
       }
@@ -180,7 +252,7 @@ namespace PingLib
         // set new sound
         _sound = _installedSounds.Where( x => x.Melody == soundBite.Melody ).FirstOrDefault( );
         if ( _sound == null ) {
-          Console.WriteLine( $"PingLib-WaveProc: ERROR - Melody has no Audiofile: {soundBite.Melody} - cannot play" );
+          LOG.LogError( $"PlayAsyncLow: Melody has no Audiofile: {soundBite.Melody} - cannot play" );
           await EndOfSound( );
           return;
         }
@@ -188,8 +260,8 @@ namespace PingLib
         // create the InputNode
         var resultAF = await _audioGraph.CreateFileInputNodeAsync(file);
         if ( resultAF.Status != AudioFileNodeCreationStatus.Success ) {
-          Console.WriteLine( $"PingLib-WaveProc: ERROR - AudioFileNodeCreationStatus creation error: {resultAF.Status}"
-            + $"\nExtError: {resultAF.ExtendedError}" );
+          LOG.LogError( $"PlayAsyncLow: AudioFileNodeCreationStatus creation: {resultAF.Status}"
+                                  + $"\nExtError: {resultAF.ExtendedError}" );
           await EndOfSound( );
           return;
         }
@@ -220,7 +292,7 @@ namespace PingLib
         //_audioGraph.Start( );
       }
       catch ( Exception e ) {
-        Console.WriteLine( $"PingLib-WaveProc: ERROR - Sample Setup caused an Exception\n{e.Message}" );
+        LOG.LogError( $"PlayAsyncLow: Sample Setup caused an Exception\n{e.Message}" );
         await EndOfSound( );
       }
     }
@@ -240,11 +312,17 @@ namespace PingLib
     /// </summary>
     public WaveProc( AutoResetEvent resetEvent, bool loolPlayer )
     {
+      // Init - will be flaged during init if something goes wrong
+      _canPlay = true;
+
+      LoadAvailableSounds( );
+
       _playingWaitHandle = resetEvent;
       _playingWaitHandle.Reset( );
 
       /* AudioGraph*/
-      LoadAvailableSounds( );
+      // find a render cat (see notes above)
+      FindRenderCategory( );
       InitAudioGraph( );
     }
 
@@ -283,7 +361,7 @@ namespace PingLib
       if ( !_canPlay ) return; // Cannot
 
       if ( _deviceOutputNode == null ) {
-        Console.WriteLine( "PingLib-WaveProc: ERROR - Cannot Mute, DeviceOutput was null ??" );
+        LOG.LogError( "Mute: Cannot Mute, DeviceOutput was null ??" );
         return;
       }
       _deviceOutputNode.ConsumeInput = !muted;

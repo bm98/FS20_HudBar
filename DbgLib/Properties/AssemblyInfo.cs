@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PingLib")]
-[assembly: AssemblyDescription( "Wrapper around the Win10 AudioGraph API - plays sound notes" )]
+[assembly: AssemblyTitle("DbgLib")]
+[assembly: AssemblyDescription( "Debug Helper Lib" )]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("PingLib")]
+[assembly: AssemblyProduct("DbgLib")]
 [assembly: AssemblyCopyright( "Copyright ©  2022 M.Burri" )]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("6ad5de08-d31b-4567-bca8-b6da8a73a22c")]
+[assembly: Guid("45f076ab-787b-434d-a4cd-e6b7d0a423df")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion( "1.0.2.8" )]
-[assembly: AssemblyFileVersion( "1.0.2.8" )]
+[assembly: AssemblyVersion( "1.0.0.5" )]
+[assembly: AssemblyFileVersion( "1.0.0.5" )]

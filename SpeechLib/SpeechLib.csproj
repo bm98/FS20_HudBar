@@ -55,8 +55,14 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.22000.194</Version>
+      <Version>10.0.22000.196</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DbgLib\DbgLib.csproj">
+      <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
+      <Name>DbgLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

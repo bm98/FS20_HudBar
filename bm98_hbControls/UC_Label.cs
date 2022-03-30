@@ -33,11 +33,11 @@ namespace bm98_hbControls
     // some shorts to eval the Alignment  (x & c_xy)>0  gets the H or V StringAlignment
     private readonly ContentAlignment c_hLeft = ContentAlignment.TopLeft | ContentAlignment.MiddleLeft | ContentAlignment.BottomLeft;
     private readonly ContentAlignment c_hCenter = ContentAlignment.TopCenter | ContentAlignment.MiddleCenter | ContentAlignment.BottomCenter;
-    private readonly ContentAlignment c_hRight = ContentAlignment.TopRight | ContentAlignment.MiddleRight | ContentAlignment.BottomRight;
+    //private readonly ContentAlignment c_hRight = ContentAlignment.TopRight | ContentAlignment.MiddleRight | ContentAlignment.BottomRight;
 
     private readonly ContentAlignment c_vTop = ContentAlignment.TopLeft | ContentAlignment.TopCenter | ContentAlignment.TopRight;
     private readonly ContentAlignment c_vMiddle = ContentAlignment.MiddleLeft | ContentAlignment.MiddleCenter | ContentAlignment.MiddleRight;
-    private readonly ContentAlignment c_vBottom = ContentAlignment.BottomLeft | ContentAlignment.BottomCenter | ContentAlignment.BottomRight;
+    //private readonly ContentAlignment c_vBottom = ContentAlignment.BottomLeft | ContentAlignment.BottomCenter | ContentAlignment.BottomRight;
 
     // Hor Alignment
     private StringAlignment HAlignment( ContentAlignment ca )

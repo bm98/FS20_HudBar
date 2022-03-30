@@ -39,7 +39,7 @@ namespace SpeechLib
     {
       _workerWaitHandle = new AutoResetEvent( false );
       _speakerWaitHandle = new AutoResetEvent( false );
-      _speaker = new VoiceSynth(_speakerWaitHandle);
+      _speaker = new VoiceSynth( _speakerWaitHandle );
 
       this.WorkerSupportsCancellation = true;
       this.WorkerReportsProgress = true;
@@ -47,7 +47,7 @@ namespace SpeechLib
       this.DoWork += SpeechWorker_DoWork;
     }
 
-    
+
     /// <summary>
     /// Start the Speaker processing
     /// </summary>
@@ -91,7 +91,7 @@ namespace SpeechLib
       if ( !this.IsBusy ) {
         throw new InvalidOperationException( "Cannot add Words when not initialized" );
       }
-      if ( text.Length> _maxWordLength ) {
+      if ( text.Length > _maxWordLength ) {
         throw new InvalidOperationException( $"Text is too long: {text.Length} chars ({_maxWordLength} chars max supported)" );
       }
 
@@ -157,7 +157,7 @@ namespace SpeechLib
 
         // retrigger of there are words left
         if ( _words.Count > 0 )
-          _workerWaitHandle.Set( ); 
+          _workerWaitHandle.Set( );
       }
 
       // finishing here

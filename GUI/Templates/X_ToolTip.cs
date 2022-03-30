@@ -99,7 +99,7 @@ namespace FS20_HudBar.GUI.Templates
     // the boundary box should be set here via ToolTip PopUp event to the measured size of the text to draw
     private void OnDraw( object sender, DrawToolTipEventArgs e )
     {
-      Console.WriteLine( $"OnDraw: {e.Bounds.Width} x {e.Bounds.Height}" );
+      //Console.WriteLine( $"OnDraw: {e.Bounds.Width} x {e.Bounds.Height}" );
       DrawToolTipEventArgs newArgs = new DrawToolTipEventArgs ( e.Graphics,
                 e.AssociatedWindow, e.AssociatedControl, e.Bounds, e.ToolTipText,
                 this.BackColor, this.ForeColor, ttFont /*new Font ( e.Font, FontStyle.Regular ) */);

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DbgLib;
+
 namespace PingLib
 {
 
@@ -12,6 +14,15 @@ namespace PingLib
   /// </summary>
   public class SoundBite
   {
+    #region STATIC
+
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+
+    #endregion
+
     /// <summary>
     /// A Melody from the available ones
     /// </summary>
@@ -57,7 +68,7 @@ namespace PingLib
       var tune = WaveProc.GetInstalledSounds().Where(x=>x.Melody==melody).FirstOrDefault();
       if ( tune == null ) {
         // sould not happen .....
-        Console.WriteLine( $"PingLib: ERROR - Cannot find the Meldoy: {melody}" );
+        LOG.LogError( $"SoundBite: Cannot find the Melody: {melody}" );
         Melody = Melody.Silence;
         return;
       }
@@ -82,7 +93,7 @@ namespace PingLib
       var tune = WaveProc.GetInstalledSounds().Where(x=>x.Melody==melody).FirstOrDefault();
       if ( tune == null ) {
         // sould not happen .....
-        Console.WriteLine( $"PingLib: ERROR - Cannot find the Meldoy: {melody}" );
+        LOG.LogError( $"SoundBite: Cannot find the Melody: {melody}" );
         Melody = Melody.Silence;
         return;
       }
