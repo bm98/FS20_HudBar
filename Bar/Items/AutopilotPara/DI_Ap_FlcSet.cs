@@ -55,6 +55,8 @@ namespace FS20_HudBar.Bar.Items
 
     private void _label_MouseWheel( object sender, MouseEventArgs e )
     {
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return;
+
       if ( e.Delta > 0 ) {
         // Up
         SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting( FSimClientIF.CmdMode.Inc );
@@ -67,9 +69,9 @@ namespace FS20_HudBar.Bar.Items
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
-      if ( SC.SimConnectClient.Instance.IsConnected ) {
-        SC.SimConnectClient.Instance.AP_G1000Module.FLChold_active = true; // toggles independent of the set value
-      }
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return;
+
+      SC.SimConnectClient.Instance.AP_G1000Module.FLChold_active = true; // toggles independent of the set value
     }
 
     /// <summary>

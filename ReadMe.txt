@@ -45,9 +45,17 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.48-B45
+- Add Engine 3 and 4 support
 - Add AP Attitude Hold Item
+- Add AP AutoThrottle item (ATHR, TOGA)
+- Add AP IAS Speed Hold item
+- Add COM Activ, Standby Frequ. (with mouse dial and swap)
+- Add NAV Activ, Standby Frequ. (with mouse dial and swap)
 - Update Setup for Audio Speech Render Device (VoiceOut)
 - Add Debug module
+- Refactoring of the Layout procedure
+- Fix some issues found throughout
+- Update QuickGuide
 
 V 0.47-B44
 - Fix Startup Error when Share Tech Mono Font is not installed on PC

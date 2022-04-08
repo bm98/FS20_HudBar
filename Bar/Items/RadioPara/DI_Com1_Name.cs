@@ -12,37 +12,43 @@ using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
+using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.Bar.Items
 {
-  class DI_CompTime : DispItem
+  class DI_Com1_Name : DispItem
   {
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.CTIME;
+    public static readonly LItem LItem = LItem.COM1_NAME;
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static readonly string Short = "C-CLK";
+    public static readonly string Short = "COM 1";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "Time of day (Computer)";
+    public static readonly string Desc = "COM-1 Type ID";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
+    private readonly V_Base _value2;
 
-    public DI_CompTime( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
+    public DI_Com1_Name( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
       LabelID = LItem;
-      var item = VItem.CTIME;
+      var item = VItem.COM1_TYPE;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Clock( value2Proto ) { ItemForeColor = cLabel };
+      _value1 = new V_ICAO_L( value2Proto ) { ItemForeColor = cInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
-      // just need a ping to update - not taking data from the Module
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+
+      item = VItem.COM1_ID;
+      _value2 = new V_Text( value2Proto ) { ItemForeColor = cInfo };
+      this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
+
+      m_observerID = SC.SimConnectClient.Instance.ComModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -51,15 +57,18 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = (int)DateTime.Now.TimeOfDay.TotalSeconds;
+        // seems that if no station is tuned in the reply is Type= ACTIVE, Id= COM
+        _value1.Text = SC.SimConnectClient.Instance.ComModule.COM1_type;
+        _value2.Text = ( SC.SimConnectClient.Instance.ComModule.COM1_id == "COM" ) ? "..." : SC.SimConnectClient.Instance.ComModule.COM1_id;
       }
     }
 
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
+      SC.SimConnectClient.Instance.ComModule.RemoveObserver( m_observerID );
     }
 
   }
 }
+

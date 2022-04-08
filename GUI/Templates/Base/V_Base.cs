@@ -130,6 +130,7 @@ namespace FS20_HudBar.GUI.Templates.Base
       UseCompatibleTextRendering = true;        // make sure the WingDings an other font special chars display properly
       Cursor = Cursors.Default;                 // avoid the movement cross on the item controls
       Text = m_default;
+      TabStop = false; // forced, no TabStop
 
       base.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 

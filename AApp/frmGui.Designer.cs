@@ -28,25 +28,13 @@ namespace FS20_HudBar
     /// </summary>
     private void InitializeComponent( )
     {
-      this.flp = new System.Windows.Forms.FlowLayoutPanel();
       this.SuspendLayout();
-      // 
-      // flp
-      // 
-      this.flp.AutoSize = true;
-      this.flp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(1)))), ((int)(((byte)(1)))), ((int)(((byte)(1)))), ((int)(((byte)(1)))));
-      this.flp.CausesValidation = false;
-      this.flp.Location = new System.Drawing.Point(80, 100);
-      this.flp.Name = "flp";
-      this.flp.Size = new System.Drawing.Size(110, 31);
-      this.flp.TabIndex = 2;
       // 
       // frmGui
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-      this.ClientSize = new System.Drawing.Size(678, 420);
+      this.ClientSize = new System.Drawing.Size(120, 23);
       this.ControlBox = false;
-      this.Controls.Add(this.flp);
       this.Font = new System.Drawing.Font("Bahnschrift", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
       this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -59,12 +47,9 @@ namespace FS20_HudBar
       this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
       this.Text = "frmGui";
       this.ResumeLayout(false);
-      this.PerformLayout();
 
     }
 
     #endregion
-
-    internal System.Windows.Forms.FlowLayoutPanel flp;
   }
 }

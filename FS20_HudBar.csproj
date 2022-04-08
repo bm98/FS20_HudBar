@@ -156,6 +156,9 @@
     <Compile Include="Bar\Items\AtcPara\DI_Metar.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\Base\DispPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\CtrlPara\DI_Mix_LEV.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -178,6 +181,33 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AutopilotPara\DI_Ap_ATT.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_AThrottle.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_ABrake.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AutopilotPara\DI_Ap_SpeedSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Nav1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Nav2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Com1_Name.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Com2_Name.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Com1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Com2.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\SimPara\DI_Text.cs">
@@ -240,7 +270,7 @@
     <Compile Include="Bar\Items\SimPara\DI_FlightLog.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\InstrPara\DI_Xpdr.cs">
+    <Compile Include="Bar\Items\RadioPara\DI_Xpdr.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\SimPara\DI_CompTime.cs">
@@ -267,10 +297,10 @@
     <Compile Include="Bar\Items\InstrPara\DI_GForce.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\InstrPara\DI_Nav1_Name.cs">
+    <Compile Include="Bar\Items\RadioPara\DI_Nav1_Name.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\InstrPara\DI_Nav2_Name.cs">
+    <Compile Include="Bar\Items\RadioPara\DI_Nav2_Name.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\FuelPara\DI_Fuel_LR_Lb.cs">
@@ -306,10 +336,10 @@
     <Compile Include="Bar\Items\SimPara\DI_M_TimDist3.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\InstrPara\DI_Nav1.cs">
+    <Compile Include="Bar\Items\RadioPara\DI_Nav1_Active.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\InstrPara\DI_Nav2.cs">
+    <Compile Include="Bar\Items\RadioPara\DI_Nav2_Active.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\InstrPara\DI_Alt_eff.cs">
@@ -525,6 +555,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="AApp\DebugStart.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="GUI\IAlign.cs" />
     <Compile Include="GUI\Templates\A_AHor.cs">
       <SubType>UserControl</SubType>
@@ -551,6 +582,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Templates\Base\X_Label.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\V_Clock.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Templates\V_Flow_kgh.cs">

@@ -17,7 +17,7 @@ using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.Bar.Items
 {
-  class DI_Nav2 : DispItem
+  class DI_Nav2_Active : DispItem
   {
     /// <summary>
     /// The Label ID 
@@ -37,11 +37,11 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value2;
     private readonly V_Base _value3;
 
-    public DI_Nav2( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Nav2_Active( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
       LabelID = LItem;
       var item = VItem.NAV2_ID;
-      _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
+      _label = new V_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_ICAO_L( valueProto ) { ItemForeColor = cInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
@@ -91,7 +91,7 @@ namespace FS20_HudBar.Bar.Items
         }
         else {
           _value1.ItemForeColor = cInfo;
-          _value1.Text = SC.SimConnectClient.Instance.HudBarModule.NAV2_active_mhz;
+          _value1.Text = $"{SC.SimConnectClient.Instance.NavModule.Nav2_active_hz / 1_000_000f:000.00}";
           _value2.Value = null;
           _value3.Value = null;
         }

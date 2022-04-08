@@ -22,7 +22,7 @@ namespace FS20_HudBar.GUI.Templates
     : base( proto, false )
     {
       m_unit = " ";
-      m_default = DefaultString( $"{"__:__",7} " );
+      m_default = DefaultString( $"{"__:__:__",8} " );
       Text = UnitString( m_default );
     }
 
@@ -56,7 +56,7 @@ namespace FS20_HudBar.GUI.Templates
         }
 
         else if ( number >= 0 ) {
-          return $"{new TimeSpan( 0, 0, 0, number ),7:mm\\:ss} ";
+          return $"{new TimeSpan( 0, 0, 0, number ),8:mm\\:ss} ";
         }
         else {
           return m_default;

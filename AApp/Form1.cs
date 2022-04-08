@@ -53,7 +53,7 @@ namespace FS20_HudBar
 
     // This will be the GUI form
     private frmGui m_frmGui;
-    private FlowLayoutPanel flp;
+    private DispPanel flp;
 
     // A HudBar standard ToolTip for the Button Helpers
     private ToolTip_Base m_toolTip = new ToolTip_Base();
@@ -96,7 +96,7 @@ namespace FS20_HudBar
       formRect.Inflate( -20, -20 ); // have to make it a bit smaller as the rectangle can be slightly out of screen
       Screen[] screens = Screen.AllScreens;
       foreach ( Screen screen in screens ) {
-        if ( screen.WorkingArea.Contains( formRect ) ) {
+        if ( screen.WorkingArea.Contains( formRect.Location ) ) {
           return true;
         }
       }
@@ -105,22 +105,122 @@ namespace FS20_HudBar
 
     #region Synch GUI Forms
 
+    /// <summary>
+    /// Calc and return the Size of the Bar
+    /// </summary>
+    /// <returns>A Size</returns>
+    private Size BarSize( )
+    {
+      if ( HUD == null ) return this.Size; // we need the HUD to find the Size
+
+      // get the window manager decoration borders from the Main Window
+      Rectangle screenClientRect = base.RectangleToScreen(base.ClientRectangle);
+      int leftBorderWidth = screenClientRect.Left - base.Left;
+      int rightBorderWidth = base.Right - screenClientRect.Right;
+      int topBorderHeight = screenClientRect.Top - base.Top;
+      int bottomBorderHeight = base.Bottom - screenClientRect.Bottom;
+      // define the needed Window Size from the AutoSized GUI Form
+      // AutoSize on our Main Form does not catch the the GUI changes as they are not contained in the Form
+      // The GUI Form and it's FlowPanel is only overlaid over the Main Form
+      Size newS = m_frmGui.PreferredSize;
+      newS.Width += leftBorderWidth + rightBorderWidth;
+      newS.Height += topBorderHeight + bottomBorderHeight;
+      // Adjust for Bar which is stretching the screen in vert or hor direction and is only on the Main Screen 
+      if ( HUD.Kind == GUI.Kind.Bar ) {
+        switch ( HUD.Placement ) {
+          case GUI.Placement.Top: newS.Width = m_mainScreen.Bounds.Width; break;
+          case GUI.Placement.Bottom: newS.Width = m_mainScreen.Bounds.Width; break;
+          case GUI.Placement.Left: newS.Height = m_mainScreen.Bounds.Height; break;
+          case GUI.Placement.Right: newS.Height = m_mainScreen.Bounds.Height; break;
+          default: break; // program error...
+        }
+      }
+      return newS;
+    }
+
+    /// <summary>
+    /// Calc and return the Location of the Bar
+    /// </summary>
+    /// <param name="curLoc">Current Location</param>
+    /// <param name="size">The proposed BarSize</param>
+    /// <returns>A Point</returns>
+    private Point BarLocation( Point curLoc, Size size )
+    {
+      Point newL = curLoc;
+      if ( HUD == null ) return newL; // we need the HUD to find the Location
+
+      // location is managed when it is a Bar or Tile, else it is movable and we return the current Location
+      // Bar is on the Main Screen Border aligned full width or height
+      // Tile follows the preferred border but the dimension is the same as a Borderless Window
+      switch ( HUD.Placement ) {
+        case GUI.Placement.Top:
+          if ( HUD.Profile.Kind == GUI.Kind.Bar ) newL = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) newL.Y = m_mainScreen.Bounds.Y;
+          break;
+        case GUI.Placement.Bottom:
+          if ( HUD.Profile.Kind == GUI.Kind.Bar ) newL = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - size.Height );
+          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) newL.Y = m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - size.Height;
+          break;
+        case GUI.Placement.Left:
+          if ( HUD.Profile.Kind == GUI.Kind.Bar ) newL = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
+          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) newL.X = m_mainScreen.Bounds.X;
+          break;
+        case GUI.Placement.Right:
+          if ( HUD.Profile.Kind == GUI.Kind.Bar ) newL = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - size.Width, m_mainScreen.Bounds.Y );
+          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) newL.X = m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - size.Width;
+          break;
+        default:
+          break;
+      }
+
+      return newL;
+    }
+
+    /// <summary>
+    /// Returns a Rectangle containing the Bar Form
+    /// Takes care of the Kind and Position taken from the HUD
+    /// </summary>
+    /// <returns>A Rectangle</returns>
+    private Rectangle BarRectangle( )
+    {
+      Size newS = BarSize();
+      Point newL = BarLocation(this.Location, newS);
+
+      return new Rectangle( newL, newS );
+    }
+
     // synch the two forms for Size
     private void SynchGUISize( )
     {
-      m_frmGui.Size = this.ClientSize;
+      if ( HUD == null ) return; // no synch possible if there is not yet a HUDBar
+
+      // Adding controls to the FlowPanel is enclosed in a   _inLayout = true ...  = false bracket
+      // While adding controls to the FlowPanel there is some Resizing we don't want to catch
+      // else it looks weird and takes more time than needed
+      if ( !_inLayout ) {
+        Rectangle newR = BarRectangle();
+        // set This Size and Loc if a change is needed
+        if ( ( this.Width != newR.Width ) || ( this.Height != newR.Height ) ) {
+          this.Size = newR.Size;
+          this.Location = newR.Location;
+        }
+      }
     }
+
     // synch the two forms for Location
     private void SynchGUILocation( )
     {
-      m_frmGui.Location = this.PointToScreen( this.ClientRectangle.Location ); // in Windowed mode we need to get it from the client rect
+      // in Windowed mode we need to get it from the client rect
+      m_frmGui.Location = this.PointToScreen( this.ClientRectangle.Location );
     }
+
     // synch the two forms for Size and Location
     private void SynchGUI( )
     {
       SynchGUISize( );
       SynchGUILocation( );
     }
+
     // synch the two forms for Visible state
     private void SynchGUIVisible( bool visible )
     {
@@ -221,7 +321,7 @@ namespace FS20_HudBar
           _keyHook = new Win.HotkeyController( Handle );
         }
         _keyHook.KeyHandling( false ); // disable momentarily
-        // reload the bindings
+                                       // reload the bindings
         _keyHook.RemoveAllKeys( );
         if ( HUD.Hotkeys.ContainsKey( Hotkeys.Show_Hide ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Show_Hide], Hooks.Show_Hide.ToString( ), OnHookKey );
         if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_1 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_1], Hooks.Profile_1.ToString( ), OnHookKey );
@@ -310,17 +410,29 @@ namespace FS20_HudBar
       LOG.Log( "frmMain: Load Colors" );
       Colorset = ToColorSet( AppSettings.Instance.Appearance );
 
+      // Use CoordLib with no blanks as separator
+      CoordLib.Dms.Separator = "";
+
       // ShowUnits and Opacity are set via HUD in InitGUI
       LOG.Log( "frmMain: Load GUI Forms" );
-      m_frmGui = new frmGui( );
-      this.AddOwnedForm( m_frmGui );
+      m_frmGui = new frmGui {
+        AutoSize = true // Allow the GUIform to AutoSize (the one containing the FlowPanel)
+      };
+      m_frmGui.Resize += M_frmGui_Resize;
+      m_frmGui.SizeChanged += M_frmGui_SizeChanged;
+
+      this.AddOwnedForm( m_frmGui ); // we Own the GuiForm for management
+                                     // Create a DispList 
+      flp = new DispPanel( ) { Name = "flp" };
+      m_frmGui.Controls.Add( flp );
       m_frmGui.Show( );
+      // And Overlay the two Forms
       SynchGUI( );
-      flp = m_frmGui.flp;
-      /* DEBUG ONLY
-      flp.Layout += Flp_Layout;
-      flp.SizeChanged += Flp_SizeChanged;
-      */
+
+#if DEBUG
+      // DEBUG TESTS
+      //flp.BackColor = Color.DarkGray; // show extent of the FlowPanel
+#endif
 
       // Setup the Shelf and put it somewhere we can see it (either last location or default)
       LOG.Log( "frmMain: Load Shelf" );
@@ -350,52 +462,46 @@ namespace FS20_HudBar
       LOG.Log( "frmMain: Init Form Done" );
     }
 
-    /* DEBUG ONLY
-    int lct = 0;
-    int sct = 0;
 
-    private void Flp_SizeChanged( object sender, EventArgs e )
-    {
-      sct++;
-    }
-
-    private void Flp_Layout( object sender, LayoutEventArgs e )
-    {
-      lct++;
-    }
-    */
     private void frmMain_Load( object sender, EventArgs e )
     {
       LOG.Log( $"frmMain_Load: Start" );
-      // prepare the GUI On Form Load
-
       // The FlowPanel in Design is not docked - do it here
       flp.Dock = DockStyle.Fill;
-      // flp.BorderStyle = BorderStyle.FixedSingle; // DEBUG to see where the FLPanel is
-      flp.WrapContents = true; // Needs to wrap around
-                               // attach mouse handlers
+      flp.WrapContents = true; // Needs to wrap around for the FlowBreaks
+      flp.AutoSize = true; // The FlowPanel is AutoSize too 
+
+      // attach mouse handlers to move the Bar/Tile around
       flp.MouseDown += frmMain_MouseDown;
       flp.MouseUp += frmMain_MouseUp;
       flp.MouseMove += frmMain_MouseMove;
 
-      // Window Props - major ones - the rest will be set in InitGUI()
-      this.FormBorderStyle = FormBorderStyle.None; // no frame etc. to begin with
+      // Main Window Props - major ones - the rest will be set in InitGUI()
+      this.FormBorderStyle = FormBorderStyle.None; // no frame etc. to begin with - this may change during InitGUI()
       this.TopMost = true; // make sure we float on top
       this.BackColor = c_WinBG;
 
-      // Get the controls
+      // Get the controls the first time from Config
       InitGUI( );
       WPTracker.Reset( );
 
       // attach a Callback for the SimClient
       SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
       SC.SimConnectClient.Instance.FlightPlanModule.Enabled = false; // start disabled, will be re-checked in InitGUI
+                                                                     // Layout may need to update when the Aircraft changes (due to Engine Count)
+      SC.SimConnectClient.Instance.AircraftChange += Instance_AircraftChange;
 
-      // Pacer to connect and may be other chores
+      // Pacer to connect and other repetitive chores
       timer1.Interval = 5000; // try to connect in 5 sec intervals
       timer1.Enabled = true;
 
       LOG.Log( $"frmMain_Load: End" );
+    }
+
+    // Layout may need to update when the Aircraft changes (due to Engine Count)
+    private void Instance_AircraftChange( object sender, EventArgs e )
+    {
+      SynchGUISize( );
     }
 
 
@@ -405,7 +511,8 @@ namespace FS20_HudBar
     {
       if ( !m_initDone ) return; // bail out if in Init
       if ( this.WindowState != FormWindowState.Normal ) return;   // can only handle the normal Window State here
-      if ( !( HUD.Kind == GUI.Kind.Window || HUD.Kind == GUI.Kind.WindowBL ) ) return; // can only handle Window here
+                                                                  // can only handle Windows here, Bar and Tile is tied to the screen border
+      if ( !( HUD.Kind == GUI.Kind.Window || HUD.Kind == GUI.Kind.WindowBL ) ) return;
 
       HUD.Profile.UpdateLocation( this.Location );
       // store new location per profile
@@ -420,19 +527,26 @@ namespace FS20_HudBar
       AppSettings.Instance.Save( );
     }
 
-    // Get the GUI form resized too
-    private void frmMain_Resize( object sender, EventArgs e )
+
+    // Capture Resizing of the GUI Form (where the controls are loaded)
+    private void M_frmGui_SizeChanged( object sender, EventArgs e )
     {
       SynchGUISize( );
     }
 
-    // Get the GUI form moved too
+    // Capture Resizing of the GUI Form (where the controls are loaded)
+    private void M_frmGui_Resize( object sender, EventArgs e )
+    {
+      //        SynchGUISize( );
+    }
+
+    // Capture and synch Movements of the Main Window
     private void frmMain_Move( object sender, EventArgs e )
     {
       SynchGUILocation( );
     }
 
-    // Fired when about to Close
+    // Fired when about to Close, Cleanup
     private void frmMain_FormClosing( object sender, FormClosingEventArgs e )
     {
       LOG.Log( $"frmMain_FormClosing: Start" );
@@ -751,14 +865,15 @@ namespace FS20_HudBar
 
     #region GUI
 
-    private HudBar HUD = null;
+    private HudBar HUD = null; // THE HudBar Obj
+    private bool _inLayout = false; // enclose and track Loading of DispItems
 
     // initialize the form, the labels and default values
     private void InitGUI( )
     {
       LOG.Log( $"InitGUI: Start" );
 
-      timer1.Enabled = false; // stop asynch events
+      timer1.Enabled = false; // stop asynch Timer events
       m_initDone = false; // stop updating values while reconfiguring
       SynchGUIVisible( false ); // hide, else we see all kind of shaping
 
@@ -795,7 +910,7 @@ namespace FS20_HudBar
         LOG.Log( $"InitGUI: {hk.Key} - {hk.Value.AsString}" );
       }
 
-      // start from scratch
+      // start the HudBar from scratch
       LOG.Log( $"InitGUI: Create HudBar" );
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
                           AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook, _hotkeycat,
@@ -803,232 +918,63 @@ namespace FS20_HudBar
                           m_profiles[m_selProfile], AppSettings.Instance.VoiceName, AppSettings.Instance.UserFonts,
                           AppSettings.Instance.FRecorder );
 
-      // reread after config change
+      // reread from config (change)
       LOG.Log( $"InitGUI: Reread Config changes" );
       SetupKeyboardHook( AppSettings.Instance.KeyboardHook );
       SetupInGameHook( AppSettings.Instance.InGameHook );
       m_shelf?.SetShelfFolder( AppSettings.Instance.ShelfFolder );
 
-      LOG.Log( $"InitGUI: Reload FlowPanel with Kind: {HUD.Profile.Kind}, Placement: {HUD.Placement}" );
-      // prepare to create the content as bar or tile (may be switch to Window later if needed)
-      this.FormBorderStyle = FormBorderStyle.None; // no frame etc.
-                                                   // Prepare FLPanel to load controls
-      flp.Controls.Clear( ); // reload
+      // Prepare FLPanel to load controls
       // DON'T Suspend the Layout else the calculations below will not be valid, the form is invisible and no painting is done here
-      // release dock to allow the bar to autosize
-      flp.Dock = DockStyle.None;
-      flp.AutoSize = true;
+      LOG.Log( $"InitGUI: Reload FlowPanel with Kind: {HUD.Profile.Kind}, Placement: {HUD.Placement}" );
+
+      // suspend intermediate Size change Events as they are immediately obsolete
+      _inLayout = true;
+      // Full Reload
+      flp.ClearPanel( ); 
+      // Load visible controls into the FLP
+      HUD.LoadFLPanel( flp );
+      _inLayout = false;
+
+      // post proc - reset some properties and the location of the MainWindow
+      //   A window is essentially a tile with border and will later be positioned at the last stored location
+      //   A Bar or Tile is following along the edges of the primary screen
+      LOG.Log( $"InitGUI: Post Processing" );
+      // no border for most
+      this.FormBorderStyle = FormBorderStyle.None; 
+      if ( HUD.Kind == GUI.Kind.Window ) this.FormBorderStyle = FormBorderStyle.FixedToolWindow; // apply the border if needed
       // can move a tile kind profile (but not a bar or window - has it's own window border anyway)
       this.Cursor = ( HUD.Profile.Kind == GUI.Kind.Tile || HUD.Profile.Kind == GUI.Kind.WindowBL ) ? Cursors.SizeAll : Cursors.Default;
-      // attach it to the PRIMARY screen (we assume the FS is run on the primary anyway...)
-      // preliminary  windows full width/height
-      switch ( HUD.Placement ) {
-        case GUI.Placement.Bottom:
-          this.Width = m_mainScreen.Bounds.Width;
-          this.Height = 40; //  any will do as we rescale it below
-          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
-          flp.FlowDirection = FlowDirection.LeftToRight;
-          break;
-        case GUI.Placement.Left:
-          this.Height = m_mainScreen.Bounds.Height;
-          this.Width = 200; //  any will do as we rescale it below
-          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
-          flp.FlowDirection = FlowDirection.TopDown;
-          break;
-        case GUI.Placement.Right:
-          this.Height = m_mainScreen.Bounds.Height;
-          this.Width = 200; //  any will do as we rescale it below
-          this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, m_mainScreen.Bounds.Y );
-          flp.FlowDirection = FlowDirection.TopDown;
-          break;
-        case GUI.Placement.Top:
-          this.Width = m_mainScreen.Bounds.Width;
-          this.Height = 40; //  any will do as we rescale it below
-          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
-          flp.FlowDirection = FlowDirection.LeftToRight;
-          break;
-        default:
-          // Bottom
-          this.Width = m_mainScreen.Bounds.Width;
-          this.Height = 40; //  any will do as we rescale it below
-          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
-          flp.FlowDirection = FlowDirection.LeftToRight;
-          break;
-      }
-
-      // Walk all DispItems and add the ones to be shown to the Flow Panel
-      int maxHeight = 0;
-      int maxWidth = 0;
-      DispItem prevDi = null;
-      GUI.BreakType registeredBreak = GUI.BreakType.None; ;
-      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
-        // using the enum index only to count from 0..max items
-        var key = HUD.Profile.ItemKeyFromPos( (int)i);
-        // The DispItem is a FlowPanel containing the Label and maybe some Values
-        var di = HUD.DispItem( key );
-        if ( di != null ) {
-          if ( di.Controls.Count > 0 ) {
-            // check and register breaks for 2nd up items if there is no break registered (FlowBreak takes priority over DivBreaks)
-            // this takes breaks from not visible items too
-            if ( registeredBreak == GUI.BreakType.None ) {
-              // take any
-              registeredBreak = HUD.Profile.BreakItem( key ) ? GUI.BreakType.FlowBreak :
-                                HUD.Profile.DivItem1( key ) ? GUI.BreakType.DivBreak1 :
-                                HUD.Profile.DivItem2( key ) ? GUI.BreakType.DivBreak2 : GUI.BreakType.None;
-            }
-            else if ( registeredBreak == GUI.BreakType.FlowBreak ) {
-              // take no further
-              ; // NOP
-            }
-            else {
-              // override DivBreaks with FlowBrake only
-              registeredBreak = HUD.Profile.BreakItem( key ) ? GUI.BreakType.FlowBreak : registeredBreak;
-            }
-          }
-          // process shown items
-          if ( HUD.ShowItem( key ) ) {
-            // apply breaks if there are any
-            if ( registeredBreak == GUI.BreakType.FlowBreak && prevDi != null ) {
-              // the flowbreak causes the tagged item to be on the same line and then to break for the next one
-              // Not so intuitive for the user - so we mark the one that goes on the next line but need to attach the FB then to the prev one
-              flp.SetFlowBreak( prevDi, true );
-              registeredBreak = GUI.BreakType.None; // reset
-            }
-            else if ( registeredBreak == GUI.BreakType.DivBreak1 || registeredBreak == GUI.BreakType.DivBreak2 ) {
-              // separator must be set before the newly added item
-              // select Color Type of the separator
-              DI_Separator dSep = new DI_Separator((registeredBreak== GUI.BreakType.DivBreak2)? ColorType.cDivBG2: ColorType.cDivBG1 );
-              // need some fiddling to make it fit in either direction
-              if ( ( HUD.Placement == GUI.Placement.Bottom ) || ( HUD.Placement == GUI.Placement.Top ) ) {
-                dSep.Dock = DockStyle.Left;// horizontal Bar
-              }
-              else {
-                dSep.Dock = DockStyle.Top;// vertical Bar
-              }
-              GUI.GUI_Colors.Register( dSep ); // register for color management
-              flp.Controls.Add( dSep ); // add it to the Main FlowPanel
-              registeredBreak = GUI.BreakType.None; // reset
-            }
-            // add the item 
-            flp.Controls.Add( di );
-            /* Code to add tooltips to the Label Part of an item - NOT IN USE RIGHT NOW
-            if ( !string.IsNullOrEmpty( di.TText ) ) {
-              m_toolTip.SetToolTip( di.Label, di.TText );
-            }
-            */
-            // collect max dimensions derived from each DispItem while loading the panel (loading also layouts them)
-            int h = di.Top+di.Height;
-            maxHeight = ( h > maxHeight ) ? h : maxHeight;
-            int w = di.Left+di.Width;
-            maxWidth = ( w > maxWidth ) ? w : maxWidth;
-
-            prevDi = di; // store for FlowBreak attachment for valid and visible ones if the next one is tagged
-          }
-          // don't show
-          else {
-            di.Visible = false;
-            // Dispose these items to get some memory back and not having invisible ones to be processed
-            di.Dispose( );
-          }
-        }
-      }
-
-      // post proc - allocate the needed height/width/location
-      // reduce width/ height for Tiles or Windows
-      // A window is essentially a tile with border and will later be positioned at the last stored location
-      LOG.Log( $"InitGUI: Post Processing" );
-      switch ( HUD.Placement ) {
-        case GUI.Placement.Bottom:
-          this.Height = maxHeight + 5;
-          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) || ( HUD.Profile.Kind == GUI.Kind.WindowBL ) ) {
-            this.Width = flp.Width + 10;
-            this.Location = new Point( HUD.Profile.Location.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
-          }
-          else { // Bar
-            this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
-          }
-          break;
-
-        case GUI.Placement.Left:
-          this.Width = maxWidth + 10;
-          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) || ( HUD.Profile.Kind == GUI.Kind.WindowBL ) ) {
-            this.Height = flp.Height + 10;
-            this.Location = new Point( m_mainScreen.Bounds.X, HUD.Profile.Location.Y );
-          }
-          else { // Bar
-            this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
-          }
-          break;
-
-        case GUI.Placement.Right:
-          this.Width = maxWidth + 10;
-          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) || ( HUD.Profile.Kind == GUI.Kind.WindowBL ) ) {
-            this.Height = flp.Height + 10;
-            this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, HUD.Profile.Location.Y );
-          }
-          else { // Bar
-            this.Location = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - this.Width, m_mainScreen.Bounds.Y );
-          }
-          break;
-
-        case GUI.Placement.Top:
-          this.Height = maxHeight + 5;
-          if ( ( HUD.Profile.Kind == GUI.Kind.Tile ) || ( HUD.Profile.Kind == GUI.Kind.Window ) || ( HUD.Profile.Kind == GUI.Kind.WindowBL ) ) {
-            this.Width = flp.Width + 10;
-            this.Location = new Point( HUD.Profile.Location.X, m_mainScreen.Bounds.Y );
-          }
-          else { // Bar
-            this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
-          }
-          break;
-
-        default:
-          // Bottom
-          this.Height = maxHeight + 5;
-          this.Location = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - this.Height );
-          break;
-      }
-      // after sizing the Window - re-dock the FLPanel for full Fill
-      flp.Dock = DockStyle.Fill;
-
-      // handle Window Style HUDs
-      if ( HUD.Kind == GUI.Kind.Window ) {
-        this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
-        // We take the last user location to reposition the window / above it was bound to the edge of the main screen (Tile kind)
-        // avoid invisible windows from odd stored locations
-        if ( IsOnScreen( new Rectangle( HUD.Profile.Location, this.Size ) ) ) {
-          this.Location = HUD.Profile.Location;
-        }
-        // A Window is still TopMost - don't know if this is a good idea, we shall see...
-      }
-      else if ( HUD.Kind == GUI.Kind.WindowBL ) {
-        // We take the last user location to reposition the window / above it was bound to the edge of the main screen (Tile kind)
-        // avoid invisible windows from odd stored locations
-        if ( IsOnScreen( new Rectangle( HUD.Profile.Location, this.Size ) ) ) {
-          this.Location = HUD.Profile.Location;
-        }
-        // A Window is still TopMost - don't know if this is a good idea, we shall see...
-      }
-
       // set form opacity from Profile
       this.Opacity = HUD.Profile.Opacity;
+
+      // init with the proposed location from profile
+      if ( IsOnScreen( new Rectangle( HUD.Profile.Location, m_frmGui.Size ) ) ) {
+        this.Location = HUD.Profile.Location;
+      }
+      else {
+        this.Location = new Point( 10, 10 ); // safe location
+      }
+
+      // realign all
+      SynchGUI( );
+      // Unhide when finished
+      SynchGUIVisible( true ); 
 
       // Color the MSFS Label it if connected
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cOK;
         HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse; // not cBG so we still can select it in Transp. Mode
+        // Set Engines if already connected
+        flp.SetEnginesVisible( SC.SimConnectClient.Instance.HudBarModule.NumEngines );
       }
       else {
         HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cInfo;
         HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cAlert;
       }
-      LOG.Log( $"InitGUI: SimConnect IsConnected = {SC.SimConnectClient.Instance.IsConnected}" );
-
-      SynchGUIVisible( true ); // Unhide when finished
-      SynchGUI( );
 
       m_initDone = true;
-      timer1.Enabled = true; // and enable pacer
+      timer1.Enabled = true; // and enable the pacer
 
       LOG.Log( $"InitGUI: End" );
     }
@@ -1044,6 +990,9 @@ namespace FS20_HudBar
       if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity..
       if ( !m_initDone ) return; // cannot access items at this time
 
+      // maintain the Engine Visibility
+      flp.SetEnginesVisible( SC.SimConnectClient.Instance.HudBarModule.NumEngines );
+      // The Bar has it's own logic for data updates
       HUD.UpdateGUI( dataRefName );
     }
 
@@ -1068,6 +1017,7 @@ namespace FS20_HudBar
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         // Disconnect from Input and SimConnect
         SetupInGameHook( false );
+        flp.SetEnginesVisible( -1 ); // reset for the next attempt
         SC.SimConnectClient.Instance.FlightPlanModule.Enabled = false;
         SC.SimConnectClient.Instance.Disconnect( );
         LOG.Log( $"SimConnect: Disconnected now" );
@@ -1084,6 +1034,8 @@ namespace FS20_HudBar
           SC.SimConnectClient.Instance.FlightPlanModule.Enabled = AppSettings.Instance.FltAutoSave;
           // enable game hooks if newly connected and desired
           SetupInGameHook( AppSettings.Instance.InGameHook );
+          // Set Engines 
+          flp.SetEnginesVisible( SC.SimConnectClient.Instance.HudBarModule.NumEngines );
           LOG.Log( $"SimConnect: Connected now" );
         }
         else {
@@ -1101,9 +1053,6 @@ namespace FS20_HudBar
     /// <param name="e"></param>
     private void timer1_Tick( object sender, EventArgs e )
     {
-      //Console.WriteLine( $"LCT count {lct,-6:###0}; SCT count {sct,-6:###0}; " );
-
-
       if ( SC.SimConnectClient.Instance.IsConnected ) {
         // handle the situation where Sim is connected but could not hookup to events
         // Happens when HudBar is running when the Sim is starting only.
@@ -1119,8 +1068,11 @@ namespace FS20_HudBar
           m_scGracePeriod--;
         }
         // Voice is disabled when a new HUD is created, so enable if not yet done
-        // The timer is enabled after InitGUI - so this one is always 5 sec later which should avoid the early takling..
+        // The timer is enabled after InitGUI - so this one is always 5 sec later which should avoid some of the early talking..
         HUD.VoiceEnabled = true;
+        // Check and Resize at this pace to fit the contents in case some layout changes made it not fitting anymore
+        // this is due to long texts or changes in the visibility of items coming in by the SimConnect Data processing in the DI items
+        SynchGUISize( );
       }
       else {
         // If not connected try again

@@ -38,6 +38,5 @@ namespace FS20_HudBar
 
       //this.BackColor = Color.FromArgb( 1, 99, 1 ); // DEBUG ONLY
     }
-
   }
 }

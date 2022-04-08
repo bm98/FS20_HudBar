@@ -353,7 +353,6 @@ namespace FS20_HudBar
       this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseMove);
       this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseUp);
       this.Move += new System.EventHandler(this.frmMain_Move);
-      this.Resize += new System.EventHandler(this.frmMain_Resize);
       this.cMenu.ResumeLayout(false);
       this.cMenu.PerformLayout();
       this.ResumeLayout(false);

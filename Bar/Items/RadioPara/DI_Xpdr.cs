@@ -48,7 +48,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Text( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SC.SimConnectClient.Instance.ComModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -57,9 +57,9 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        var stat = SC.SimConnectClient.Instance.HudBarModule.Transponder_status;
-        if ( SC.SimConnectClient.Instance.HudBarModule.Transponder_Available ) {
-          _value1.Text = $"{SC.SimConnectClient.Instance.HudBarModule.Transponder_code:0000}";
+        var stat = SC.SimConnectClient.Instance.ComModule.Transponder_status;
+        if ( SC.SimConnectClient.Instance.ComModule.Transponder_Available ) {
+          _value1.Text = $"{SC.SimConnectClient.Instance.ComModule.Transponder_code:0000}";
           _value2.Text = $"{stat}";
           if ( stat == FSimClientIF.TransponderStatus.ALT ) {
             _value1.ItemForeColor = cNav;
@@ -83,7 +83,7 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
+      SC.SimConnectClient.Instance.ComModule.RemoveObserver( m_observerID );
     }
 
   }

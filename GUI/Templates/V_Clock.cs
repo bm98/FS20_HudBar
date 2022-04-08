@@ -10,19 +10,19 @@ using FS20_HudBar.GUI.Templates.Base;
 namespace FS20_HudBar.GUI.Templates
 {
   /// <summary>
-  /// Longitude W180 .. E180
+  /// Format Time as HH:MM:SS
   /// </summary>
-  class V_Longitude : V_Base
+  class V_Clock : V_Base
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Longitude( Label proto )
+    public V_Clock( Label proto )
     : base( proto, false )
     {
-      m_unit = "";
-      m_default = DefaultString( "E___°__'" );
+      m_unit = " ";
+      m_default = DefaultString( $"{"__:__:__",8} " );
       Text = UnitString( m_default );
     }
 
@@ -35,14 +35,35 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else if ( float.IsNaN( (float)value ) ) {
-          this.Text = m_default;
+          this.Text = UnitString( m_default );
         }
         else {
-          string l = CoordLib.Dms.ToLon( (double)value, "dm", 0 );
-          this.Text = $"{l,8}";
+          this.Text = FmtTimeFromSec( (int)value ); // HH:MM:SS
         }
       }
     }
 
+
+    /// <summary>
+    /// Time Format:  00.00..99.99 (leading Zeroes)
+    /// </summary>
+    public string FmtTimeFromSec( int number )
+    {
+      try {
+        if ( number >= 0 ) {
+          // with hours
+          return $"{new TimeSpan( 0, 0, 0, number ),8:hh\\:mm\\:ss}";
+        }
+        else {
+          return m_default;
+        }
+      }
+      catch {
+        return m_default;
+      }
+    }
+
+
   }
 }
+

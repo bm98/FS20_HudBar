@@ -86,6 +86,13 @@ namespace FS20_HudBar.Bar
       {LItem.FLAPS, DI_Flaps.Desc },          {LItem.SPOILER, DI_Spoilers.Desc },
       {LItem.FLAPS_ANI, DI_FlapsGraph.Desc }, {LItem.SPOILER_ANI, DI_SpoilersGraph.Desc },
       {LItem.Lights, DI_Lights.Desc },
+
+      {LItem.NAV1_F, DI_Nav1.Desc },          {LItem.NAV2_F, DI_Nav2.Desc },
+      {LItem.NAV1, DI_Nav1_Active.Desc },     {LItem.NAV2, DI_Nav2_Active.Desc },
+      {LItem.NAV1_NAME, DI_Nav1_Name.Desc },  {LItem.NAV2_NAME, DI_Nav2_Name.Desc },
+
+      {LItem.COM1, DI_Com1.Desc },            {LItem.COM2, DI_Com2.Desc },
+      {LItem.COM1_NAME, DI_Com1_Name.Desc },  {LItem.COM2_NAME, DI_Com2_Name.Desc },
       {LItem.XPDR, DI_Xpdr.Desc },
 
       {LItem.MAN, DI_Man.Desc },
@@ -136,6 +143,7 @@ namespace FS20_HudBar.Bar
       {LItem.AP_ALTs, DI_Ap_AltSet.Desc },
       {LItem.AP_VSs, DI_Ap_VsSet.Desc },
       {LItem.AP_FLCs, DI_Ap_FlcSet.Desc },
+      {LItem.AP_SPDs, DI_Ap_SpeedSet.Desc },
       {LItem.AP_BC, DI_Ap_BC.Desc },
       {LItem.AP_NAVg, DI_Ap_NavGps.Desc },
       {LItem.AP_APR_GS, DI_Ap_AprGs.Desc },
@@ -143,9 +151,8 @@ namespace FS20_HudBar.Bar
       {LItem.AP_YD, DI_Ap_YD.Desc },
       {LItem.AP_LVL, DI_Ap_LVL.Desc },
       {LItem.AP_APR_INFO, DI_Ap_ApproachMode.Desc },
-
-      {LItem.NAV1, DI_Nav1.Desc },            {LItem.NAV2, DI_Nav2.Desc },
-      {LItem.NAV1_NAME, DI_Nav1_Name.Desc },  {LItem.NAV2_NAME, DI_Nav2_Name.Desc },
+      {LItem.AP_ATHR, DI_Ap_AThrottle.Desc },
+      {LItem.AP_ABRK, DI_Ap_ABrake.Desc },
 
       {LItem.ATC_APT, DI_Atc_APT.Desc },
       {LItem.ATC_RWY, DI_Atc_RWY.Desc },
@@ -159,9 +166,6 @@ namespace FS20_HudBar.Bar
     };
 
     #endregion  // STATIC
-
-
-
 
     /// <summary>
     /// The currently used profile settings for the Bar
@@ -376,7 +380,6 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Acft_ID( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Baro_HPA( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Baro_InHg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Xpdr( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Gear( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Brakes( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Flaps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -462,14 +465,22 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Gforce_MM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Nav1( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Nav2( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Nav1_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Nav2_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Nav1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Nav2_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Xpdr( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Com1( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Com2( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Com1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Com2_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       // Autopilot
       m_dispItems.AddDisp( new DI_Ap( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_HdgSet( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Ap_AltSet( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Ap_VsSet( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Ap_FlcSet( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Ap_SpeedSet( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Ap_BC( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_NavGps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_AprGs( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -477,6 +488,8 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Ap_YD( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_LVL( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_ApproachMode( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ap_AThrottle( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ap_ABrake( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // ATC
       m_dispItems.AddDisp( new DI_Atc_APT( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Atc_RWY( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -514,7 +527,8 @@ namespace FS20_HudBar.Bar
         foreach ( var lx in m_dispItems ) {
           mh = ( lx.Value.Label.Height > mh ) ? lx.Value.Label.Height : mh;
         }
-        // define MinHeight for value Labels
+
+        // set MinHeight for value Labels
         foreach ( var lx in m_valueItems ) {
           lx.Value.Ctrl.MinimumSize = new Size( 1, mh );
         }
@@ -563,8 +577,15 @@ namespace FS20_HudBar.Bar
               dix.Controls[1].Padding = new Padding( max1ValueWidth - dix.Controls[1].Width, 0, 0, 0 );
             }
             else {
-              // others just column align the label
+              // others just column align the Value Items by adding a right Padding to the Label
               dix.Controls[0].Padding = new Padding( 0, 0, maxLabelWidth - dix.Controls[0].Width, 0 );
+
+              // For Left and Right Bars - Handle two row items, assuming they get 1 Label and 2 + 2  Value controls
+              if ( dix.TwoRows ) {
+                // Shift the 2nd row Value to the same location as the 1st Value right with some padding
+                dix.Controls[3].Padding = new Padding( dix.Controls[1].Location.X, 0, 0, 0 );
+                dix.WrapContents = true;
+              }
             }
           }
         }
@@ -641,7 +662,7 @@ namespace FS20_HudBar.Bar
              + $"Vs1 Stall Speed:   {ds.DesingSpeedVS1_kt:##0} kt\n"
              + $"Vs0 Stall Speed:   {ds.DesingSpeedVS0_kt:##0} kt\n\n"
              + $"Empty Weight:      {ds.EmptyAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.EmptyAcftWeight_lbs ):###,##0} kg)\n"
-             + $"Max. Weight:       {ds.MaxAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs(ds.MaxAcftWeight_lbs):###,##0} kg)\n"
+             + $"Max. Weight:       {ds.MaxAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.MaxAcftWeight_lbs ):###,##0} kg)\n"
              + $"TOTAL Weight:      {ds.TotalAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.TotalAcftWeight_lbs ):###,##0} kg)\n"
              ;
         }
@@ -730,6 +751,107 @@ namespace FS20_HudBar.Bar
     public void SetShelfFolder( string folder )
     {
       ShelfFolder = folder;
+    }
+
+    #endregion
+
+    #region FlowLayout Panel Handling
+
+    /// <summary>
+    /// Load the given FLP with all visible Display Items
+    /// </summary>
+    /// <param name="flp"></param>
+    public void LoadFLPanel( FlowLayoutPanel flp )
+    {
+      if ( flp == null ) return; // Sanity check
+      // release the docking for a freeflow alignment  
+      flp.Dock = DockStyle.None;
+      flp.AutoSize = true; // don't know if this changes by some Magic in WinForms - just make sure it is set properly
+
+      // set the Panel Alignment 
+      switch ( this.Placement ) {
+        case GUI.Placement.Top: flp.FlowDirection = FlowDirection.LeftToRight; break;
+        case GUI.Placement.Bottom: flp.FlowDirection = FlowDirection.LeftToRight; break;
+        case GUI.Placement.Left: flp.FlowDirection = FlowDirection.TopDown; break;
+        case GUI.Placement.Right: flp.FlowDirection = FlowDirection.TopDown; break;
+        default: flp.FlowDirection = FlowDirection.LeftToRight; break;// Bottom
+      }
+
+      // Walk all DispItems and add the ones to be shown to the Flow Panel
+      DispItem prevDi = null;
+      GUI.BreakType registeredBreak = GUI.BreakType.None; ;
+      // Walk through all DispItems from the Bar
+      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
+        // using the enum index only to count from 0..max items
+        var key = this.Profile.ItemKeyFromPos( (int)i);
+        // The DispItem is a FlowPanel containing the Label and maybe some Values
+        var di = this.DispItem( key );
+        if ( di != null ) {
+          // For Sanity only - check that we have Controls to show
+          if ( di.Controls.Count > 0 ) {
+            // check and register breaks for 2nd up items if there is no break registered (FlowBreak takes priority over DivBreaks)
+            // this takes breaks from not visible items too
+            if ( registeredBreak == GUI.BreakType.None ) {
+              // take any
+              registeredBreak = this.Profile.BreakItem( key ) ? GUI.BreakType.FlowBreak :
+                                this.Profile.DivItem1( key ) ? GUI.BreakType.DivBreak1 :
+                                this.Profile.DivItem2( key ) ? GUI.BreakType.DivBreak2 : GUI.BreakType.None;
+            }
+            else if ( registeredBreak == GUI.BreakType.FlowBreak ) {
+              // take no further
+              ; // NOP
+            }
+            else {
+              // override DivBreaks only with FlowBreaks
+              registeredBreak = this.Profile.BreakItem( key ) ? GUI.BreakType.FlowBreak : registeredBreak;
+            }
+          }
+
+          // Load and process shown items
+          if ( this.ShowItem( key ) ) {
+            // apply breaks if there are any
+            if ( registeredBreak == GUI.BreakType.FlowBreak && prevDi != null ) {
+              // the flowbreak causes the tagged item to be on the same line and then to break for the next one
+              // Not so intuitive for the user - so we mark the one that goes on the next line but need to attach the FB then to the prev one
+              flp.SetFlowBreak( prevDi, true );
+              registeredBreak = GUI.BreakType.None; // reset
+            }
+            else if ( registeredBreak == GUI.BreakType.DivBreak1 || registeredBreak == GUI.BreakType.DivBreak2 ) {
+              // separator must be set before the newly added item
+              // select Color Type of the separator
+              DI_Separator dSep = new DI_Separator((registeredBreak== GUI.BreakType.DivBreak2)?GUI_Colors.ColorType.cDivBG2: GUI_Colors.ColorType.cDivBG1 );
+              // need some fiddling to make it fit in either direction
+              if ( ( this.Placement == GUI.Placement.Bottom ) || ( this.Placement == GUI.Placement.Top ) ) {
+                dSep.Dock = DockStyle.Left;// horizontal Bar
+              }
+              else {
+                dSep.Dock = DockStyle.Top;// vertical Bar
+              }
+              GUI.GUI_Colors.Register( dSep ); // register for color management
+              flp.Controls.Add( dSep ); // add it to the Main FlowPanel
+              registeredBreak = GUI.BreakType.None; // reset
+            }
+            // add the item 
+            flp.Controls.Add( di );
+            /* Code to add tooltips to the Label Part of an item - NOT IN USE RIGHT NOW
+            if ( !string.IsNullOrEmpty( di.TText ) ) {
+              m_toolTip.SetToolTip( di.Label, di.TText );
+            }
+            */
+            prevDi = di; // store for FlowBreak attachment for valid and visible ones if the next one is tagged
+          }
+          // don't show
+          else {
+            // remove the DispItem
+            m_dispItems.Remove( di.LabelID );
+            // Dispose these items to get some memory back and not having invisible ones to be processed
+            di.Dispose( );
+          }
+        }
+      }
+      // controls are loaded now
+      // reapply Docking - the form will Autosize itself
+      flp.Dock = DockStyle.Fill;
     }
 
     #endregion
@@ -823,7 +945,6 @@ namespace FS20_HudBar.Bar
     }
 
     #endregion
-
 
     #region DISPOSE
 

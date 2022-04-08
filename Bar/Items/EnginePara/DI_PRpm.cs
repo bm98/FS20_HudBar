@@ -34,12 +34,14 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _label;
     private readonly V_Base _value1;
     private readonly V_Base _value2;
+    private readonly V_Base _value3;
+    private readonly V_Base _value4;
 
     public DI_PRpm( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
       LabelID = LItem;
-      var item = VItem.P1_RPM;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
+      var item = VItem.P1_RPM;
       _value1 = new V_RPM( value2Proto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
@@ -47,6 +49,17 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_RPM( value2Proto, showUnits );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
+      // add 2 more values
+      this.TwoRows = true;
+      item = VItem.P3_RPM;
+      _value3 = new V_RPM( value2Proto, showUnits ) { Visible = false };
+      this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
+
+      item = VItem.P4_RPM;
+      _value4 = new V_RPM( value2Proto, showUnits ) { Visible = false };
+      this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
+
+      this.IsEngineItem = true;
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
@@ -58,7 +71,8 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         _value1.Value = SC.SimConnectClient.Instance.HudBarModule.Propeller1_rpm;
         _value2.Value = SC.SimConnectClient.Instance.HudBarModule.Propeller2_rpm;
-        _value2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );
+        _value3.Value = SC.SimConnectClient.Instance.HudBarModule.Propeller3_rpm;
+        _value4.Value = SC.SimConnectClient.Instance.HudBarModule.Propeller4_rpm;
       }
     }
 

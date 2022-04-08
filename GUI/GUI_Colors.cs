@@ -131,6 +131,9 @@ namespace FS20_HudBar.GUI
       cDivBG1, // type 1 darker blueish
       cDivBG2, // type 2 brighter yellowish
 
+      // Clickable Back
+      cValBG, // type 1 dark blueish
+
       // Color Scale e.g. Wind
       cScale0,  // lowest
       cScale1,
@@ -193,6 +196,8 @@ namespace FS20_HudBar.GUI
       { ColorType.cDivBG1, Color.FromArgb(46,56,107) },// Separator Background Blueish
       { ColorType.cDivBG2, Color.FromArgb(217,216,160) },// Separator Background Yellowish bright
 
+      { ColorType.cValBG, Color.FromArgb(16,26,67) },// Clickable Value Background, blueish dark
+
       { ColorType.cScale0, Color.MintCream }, // Color Scale light greenish .. Magenta
       { ColorType.cScale1, Color.LawnGreen }, // Color Scale light greenish .. Magenta
       { ColorType.cScale2, Color.Gold }, // Color Scale light greenish .. Magenta
@@ -239,6 +244,8 @@ namespace FS20_HudBar.GUI
       { ColorType.cDivBG1, Dimm( c_brightColors[ColorType.cDivBG1] ) },// Separator Background
       { ColorType.cDivBG2, Dimm( c_brightColors[ColorType.cDivBG2] ) },// Separator Background
 
+      { ColorType.cValBG, Dimm( c_brightColors[ColorType.cValBG] ) },// Clickable Value Background
+
       { ColorType.cScale0, Dimm( c_brightColors[ColorType.cScale0] ) },// Color Scale
       { ColorType.cScale1, Dimm( c_brightColors[ColorType.cScale1] ) },// Color Scale
       { ColorType.cScale2, Dimm( c_brightColors[ColorType.cScale2] ) },// Color Scale
@@ -282,6 +289,8 @@ namespace FS20_HudBar.GUI
 
       { ColorType.cDivBG1, Dimm(Color.DeepSkyBlue, 50) },// Separator Background type 1
       { ColorType.cDivBG2, Color.FromArgb(217,216,160) },// Separator Background Yellowish bright
+
+      { ColorType.cValBG, Dimm(Color.FromArgb(124, 214, 252) ) },// Clickable Value Background
 
       { ColorType.cScale0, Dimm( c_dimColors[ColorType.cScale0] ) },// Color Scale
       { ColorType.cScale1, Dimm( c_dimColors[ColorType.cScale1] ) },// Color Scale

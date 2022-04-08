@@ -51,7 +51,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Max HP Calibration storage
     /// </summary>
-    static float[] s_maxHP = new float[]{ 180, 180, 180, 180}; // init 4 engines
+    static float[] s_maxHP = new float[]{ 180, 180, 180, 180 }; // init 4 engines
     static bool s_calibrated = false;
     static private int m_acftTitleHash = 0;
 
@@ -89,12 +89,16 @@ namespace FS20_HudBar.Bar.Items
     private readonly B_Base _label;
     private readonly V_Base _value1;
     private readonly V_Base _value2;
+    private readonly V_Base _value3;
+    private readonly V_Base _value4;
 
     public DI_Load_prct( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       var item = VItem.E1_LOAD_P;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
+      _label.ButtonClicked += _label_ButtonClicked;
+
       _value1 = new V_Prct( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
@@ -102,7 +106,16 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Prct( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      _label.ButtonClicked += _label_ButtonClicked;
+      // add 2 more values
+      this.TwoRows = true;
+      item = VItem.E3_LOAD_P;
+      _value3 = new V_Prct( value2Proto ) { Visible = false };
+      this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
+
+      item = VItem.E4_LOAD_P;
+      _value4 = new V_Prct( value2Proto ) { Visible = false };
+      this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
+
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
@@ -116,11 +129,11 @@ namespace FS20_HudBar.Bar.Items
       if ( nEng > 0 )
         CalEngine( 1, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
       if ( nEng > 1 )
-        CalEngine( 2, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
+        CalEngine( 2, SC.SimConnectClient.Instance.HudBarModule.Engine2_Torque_ft_lbs, SC.SimConnectClient.Instance.HudBarModule.Engine2_rpm );
       if ( nEng > 2 )
-        CalEngine( 3, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
+        CalEngine( 3, SC.SimConnectClient.Instance.HudBarModule.Engine3_Torque_ft_lbs, SC.SimConnectClient.Instance.HudBarModule.Engine3_rpm );
       if ( nEng > 3 )
-        CalEngine( 4, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs, SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
+        CalEngine( 4, SC.SimConnectClient.Instance.HudBarModule.Engine4_Torque_ft_lbs, SC.SimConnectClient.Instance.HudBarModule.Engine4_rpm );
       s_calibrated = true;
     }
 
@@ -136,7 +149,7 @@ namespace FS20_HudBar.Bar.Items
           // acft title has changed
           m_acftTitleHash = SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile.GetHashCode( );
           var acft = SC.MSFS.MsAcftTitles.AircraftFromTitle(SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile);
-          if (acft!= SC.MSFS.MsAcftTitles.Acft.Unknown ) {
+          if ( acft != SC.MSFS.MsAcftTitles.Acft.Unknown ) {
             // found in the SimConnectClient library
             var acdesc = SC.MSFS.MsAcftTitles.AircraftDesc(acft);
             if ( acdesc.MaxHP > 0 ) { // sanity .. avoid Div0
@@ -152,11 +165,18 @@ namespace FS20_HudBar.Bar.Items
           }
         }
 
+        this.SetValuesVisible( SC.SimConnectClient.Instance.HudBarModule.NumEngines );
         _value1.Value = Load_prct( 1, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs,
-                                      SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
-        _value2.Value = Load_prct( 2, SC.SimConnectClient.Instance.HudBarModule.Engine1_Torque_ft_lbs,
-                                      SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
-        _value2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );
+                                    SC.SimConnectClient.Instance.HudBarModule.Engine1_rpm );
+
+        _value2.Value = Load_prct( 2, SC.SimConnectClient.Instance.HudBarModule.Engine2_Torque_ft_lbs,
+                                      SC.SimConnectClient.Instance.HudBarModule.Engine2_rpm );
+
+        _value3.Value = Load_prct( 3, SC.SimConnectClient.Instance.HudBarModule.Engine3_Torque_ft_lbs,
+                                      SC.SimConnectClient.Instance.HudBarModule.Engine3_rpm );
+
+        _value4.Value = Load_prct( 4, SC.SimConnectClient.Instance.HudBarModule.Engine4_Torque_ft_lbs,
+                                      SC.SimConnectClient.Instance.HudBarModule.Engine4_rpm );
         this.ColorType.ItemBackColor = s_calibrated ? cActBG : cWarnBG; // change to live once established
       }
     }

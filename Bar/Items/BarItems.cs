@@ -158,6 +158,16 @@ namespace FS20_HudBar.Bar.Items
 
     TXT,          // Free Text
     AP_ATT,       // Attitude Hold
+    AP_ATHR,      // Auto Throttle (active, TOGA)
+    AP_ABRK,      // Auto Brake (active)
+    AP_SPDs,      // Auto Speed (IAS)
+    COM1,         // COM1
+    COM1_NAME,    // COM1 ID
+    COM2,         // COM2
+    COM2_NAME,    // COM2 ID
+    NAV1_F,       // NAV1 Frequ
+    NAV2_F,       // NAV2 Frequ
+
   }
 
 
@@ -210,64 +220,125 @@ namespace FS20_HudBar.Bar.Items
     // RPMs
     P1_RPM,       // Prop1 RPM
     P2_RPM,       // Prop2 RPM
-    PRPM_ANI_1,   // Prop RPM Graph Single Engine
-    PRPM_ANI_2,   // Prop RPM Graph Twin Engine
+    P3_RPM,       // Prop3 RPM
+    P4_RPM,       // Prop4 RPM
+
+    P1_RPM_ANI,   // Prop RPM Graph Single Engine
+    P2_RPM_ANI,   // Prop RPM Graph Twin Engine
+    P3_RPM_ANI,   // Prop RPM Graph 3rd Engine
+    P4_RPM_ANI,   // Prop RPM Graph 4th Engine
+
     E1_RPM,       // Engine1 RPM
     E2_RPM,       // Engine2 RPM
-    ERPM_ANI_1,   // Engine RPM Graph Single Engine
-    ERPM_ANI_2,   // Engine RPM Graph Twin Engine
+    E3_RPM,       // Engine3 RPM
+    E4_RPM,       // Engine4 RPM
+
+    E1_RPM_ANI,   // Engine RPM Graph Single Engine
+    E2_RPM_ANI,   // Engine RPM Graph Twin Engine
+    E3_RPM_ANI,   // Engine RPM Graph 3rd Engine
+    E4_RPM_ANI,   // Engine RPM Graph 4th Engine
 
     // ENGINE
     E1_MAN,       // Engine1 MAN Pressure InHg
     E2_MAN,       // Engine2 MAN Pressure InHg
+    E3_MAN,       // Engine3 MAN Pressure InHg
+    E4_MAN,       // Engine4 MAN Pressure InHg
+
     E1_LOAD_P,    // Engine1 LOAD % 1 %
     E2_LOAD_P,    // Engine2 LOAD % 2 %
+    E3_LOAD_P,    // Engine3 LOAD % 1 %
+    E4_LOAD_P,    // Engine4 LOAD % 2 %
 
     E1_EGT_C,     // Engine1 EGT °C
     E2_EGT_C,     // Engine2 EGT °C
+    E3_EGT_C,     // Engine3 EGT °C
+    E4_EGT_C,     // Engine4 EGT °C
+
     E1_EGT_F,     // Engine1 EGT °F
     E2_EGT_F,     // Engine2 EGT °F
+    E3_EGT_F,     // Engine3 EGT °F
+    E4_EGT_F,     // Engine4 EGT °F
 
     E1_CHT_C,     // Engine1 CHT °C
     E2_CHT_C,     // Engine2 CHT °C
+    E3_CHT_C,     // Engine3 CHT °C
+    E4_CHT_C,     // Engine4 CHT °C
+
     E1_CHT_F,     // Engine1 CHT °F
     E2_CHT_F,     // Engine2 CHT °F
+    E3_CHT_F,     // Engine3 CHT °F
+    E4_CHT_F,     // Engine4 CHT °F
 
     E1_TORQP,     // Engine1 Torque %
     E2_TORQP,     // Engine2 Torque %
-    TORQP_ANI_1,  // Turbine Torque Percent Graph Single Engine
-    TORQP_ANI_2,  // Turbine Torque Percent Graph Twin Engine
+    E3_TORQP,     // Engine3 Torque %
+    E4_TORQP,     // Engine4 Torque %
+
+    E1_TORQP_ANI,  // Turbine Torque Percent Graph Single Engine
+    E2_TORQP_ANI,  // Turbine Torque Percent Graph Twin Engine
+    E3_TORQP_ANI,  // Turbine Torque Percent Graph 3rd Engine
+    E4_TORQP_ANI,  // Turbine Torque Percent Graph 4th Engine
+
     E1_TORQ,      // Engine1 Torque ft/lb
     E2_TORQ,      // Engine2 Torque ft/lb
+    E3_TORQ,      // Engine3 Torque ft/lb
+    E4_TORQ,      // Engine4 Torque ft/lb
 
     E1_ITT,       // Engine1 ITT °C
     E2_ITT,       // Engine2 ITT °C
+    E3_ITT,       // Engine3 ITT °C
+    E4_ITT,       // Engine4 ITT °C
 
     E1_N1,        // Engine1 N1 %
     E2_N1,        // Engine2 N1 %
-    E_N1_ANI_1,   // Engine N1 Graph Single Engine
-    E_N1_ANI_2,   // Engine N1 Graph Twin Engine
+    E3_N1,        // Engine3 N1 %
+    E4_N1,        // Engine4 N1 %
+
+    E1_N1_ANI,   // Engine N1 Graph Single Engine
+    E2_N1_ANI,   // Engine N1 Graph Twin Engine
+    E3_N1_ANI,   // Engine N1 Graph 3rd Engine
+    E4_N1_ANI,   // Engine N1 Graph 4th Engine
+
     E1_N2,        // Engine1 N2 %
     E2_N2,        // Engine2 N2 %
-    E_N2_ANI_1,   // Engine N2 Graph Single Engine
-    E_N2_ANI_2,   // Engine N2 Graph Twin Engine
+    E3_N2,        // Engine3 N2 %
+    E4_N2,        // Engine4 N2 %
+
+    E1_N2_ANI,   // Engine N2 Graph Single Engine
+    E2_N2_ANI,   // Engine N2 Graph Twin Engine
+    E3_N2_ANI,   // Engine N2 Graph 3rd Engine
+    E4_N2_ANI,   // Engine N2 Graph 4th Engine
+
     E1_AFTB,      // Engine1 Afterburner %
     E2_AFTB,      // Engine2 Afterburner %
-    AFTB_ANI_1,   // Afterburner % Graph Single Engine
-    AFTB_ANI_2,   // Afterburner % Graph Twin Engine
+    E3_AFTB,      // Engine3 Afterburner %
+    E4_AFTB,      // Engine4 Afterburner %
 
-    E_COWL_ANI_1, // Cowl Flaps Graph Single Engine
-    E_COWL_ANI_2, // Cowl Flaps Graph Twin Engine
+    E1_AFTB_ANI,   // Afterburner % Graph Single Engine
+    E2_AFTB_ANI,   // Afterburner % Graph Twin Engine
+    E3_AFTB_ANI,   // Afterburner % Graph 3rd Engine
+    E4_AFTB_ANI,   // Afterburner % Graph 4th Engine
+
+    E1_COWL_ANI, // Cowl Flaps Graph Single Engine
+    E2_COWL_ANI, // Cowl Flaps Graph Twin Engine
+    E3_COWL_ANI, // Cowl Flaps Graph 3rd Engine
+    E4_COWL_ANI, // Cowl Flaps Graph 4th Engine
 
     // FUEL
     E1_FFlow_pph,   // Fuel1 Flow pph
     E2_FFlow_pph,   // Fuel2 Flow pph
+    E3_FFlow_pph,   // Fuel3 Flow pph
+    E4_FFlow_pph,   // Fuel4 Flow pph
 
     E1_FFlow_gph,   // Fuel1 Flow gph
     E2_FFlow_gph,   // Fuel2 Flow gph
+    E3_FFlow_gph,   // Fuel3 Flow gph
+    E4_FFlow_gph,   // Fuel4 Flow gph
 
     E1_FFlow_kgh,   // Fuel1 Flow kg
     E2_FFlow_kgh,   // Fuel2 Flow kg
+    E3_FFlow_kgh,   // Fuel3 Flow kg
+    E4_FFlow_kgh,   // Fuel4 Flow kg
 
     FUEL_L_gal,     // Fuel quantity Left Gallons
     FUEL_R_gal,     // Fuel quantity Right Gallons
@@ -340,10 +411,30 @@ namespace FS20_HudBar.Bar.Items
     NAV1_DST,     // NAV1 DME Distance
     NAV1_BRG,     // NAV1 BRG to
 
+    NAV1_SWAP,    // NAV1 Swap
+    NAV1_STDBY,   // NAV1 Standby Frequency
+    NAV1_ACTIVE,  // NAV1 Active Frequency
+
     NAV2_ID,      // NAV2 ID
     NAV2_NAME,    // NAV2 Name {Apt}
     NAV2_DST,     // NAV2 DME Distance
     NAV2_BRG,     // NAV2 BRG to
+
+    NAV2_SWAP,    // NAV2 Swap
+    NAV2_STDBY,   // NAV2 Standby Frequency
+    NAV2_ACTIVE,  // NAV2 Active Frequency
+
+    COM1_SWAP,    // COM1 Swap
+    COM1_STDBY,   // COM1 Standby Frequency
+    COM1_ACTIVE,  // COM1 Active Frequency
+    COM1_TYPE,    // COM1 Type
+    COM1_ID,      // COM1 ID
+
+    COM2_SWAP,    // COM2 Swap
+    COM2_STDBY,   // COM2 Standby Frequency
+    COM2_ACTIVE,  // COM2 Active Frequency
+    COM2_TYPE,    // COM2 Type
+    COM2_ID,      // COM2 ID
 
     XPDR_CODE,    // Transponder Code
     XPDR_STAT,    // Transponder Status
@@ -362,6 +453,9 @@ namespace FS20_HudBar.Bar.Items
     AP_FLC,       // AP FLC hold active
     AP_FLCset,    // AP FLC IAS set
     AP_FLCset_sel,// AP FLC IAS set selected slot
+    AP_SPD,       // AP SPD hold active
+    AP_SPDset,    // AP SPD IAS set
+    AP_SPDset_sel,// AP SPD IAS set selected slot
     AP_NAV,       // AP NAV active
     AP_NAVgps,    // AP NAV follow GPS
     AP_BC,        // AP BC signal
@@ -370,7 +464,10 @@ namespace FS20_HudBar.Bar.Items
     AP_ATT,       // Attitude Hold
     AP_YD,        // Yaw Damper signal
     AP_LVL,       // Wing Leveler signal
-    AP_APR_INFO,   // AP/GPS Approach Information
+    AP_APR_INFO,  // AP/GPS Approach Information
+    AP_ATHR_armed,// Auto Throttle Arm Click
+    AP_ATHR_toga, // Auto Throttle TOGA Click
+    AP_ABRK_armed,// Auto Brake Arm Click
 
     // TIMER
     M_Elapsed1,   // Time elapsed since start of CP1

@@ -34,13 +34,15 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _label;
     private readonly V_Base _value1;
     private readonly V_Base _value2;
+    private readonly V_Base _value3;
+    private readonly V_Base _value4;
 
     public DI_Man( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
       LabelID = LItem;
       // Wind Direction, Speed
-      var item = VItem.E1_MAN;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
+      var item = VItem.E1_MAN;
       _value1 = new V_PressureInHg( value2Proto, showUnits );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
@@ -48,6 +50,17 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_PressureInHg( value2Proto, showUnits );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
+      // add 2 more values
+      this.TwoRows = true;
+      item = VItem.E3_MAN;
+      _value3 = new V_PressureInHg( value2Proto, showUnits ) { Visible = false };
+      this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
+
+      item = VItem.E4_MAN;
+      _value4 = new V_PressureInHg( value2Proto, showUnits ) { Visible = false };
+      this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
+
+      this.IsEngineItem = true;
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
@@ -57,9 +70,10 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-          _value1.Value = SC.SimConnectClient.Instance.HudBarModule.Engine1MAN_inhg;
-          _value2.Value = SC.SimConnectClient.Instance.HudBarModule.Engine2MAN_inhg;
-          _value2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.Engine1MAN_inhg;
+        _value2.Value = SC.SimConnectClient.Instance.HudBarModule.Engine2MAN_inhg;
+        _value3.Value = SC.SimConnectClient.Instance.HudBarModule.Engine3MAN_inhg;
+        _value4.Value = SC.SimConnectClient.Instance.HudBarModule.Engine4MAN_inhg;
       }
     }
 

@@ -35,6 +35,9 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
+    private readonly V_Base _value3;
+    private readonly V_Base _value4;
+
     public DI_N1( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
@@ -47,6 +50,17 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Prct( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
+      // add 2 more values
+      this.TwoRows = true;
+      item = VItem.E3_N1;
+      _value3 = new V_Prct( value2Proto ) { Visible = false };
+      this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
+
+      item = VItem.E4_N1;
+      _value4 = new V_Prct( value2Proto ) { Visible = false };
+      this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
+
+      this.IsEngineItem = true;
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
     }
 
@@ -58,7 +72,8 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         _value1.Value = SC.SimConnectClient.Instance.HudBarModule.Engine1_N1_prct / 100;// needs to be 0..1
         _value2.Value = SC.SimConnectClient.Instance.HudBarModule.Engine2_N1_prct / 100;// needs to be 0..1
-        _value2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );
+        _value3.Value = SC.SimConnectClient.Instance.HudBarModule.Engine3_N1_prct / 100;// needs to be 0..1
+        _value4.Value = SC.SimConnectClient.Instance.HudBarModule.Engine4_N1_prct / 100;// needs to be 0..1
       }
     }
 
