@@ -87,16 +87,15 @@ namespace FS20_HudBar
     private bool m_initDone = false;
 
     /// <summary>
-    /// Checks if a rectangle is visible on any screen
+    /// Checks if a Point is visible on any screen
     /// </summary>
-    /// <param name="formRect"></param>
+    /// <param name="point">The Location to check</param>
     /// <returns>True if visible</returns>
-    private static bool IsOnScreen( Rectangle formRect )
+    private static bool IsOnScreen( Point point )
     {
-      formRect.Inflate( -20, -20 ); // have to make it a bit smaller as the rectangle can be slightly out of screen
       Screen[] screens = Screen.AllScreens;
       foreach ( Screen screen in screens ) {
-        if ( screen.WorkingArea.Contains( formRect.Location ) ) {
+        if ( screen.WorkingArea.Contains( point ) ) {
           return true;
         }
       }
@@ -106,12 +105,51 @@ namespace FS20_HudBar
     #region Synch GUI Forms
 
     /// <summary>
+    /// Ensure a Tile to be in Bounds of the Main Screen
+    ///  Bounds means that at least a part of the Tile remains on the main screen to be catched by the Mouse
+    ///  The allowance is 1/2 of the bar Width or Height
+    /// </summary>
+    /// <param name="curLoc">Current Location</param>
+    /// <param name="size">The Size of the Tile</param>
+    /// <returns>Proposed new Location to be within the rules</returns>
+    private Point TileBoundLocation( Point curLoc, Size size )
+    {
+      Point newL = curLoc;
+      if ( HUD == null ) return newL; // we need the HUD to apply rules
+
+      // Tiles are bound to a border of the main screen
+      switch ( HUD.Placement ) {
+        case GUI.Placement.Top:
+          newL.X = ( newL.X > m_mainScreen.Bounds.Right - size.Width / 2 ) ? m_mainScreen.Bounds.Right - size.Width / 2 : newL.X; // catch right side out of bounds
+          newL.X = ( newL.X < m_mainScreen.Bounds.Left - size.Width / 2 ) ? m_mainScreen.Bounds.Left - size.Width / 2 : newL.X; // catch left side out of bounds, wins if the width is > screen.Width
+          break;
+        case GUI.Placement.Bottom:
+          newL.X = ( newL.X > m_mainScreen.Bounds.Right - size.Width / 2 ) ? m_mainScreen.Bounds.Right - size.Width / 2 : newL.X; // catch right side out of bounds
+          newL.X = ( newL.X < m_mainScreen.Bounds.Left - size.Width / 2 ) ? m_mainScreen.Bounds.Left - size.Width / 2 : newL.X; // catch left side out of bounds, wins if the width is > screen.Width
+          break;
+        case GUI.Placement.Left:
+          newL.Y = ( newL.Y > m_mainScreen.Bounds.Bottom - size.Height / 2 ) ? m_mainScreen.Bounds.Bottom - size.Height / 2 : newL.Y; // catch top side out of bounds
+          newL.Y = ( newL.Y < m_mainScreen.Bounds.Top - size.Height / 2 ) ? m_mainScreen.Bounds.Top - size.Height / 2 : newL.Y; // catch top side out of bounds, wins if the width is > screen.Height
+          break;
+        case GUI.Placement.Right:
+          newL.Y = ( newL.Y > m_mainScreen.Bounds.Bottom - size.Height / 2 ) ? m_mainScreen.Bounds.Bottom - size.Height / 2 : newL.Y; // catch top side out of bounds
+          newL.Y = ( newL.Y < m_mainScreen.Bounds.Top - size.Height / 2 ) ? m_mainScreen.Bounds.Top - size.Height / 2 : newL.Y; // catch top side out of bounds, wins if the width is > screen.Height
+          break;
+        default: break;
+      }
+
+      return newL;
+    }
+
+
+    /// <summary>
     /// Calc and return the Size of the Bar
     /// </summary>
     /// <returns>A Size</returns>
     private Size BarSize( )
     {
-      if ( HUD == null ) return this.Size; // we need the HUD to find the Size
+      Size newS = m_frmGui.PreferredSize;
+      if ( HUD == null ) return newS; // we need the HUD to find the Size
 
       // get the window manager decoration borders from the Main Window
       Rectangle screenClientRect = base.RectangleToScreen(base.ClientRectangle);
@@ -122,7 +160,6 @@ namespace FS20_HudBar
       // define the needed Window Size from the AutoSized GUI Form
       // AutoSize on our Main Form does not catch the the GUI changes as they are not contained in the Form
       // The GUI Form and it's FlowPanel is only overlaid over the Main Form
-      Size newS = m_frmGui.PreferredSize;
       newS.Width += leftBorderWidth + rightBorderWidth;
       newS.Height += topBorderHeight + bottomBorderHeight;
       // Adjust for Bar which is stretching the screen in vert or hor direction and is only on the Main Screen 
@@ -135,6 +172,7 @@ namespace FS20_HudBar
           default: break; // program error...
         }
       }
+
       return newS;
     }
 
@@ -155,19 +193,31 @@ namespace FS20_HudBar
       switch ( HUD.Placement ) {
         case GUI.Placement.Top:
           if ( HUD.Profile.Kind == GUI.Kind.Bar ) newL = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
-          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) newL.Y = m_mainScreen.Bounds.Y;
+          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) {
+            newL.Y = m_mainScreen.Bounds.Y;
+            newL = TileBoundLocation( newL, size );
+          }
           break;
         case GUI.Placement.Bottom:
           if ( HUD.Profile.Kind == GUI.Kind.Bar ) newL = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - size.Height );
-          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) newL.Y = m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - size.Height;
+          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) {
+            newL.Y = m_mainScreen.Bounds.Y + m_mainScreen.Bounds.Height - size.Height;
+            newL = TileBoundLocation( newL, size );
+          }
           break;
         case GUI.Placement.Left:
           if ( HUD.Profile.Kind == GUI.Kind.Bar ) newL = new Point( m_mainScreen.Bounds.X, m_mainScreen.Bounds.Y );
-          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) newL.X = m_mainScreen.Bounds.X;
+          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) {
+            newL.X = m_mainScreen.Bounds.X;
+            newL = TileBoundLocation( newL, size );
+          }
           break;
         case GUI.Placement.Right:
           if ( HUD.Profile.Kind == GUI.Kind.Bar ) newL = new Point( m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - size.Width, m_mainScreen.Bounds.Y );
-          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) newL.X = m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - size.Width;
+          else if ( HUD.Profile.Kind == GUI.Kind.Tile ) {
+            newL.X = m_mainScreen.Bounds.X + m_mainScreen.Bounds.Width - size.Width;
+            newL = TileBoundLocation( newL, size );
+          }
           break;
         default:
           break;
@@ -192,8 +242,6 @@ namespace FS20_HudBar
     // synch the two forms for Size
     private void SynchGUISize( )
     {
-      if ( HUD == null ) return; // no synch possible if there is not yet a HUDBar
-
       // Adding controls to the FlowPanel is enclosed in a   _inLayout = true ...  = false bracket
       // While adding controls to the FlowPanel there is some Resizing we don't want to catch
       // else it looks weird and takes more time than needed
@@ -202,12 +250,14 @@ namespace FS20_HudBar
         // set This Size and Loc if a change is needed
         if ( ( this.Width != newR.Width ) || ( this.Height != newR.Height ) ) {
           this.Size = newR.Size;
+        }
+        if ( ( this.Left != newR.Left ) || ( this.Top != newR.Top ) ) {
           this.Location = newR.Location;
         }
       }
     }
 
-    // synch the two forms for Location
+    // synch the GUI Form to overlay the Main Form
     private void SynchGUILocation( )
     {
       // in Windowed mode we need to get it from the client rect
@@ -440,8 +490,8 @@ namespace FS20_HudBar
         Size = AppSettings.Instance.ShelfSize,
         Location = AppSettings.Instance.ShelfLocation
       };
-      if ( !IsOnScreen( new Rectangle( m_shelf.Location, m_shelf.Size ) ) ) {
-        m_shelf.Location = new Point( 100, 100 );
+      if ( !IsOnScreen( m_shelf.Location ) ) {
+        m_shelf.Location = new Point( 100, 100 );// default if not visible
       }
       //  set from Saved default - if not found, set our default
       if ( !m_shelf.SetShelfFolder( AppSettings.Instance.ShelfFolder ) ) {
@@ -810,8 +860,11 @@ namespace FS20_HudBar
         this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y + e.Y - m_moveOffset.Y );
       }
       else {
-        // Tiles are bound to a border
+        // Tiles are bound to a border of the main screen
         switch ( HUD.Placement ) {
+          case GUI.Placement.Top:
+            this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y );
+            break;
           case GUI.Placement.Bottom:
             this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y );
             break;
@@ -821,21 +874,20 @@ namespace FS20_HudBar
           case GUI.Placement.Right:
             this.Location = new Point( this.Location.X, this.Location.Y + e.Y - m_moveOffset.Y );
             break;
-          case GUI.Placement.Top:
-            this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y );
-            break;
           default: break;
         }
+        this.Location = TileBoundLocation( this.Location, this.Size ); // get into Tile Bounds
       }
     }
 
     private void frmMain_MouseUp( object sender, MouseEventArgs e )
     {
+      if ( !m_moving ) return;
+      m_moving = false;
+
       if ( !m_initDone ) return; // bail out if in Init
       if ( !( HUD.Kind == GUI.Kind.Tile || HUD.Kind == GUI.Kind.WindowBL ) ) return; // can only move Tile kind around here
-      if ( !m_moving ) return;
 
-      m_moving = false;
       HUD.Profile.UpdateLocation( this.Location );
       // store new location per profile
       switch ( m_selProfile ) {
@@ -931,7 +983,7 @@ namespace FS20_HudBar
       // suspend intermediate Size change Events as they are immediately obsolete
       _inLayout = true;
       // Full Reload
-      flp.ClearPanel( ); 
+      flp.ClearPanel( );
       // Load visible controls into the FLP
       HUD.LoadFLPanel( flp );
       _inLayout = false;
@@ -941,7 +993,7 @@ namespace FS20_HudBar
       //   A Bar or Tile is following along the edges of the primary screen
       LOG.Log( $"InitGUI: Post Processing" );
       // no border for most
-      this.FormBorderStyle = FormBorderStyle.None; 
+      this.FormBorderStyle = FormBorderStyle.None;
       if ( HUD.Kind == GUI.Kind.Window ) this.FormBorderStyle = FormBorderStyle.FixedToolWindow; // apply the border if needed
       // can move a tile kind profile (but not a bar or window - has it's own window border anyway)
       this.Cursor = ( HUD.Profile.Kind == GUI.Kind.Tile || HUD.Profile.Kind == GUI.Kind.WindowBL ) ? Cursors.SizeAll : Cursors.Default;
@@ -949,17 +1001,17 @@ namespace FS20_HudBar
       this.Opacity = HUD.Profile.Opacity;
 
       // init with the proposed location from profile
-      if ( IsOnScreen( new Rectangle( HUD.Profile.Location, m_frmGui.Size ) ) ) {
+      if ( IsOnScreen( HUD.Profile.Location ) ) {
         this.Location = HUD.Profile.Location;
       }
       else {
-        this.Location = new Point( 10, 10 ); // safe location
+        this.Location = new Point( 0, 0 ); // safe location
       }
 
       // realign all
       SynchGUI( );
       // Unhide when finished
-      SynchGUIVisible( true ); 
+      SynchGUIVisible( true );
 
       // Color the MSFS Label it if connected
       if ( SC.SimConnectClient.Instance.IsConnected ) {

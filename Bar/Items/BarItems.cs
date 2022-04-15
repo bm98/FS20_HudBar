@@ -445,7 +445,8 @@ namespace FS20_HudBar.Bar.Items
     AP_HDGset,    // AP HDG set
     AP_HDGset_sel,// AP HDG set selected slot
     AP_ALT,       // AP ALT hold active
-    AP_ALTset,    // AP ALT set
+    AP_ALThold,   // AP ALT Hold SLOT 1
+    AP_ALTset,    // AP ALT set 
     AP_ALTset_sel,// AP ALT set selected slot
     AP_VS,        // AP VS hold active
     AP_VSset,     // AP VS set

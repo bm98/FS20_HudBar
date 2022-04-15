@@ -131,7 +131,9 @@ namespace FS20_HudBar.GUI
       cDivBG1, // type 1 darker blueish
       cDivBG2, // type 2 brighter yellowish
 
-      // Clickable Back
+      /// <summary>
+      /// Actionable VALUE Background
+      /// </summary>
       cValBG, // type 1 dark blueish
 
       // Color Scale e.g. Wind

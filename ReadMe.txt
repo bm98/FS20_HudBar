@@ -1,5 +1,5 @@
 FS20_HudBar V 0.48 - Build 45 BETA
-(c) M. Burri - 28-Mar-2022
+(c) M. Burri - 16-Apr-2022
 
 Contains files:
 
@@ -46,9 +46,14 @@ Changelog:
 
 V 0.48-B45
 - Add Engine 3 and 4 support
-- Add AP Attitude Hold Item
-- Add AP AutoThrottle item (ATHR, TOGA)
+- Add AP AutoThrottle item (ATHR, TOGA) - experimental, scroll to change, TOGA click to toggle
+- Add AP AutoBrake item (ABRK) - experimental, scroll to change
 - Add AP IAS Speed Hold item
+- Add AP Attitude Hold Item
+- Update AP Setting handling (mouse scroll over the setting number - not the Label anymore)
+- Update AP HDG setting number, click to set to current heading
+- Update AP ALT mode handling (as the Sim does not provide correct states)
+- Update AP settings, visual background changed to indicate active settings
 - Add COM Activ, Standby Frequ. (with mouse dial and swap)
 - Add NAV Activ, Standby Frequ. (with mouse dial and swap)
 - Update Setup for Audio Speech Render Device (VoiceOut)

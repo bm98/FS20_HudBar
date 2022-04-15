@@ -65,9 +65,9 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.APRhold_active ? cAP : cLabel;
-        _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.IsGPS_active ? "►GP◄" : "►GS◄";
-        _value1.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.IsGS_active ? cAP :
-                                      ( SC.SimConnectClient.Instance.AP_G1000Module.IsGShold_active ? cInfo : cLabel);
+        _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? "►GP◄" : "►GS◄";
+        _value1.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GS_active ? cAP :
+                                      ( SC.SimConnectClient.Instance.AP_G1000Module.GShold_active ? cInfo : cLabel);
         
       }
     }

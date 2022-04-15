@@ -59,7 +59,7 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.IsLVL_active ? cAP : cLabel;
+        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.LVL_active ? cAP : cLabel;
       }
     }
 

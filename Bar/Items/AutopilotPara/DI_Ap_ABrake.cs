@@ -13,6 +13,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -37,7 +38,7 @@ namespace FS20_HudBar.Bar.Items
     // align size with ATHR to make it look pleasant.. (8 chars for now)
     private const string c_active = "active {0}";
     private const string c_armed  = "armed  {0}";
-    private const string c_off    = " off   {0}";
+    private const string c_off    = " off    ";
 
     public DI_Ap_ABrake( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
@@ -61,7 +62,7 @@ namespace FS20_HudBar.Bar.Items
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
       if ( SC.SimConnectClient.Instance.AP_G1000Module.ABRK_active ) {
-        SC.SimConnectClient.Instance.AP_G1000Module.ABRK_set( FSimClientIF.CmdMode.Off );
+        SC.SimConnectClient.Instance.AP_G1000Module.ABRK_set( CmdMode.Off );
       }
     }
 
@@ -70,11 +71,11 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
-      if ( e.Delta > 0 ) {
-        SC.SimConnectClient.Instance.AP_G1000Module.ABRK_set( FSimClientIF.CmdMode.Inc );
+      if ( e.Delta > 0 && SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level < AutoBrakeLevel.MAX ) {
+        SC.SimConnectClient.Instance.AP_G1000Module.ABRK_set( CmdMode.Inc );
       }
-      else if ( e.Delta < 0 ) {
-        SC.SimConnectClient.Instance.AP_G1000Module.ABRK_set( FSimClientIF.CmdMode.Dec );
+      else if ( e.Delta < 0 && SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level > AutoBrakeLevel.RTO ) {
+        SC.SimConnectClient.Instance.AP_G1000Module.ABRK_set( CmdMode.Dec );
       }
     }
 
@@ -86,16 +87,16 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         if ( SC.SimConnectClient.Instance.AP_G1000Module.ABRK_active ) {
           _value1.ItemForeColor = cNav;
-          _value1.Text = string.Format( c_active, SC.SimConnectClient.Instance.AP_G1000Module.ABRK_position );
+          _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( );
         }
         else {
-          if ( SC.SimConnectClient.Instance.AP_G1000Module.ABRK_position > 0 ) {
+          if ( SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level > AutoBrakeLevel.OFF ) {
             _value1.ItemForeColor = cSet;
-            _value1.Text = string.Format( c_armed, SC.SimConnectClient.Instance.AP_G1000Module.ABRK_position );
+            _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( 8 );
           }
           else {
             _value1.ItemForeColor = cLabel;
-            _value1.Text = string.Format( c_off, SC.SimConnectClient.Instance.AP_G1000Module.ABRK_position );
+            _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( 8 );
           }
         }
 

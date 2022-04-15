@@ -33,6 +33,7 @@ namespace FS20_HudBar.Bar.Items
 
     private readonly B_Base _label;
     private readonly V_Base _value1;
+    private readonly V_Base _value2;
 
     public DI_Ap_AltSet( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
     {
@@ -43,17 +44,23 @@ namespace FS20_HudBar.Bar.Items
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
 
       item = VItem.AP_ALTset;
-      _value1 = new V_Alt( value2Proto, showUnits ) { ItemForeColor = cSet };
+      _value1 = new V_Alt( value2Proto, showUnits ) { ItemForeColor = cSet, ItemBackColor = cValBG };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
+      item = VItem.AP_ALThold;
+      _value2 = new V_Alt( value2Proto, showUnits ) { ItemForeColor = cInfo };
+      this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
+
       _label.ButtonClicked += _label_ButtonClicked;
-      _label.MouseWheel += _label_MouseWheel;
-      _label.Cursor = Cursors.SizeNS;
+      _label.Cursor = Cursors.Hand;
+
+      _value1.MouseWheel += _value1_MouseWheel;
+      _value1.Cursor = Cursors.SizeNS;
 
       m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
     }
 
-    private void _label_MouseWheel( object sender, MouseEventArgs e )
+    private void _value1_MouseWheel( object sender, MouseEventArgs e )
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
@@ -71,7 +78,8 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
-      SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active = true; // toggles independent of the set value
+      //SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active = true; // toggles independent of the set value
+      SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold_current( FSimClientIF.CmdMode.Toggle );
     }
 
     /// <summary>
@@ -80,8 +88,14 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
+        _label.Text = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_armed ? "ALTS" : "ALT";
         this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active ? cAP : cLabel;
-        _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
+
+        _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft; 
+        // the Alt Ref currently holding (can get NaN)
+        _value2.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active ? cAP 
+          : SC.SimConnectClient.Instance.AP_G1000Module.ALThold_armed ? cInfo : cLabel;
+        _value2.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_holding_ft;
       }
     }
 

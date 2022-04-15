@@ -43,17 +43,27 @@ namespace FS20_HudBar.Bar.Items
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
 
       item = VItem.AP_HDGset;
-      _value1 = new V_Deg( value2Proto, showUnits ) { ItemForeColor = cSet };
+      _value1 = new V_Deg( value2Proto, showUnits ) { ItemForeColor = cSet, ItemBackColor = cValBG };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       _label.ButtonClicked += _label_ButtonClicked;
-      _label.MouseWheel += _label_MouseWheel;
-      _label.Cursor = Cursors.SizeNS;
+      _label.Cursor = Cursors.Hand;
+
+      _value1.MouseClick += _value1_MouseClick;
+      _value1.MouseWheel += _value1_MouseWheel;
+      _value1.Cursor = Cursors.SizeNS;
 
       m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
     }
 
-    private void _label_MouseWheel( object sender, MouseEventArgs e )
+    private void _value1_MouseClick( object sender, MouseEventArgs e )
+    {
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return;
+
+      SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting_degm = SC.SimConnectClient.Instance.NavModule.HDG_mag_degm;
+    }
+
+    private void _value1_MouseWheel( object sender, MouseEventArgs e )
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
@@ -71,7 +81,8 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
-      SC.SimConnectClient.Instance.AP_G1000Module.HDGhold_active = true; // toggles independent of the set value
+      //      SC.SimConnectClient.Instance.AP_G1000Module.HDGhold_active = true; // toggles independent of the set value
+      SC.SimConnectClient.Instance.AP_G1000Module.HDG_hold_panel(  FSimClientIF.CmdMode.Toggle );
     }
 
     /// <summary>

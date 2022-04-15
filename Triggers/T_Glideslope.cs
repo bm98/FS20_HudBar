@@ -44,9 +44,9 @@ namespace FS20_HudBar.Triggers
       if ( SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) return; // not while on ground
 
       var ds = SC.SimConnectClient.Instance.AP_G1000Module;
-      this.m_actions[true].Text = ds.IsGPS_active ? _path : _slope; // change according to NAV mode
-      DetectStateChange( ds.IsGS_active );
-      if ( ds.IsGS_active == false )
+      this.m_actions[true].Text = ds.GPS_active ? _path : _slope; // change according to NAV mode
+      DetectStateChange( ds.GS_active );
+      if ( ds.GS_active == false )
         m_lastTriggered = false; // RESET if no longer captured
     }
 
