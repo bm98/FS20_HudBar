@@ -61,11 +61,21 @@ namespace FS20_HudBar.Bar.Items
 
       if ( e.Delta > 0 ) {
         // Up
-        SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting( FSimClientIF.CmdMode.Inc );
+        if ( SC.SimConnectClient.Instance.AP_G1000Module.MACH_managed ) {
+          SC.SimConnectClient.Instance.AP_G1000Module.MACH_setting( FSimClientIF.CmdMode.Inc );
+        }
+        else {
+          SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting( FSimClientIF.CmdMode.Inc );
+        }
       }
       else if ( e.Delta < 0 ) {
         // Down
-        SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting( FSimClientIF.CmdMode.Dec );
+        if ( SC.SimConnectClient.Instance.AP_G1000Module.MACH_managed ) {
+          SC.SimConnectClient.Instance.AP_G1000Module.MACH_setting( FSimClientIF.CmdMode.Dec );
+        }
+        else {
+          SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting( FSimClientIF.CmdMode.Dec );
+        }
       }
     }
 
@@ -83,8 +93,20 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.SPDhold_active ? cAP : cLabel;
-        _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt;
+        // set MACH mode
+        ( _value1 as V_Speed ).MachMode = SC.SimConnectClient.Instance.AP_G1000Module.MACH_managed;
+        // Set Value and color
+        if ( SC.SimConnectClient.Instance.AP_G1000Module.MACH_managed ) {
+          Label.Text = Short + "m";
+          this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.SPDhold_active ? cAP : cLabel;
+          _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.MACH_setting_mach;
+        }
+        else {
+          // IAS managed
+          Label.Text = Short;
+          this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.SPDhold_active ? cAP : cLabel;
+          _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt;
+        }
       }
     }
 

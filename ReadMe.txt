@@ -48,7 +48,7 @@ V 0.48-B45
 - Add Engine 3 and 4 support
 - Add AP AutoThrottle item (ATHR, TOGA) - experimental, scroll to change, TOGA click to toggle
 - Add AP AutoBrake item (ABRK) - experimental, scroll to change
-- Add AP IAS Speed Hold item
+- Add AP IAS/MACH Speed Hold item
 - Add AP Attitude Hold Item
 - Update AP Setting handling (mouse scroll over the setting number - not the Label anymore)
 - Update AP HDG setting number, click to set to current heading

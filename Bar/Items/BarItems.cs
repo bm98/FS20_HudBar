@@ -469,6 +469,7 @@ namespace FS20_HudBar.Bar.Items
     AP_ATHR_armed,// Auto Throttle Arm Click
     AP_ATHR_toga, // Auto Throttle TOGA Click
     AP_ABRK_armed,// Auto Brake Arm Click
+    AP_ASKID,     // Auto Skid On
 
     // TIMER
     M_Elapsed1,   // Time elapsed since start of CP1

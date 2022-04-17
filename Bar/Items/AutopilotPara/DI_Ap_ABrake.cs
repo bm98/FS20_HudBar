@@ -34,11 +34,12 @@ namespace FS20_HudBar.Bar.Items
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
+    private readonly V_Base _value2;
 
     // align size with ATHR to make it look pleasant.. (8 chars for now)
-    private const string c_active = "active {0}";
-    private const string c_armed  = "armed  {0}";
-    private const string c_off    = " off    ";
+
+    private const string c_aSkid    = " a-skid ";
+
 
     public DI_Ap_ABrake( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
@@ -48,11 +49,15 @@ namespace FS20_HudBar.Bar.Items
       _label = new V_Text( lblProto ) { Text = Short }; this.AddItem( _label );
 
       var item = VItem.AP_ABRK_armed;
-      _value1 = new V_Text( value2Proto ) { ItemBackColor = cValBG, Text = c_off };
+      _value1 = new V_Text( value2Proto ) { ItemForeColor = cLabel, ItemBackColor = cValBG, Text = AutoBrakeLevel.OFF.ToString().PadRight(8) };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
       _value1.Click += _value1_Click;
       _value1.MouseWheel += _value1_MouseWheel;
       _value1.Cursor = Cursors.SizeNS;
+
+      item = VItem.AP_ASKID;
+      _value2 = new V_Text( value2Proto ) { ItemForeColor = cLabel, Text = c_aSkid };
+      this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
     }
@@ -86,20 +91,23 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         if ( SC.SimConnectClient.Instance.AP_G1000Module.ABRK_active ) {
-          _value1.ItemForeColor = cNav;
-          _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( );
+          _value1.ItemForeColor = cOK;
+          _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( 8 );
         }
         else {
-          if ( SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level > AutoBrakeLevel.OFF ) {
-            _value1.ItemForeColor = cSet;
+          if ( SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level == AutoBrakeLevel.OFF ) {
+            _value1.ItemForeColor = cLabel;
             _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( 8 );
           }
           else {
-            _value1.ItemForeColor = cLabel;
+            _value1.ItemForeColor = cSet;
             _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( 8 );
           }
         }
 
+        // Anti Skid (A320 only it seems)
+        _value2.Text = SC.SimConnectClient.Instance.AP_G1000Module.ASKID_active ? c_aSkid.ToUpperInvariant() : c_aSkid;
+        _value2.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ASKID_active ? cOK : cLabel;
       }
     }
 

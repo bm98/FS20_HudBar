@@ -36,9 +36,9 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value2;
 
     // align size with ABRK to make it look pleasant.. (8 chars for now)
-    private const string c_active = "active  ";
-    private const string c_armed  = "armed   ";
-    private const string c_off    = " off    ";
+    private const string c_active = "ACTIVE  ";
+    private const string c_armed  = "ARMED   ";
+    private const string c_off    = "OFF     ";
     private const string c_toga   = "  toga  ";
 
 
@@ -50,13 +50,13 @@ namespace FS20_HudBar.Bar.Items
       _label = new V_Text( lblProto ) { Text = Short }; this.AddItem( _label );
 
       var item = VItem.AP_ATHR_armed;
-      _value1 = new V_Text( value2Proto ) { ItemBackColor = cValBG, Text = c_off };
+      _value1 = new V_Text( value2Proto ) { ItemForeColor = cLabel, ItemBackColor = cValBG, Text = c_off };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
       _value1.Click += _value1_Click;
       _value1.Cursor = Cursors.Hand;
 
       item = VItem.AP_ATHR_toga;
-      _value2 = new V_Text( value2Proto ) { ItemBackColor = cValBG, Text = c_toga };
+      _value2 = new V_Text( value2Proto ) { ItemForeColor = cLabel, ItemBackColor = cValBG, Text = c_toga };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
       _value2.Click += _value2_Click;
       _value2.Cursor = Cursors.Hand;
@@ -91,11 +91,11 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         if ( SC.SimConnectClient.Instance.AP_G1000Module.ATHR_active ) {
-          _value1.ItemForeColor = cNav;
-          _value1.Text = c_active;  
+          _value1.ItemForeColor = cOK;
+          _value1.Text = c_active;
         }
         else if ( SC.SimConnectClient.Instance.AP_G1000Module.ATHRmanaged_active ) {
-          _value1.ItemForeColor = cNav;
+          _value1.ItemForeColor = cOK;
           _value1.Text = c_active;
         }
         else if ( SC.SimConnectClient.Instance.AP_G1000Module.ATHR_armed ) {
@@ -107,15 +107,9 @@ namespace FS20_HudBar.Bar.Items
           _value1.Text = c_off;
         }
 
-        if ( SC.SimConnectClient.Instance.AP_G1000Module.TOGA_active ) {
-          _value2.ItemForeColor = cNav;
-          _value2.Text = c_toga.ToUpperInvariant();
-        }
-        else {
-          _value2.ItemForeColor = cLabel;
-          _value2.Text = c_toga;
-        }
-
+        // TOGA
+        _value2.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.TOGA_active ? cOK : cLabel;
+        _value2.Text = SC.SimConnectClient.Instance.AP_G1000Module.TOGA_active ? c_toga.ToUpperInvariant( ) : c_toga;
 
       }
     }
