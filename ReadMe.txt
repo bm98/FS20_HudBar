@@ -1,4 +1,4 @@
-FS20_HudBar V 0.48 - Build 45 BETA
+FS20_HudBar V 0.49 - Build 46 BETA
 (c) M. Burri - 21-Apr-2022
 
 Contains files:
@@ -43,6 +43,9 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.49-B46
+- Version increment only
 
 V 0.48-B45
 - Add Engine 3 and 4 support
