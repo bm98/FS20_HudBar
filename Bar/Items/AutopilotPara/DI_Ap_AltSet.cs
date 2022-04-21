@@ -13,6 +13,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FS20_HudBar.GUI.GUI_Fonts;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -25,7 +26,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static readonly string Short = "ALT";
+    public static readonly string Short = "ALT" + c_space + c_space; // need to have one all the time, else the height box changes which is moving the whole column
     /// <summary>
     /// The Configuration Description
     /// </summary>
@@ -88,7 +89,7 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _label.Text = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_armed ? "ALTS" : "ALT";
+        _label.Text = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_armed ? "ALTS" + c_space : "ALT" + c_space + c_space;
         this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active ? cAP : cLabel;
 
         _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft; 

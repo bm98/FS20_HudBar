@@ -95,13 +95,6 @@ namespace FS20_HudBar.GUI
   /// </summary>
   class GUI_Fonts : IDisposable
   {
-    #region STATIC
-    // A logger
-    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
-      System.Reflection.Assembly.GetCallingAssembly( ),
-      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
-    #endregion
-
     /// <summary>
     /// Embedded Fonts
     /// </summary>
@@ -120,6 +113,18 @@ namespace FS20_HudBar.GUI
       Value2,
       Sign,
     }
+
+
+    #region STATIC
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+
+    // figure space - i.e. wide space char for Labels (flex spaced fonts)
+    // as it uses a larger height box make sure to check the appearance 
+    // May be use 1 c_space added all the time to have a consistent layout
+    internal static char c_space = '\x2007';
 
     // Store embedded Fonts here
     private static PrivateFontCollection s_privateFonts = new PrivateFontCollection( );
@@ -168,6 +173,7 @@ namespace FS20_HudBar.GUI
       return ret;
     }
 
+    #endregion
 
     /// <summary>
     /// Local Font repository

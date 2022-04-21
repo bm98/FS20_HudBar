@@ -162,7 +162,7 @@ namespace FS20_HudBar.Bar
       {LItem.M_TIM_DIST1, DI_M_TimDist1.Desc },{LItem.M_TIM_DIST2, DI_M_TimDist2.Desc }, {LItem.M_TIM_DIST3, DI_M_TimDist3.Desc },
 
       {LItem.THR_LEV, DI_Thr_LEV.Desc },      {LItem.MIX_LEV, DI_Mix_LEV.Desc }, {LItem.PROP_LEV, DI_Prop_LEV.Desc },
-
+      {LItem.A320THR, DI_A320Throttle.Desc },
     };
 
     #endregion  // STATIC
@@ -504,6 +504,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Thr_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Mix_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Prop_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_A320Throttle( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
 
       LOG.Log( $"cTor HudBar: {m_dispItems.Count} items loaded" );
 

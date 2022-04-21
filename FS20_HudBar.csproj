@@ -192,6 +192,9 @@
     <Compile Include="Bar\Items\AutopilotPara\DI_Ap_SpeedSet.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\CtrlPara\DI_A320Throttle.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\RadioPara\DI_Nav1.cs">
       <SubType>Component</SubType>
     </Compile>

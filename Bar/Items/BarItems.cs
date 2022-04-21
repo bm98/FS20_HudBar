@@ -167,7 +167,7 @@ namespace FS20_HudBar.Bar.Items
     COM2_NAME,    // COM2 ID
     NAV1_F,       // NAV1 Frequ
     NAV2_F,       // NAV2 Frequ
-
+    A320THR,      // A320 Throttle
   }
 
 
@@ -502,6 +502,10 @@ namespace FS20_HudBar.Bar.Items
     E2_MIX_LEV,    // Mixture Lever Engine 2
     E1_PROP_LEV,   // Propeller Lever Engine 1
     E2_PROP_LEV,   // Propeller Lever Engine 2
+
+    E1_A320THR,    // A320 Throttle
+    E2_A320THR,    // A320 Throttle
+
   }
 
 }

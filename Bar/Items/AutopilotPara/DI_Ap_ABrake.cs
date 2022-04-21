@@ -76,7 +76,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
-      if ( e.Delta > 0 && SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level < AutoBrakeLevel.MAX ) {
+      if ( e.Delta > 0 && SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level < AutoBrakeLevel.HIGH_4 ) {
         SC.SimConnectClient.Instance.AP_G1000Module.ABRK_set( CmdMode.Inc );
       }
       else if ( e.Delta < 0 && SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level > AutoBrakeLevel.RTO ) {

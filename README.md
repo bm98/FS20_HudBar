@@ -4,7 +4,7 @@
 
 
 * Displays more than 100 essential aircraft and flight information items as Bar, Tile or Window
-* Supports 1 and 2 engine aircrafts (Prop/Engine RPM, FuelFlow for each)
+* Supports 1, 2, 3 and 4 engine aircrafts (Prop/Engine RPM, FuelFlow for each)
 * Provides 5 different content profiles which are fully configurable
 * The pilot can directly activate Autopilot and other commands
 * Auto Elevator Trim on a click
@@ -70,11 +70,12 @@ My FlightSim Libraries (included in the release package)
 * PingLib.dll                 -- An audio lib using Win10 Audio facilities (new since V0.43)
 * MetarLib.dll                -- A METAR access library 
 * bm98_Album.dll              -- A UserControl for displaying images (zoom & drag new since V0.43)
+* bm98_hb_Controls.dll        -- UserControls for displaying graphs (new since V0.45)
 <br>
 * SimConnectClient.dll        -- FlightSim interface to MSFS2020 SimConnect
 * FSimClientIF.dll            -- Generic FSim Client interface definition
 * FSimIF.dll                  -- Generic FSim interface definition
-* FS20_AptLib.dll             -- MSFS2020 Airport DB (new since V0.29)
+* FS20_AptLib.dll             -- MSFS2020 Airport DB (SU8 updated)
 * CoordLib.dll                -- A coord. handling library (https://github.com/bm98/CoordLib)
 <br>
 

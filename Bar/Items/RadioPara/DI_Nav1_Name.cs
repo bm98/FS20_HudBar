@@ -57,8 +57,8 @@ namespace FS20_HudBar.Bar.Items
           string dd = SC.SimConnectClient.Instance.NavModule.Nav1_Name;
           if ( !string.IsNullOrEmpty( SC.SimConnectClient.Instance.NavModule.APT1 ) ) {
             dd += $" ({SC.SimConnectClient.Instance.NavModule.APT1})";
-            _value1.Text = dd;
           }
+          _value1.Text = dd;
         }
         else {
           _value1.Text = null;

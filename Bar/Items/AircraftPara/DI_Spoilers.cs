@@ -31,18 +31,28 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     public static readonly string Desc = "Spoiler / Speedbrakes";
 
-    private readonly V_Base _label;
+    private readonly B_Base _label;
     private readonly V_Base _value1;
 
     public DI_Spoilers( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       var item = VItem.SPOLIER;
-      _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
+      _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
+      _label.ButtonClicked += _label_ButtonClicked;
+      
       _value1 = new V_Steps( signProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+    }
+
+    private void _label_ButtonClicked( object sender, EventArgs e )
+    {
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return;
+      if ( !SC.SimConnectClient.Instance.HudBarModule.HasSpoiler ) return;
+
+      SC.SimConnectClient.Instance.HudBarModule.Spoilers_Arm( FSimClientIF.CmdMode.Toggle );
     }
 
     /// <summary>
@@ -50,7 +60,9 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private static Steps SpoilerState {
       get {
-        if ( !SC.SimConnectClient.Instance.IsConnected ) return Steps.Up; // cannot calculate anything
+        if ( !SC.SimConnectClient.Instance.IsConnected ) return Steps.OffOK; // cannot calculate anything
+
+        if ( !SC.SimConnectClient.Instance.HudBarModule.HasSpoiler ) return Steps.OffOK;
 
         if ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.05 ) {
           return Steps.Up;
@@ -86,6 +98,7 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
+        _label.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.HasSpoiler && SC.SimConnectClient.Instance.HudBarModule.Spoilers_armed ) ? cArmed : cLabel;
         _value1.Step = SpoilerState;
       }
     }

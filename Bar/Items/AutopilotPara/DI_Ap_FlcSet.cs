@@ -74,13 +74,10 @@ namespace FS20_HudBar.Bar.Items
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
       //      SC.SimConnectClient.Instance.AP_G1000Module.FLChold_active = true; // toggles independent of the set value
-      if ( SC.SimConnectClient.Instance.AP_G1000Module.FLChold_active )
-        SC.SimConnectClient.Instance.AP_G1000Module.FLC_hold( FSimClientIF.CmdMode.Off );
-      else {
+      if ( !SC.SimConnectClient.Instance.AP_G1000Module.FLChold_active ) {
         SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt = SC.SimConnectClient.Instance.HudBarModule.IAS_kt;
-        SC.SimConnectClient.Instance.AP_G1000Module.FLC_hold( FSimClientIF.CmdMode.Off );
-
       }
+      SC.SimConnectClient.Instance.AP_G1000Module.FLC_hold( FSimClientIF.CmdMode.Toggle );
     }
 
     /// <summary>

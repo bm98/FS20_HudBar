@@ -1,5 +1,5 @@
 FS20_HudBar V 0.48 - Build 45 BETA
-(c) M. Burri - 16-Apr-2022
+(c) M. Burri - 21-Apr-2022
 
 Contains files:
 
@@ -56,6 +56,7 @@ V 0.48-B45
 - Update AP settings, visual background changed to indicate active settings
 - Add COM Activ, Standby Frequ. (with mouse dial and swap)
 - Add NAV Activ, Standby Frequ. (with mouse dial and swap)
+- Add A320 Throttle Position Indicator
 - Update Setup for Audio Speech Render Device (VoiceOut)
 - Add Debug module
 - Refactoring of the Layout procedure

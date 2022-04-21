@@ -79,6 +79,10 @@ namespace FS20_HudBar.GUI
       /// </summary>
       cStep,
       /// <summary>
+      /// Armed color (Spoiler etc)
+      /// </summary>
+      cArmed,
+      /// <summary>
       /// Inverse readout color (black)
       /// </summary>
       cInverse,
@@ -181,6 +185,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cSubZero, Color.DeepSkyBlue },
       { ColorType.cSRATE, Color.Goldenrod },
       { ColorType.cStep, Color.LightBlue },
+      { ColorType.cArmed, Color.Cyan },
       { ColorType.cInverse, Color.Black },
 
       { ColorType.cBG, Color.Transparent },
@@ -230,6 +235,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cSubZero, Dimm( c_brightColors[ColorType.cSubZero] )},
       { ColorType.cSRATE, Dimm( c_brightColors[ColorType.cSRATE] )},
       { ColorType.cStep, Color.LightBlue },
+      { ColorType.cArmed, Dimm( c_brightColors[ColorType.cArmed] )},
       { ColorType.cInverse, Color.Black },
 
       { ColorType.cBG, Color.Transparent },
@@ -275,6 +281,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cSubZero, Color.DarkBlue },
       { ColorType.cSRATE, Color.Orange },
       { ColorType.cStep, Color.DeepSkyBlue },
+      { ColorType.cArmed, Color.DarkBlue },
       { ColorType.cInverse, Color.WhiteSmoke },
 
       { ColorType.cBG, Color.Transparent },

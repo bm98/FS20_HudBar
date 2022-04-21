@@ -31,18 +31,29 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     public static readonly string Desc = "Spoiler/SBrake Graph";
 
-    private readonly V_Base _label;
+    private readonly B_Base _label;
     private readonly A_Scale _scale1;
 
     public DI_SpoilersGraph( ValueItemCat vCat, Label lblProto )
     {
       LabelID = LItem;
       var item = VItem.SPOILER_ANI;
-      _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
+      _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
+      _label.ButtonClicked += _label_ButtonClicked;
+
       _scale1 = new A_Scale( ) { Minimum = 0, Maximum = 100, AlertEnabled = false, ItemForeColor = cStep };
       this.AddItem( _scale1 ); vCat.AddLbl( item, _scale1 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+    }
+
+
+    private void _label_ButtonClicked( object sender, EventArgs e )
+    {
+      if ( !SC.SimConnectClient.Instance.IsConnected ) return;
+      if ( !SC.SimConnectClient.Instance.HudBarModule.HasSpoiler ) return;
+
+      SC.SimConnectClient.Instance.HudBarModule.Spoilers_Arm( FSimClientIF.CmdMode.Toggle );
     }
 
     /// <summary>
@@ -51,8 +62,15 @@ namespace FS20_HudBar.Bar.Items
     public void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _scale1.Value = SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct * 100; // 0..100
-        _scale1.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.05 ) ? cOK : cStep;
+        if ( SC.SimConnectClient.Instance.HudBarModule.HasSpoiler ) {
+          _label.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.HasSpoiler && SC.SimConnectClient.Instance.HudBarModule.Spoilers_armed ) ? cArmed : cLabel;
+
+          _scale1.Value = SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct * 100; // 0..100
+          _scale1.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.05 ) ? cOK : cStep;
+        }
+        else {
+          _scale1.Value = null;
+        }
       }
     }
 
