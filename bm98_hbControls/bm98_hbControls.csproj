@@ -67,6 +67,12 @@
     <Compile Include="UC_Scale.Designer.cs">
       <DependentUpon>UC_Scale.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_Surfaces.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_Surfaces.Designer.cs">
+      <DependentUpon>UC_Surfaces.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_TwinScale.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -100,6 +106,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UC_Scale.resx">
       <DependentUpon>UC_Scale.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_Surfaces.resx">
+      <DependentUpon>UC_Surfaces.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_TwinScale.resx">
       <DependentUpon>UC_TwinScale.cs</DependentUpon>

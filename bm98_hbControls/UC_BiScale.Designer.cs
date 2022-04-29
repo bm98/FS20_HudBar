@@ -32,8 +32,7 @@ namespace bm98_hbControls
       // 
       // UC_BiScale
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
       this.DoubleBuffered = true;
       this.ForeColor = System.Drawing.Color.GreenYellow;
       this.MinimumSize = new System.Drawing.Size(30, 10);

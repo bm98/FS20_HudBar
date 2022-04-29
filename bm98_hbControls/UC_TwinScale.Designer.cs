@@ -32,8 +32,7 @@ namespace bm98_hbControls
       // 
       // UC_TwinScale
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
       this.ForeColor = System.Drawing.Color.YellowGreen;
       this.MinimumSize = new System.Drawing.Size(30, 10);
       this.Name = "UC_TwinScale";

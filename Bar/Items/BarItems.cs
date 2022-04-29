@@ -168,6 +168,8 @@ namespace FS20_HudBar.Bar.Items
     NAV1_F,       // NAV1 Frequ
     NAV2_F,       // NAV2 Frequ
     A320THR,      // A320 Throttle
+
+    SURF_ANI,     // Control Surfaces Graph
   }
 
 
@@ -505,6 +507,8 @@ namespace FS20_HudBar.Bar.Items
 
     E1_A320THR,    // A320 Throttle
     E2_A320THR,    // A320 Throttle
+
+    SURF_ANI,         // Control Surfaces
 
   }
 
