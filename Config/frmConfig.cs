@@ -92,6 +92,7 @@ namespace FS20_HudBar.Config
       m_tooltip.SetToolTip( txHkProfile4, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
       m_tooltip.SetToolTip( txHkProfile5, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
       m_tooltip.SetToolTip( txHkShelf, "Hotkey to toggle the Flight Bag\nDouble click to edit the Hotkey" );
+      m_tooltip.SetToolTip( txHkCamera, "Hotkey to toggle the Camera Selector\nDouble click to edit the Hotkey" );
 
       // indexed access for profile controls
       m_flps[0] = flp1; m_flps[1] = flp2; m_flps[2] = flp3; m_flps[3] = flp4; m_flps[4] = flp5;
@@ -193,6 +194,7 @@ namespace FS20_HudBar.Config
       txHkProfile4.Text = m_hotkeys.ContainsKey( Hotkeys.Profile_4 ) ? m_hotkeys[Hotkeys.Profile_4].AsString : "";
       txHkProfile5.Text = m_hotkeys.ContainsKey( Hotkeys.Profile_5 ) ? m_hotkeys[Hotkeys.Profile_5].AsString : "";
       txHkShelf.Text = m_hotkeys.ContainsKey( Hotkeys.FlightBag ) ? m_hotkeys[Hotkeys.FlightBag].AsString : "";
+      txHkCamera.Text = m_hotkeys.ContainsKey( Hotkeys.Camera ) ? m_hotkeys[Hotkeys.Camera].AsString : "";
     }
 
 
@@ -463,6 +465,7 @@ namespace FS20_HudBar.Config
       txHkProfile4.Visible = chkKeyboard.Checked;
       txHkProfile5.Visible = chkKeyboard.Checked;
       txHkShelf.Visible = chkKeyboard.Checked;
+      txHkCamera.Visible = chkKeyboard.Checked;
     }
 
     // Handle the hotkey entry for the given Key item
@@ -543,6 +546,12 @@ namespace FS20_HudBar.Config
       txHkShelf.Select( 0, 0 );
     }
 
+    private void txHkCamera_DoubleClick( object sender, EventArgs e )
+    {
+      txHkCamera.Text = HandleHotkey( Hotkeys.Camera );
+      txHkCamera.Select( 0, 0 );
+    }
+
     #endregion
 
 
@@ -619,7 +628,6 @@ namespace FS20_HudBar.Config
         m_applyFontChanges = true; // if called multiple times it only stores the Accept one 
       }
     }
-
 
   }
 }

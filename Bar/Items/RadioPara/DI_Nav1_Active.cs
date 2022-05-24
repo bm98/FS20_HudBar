@@ -83,7 +83,7 @@ namespace FS20_HudBar.Bar.Items
             toFromFlag = SC.SimConnectClient.Instance.NavModule.Nav1_Signal ? toFromFlag : 0; // no signal -> direction Off
 
             _value3.Value =
-                  V_DmeDist.DmeDistance( SC.SimConnectClient.Instance.NavModule.DMEdistNav1_nm, toFromFlag );
+                  V_DmeDist.DmeDistance( SC.SimConnectClient.Instance.NavModule.Nav1_DMEdist_nm, toFromFlag );
           }
           else {
             _value3.Value = null;

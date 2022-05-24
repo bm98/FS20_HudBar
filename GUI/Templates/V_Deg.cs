@@ -18,12 +18,12 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Deg( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Deg( Label proto, bool showUnit, int width = 0 )
+    : base( proto, showUnit, width )
     {
       m_unit = " "; // Deg always shows °
-      m_default = DefaultString( "___°" );
-      Text = UnitString( m_default );
+      m_default = DefaultString( "___°" + " " );
+      Text = UnitString( RightAlign( m_default ) );
     }
 
     /// <summary>
@@ -31,14 +31,14 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     override public float? Value {
       set {
-        if ( value == null ) {
-          this.Text = UnitString( m_default );
+        if (value == null) {
+          this.Text = UnitString( RightAlign( m_default ) );
         }
-        else if ( float.IsNaN( (float)value ) ) {
-          this.Text = UnitString( m_default );
+        else if (float.IsNaN( (float)value )) {
+          this.Text = UnitString( RightAlign( m_default ) );
         }
         else {
-          this.Text = UnitString( $"{value,3:000}°" ); // positive 3 digits, leading zeroes
+          this.Text = UnitString( RightAlign( $"{value,3:000}°{_cManaged}" ) ); // positive 3 digits, leading zeroes
         }
       }
     }

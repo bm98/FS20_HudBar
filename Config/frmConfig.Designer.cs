@@ -83,7 +83,6 @@ namespace FS20_HudBar.Config
       this.textBox1 = new System.Windows.Forms.TextBox();
       this.clbVoice = new System.Windows.Forms.CheckedListBox();
       this.cbxASave = new System.Windows.Forms.ComboBox();
-      this.btDumpConfigs = new System.Windows.Forms.Button();
       this.txHkShowHide = new System.Windows.Forms.TextBox();
       this.txHkProfile1 = new System.Windows.Forms.TextBox();
       this.txHkProfile2 = new System.Windows.Forms.TextBox();
@@ -96,9 +95,11 @@ namespace FS20_HudBar.Config
       this.txHkShelf = new System.Windows.Forms.TextBox();
       this.txShelfFolder = new System.Windows.Forms.TextBox();
       this.btShelfFolder = new System.Windows.Forms.Button();
+      this.btDumpConfigs = new System.Windows.Forms.Button();
+      this.btFonts = new System.Windows.Forms.Button();
       this.FBD = new System.Windows.Forms.FolderBrowserDialog();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
-      this.btFonts = new System.Windows.Forms.Button();
+      this.txHkCamera = new System.Windows.Forms.TextBox();
       this.tlp.SuspendLayout();
       this.flp1.SuspendLayout();
       this.flp2.SuspendLayout();
@@ -117,7 +118,6 @@ namespace FS20_HudBar.Config
       this.tlp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
       this.tlp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
       this.tlp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 154F));
-      this.tlp.Controls.Add(this.chkKeyboard, 5, 4);
       this.tlp.Controls.Add(this.flp1, 0, 1);
       this.tlp.Controls.Add(this.flp2, 1, 1);
       this.tlp.Controls.Add(this.flp3, 2, 1);
@@ -164,7 +164,6 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.txHkProfile2, 1, 3);
       this.tlp.Controls.Add(this.txHkProfile3, 2, 3);
       this.tlp.Controls.Add(this.txHkProfile4, 3, 3);
-      this.tlp.Controls.Add(this.chkInGame, 5, 5);
       this.tlp.Controls.Add(this.cbxFlightRecorder, 3, 9);
       this.tlp.Controls.Add(this.btCancel, 5, 10);
       this.tlp.Controls.Add(this.btAccept, 4, 10);
@@ -173,6 +172,9 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.btShelfFolder, 0, 10);
       this.tlp.Controls.Add(this.btDumpConfigs, 5, 9);
       this.tlp.Controls.Add(this.btFonts, 5, 7);
+      this.tlp.Controls.Add(this.chkInGame, 5, 6);
+      this.tlp.Controls.Add(this.chkKeyboard, 5, 5);
+      this.tlp.Controls.Add(this.txHkCamera, 5, 4);
       this.tlp.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tlp.Location = new System.Drawing.Point(0, 0);
       this.tlp.Name = "tlp";
@@ -196,7 +198,7 @@ namespace FS20_HudBar.Config
       this.chkKeyboard.AutoSize = true;
       this.chkKeyboard.BackColor = System.Drawing.Color.Honeydew;
       this.chkKeyboard.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.chkKeyboard.Location = new System.Drawing.Point(783, 549);
+      this.chkKeyboard.Location = new System.Drawing.Point(783, 579);
       this.chkKeyboard.Name = "chkKeyboard";
       this.chkKeyboard.Size = new System.Drawing.Size(148, 24);
       this.chkKeyboard.TabIndex = 30;
@@ -765,7 +767,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxVoice.Location = new System.Drawing.Point(159, 700);
+      this.cbxVoice.Location = new System.Drawing.Point(159, 702);
       this.cbxVoice.Name = "cbxVoice";
       this.cbxVoice.Size = new System.Drawing.Size(150, 23);
       this.cbxVoice.TabIndex = 25;
@@ -804,22 +806,10 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxASave.Location = new System.Drawing.Point(315, 700);
+      this.cbxASave.Location = new System.Drawing.Point(315, 702);
       this.cbxASave.Name = "cbxASave";
       this.cbxASave.Size = new System.Drawing.Size(150, 23);
       this.cbxASave.TabIndex = 29;
-      // 
-      // btDumpConfigs
-      // 
-      this.btDumpConfigs.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btDumpConfigs.Location = new System.Drawing.Point(783, 699);
-      this.btDumpConfigs.Name = "btDumpConfigs";
-      this.btDumpConfigs.Size = new System.Drawing.Size(133, 24);
-      this.btDumpConfigs.TabIndex = 28;
-      this.btDumpConfigs.Text = "Dump Def.Profiles";
-      this.btDumpConfigs.UseVisualStyleBackColor = true;
-      this.btDumpConfigs.Visible = false;
-      this.btDumpConfigs.Click += new System.EventHandler(this.btDumpConfigs_Click);
       // 
       // txHkShowHide
       // 
@@ -886,7 +876,7 @@ namespace FS20_HudBar.Config
       this.chkInGame.AutoSize = true;
       this.chkInGame.BackColor = System.Drawing.Color.Azure;
       this.chkInGame.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.chkInGame.Location = new System.Drawing.Point(783, 579);
+      this.chkInGame.Location = new System.Drawing.Point(783, 609);
       this.chkInGame.Name = "chkInGame";
       this.chkInGame.Size = new System.Drawing.Size(148, 24);
       this.chkInGame.TabIndex = 31;
@@ -964,16 +954,17 @@ namespace FS20_HudBar.Config
       this.btShelfFolder.UseVisualStyleBackColor = true;
       this.btShelfFolder.Click += new System.EventHandler(this.btShelfFolder_Click);
       // 
-      // FBD
+      // btDumpConfigs
       // 
-      this.FBD.Description = "Select Flight Bag Folder";
-      this.FBD.ShowNewFolderButton = false;
-      // 
-      // timer1
-      // 
-      this.timer1.Enabled = true;
-      this.timer1.Interval = 5000;
-      this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+      this.btDumpConfigs.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btDumpConfigs.Location = new System.Drawing.Point(783, 699);
+      this.btDumpConfigs.Name = "btDumpConfigs";
+      this.btDumpConfigs.Size = new System.Drawing.Size(133, 24);
+      this.btDumpConfigs.TabIndex = 28;
+      this.btDumpConfigs.Text = "Dump Def.Profiles";
+      this.btDumpConfigs.UseVisualStyleBackColor = true;
+      this.btDumpConfigs.Visible = false;
+      this.btDumpConfigs.Click += new System.EventHandler(this.btDumpConfigs_Click);
       // 
       // btFonts
       // 
@@ -985,6 +976,29 @@ namespace FS20_HudBar.Config
       this.btFonts.Text = "Fonts...";
       this.btFonts.UseVisualStyleBackColor = true;
       this.btFonts.Click += new System.EventHandler(this.btFonts_Click);
+      // 
+      // FBD
+      // 
+      this.FBD.Description = "Select Flight Bag Folder";
+      this.FBD.ShowNewFolderButton = false;
+      // 
+      // timer1
+      // 
+      this.timer1.Enabled = true;
+      this.timer1.Interval = 5000;
+      this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+      // 
+      // txHkCamera
+      // 
+      this.txHkCamera.BackColor = System.Drawing.Color.Honeydew;
+      this.txHkCamera.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.txHkCamera.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txHkCamera.Location = new System.Drawing.Point(783, 549);
+      this.txHkCamera.Name = "txHkCamera";
+      this.txHkCamera.ReadOnly = true;
+      this.txHkCamera.Size = new System.Drawing.Size(148, 22);
+      this.txHkCamera.TabIndex = 35;
+      this.txHkCamera.DoubleClick += new System.EventHandler(this.txHkCamera_DoubleClick);
       // 
       // frmConfig
       // 
@@ -1094,5 +1108,6 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.FolderBrowserDialog FBD;
     private System.Windows.Forms.Timer timer1;
     private System.Windows.Forms.Button btFonts;
+    private System.Windows.Forms.TextBox txHkCamera;
   }
 }

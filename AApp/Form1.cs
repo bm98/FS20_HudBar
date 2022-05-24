@@ -69,6 +69,7 @@ namespace FS20_HudBar
       Show_Hide=0, // toggle show/hide of the bar
       Profile_1, Profile_2, Profile_3, Profile_4, Profile_5, // Profile selection
       FlightBag,
+      Camera
     }
 
     // Handles the RawInput from HID Keyboards
@@ -79,6 +80,9 @@ namespace FS20_HudBar
 
     // The Flightbag
     private Shelf.frmShelf m_shelf;
+
+    // Camera Selector
+    private Camera.frmCamera m_camera;
 
     // Configuration Dialog
     private readonly frmConfig CFG = new frmConfig( );
@@ -305,6 +309,8 @@ namespace FS20_HudBar
           _fsInputCat[Hooks.Profile_5].InputArrived += FSInput_InputArrived;
           _fsInputCat.Add( Hooks.FlightBag, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_07 ) );
           _fsInputCat[Hooks.FlightBag].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hooks.Camera, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_08 ) );
+          _fsInputCat[Hooks.Camera].InputArrived += FSInput_InputArrived;
         }
       }
       else {
@@ -335,7 +341,8 @@ namespace FS20_HudBar
       else if ( e.ActionName == _fsInputCat[Hooks.Profile_3].Inputname ) mP3_Click( null, new EventArgs( ) );
       else if ( e.ActionName == _fsInputCat[Hooks.Profile_4].Inputname ) mP4_Click( null, new EventArgs( ) );
       else if ( e.ActionName == _fsInputCat[Hooks.Profile_5].Inputname ) mP5_Click( null, new EventArgs( ) );
-      else if ( e.ActionName == _fsInputCat[Hooks.FlightBag].Inputname ) mShelf_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hooks.FlightBag].Inputname) mShelf_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hooks.Camera].Inputname) mCamera_Click( null, new EventArgs( ) );
     }
 
     /// <summary>
@@ -379,7 +386,8 @@ namespace FS20_HudBar
         if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_3 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_3], Hooks.Profile_3.ToString( ), OnHookKey );
         if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_4 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_4], Hooks.Profile_4.ToString( ), OnHookKey );
         if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_5 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_5], Hooks.Profile_5.ToString( ), OnHookKey );
-        if ( HUD.Hotkeys.ContainsKey( Hotkeys.FlightBag ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.FlightBag], Hooks.FlightBag.ToString( ), OnHookKey );
+        if (HUD.Hotkeys.ContainsKey( Hotkeys.FlightBag )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.FlightBag], Hooks.FlightBag.ToString( ), OnHookKey );
+        if (HUD.Hotkeys.ContainsKey( Hotkeys.Camera )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Camera], Hooks.Camera.ToString( ), OnHookKey );
 
         _keyHook.KeyHandling( true );
       }
@@ -401,7 +409,8 @@ namespace FS20_HudBar
       else if ( tag == Hooks.Profile_3.ToString( ) ) mP3_Click( null, new EventArgs( ) );
       else if ( tag == Hooks.Profile_4.ToString( ) ) mP4_Click( null, new EventArgs( ) );
       else if ( tag == Hooks.Profile_5.ToString( ) ) mP5_Click( null, new EventArgs( ) );
-      else if ( tag == Hooks.FlightBag.ToString( ) ) mShelf_Click( null, new EventArgs( ) );
+      else if (tag == Hooks.FlightBag.ToString( )) mShelf_Click( null, new EventArgs( ) );
+      else if (tag == Hooks.Camera.ToString( )) mCamera_Click( null, new EventArgs( ) );
     }
 
     #endregion
@@ -483,6 +492,16 @@ namespace FS20_HudBar
       // DEBUG TESTS
       //flp.BackColor = Color.DarkGray; // show extent of the FlowPanel
 #endif
+
+      // Setup the Camera and put it somewhere we can see it (either last location or default)
+      LOG.Log( "frmMain: Load Camera" );
+      m_camera = new  Camera.frmCamera {
+        //Size = AppSettings.Instance.CameraSize,  // Fixed Size
+        Location = AppSettings.Instance.CameraLocation
+      };
+      if (!IsOnScreen( m_camera.Location )) {
+        m_camera.Location = new Point( 100, 100 );// default if not visible
+      }
 
       // Setup the Shelf and put it somewhere we can see it (either last location or default)
       LOG.Log( "frmMain: Load Shelf" );
@@ -666,6 +685,7 @@ namespace FS20_HudBar
         AppSettings.Instance.HKProfile4 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_4 );
         AppSettings.Instance.HKProfile5 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_5 );
         AppSettings.Instance.HKShelf = HUD.Hotkeys.HotkeyString( Hotkeys.FlightBag );
+        AppSettings.Instance.HKCamera = HUD.Hotkeys.HotkeyString( Hotkeys.Camera );
         AppSettings.Instance.KeyboardHook = HUD.KeyboardHook;
         AppSettings.Instance.InGameHook = HUD.InGameHook;
 
@@ -825,11 +845,29 @@ namespace FS20_HudBar
       if ( m_shelf == null ) return; // sanity check 
 
       if ( m_shelf.Visible ) {
+        m_shelf.TopMost = false;
         m_shelf.Hide( );
       }
       else {
         m_shelf.TopMost = true;
         m_shelf.Show( );
+      }
+    }
+
+    #endregion
+
+    #region Camera Selector
+    private void mCamera_Click( object sender, EventArgs e )
+    {
+      if ( m_camera == null ) return; // sanity check 
+
+      if (m_camera.Visible ) {
+        m_camera.TopMost = false;
+        m_camera.Hide( );
+      }
+      else {
+        m_camera.TopMost = true;
+        m_camera.Show( );
       }
     }
 
@@ -958,6 +996,7 @@ namespace FS20_HudBar
       _hotkeycat.AddHotkeyString( Hotkeys.Profile_4, AppSettings.Instance.HKProfile4 );
       _hotkeycat.AddHotkeyString( Hotkeys.Profile_5, AppSettings.Instance.HKProfile5 );
       _hotkeycat.AddHotkeyString( Hotkeys.FlightBag, AppSettings.Instance.HKShelf );
+      _hotkeycat.AddHotkeyString( Hotkeys.Camera, AppSettings.Instance.HKCamera );
       foreach ( var hk in _hotkeycat ) {
         LOG.Log( $"InitGUI: {hk.Key} - {hk.Value.AsString}" );
       }

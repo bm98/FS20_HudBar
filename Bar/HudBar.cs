@@ -158,6 +158,7 @@ namespace FS20_HudBar.Bar
       {LItem.ATC_RWY, DI_Atc_RWY.Desc },
       {LItem.ATC_ALT_HDG, DI_Atc_AltHdg.Desc },
       {LItem.METAR, DI_Metar.Desc },
+      {LItem.DEPARR, DI_DepArr.Desc },
 
       {LItem.M_TIM_DIST1, DI_M_TimDist1.Desc },{LItem.M_TIM_DIST2, DI_M_TimDist2.Desc }, {LItem.M_TIM_DIST3, DI_M_TimDist3.Desc },
 
@@ -498,6 +499,8 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Atc_AltHdg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       // METAR
       m_dispItems.AddDisp( new DI_Metar( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      // ROUTE
+      m_dispItems.AddDisp( new DI_DepArr( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // METERS
       m_dispItems.AddDisp( new DI_M_TimDist1( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_M_TimDist2( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -515,62 +518,51 @@ namespace FS20_HudBar.Bar
 
       // Apply Unit modifier (shown, not shown) to all Values
       LOG.Log( $"cTor HudBar: Post Processing" );
-      foreach (var lx in m_valueItems)
-      {
+      foreach (var lx in m_valueItems) {
         lx.Value.Value.ShowUnit = ShowUnits;
       }
 
       // Align the Vertical alignment accross the bar
-      if (m_profile.Placement == Placement.Top || m_profile.Placement == Placement.Bottom)
-      {
+      if (m_profile.Placement == Placement.Top || m_profile.Placement == Placement.Bottom) {
         // Set min size of the labels in order to have them better aligned
         // Using arrow chars gets a larger height than regular ASCII chars (odd autosize behavior)
         // Setting minSize to the Max found height of any at least allows for some hotizontal alignment
         int mh = 0;
-        foreach (var lx in m_valueItems)
-        {
+        foreach (var lx in m_valueItems) {
           mh = (lx.Value.Ctrl.Height > mh) ? lx.Value.Ctrl.Height : mh;
         }
-        foreach (var lx in m_dispItems)
-        {
+        foreach (var lx in m_dispItems) {
           mh = (lx.Value.Label.Height > mh) ? lx.Value.Label.Height : mh;
         }
 
         // set MinHeight for value Labels
-        foreach (var lx in m_valueItems)
-        {
+        foreach (var lx in m_valueItems) {
           lx.Value.Ctrl.MinimumSize = new Size( 1, mh );
         }
         // define MinHeight for the Group Labels
-        foreach (var lx in m_dispItems)
-        {
+        foreach (var lx in m_dispItems) {
           lx.Value.Label.MinimumSize = new Size( 1, mh );
         }
       }
 
       // Align the Value columns on left and right bound bar or tile
       LOG.Log( $"cTor HudBar: Aligning DI items" );
-      if (m_profile.Placement == Placement.Left || m_profile.Placement == Placement.Right)
-      {
+      if (m_profile.Placement == Placement.Left || m_profile.Placement == Placement.Right) {
         // Determine max width and make them aligned
         int maxLabelWidth = 0;
         int max1ValueWidth = 0; // the Single Value DispItems Value label 
         Queue<int> max1ValueWidthList = new Queue<int>( );
-        foreach (var lItem in Profile.ItemPosList( ))
-        {
+        foreach (var lItem in Profile.ItemPosList( )) {
           var dix = DispItem( lItem );
-          if (dix != null)
-          {
+          if (dix != null) {
             maxLabelWidth = (dix.Controls[0].Width > maxLabelWidth) ? dix.Controls[0].Width : maxLabelWidth;
             // collect per column
-            if (Profile.BreakItem( lItem ))
-            {
+            if (Profile.BreakItem( lItem )) {
               max1ValueWidthList.Enqueue( max1ValueWidth );
               max1ValueWidth = 0;
             }
             // eval the Single Value items
-            if (dix.Controls.Count == 2)
-            {
+            if (dix.Controls.Count == 2) {
               max1ValueWidth = (dix.Controls[1].Width > max1ValueWidth) ? dix.Controls[1].Width : max1ValueWidth;
             }
           }
@@ -579,30 +571,24 @@ namespace FS20_HudBar.Bar
 
         // pad the label control to the right to have the value columns aligned
         max1ValueWidth = max1ValueWidthList.Dequeue( );
-        foreach (var lItem in Profile.ItemPosList( ))
-        {
+        foreach (var lItem in Profile.ItemPosList( )) {
           var dix = DispItem( lItem );
-          if (dix != null)
-          {
+          if (dix != null) {
             // get the next column width
-            if (Profile.BreakItem( lItem ))
-            {
+            if (Profile.BreakItem( lItem )) {
               max1ValueWidth = max1ValueWidthList.Dequeue( );
             }
-            if (dix.Controls.Count == 2 && !(dix.Controls[1] is V_Steps) && !(dix.Controls[1] is V_Text))
-            {
+            if (dix.Controls.Count == 2 && !(dix.Controls[1] is V_Steps) && !(dix.Controls[1] is V_Text)) {
               dix.Controls[0].Padding = new Padding( 0, 0, maxLabelWidth - dix.Controls[0].Width, 0 );
               // align single Value ones to the max right (pad left)
               dix.Controls[1].Padding = new Padding( max1ValueWidth - dix.Controls[1].Width, 0, 0, 0 );
             }
-            else
-            {
+            else {
               // others just column align the Value Items by adding a right Padding to the Label
               dix.Controls[0].Padding = new Padding( 0, 0, maxLabelWidth - dix.Controls[0].Width, 0 );
 
               // For Left and Right Bars - Handle two row items, assuming they get 1 Label and 2 + 2  Value controls
-              if (dix.TwoRows)
-              {
+              if (dix.TwoRows) {
                 // Shift the 2nd row Value to the same location as the 1st Value right with some padding
                 dix.Controls[3].Padding = new Padding( dix.Controls[1].Location.X, 0, 0, 0 );
                 dix.WrapContents = true;
@@ -639,34 +625,29 @@ namespace FS20_HudBar.Bar
       // ATC Airport
       AirportMgr.Update( AtcFlightPlan.Destination ); // maintain APT (we should always have a Destination here)
                                                       // Load Remaining Plan if the WYP or Flightplan has changed
-      if (WPTracker.HasChanged || FltPlanMgr.HasChanged)
-      {
+      if (WPTracker.HasChanged || FltPlanMgr.HasChanged) {
         LOG.Log( $"UpdateGUI: WP or FlightPlan has changed" );
         string tt = AtcFlightPlan.RemainingPlan( WPTracker.Read( ) );
         var di = this.DispItem( LItem.GPS_WYP );
-        if (di != null)
-        {
+        if (di != null) {
           this.ToolTipFP.SetToolTip( di.Label, tt );
           di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
         }
         tt = AtcFlightPlan.WaypointByName( WPTracker.PrevWP ).PrettyDetailed;
         var vc = this.ValueControl( VItem.GPS_PWYP );
-        if (vc != null)
-        {
+        if (vc != null) {
           this.ToolTipFP.SetToolTip( vc, tt );
           vc.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
         }
         tt = AtcFlightPlan.WaypointByName( WPTracker.NextWP ).PrettyDetailed;
         vc = this.ValueControl( VItem.GPS_NWYP );
-        if (vc != null)
-        {
+        if (vc != null) {
           this.ToolTipFP.SetToolTip( vc, tt );
           vc.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
         }
         tt = AtcFlightPlan.Pretty;
         di = this.DispItem( LItem.ATC_ALT_HDG );
-        if (di != null)
-        {
+        if (di != null) {
           this.ToolTipFP.SetToolTip( di.Label, tt );
           di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
         }
@@ -674,12 +655,10 @@ namespace FS20_HudBar.Bar
         FltPlanMgr.Read( );
       }
 
-      if (_aircraftChanged)
-      {
+      if (_aircraftChanged) {
         LOG.Log( $"UpdateGUI: Aircraft has changed to {SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile}" );
         string tt = "";
-        if (!string.IsNullOrWhiteSpace( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile ))
-        {
+        if (!string.IsNullOrWhiteSpace( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile )) {
           var ds = SC.SimConnectClient.Instance.HudBarModule;
           tt = $"Aircraft Type:     {ds.AcftConfigFile}\n\n"
              + $"Cruise Altitude:   {ds.DesingCruiseAlt_ft:##,##0} ft\n"
@@ -695,8 +674,7 @@ namespace FS20_HudBar.Bar
              ;
         }
         var di = this.DispItem( LItem.IAS );
-        if (di != null)
-        {
+        if (di != null) {
           this.ToolTipFP.SetToolTip( di.Label, tt );
           di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
         }
@@ -798,8 +776,7 @@ namespace FS20_HudBar.Bar
       flp.AutoSize = true; // don't know if this changes by some Magic in WinForms - just make sure it is set properly
 
       // set the Panel Alignment 
-      switch (this.Placement)
-      {
+      switch (this.Placement) {
         case GUI.Placement.Top: flp.FlowDirection = FlowDirection.LeftToRight; break;
         case GUI.Placement.Bottom: flp.FlowDirection = FlowDirection.LeftToRight; break;
         case GUI.Placement.Left: flp.FlowDirection = FlowDirection.TopDown; break;
@@ -811,61 +788,50 @@ namespace FS20_HudBar.Bar
       DispItem prevDi = null;
       GUI.BreakType registeredBreak = GUI.BreakType.None; ;
       // Walk through all DispItems from the Bar
-      foreach (LItem i in Enum.GetValues( typeof( LItem ) ))
-      {
+      foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
         // using the enum index only to count from 0..max items
         var key = this.Profile.ItemKeyFromPos( (int)i );
         // The DispItem is a FlowPanel containing the Label and maybe some Values
         var di = this.DispItem( key );
-        if (di != null)
-        {
+        if (di != null) {
           // For Sanity only - check that we have Controls to show
-          if (di.Controls.Count > 0)
-          {
+          if (di.Controls.Count > 0) {
             // check and register breaks for 2nd up items if there is no break registered (FlowBreak takes priority over DivBreaks)
             // this takes breaks from not visible items too
-            if (registeredBreak == GUI.BreakType.None)
-            {
+            if (registeredBreak == GUI.BreakType.None) {
               // take any
               registeredBreak = this.Profile.BreakItem( key ) ? GUI.BreakType.FlowBreak :
                                 this.Profile.DivItem1( key ) ? GUI.BreakType.DivBreak1 :
                                 this.Profile.DivItem2( key ) ? GUI.BreakType.DivBreak2 : GUI.BreakType.None;
             }
-            else if (registeredBreak == GUI.BreakType.FlowBreak)
-            {
+            else if (registeredBreak == GUI.BreakType.FlowBreak) {
               // take no further
               ; // NOP
             }
-            else
-            {
+            else {
               // override DivBreaks only with FlowBreaks
               registeredBreak = this.Profile.BreakItem( key ) ? GUI.BreakType.FlowBreak : registeredBreak;
             }
           }
 
           // Load and process shown items
-          if (this.ShowItem( key ))
-          {
+          if (this.ShowItem( key )) {
             // apply breaks if there are any
-            if (registeredBreak == GUI.BreakType.FlowBreak && prevDi != null)
-            {
+            if (registeredBreak == GUI.BreakType.FlowBreak && prevDi != null) {
               // the flowbreak causes the tagged item to be on the same line and then to break for the next one
               // Not so intuitive for the user - so we mark the one that goes on the next line but need to attach the FB then to the prev one
               flp.SetFlowBreak( prevDi, true );
               registeredBreak = GUI.BreakType.None; // reset
             }
-            else if (registeredBreak == GUI.BreakType.DivBreak1 || registeredBreak == GUI.BreakType.DivBreak2)
-            {
+            else if (registeredBreak == GUI.BreakType.DivBreak1 || registeredBreak == GUI.BreakType.DivBreak2) {
               // separator must be set before the newly added item
               // select Color Type of the separator
               DI_Separator dSep = new DI_Separator( (registeredBreak == GUI.BreakType.DivBreak2) ? GUI_Colors.ColorType.cDivBG2 : GUI_Colors.ColorType.cDivBG1 );
               // need some fiddling to make it fit in either direction
-              if ((this.Placement == GUI.Placement.Bottom) || (this.Placement == GUI.Placement.Top))
-              {
+              if ((this.Placement == GUI.Placement.Bottom) || (this.Placement == GUI.Placement.Top)) {
                 dSep.Dock = DockStyle.Left;// horizontal Bar
               }
-              else
-              {
+              else {
                 dSep.Dock = DockStyle.Top;// vertical Bar
               }
               GUI.GUI_Colors.Register( dSep ); // register for color management
@@ -882,8 +848,7 @@ namespace FS20_HudBar.Bar
             prevDi = di; // store for FlowBreak attachment for valid and visible ones if the next one is tagged
           }
           // don't show
-          else
-          {
+          else {
             // remove the DispItem
             m_dispItems.Remove( di.LabelID );
             // Dispose these items to get some memory back and not having invisible ones to be processed
@@ -908,14 +873,12 @@ namespace FS20_HudBar.Bar
     /// <returns>The Value Interface or null if not found</returns>
     public IValue Value( VItem item )
     {
-      try
-      {
+      try {
         var vi = m_valueItems[item];
         if ((vi == null) || (vi.Ctrl == null) || vi.Ctrl.IsDisposed) return null;
         return vi.Value;
       }
-      catch
-      {
+      catch {
         return null;
       }
     }
@@ -928,14 +891,12 @@ namespace FS20_HudBar.Bar
     /// <returns>The ColorType Interface or null if not found</returns>
     public IColorType ColorType( VItem item )
     {
-      try
-      {
+      try {
         var vi = m_valueItems[item];
         if ((vi == null) || (vi.Ctrl == null) || vi.Ctrl.IsDisposed) return null;
         return vi.ColorType;
       }
-      catch
-      {
+      catch {
         return null;
       }
     }
@@ -948,14 +909,12 @@ namespace FS20_HudBar.Bar
     /// <returns>The 'Value' Label-Control or null if not found</returns>
     public Control ValueControl( VItem item )
     {
-      try
-      {
+      try {
         var vi = m_valueItems[item];
         if ((vi == null) || (vi.Ctrl == null) || vi.Ctrl.IsDisposed) return null;
         return vi.Ctrl;
       }
-      catch
-      {
+      catch {
         return null;
       }
     }
@@ -967,14 +926,12 @@ namespace FS20_HudBar.Bar
     /// <returns>The DispItem or null</returns>
     public DispItem DispItem( LItem item )
     {
-      try
-      {
+      try {
         var di = m_dispItems[item];
         if ((di == null) || di.IsDisposed) return null;
         return di;
       }
-      catch
-      {
+      catch {
         return null;
       }
     }
@@ -986,12 +943,10 @@ namespace FS20_HudBar.Bar
     /// <returns>The Config Name</returns>
     public string CfgName( LItem item )
     {
-      try
-      {
+      try {
         return m_cfgNames[item];
       }
-      catch
-      {
+      catch {
         return $"Cfg Name undef {item}";
       }
     }
@@ -1004,10 +959,8 @@ namespace FS20_HudBar.Bar
 
     private void Dispose( bool disposing )
     {
-      if (!disposedValue)
-      {
-        if (disposing)
-        {
+      if (!disposedValue) {
+        if (disposing) {
           // TODO: dispose managed state (managed objects)
           SC.SimConnectClient.Instance.AircraftChange -= Instance_AircraftChange;
           FONTS.Dispose( );

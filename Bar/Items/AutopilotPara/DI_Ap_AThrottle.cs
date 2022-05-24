@@ -35,11 +35,11 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    // align size with ABRK to make it look pleasant.. (8 chars for now)
-    private const string c_active = "ACTIVE  ";
-    private const string c_armed  = "ARMED   ";
-    private const string c_off    = "OFF     ";
-    private const string c_toga   = "  toga  ";
+    // align size with ABRK to make it look pleasant.. (m_alignWidth chars, same as other AP values)
+    private const string c_active = "ACTIVE   ";
+    private const string c_armed  = "ARMED    ";
+    private const string c_off    = "OFF      ";
+    private const string c_toga   = "  toga   ";
 
 
     public DI_Ap_AThrottle( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )

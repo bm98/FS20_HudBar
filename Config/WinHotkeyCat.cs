@@ -15,7 +15,8 @@ namespace FS20_HudBar.Config
   {
     Show_Hide=0,
     Profile_1, Profile_2, Profile_3, Profile_4, Profile_5,
-    FlightBag
+    FlightBag,
+    Camera
   }
 
   /// <summary>

@@ -170,6 +170,8 @@ namespace FS20_HudBar.Bar.Items
     A320THR,      // A320 Throttle
 
     SURF_ANI,     // Control Surfaces Graph
+
+    DEPARR,       // Departure Arrival Apt
   }
 
 
@@ -445,20 +447,20 @@ namespace FS20_HudBar.Bar.Items
     AP,           // Autopilot On/Off
     AP_HDG,       // AP HDG active
     AP_HDGset,    // AP HDG set
-    AP_HDGset_sel,// AP HDG set selected slot
+    AP_HDGset_man,// AP HDG set managed slot
     AP_ALT,       // AP ALT hold active
     AP_ALThold,   // AP ALT Hold SLOT 1
     AP_ALTset,    // AP ALT set 
-    AP_ALTset_sel,// AP ALT set selected slot
+    AP_ALTset_man,// AP ALT set managed slot
     AP_VS,        // AP VS hold active
     AP_VSset,     // AP VS set
-    AP_VSset_sel, // AP VS set selected slot
+    AP_VSset_man, // AP VS set managed slot
     AP_FLC,       // AP FLC hold active
     AP_FLCset,    // AP FLC IAS set
-    AP_FLCset_sel,// AP FLC IAS set selected slot
+    AP_FLCset_man,// AP FLC IAS set managed slot
     AP_SPD,       // AP SPD hold active
     AP_SPDset,    // AP SPD IAS set
-    AP_SPDset_sel,// AP SPD IAS set selected slot
+    AP_SPDset_man,// AP SPD IAS set managed slot
     AP_NAV,       // AP NAV active
     AP_NAVgps,    // AP NAV follow GPS
     AP_BC,        // AP BC signal
@@ -496,6 +498,8 @@ namespace FS20_HudBar.Bar.Items
     ATC_WYP,      // ATC next Wyp
 
     METAR,        // METAR close to LAT,LON
+    DEPARR_DEP,   // Departure Apt
+    DEPARR_ARR,   // Arrival Apt
 
     // CONTROLs
     E1_THR_LEV,    // Throttle Lever Engine 1

@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>47</ApplicationRevision>
-    <ApplicationVersion>0.50.0.47</ApplicationVersion>
+    <ApplicationRevision>48</ApplicationRevision>
+    <ApplicationVersion>0.51.0.48</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -196,6 +196,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\CtrlPara\DI_SurfacesGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AtcPara\DI_DepArr.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\RadioPara\DI_Nav1.cs">
@@ -514,6 +517,15 @@
     </Compile>
     <Compile Include="Bar\ValueItemCat.cs" />
     <Compile Include="Bar\CPointMeter.cs" />
+    <Compile Include="Camera\frmCamera.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Camera\frmCamera.Designer.cs">
+      <DependentUpon>frmCamera.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Camera\ModeButton.cs" />
+    <Compile Include="Camera\Slot.cs" />
+    <Compile Include="Camera\SlotCat.cs" />
     <Compile Include="Config\AcftMerges.cs" />
     <Compile Include="Config\DefaultProfiles.cs" />
     <Compile Include="Config\FlpHandler.cs" />
@@ -794,6 +806,9 @@
     <Compile Include="Config\WinHotkeyCat.cs" />
     <EmbeddedResource Include="AApp\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Camera\frmCamera.resx">
+      <DependentUpon>frmCamera.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Config\frmConfig.resx">
       <DependentUpon>frmConfig.cs</DependentUpon>

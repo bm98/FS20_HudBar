@@ -19,6 +19,25 @@ namespace FS20_HudBar.GUI.Templates.Base
     protected GUI_Colors.ColorType m_foreColorType = GUI_Colors.ColorType.cInfo;
     protected GUI_Colors.ColorType m_backColorType = GUI_Colors.ColorType.cBG;
 
+    // managed - default is off
+    protected string _cManaged = " ";
+    protected bool _managed = false;
+    // Field Width to Right align (default is no alignment)
+    protected int _width = 0;
+
+    /// <summary>
+    /// Right Align Value Strings for a Size (_width)
+    /// </summary>
+    /// <param name="src">String to align</param>
+    /// <returns>A String</returns>
+    protected string RightAlign( string src )
+    {
+      if (_width < 1) return src;
+      if (src.Length >= _width) return src;
+
+      return src.PadLeft( _width );
+    }
+
     private const string c_numbers="0123456789";
     private Random random = new Random();
 
@@ -36,6 +55,19 @@ namespace FS20_HudBar.GUI.Templates.Base
     /// Set the Step Value
     /// </summary>
     virtual public Steps Step { set => throw new NotImplementedException( ); }
+
+    /// <summary>
+    /// Wether or not the value will be indicated as 'Managed'
+    /// </summary>
+    virtual public bool Managed
+    {
+      get => _managed;
+      set
+      {
+        _managed = value;
+        _cManaged = _managed ? GUI_Fonts.ManagedTag : " ";
+      }
+    }
 
     /// <summary>
     /// Get; Set the items Foreground Color by the type of the Item
@@ -116,7 +148,7 @@ namespace FS20_HudBar.GUI.Templates.Base
     /// cTor: Create a UserControl based on a prototype control
     /// </summary>
     /// <param name="proto">A label Prototype to derive from</param>
-    public V_Base( Label proto, bool showUnit )
+    public V_Base( Label proto, bool showUnit, int width=0 )
     {
       Font = proto.Font;
       ItemForeColor = GUI_Colors.ColorType.cInfo;
@@ -133,6 +165,8 @@ namespace FS20_HudBar.GUI.Templates.Base
       TabStop = false; // forced, no TabStop
 
       base.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+
+      _width = width;
 
       GUI_Colors.Register( this );
     }

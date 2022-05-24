@@ -16,20 +16,20 @@ namespace FS20_HudBar.GUI.Templates
   {
 
     private const string c_ias = "";
-    private const string c_mach ="";
+    private const string c_mach = "";
     private bool _machMode = false;
 
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Speed( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Speed( Label proto, bool showUnit, int width = 0 )
+    : base( proto, showUnit, width )
     {
       m_unit = "kt";
       _machMode = false;
-      m_default = DefaultString( "____ " ); // NNNN 
-      Text = UnitString( m_default );
+      m_default = DefaultString( "____ " + " " ); // NNNN + blank
+      Text = UnitString( RightAlign( m_default ) );
     }
 
     /// <summary>
@@ -47,19 +47,19 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     override public float? Value {
       set {
-        if ( value == null ) {
-          this.Text = UnitString( m_default );
+        if (value == null) {
+          this.Text = UnitString( RightAlign( m_default ) );
         }
-        else if ( float.IsNaN( (float)value ) ) {
-          this.Text = UnitString( m_default );
+        else if (float.IsNaN( (float)value )) {
+          this.Text = UnitString( RightAlign( m_default ) );
         }
         else {
-          if ( _machMode ) {
-            this.Text = UnitString( $"{value,4:0.00} " ); // 1.2 digits, add a blank for alignment
+          if (_machMode) {
+            this.Text = UnitString( RightAlign( $"{value,4:0.00} {_cManaged}" ) ); // 1.2 digits, add a blank for alignment
           }
           else {
             // kts Mode
-            this.Text = UnitString( $"{value,4:###0} " ); // positive only 4 digits, add a blank for alignment
+            this.Text = UnitString( RightAlign( $"{value,4:###0} {_cManaged}" ) ); // positive only 4 digits, add a blank for alignment with °
           }
         }
       }

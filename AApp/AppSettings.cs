@@ -118,6 +118,63 @@ namespace FS20_HudBar
       set { this["FormLocation"] = value; }
     }
 
+    // Camera Settings
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "10, 10" )]
+    public Point CameraLocation {
+      get { return (Point)this["CameraLocation"]; }
+      set { this["CameraLocation"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "474, 584" )]
+    public Size CameraSize {
+      get { return (Size)this["CameraSize"]; }
+      set { this["CameraSize"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string HKCamera {
+      get { return (string)this["HKCamera"]; }
+      set { this["HKCamera"] = value; }
+    }
+    // camera SlotFolders 0..N
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string CameraSlotFolder0 {
+      get { return (string)this["CameraSlotFolder0"]; }
+      set { this["CameraSlotFolder0"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string CameraSlotFolder1 {
+      get { return (string)this["CameraSlotFolder1"]; }
+      set { this["CameraSlotFolder1"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string CameraSlotFolder2 {
+      get { return (string)this["CameraSlotFolder2"]; }
+      set { this["CameraSlotFolder2"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string CameraSlotFolder3 {
+      get { return (string)this["CameraSlotFolder3"]; }
+      set { this["CameraSlotFolder3"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string CameraSlotFolder4 {
+      get { return (string)this["CameraSlotFolder4"]; }
+      set { this["CameraSlotFolder4"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string CameraSlotFolder5 {
+      get { return (string)this["CameraSlotFolder5"]; }
+      set { this["CameraSlotFolder5"] = value; }
+    }
+
     // Shelf Settings
     [UserScopedSetting( )]
     [DefaultSettingValue( "10, 10" )]

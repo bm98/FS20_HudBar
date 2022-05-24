@@ -19,8 +19,8 @@ namespace FS20_HudBar.GUI.Templates
     : base( proto, showUnit )
     {
       m_unit = " "; // Deg always shows °
-      m_default = DefaultString( "+__._°" );
-      Text = UnitString( m_default );
+      m_default = DefaultString( "+__._°" + " " );
+      Text = UnitString( RightAlign( m_default ) );
     }
 
     /// <summary>
@@ -28,14 +28,14 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     override public float? Value {
       set {
-        if ( value == null ) {
-          this.Text = UnitString( m_default );
+        if (value == null) {
+          this.Text = UnitString( RightAlign( m_default ) );
         }
-        else if ( float.IsNaN( (float)value ) ) {
-          this.Text = UnitString( m_default );
+        else if (float.IsNaN( (float)value )) {
+          this.Text = UnitString( RightAlign( m_default ) );
         }
         else {
-          this.Text = UnitString( $"{value,5:#0.0}°" ); // sign 2.1 digits
+          this.Text = UnitString( RightAlign( $"{value,5:#0.0}°" + " " ) ); // sign 2.1 digits
         }
       }
     }

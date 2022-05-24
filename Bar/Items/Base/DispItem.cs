@@ -68,6 +68,11 @@ namespace FS20_HudBar.Bar.Items.Base
     protected virtual void UnregisterDataSource( ) { }
 
     /// <summary>
+    /// Width for Aligned AP items (defined only here..)
+    /// </summary>
+    protected int m_alignWidth = 9;
+
+    /// <summary>
     /// cTor: Create an item
     /// </summary>
     public DispItem( )

@@ -24,7 +24,7 @@ namespace FS20_HudBar.GUI.Templates
     : base( proto, showUnit )
     {
       m_unit = "ft";
-      m_default = DefaultString( "+__'___ " );
+      m_default = DefaultString( "+__'___ " + " " ); // -nn,nnn + blank
       Text = UnitString( m_default );
       m_raCallout = new Triggers.T_RAcallout( gUI_SpeechRef ) { Enabled = false }; // will be enabled once we get a value to report
       m_raCallout.RegisterObserver( ); // this one is not in the HUDVoice List - so call it here
@@ -35,14 +35,14 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     override public float? Value {
       set {
-        if ( value == null ) {
-          this.Text = UnitString( m_default );
+        if (value == null) {
+          this.Text = UnitString( RightAlign( m_default ) );
         }
-        else if ( float.IsNaN( (float)value ) ) {
-          this.Text = UnitString( m_default );
+        else if (float.IsNaN( (float)value )) {
+          this.Text = UnitString( RightAlign( m_default ) );
         }
         else {
-          this.Text = UnitString( $"{value,7:##,##0} " ); // sign 5 digits, 1000 separator, add a blank to aling better
+          this.Text = UnitString( RightAlign( $"{value,7:##,##0} {_cManaged}" ) ); // 9 chars: sign + 5 digits + 1000 separator, add a blank to aling better with ° values
           // The RA callout will talk...
           m_raCallout.Enabled = true;
         }

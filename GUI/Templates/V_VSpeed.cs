@@ -18,12 +18,12 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_VSpeed( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_VSpeed( Label proto, bool showUnit, int width = 0 )
+    : base( proto, showUnit, width )
     {
       m_unit = "fpm";
-      m_default = DefaultString( "____↑" ); // NNNN_Direction
-      Text = UnitString( m_default );
+      m_default = DefaultString( "____↑" + " " ); // NNNN_Direction
+      Text = UnitString( RightAlign( m_default ) );
     }
 
     private string c_up = "↑";
@@ -35,21 +35,21 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     override public float? Value {
       set {
-        if ( value == null ) {
-          this.Text = UnitString( m_default );
+        if (value == null) {
+          this.Text = UnitString( RightAlign( m_default ) );
         }
-        else if ( float.IsNaN( (float)value ) ) {
-          this.Text = UnitString( m_default );
+        else if (float.IsNaN( (float)value )) {
+          this.Text = UnitString( RightAlign( m_default ) );
         }
         else {
-          if ( value <= -5 ) {
-            this.Text = UnitString( $"{-value,4:###0}{c_do}" );
+          if (value <= -5) {
+            this.Text = UnitString( RightAlign( $"{-value,4:###0}{c_do}{_cManaged}" ) );
           }
-          else if ( value >= 5 ) {
-            this.Text = UnitString( $"{value,4:###0}{c_up}" ); 
+          else if (value >= 5) {
+            this.Text = UnitString( RightAlign( $"{value,4:###0}{c_up}{_cManaged}" ) );
           }
           else {
-            this.Text = UnitString( $"{0,4:###0}{c_flat}" );
+            this.Text = UnitString( RightAlign( $"{0,4:###0}{c_flat}{_cManaged}" ) );
           }
         }
       }

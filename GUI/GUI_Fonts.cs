@@ -173,6 +173,11 @@ namespace FS20_HudBar.GUI
       return ret;
     }
 
+    /// <summary>
+    /// Char for 'Managed' indication
+    /// </summary>
+    public static string ManagedTag = "♦";
+
     #endregion
 
     /// <summary>

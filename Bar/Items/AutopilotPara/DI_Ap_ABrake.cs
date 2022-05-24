@@ -36,9 +36,9 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    // align size with ATHR to make it look pleasant.. (8 chars for now)
+    // align size with ABRK to make it look pleasant.. (m_alignWidth chars, same as other AP values)
 
-    private const string c_aSkid    = " a-skid ";
+    private const string c_aSkid    = " a-skid  ";
 
 
     public DI_Ap_ABrake( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
@@ -49,7 +49,7 @@ namespace FS20_HudBar.Bar.Items
       _label = new V_Text( lblProto ) { Text = Short }; this.AddItem( _label );
 
       var item = VItem.AP_ABRK_armed;
-      _value1 = new V_Text( value2Proto ) { ItemForeColor = cLabel, ItemBackColor = cValBG, Text = AutoBrakeLevel.OFF.ToString().PadRight(8) };
+      _value1 = new V_Text( value2Proto ) { ItemForeColor = cLabel, ItemBackColor = cValBG, Text = AutoBrakeLevel.OFF.ToString().PadRight( m_alignWidth ) };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
       _value1.Click += _value1_Click;
       _value1.MouseWheel += _value1_MouseWheel;
@@ -92,16 +92,16 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         if ( SC.SimConnectClient.Instance.AP_G1000Module.ABRK_active ) {
           _value1.ItemForeColor = cOK;
-          _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( 8 );
+          _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( m_alignWidth );
         }
         else {
           if ( SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level == AutoBrakeLevel.OFF ) {
             _value1.ItemForeColor = cLabel;
-            _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( 8 );
+            _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( m_alignWidth );
           }
           else {
             _value1.ItemForeColor = cSet;
-            _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( 8 );
+            _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( m_alignWidth );
           }
         }
 

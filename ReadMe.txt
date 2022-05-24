@@ -1,5 +1,5 @@
-FS20_HudBar V 0.50 - Build 47 BETA
-(c) M. Burri - 30-Apr-2022
+FS20_HudBar V 0.51 - Build 48 BETA
+(c) M. Burri - 26-May-2022
 
 Contains files:
 
@@ -18,6 +18,7 @@ FS20_AptLib.dll             MSFS2020 Airport DB (updated)
 FSimClientIF.dll            Generic FSim Client interface definition (updated)
 FSimIF.dll                  Generic FSim interface definition (updated)
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
+BM98CH_WasmClient.dll       WASM Module client to get LVars (new since V0.51)
 CoordLib.dll				A coord. handling library (new since V0.29)
 
 From MSFS2020 Developer Kit for convenience included:
@@ -43,6 +44,12 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.51-B48
+- Add Camera Management Console
+- Add Departure, Arrival Apt item
+- Add LVar retrieval facilities for non SimVar items (not active in release build yet)
+- Update QuickGuide
 
 V 0.50-B47
 - Add Control Surfaces Item as Graphics

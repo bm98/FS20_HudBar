@@ -65,10 +65,10 @@ namespace FS20_HudBar.Bar.Items
       var whole= e.Location.X < ( _value1.Width / 3 * 2 );
 
       if ( e.Delta > 0 ) {
-        SC.SimConnectClient.Instance.NavModule.Nav2set( whole ? FSimClientIF.CmdMode.Inc : FSimClientIF.CmdMode.Inc_Fract );
+        SC.SimConnectClient.Instance.NavModule.Nav2_Set( whole ? FSimClientIF.CmdMode.Inc : FSimClientIF.CmdMode.Inc_Fract );
       }
       else if ( e.Delta < 0 ) {
-        SC.SimConnectClient.Instance.NavModule.Nav2set( whole ? FSimClientIF.CmdMode.Dec : FSimClientIF.CmdMode.Dec_Fract );
+        SC.SimConnectClient.Instance.NavModule.Nav2_Set( whole ? FSimClientIF.CmdMode.Dec : FSimClientIF.CmdMode.Dec_Fract );
       }
     }
 
@@ -77,7 +77,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
-      SC.SimConnectClient.Instance.NavModule.Nav2set( FSimClientIF.CmdMode.Toggle );
+      SC.SimConnectClient.Instance.NavModule.Nav2_Set( FSimClientIF.CmdMode.Toggle );
     }
 
     /// <summary>

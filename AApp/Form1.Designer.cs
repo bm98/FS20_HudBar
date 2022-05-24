@@ -56,6 +56,7 @@ namespace FS20_HudBar
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
+      this.mCamera = new System.Windows.Forms.ToolStripMenuItem();
       this.cMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -114,12 +115,13 @@ namespace FS20_HudBar
             this.mAppearance,
             this.toolStripSeparator2,
             this.mShelf,
+            this.mCamera,
             this.toolStripSeparator4,
             this.mConfig,
             this.toolStripSeparator3,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(161, 163);
+      this.cMenu.Size = new System.Drawing.Size(181, 207);
       // 
       // mSelProfile
       // 
@@ -131,7 +133,7 @@ namespace FS20_HudBar
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(157, 6);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
       // 
       // mProfile
       // 
@@ -142,7 +144,7 @@ namespace FS20_HudBar
             this.mP4,
             this.mP5});
       this.mProfile.Name = "mProfile";
-      this.mProfile.Size = new System.Drawing.Size(160, 22);
+      this.mProfile.Size = new System.Drawing.Size(180, 22);
       this.mProfile.Text = "Select Profile";
       // 
       // mP1
@@ -187,7 +189,7 @@ namespace FS20_HudBar
             this.maDimm,
             this.maDark});
       this.mAppearance.Name = "mAppearance";
-      this.mAppearance.Size = new System.Drawing.Size(160, 22);
+      this.mAppearance.Size = new System.Drawing.Size(180, 22);
       this.mAppearance.Text = "Appearance";
       this.mAppearance.DropDownOpening += new System.EventHandler(this.mAppearance_DropDownOpening);
       // 
@@ -215,36 +217,36 @@ namespace FS20_HudBar
       // toolStripSeparator2
       // 
       this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
+      this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
       // 
       // mShelf
       // 
       this.mShelf.Name = "mShelf";
-      this.mShelf.Size = new System.Drawing.Size(160, 22);
+      this.mShelf.Size = new System.Drawing.Size(180, 22);
       this.mShelf.Text = "Flight Bag...";
       this.mShelf.Click += new System.EventHandler(this.mShelf_Click);
       // 
       // toolStripSeparator4
       // 
       this.toolStripSeparator4.Name = "toolStripSeparator4";
-      this.toolStripSeparator4.Size = new System.Drawing.Size(157, 6);
+      this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
       // 
       // mConfig
       // 
       this.mConfig.Name = "mConfig";
-      this.mConfig.Size = new System.Drawing.Size(160, 22);
+      this.mConfig.Size = new System.Drawing.Size(180, 22);
       this.mConfig.Text = "Configure...";
       this.mConfig.Click += new System.EventHandler(this.mConfig_Click);
       // 
       // toolStripSeparator3
       // 
       this.toolStripSeparator3.Name = "toolStripSeparator3";
-      this.toolStripSeparator3.Size = new System.Drawing.Size(157, 6);
+      this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
       // 
       // mExit
       // 
       this.mExit.Name = "mExit";
-      this.mExit.Size = new System.Drawing.Size(160, 22);
+      this.mExit.Size = new System.Drawing.Size(180, 22);
       this.mExit.Text = "Exit";
       this.mExit.Click += new System.EventHandler(this.mExit_Click);
       // 
@@ -319,6 +321,13 @@ namespace FS20_HudBar
       this.label1.UseCompatibleTextRendering = true;
       this.label1.Visible = false;
       // 
+      // mCamera
+      // 
+      this.mCamera.Name = "mCamera";
+      this.mCamera.Size = new System.Drawing.Size(180, 22);
+      this.mCamera.Text = "Camera...";
+      this.mCamera.Click += new System.EventHandler(this.mCamera_Click);
+      // 
       // frmMain
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -389,6 +398,7 @@ namespace FS20_HudBar
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     private System.Windows.Forms.ToolStripMenuItem mShelf;
+    private System.Windows.Forms.ToolStripMenuItem mCamera;
   }
 }
 

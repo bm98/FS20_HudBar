@@ -213,7 +213,7 @@ namespace FS20_HudBar.Bar
     private static AvgModule m_avgFuelFlowModule = new AvgModule( 5 ); // use N samples to average
 
     /// <summary>
-    /// Sample the total fuel flow in  gal/hour and feed the AvgModule
+    /// Sample the total fuel flow in  lb/hour and feed the AvgModule
     /// </summary>
     /// <returns></returns>
     private static void FuelFlowTotalSampler( )
@@ -221,21 +221,20 @@ namespace FS20_HudBar.Bar
       if ( !SC.SimConnectClient.Instance.IsConnected ) return; // cannot calculate anything
 
       var eModule = SC.SimConnectClient.Instance.HudBarModule;
-      float ff = eModule.Engine1_FuelFlow_galPh;
-      if ( eModule.NumEngines > 1 ) ff += eModule.Engine2_FuelFlow_galPh;
-      if ( eModule.NumEngines > 2 ) ff += eModule.Engine3_FuelFlow_galPh;
-      if ( eModule.NumEngines > 3 ) ff += eModule.Engine4_FuelFlow_galPh;
+      float ff = eModule.Engine1_FuelFlow_lbPh;
+      if ( eModule.NumEngines > 1 ) ff += eModule.Engine2_FuelFlow_lbPh;
+      if ( eModule.NumEngines > 2 ) ff += eModule.Engine3_FuelFlow_lbPh;
+      if ( eModule.NumEngines > 3 ) ff += eModule.Engine4_FuelFlow_lbPh;
 
       m_avgFuelFlowModule.Sample( ff );
     }
 
     /// <summary>
-    /// Returns a running average FuelFlow gal / hour
+    /// Returns a running average FuelFlow lb / hour
     /// </summary>
-    /// <returns>Avg Fuel Flow [gal/h]</returns>
-    public static float AvgFuelFlowTotal_galPh( )
+    /// <returns>Avg Fuel Flow [lb/h]</returns>
+    public static float AvgFuelFlowTotal_lbPh( )
     {
-      //return SC.SimConnectClient.Instance.HudBarModule.EstimatedCruiseFFlow_gph;
       return m_avgFuelFlowModule.Avg;
     }
 
@@ -245,9 +244,9 @@ namespace FS20_HudBar.Bar
     /// <returns>The fuel reach in seconds</returns>
     public static float FuelReach_sec( )
     {
-      if ( AvgFuelFlowTotal_galPh( ) <= 0 ) return float.NaN;
+      if ( AvgFuelFlowTotal_lbPh( ) <= 0 ) return float.NaN;
 
-      return ( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityTotal_gal / m_avgFuelFlowModule.Avg ) * 3600f;
+      return ( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityTotal_lb / m_avgFuelFlowModule.Avg ) * 3600f;
     }
 
     #endregion
