@@ -48,8 +48,8 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.AP_FLCset_man;
-      _value1 = new V_Speed( value2Proto, showUnits, m_alignWidth ) { ItemForeColor = cInfo, Visible = false };
-      this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
+      _value2 = new V_Speed( value2Proto, showUnits, m_alignWidth ) { ItemForeColor = cInfo, Visible = false };
+      this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       _label.ButtonClicked += _label_ButtonClicked;
       _label.Cursor = Cursors.Hand;
