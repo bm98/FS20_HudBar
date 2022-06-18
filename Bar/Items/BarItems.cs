@@ -172,6 +172,8 @@ namespace FS20_HudBar.Bar.Items
     SURF_ANI,     // Control Surfaces Graph
 
     DEPARR,       // Departure Arrival Apt
+
+    VWIND,       // Vertical WindComponent
   }
 
 
@@ -205,6 +207,9 @@ namespace FS20_HudBar.Bar.Items
     WIND_SPEED,   // Wind speed kt
     WIND_LAT,     // Wind lateral comp kt
     WIND_LON,     // Wind longitudinal comp kt
+
+    VWIND,        // Vertical WindComponent kt
+    VWIND_ANI,    // Vertical WindComponent Dot
 
     // TRIMs
     ETRIM,        // Elevator Trim +-N%, active: set to zero

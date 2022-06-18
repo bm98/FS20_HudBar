@@ -1,4 +1,4 @@
-FS20_HudBar V 0.51 - Build 48 BETA
+FS20_HudBar V 0.52 - Build 49 BETA
 (c) M. Burri - 05-Jun-2022
 
 Contains files:
@@ -44,6 +44,11 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.52-B49
+- Add Ambient Vertical Wind Item (LIFT)
+- Update Ability to enter the Route via Kbd (on RTE Item)
+- Update QuickGuide
 
 V 0.51-B48
 - Add Camera Management Console

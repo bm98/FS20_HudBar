@@ -1,4 +1,4 @@
-# MSFS HudBar V 0.51.0.48
+# MSFS HudBar V 0.52.0.49
 
 ### Display essential Information as Bar or Tile at any side of the primary screen or as Window anywhere you like  
 

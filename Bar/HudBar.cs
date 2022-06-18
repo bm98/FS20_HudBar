@@ -80,7 +80,7 @@ namespace FS20_HudBar.Bar
 
       {LItem.OAT_C, DI_Oat_C.Desc },          {LItem.OAT_F, DI_Oat_F.Desc },
       {LItem.VIS, DI_Vis.Desc },
-      {LItem.WIND_SD, DI_Wind_SD.Desc },      {LItem.WIND_XY, DI_Wind_XY.Desc },
+      {LItem.WIND_SD, DI_Wind_SD.Desc },      {LItem.WIND_XY, DI_Wind_XY.Desc },  {LItem.VWIND, DI_Wind_V.Desc },
       {LItem.BARO_HPA, DI_Baro_HPA.Desc },    {LItem.BARO_InHg, DI_Baro_InHg.Desc },
       {LItem.GEAR, DI_Gear.Desc },            {LItem.BRAKES, DI_Brakes.Desc },
       {LItem.FLAPS, DI_Flaps.Desc },          {LItem.SPOILER, DI_Spoilers.Desc },
@@ -218,8 +218,7 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// Enable or disable the Voice Out
     /// </summary>
-    public bool VoiceEnabled
-    {
+    public bool VoiceEnabled {
       get => m_speech.Enabled;
       set => m_speech.Enabled = value;
     }
@@ -379,6 +378,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Vis( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Wind_SD( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       m_dispItems.AddDisp( new DI_Wind_XY( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Wind_V( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
       // Aircraft
       m_dispItems.AddDisp( new DI_Acft_ID( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Baro_HPA( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
@@ -621,10 +621,10 @@ namespace FS20_HudBar.Bar
       // update calculations
       Calculator.PaceCalculator( );
 
-      // ATC Flightplan  - LOCK the flightplan while using it, else the Asynch Update may change it ..
       // ATC Airport
-      AirportMgr.Update( AtcFlightPlan.Destination ); // maintain APT (we should always have a Destination here)
-                                                      // Load Remaining Plan if the WYP or Flightplan has changed
+      AirportMgr.Update( AtcFlightPlan.Departure, AtcFlightPlan.Destination ); // maintain APTs (we should always have a Destination here)
+
+      // Load Remaining Plan if the WYP or Flightplan has changed
       if (WPTracker.HasChanged || FltPlanMgr.HasChanged) {
         LOG.Log( $"UpdateGUI: WP or FlightPlan has changed" );
         string tt = AtcFlightPlan.RemainingPlan( WPTracker.Read( ) );

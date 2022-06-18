@@ -93,7 +93,7 @@ namespace FS20_HudBar.Bar.Items
 
         // Managed Mode
         _value2.Managed = SC.SimConnectClient.Instance.AP_G1000Module.VS_managed;
-        _value2.Value = SC.SimConnectClient.Instance.AP_G1000Module.VS_managed_fpm;
+        _value2.Value = SC.SimConnectClient.Instance.AP_G1000Module.VS_selSlot_fpm;
         _value2.Visible = SC.SimConnectClient.Instance.AP_G1000Module.VS_managed;
       }
     }

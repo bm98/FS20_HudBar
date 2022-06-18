@@ -20,60 +20,123 @@ namespace FS20_HudBar
     public const string AirportNA_Icao = "n.a.";
 
     /// <summary>
-    /// The Airport ICAO Code
+    /// The Arrival Airport ICAO Code
     /// </summary>
-    public static string AirportICAO { get; private set; } = AirportNA_Icao;
+    public static string ArrAirportICAO { get; private set; } = AirportNA_Icao;
 
     /// <summary>
-    /// For valid Airports, the Airport Name
+    /// For valid Airports, the Arrival Airport Name
     /// </summary>
-    public static string AirportName { get; private set; } = "";
+    public static string ArrAirportName { get; private set; } = "";
 
     /// <summary>
-    /// For valid Airports, the Location if found, else it is null
+    /// For valid Airports, the Arrival Location if found, else it is null
     /// </summary>
-    public static LatLon Location { get; private set; } = null;
+    public static LatLon ArrLocation { get; private set; } = null;
 
     /// <summary>
-    /// True if the Airport has changed 
+    /// True if a real Arrival Airport is available
+    /// </summary>
+    public static bool IsArrAvailable => ArrAirportICAO != AirportNA_Icao;
+
+    /// <summary>
+    /// The Departure Airport ICAO Code
+    /// </summary>
+    public static string DepAirportICAO { get; private set; } = AirportNA_Icao;
+
+    /// <summary>
+    /// For valid Airports, the Departure Airport Name
+    /// </summary>
+    public static string DepAirportName { get; private set; } = "";
+    /// <summary>
+    /// For valid Airports, the Departure Location if found, else it is null
+    /// </summary>
+    public static LatLon DepLocation { get; private set; } = null;
+    /// <summary>
+    /// True if a real Departure Airport is available
+    /// </summary>
+    public static bool IsDepAvailable => DepAirportICAO != AirportNA_Icao;
+
+
+    /// <summary>
+    /// True if any Airport has changed 
     /// (Use Read() to commit)
     /// </summary>
     public static bool HasChanged { get; private set; } = false;
-    /// <summary>
-    /// True if a real Airport is available
-    /// </summary>
-    public static bool IsAvailable => AirportICAO != AirportNA_Icao;
 
     /// <summary>
     /// Update from Sim Data Event
-    /// Maintain the current Airport
+    /// Maintain the current Departure Airport - if the ICAO cannot be found it will get N.A.
     /// 
     /// </summary>
-    /// <param name="icao">The airport ICAO code</param>
-    public static void Update( string icao )
+    /// <param name="icao">The airport ICAO code or an empty string</param>
+    public static void UpdateDep( string icao )
     {
       icao = icao.ToUpperInvariant( );
-      if ( icao == AirportICAO ) return; // same as before
+      if (icao == DepAirportICAO) return; // same as before
 
-      // reset before evaluation
-      Location = null;
-      AirportName = "";
 
-      if ( !string.IsNullOrWhiteSpace( icao ) ) {
-        AirportICAO = icao;
+      // then set if a string was given, else we leave it as it was before
+      if (!string.IsNullOrWhiteSpace( icao )) {
+        // first clear all
+        DepAirportICAO = AirportNA_Icao;
+        DepLocation = null;
+        DepAirportName = "";
+
         var apt = Airports.FindAirport( icao );
-        if ( apt != null ) {
-          Location = new LatLon( apt.Lat, apt.Lon, apt.Elevation );
-          AirportName = apt.Name;
+        if (apt != null) {
+          // Apt found in DB
+          DepLocation = new LatLon( apt.Lat, apt.Lon, apt.Elevation );
+          DepAirportName = apt.Name;
+          DepAirportICAO = icao;
         }
-        else {
-          AirportICAO = AirportNA_Icao; // Dummy one if not in DB
+
+        HasChanged = true;
+      }
+    }
+
+    /// <summary>
+    /// Update from Sim Data Event
+    /// Maintain the current Arrival Airport - if the ICAO cannot be found it will get N.A.
+    /// 
+    /// </summary>
+    /// <param name="icao">The airport ICAO code or an empty string</param>
+    public static void UpdateArr( string icao )
+    {
+      icao = icao.ToUpperInvariant( );
+      if (icao == ArrAirportICAO) return; // same as before
+
+
+      // then set if a string was given, else we leave it as it was before
+      if (!string.IsNullOrWhiteSpace( icao )) {
+        // first clear all
+        ArrAirportICAO = AirportNA_Icao;
+        ArrLocation = null;
+        ArrAirportName = "";
+
+        var apt = Airports.FindAirport( icao );
+        if (apt != null) {
+          // Apt found in DB
+          ArrLocation = new LatLon( apt.Lat, apt.Lon, apt.Elevation );
+          ArrAirportName = apt.Name;
+          ArrAirportICAO = icao;
         }
+
+        HasChanged = true;
       }
-      else {
-        AirportICAO = AirportNA_Icao; // Dummy one
-      }
-      HasChanged = true;
+    }
+
+    /// <summary>
+    /// Update from Sim Data Event
+    /// Maintain the current Departure and Arrival Airport - if the ICAO cannot be found it will get N.A.
+    /// 
+    /// </summary>
+    /// <param name="depIcao">The departure airport ICAO code or an empty string</param>
+    /// <param name="arrIcao">The arrival airport ICAO code or an empty string</param>
+    public static void Update( string depIcao , string arrIcao )
+    {
+      UpdateDep( depIcao );
+      UpdateArr( arrIcao );
     }
 
     /// <summary>
@@ -81,33 +144,33 @@ namespace FS20_HudBar
     /// </summary>
     public static void Reset( )
     {
-      AirportICAO = AirportNA_Icao; // Dummy one
+      //AirportICAO = AirportNA_Icao; // don't kill the current entry
       HasChanged = true;
     }
 
     /// <summary>
     /// Commit reading the new airport
     /// </summary>
-    /// <returns>The current Airport Code</returns>
+    /// <returns>The current Arrival Airport Code</returns>
     public static string Read( )
     {
       HasChanged = false;
-      return AirportICAO;
+      return ArrAirportICAO;
     }
 
     /// <summary>
-    /// Calculated the straight distance from current to the Airport
+    /// Calculated the straight distance from current to the Arrival Airport
     /// returns NaN if the Airport or current location is not valid
     /// </summary>
     /// <param name="currentLocation">LatLon of the current location</param>
     /// <returns>A distance [nm] or NaN</returns>
-    public static float Distance_nm( LatLon currentLocation )
+    public static float ArrDistance_nm( LatLon currentLocation )
     {
       // Sanity
       if ( currentLocation == null ) return float.NaN;
-      if ( Location == null ) return float.NaN;
+      if ( ArrLocation == null ) return float.NaN;
 
-      return (float)currentLocation.DistanceTo( Location, CoordLib.ConvConsts.EarthRadiusNm );
+      return (float)currentLocation.DistanceTo( ArrLocation, CoordLib.ConvConsts.EarthRadiusNm );
     }
 
   }

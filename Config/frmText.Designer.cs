@@ -66,7 +66,7 @@ namespace FS20_HudBar.Config
       // 
       // btAccept
       // 
-      this.btAccept.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+      this.btAccept.DialogResult = System.Windows.Forms.DialogResult.OK;
       this.btAccept.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btAccept.Location = new System.Drawing.Point(13, 84);
       this.btAccept.Name = "btAccept";

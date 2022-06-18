@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>48</ApplicationRevision>
-    <ApplicationVersion>0.51.0.48</ApplicationVersion>
+    <ApplicationRevision>49</ApplicationRevision>
+    <ApplicationVersion>0.52.0.49</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -199,6 +199,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AtcPara\DI_DepArr.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnvPara\DI_Wind_V.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\RadioPara\DI_Nav1.cs">
@@ -529,6 +532,12 @@
     <Compile Include="Config\AcftMerges.cs" />
     <Compile Include="Config\DefaultProfiles.cs" />
     <Compile Include="Config\FlpHandler.cs" />
+    <Compile Include="Config\frmApt.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\frmApt.Designer.cs">
+      <DependentUpon>frmApt.cs</DependentUpon>
+    </Compile>
     <Compile Include="Config\FrmFonts.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -594,6 +603,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="GUI\Templates\A_Scale.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\A_WindDot.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="GUI\Templates\Base\B_Base.cs">
@@ -809,6 +821,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Camera\frmCamera.resx">
       <DependentUpon>frmCamera.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Config\frmApt.resx">
+      <DependentUpon>frmApt.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Config\frmConfig.resx">
       <DependentUpon>frmConfig.cs</DependentUpon>

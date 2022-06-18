@@ -97,9 +97,9 @@ namespace FS20_HudBar.Bar.Items
         // second item
         if (SC.SimConnectClient.Instance.AP_G1000Module.ALT_managed) {
           // Managed Mode
-          _value2.Managed = SC.SimConnectClient.Instance.AP_G1000Module.ALT_managed;
+          _value2.Managed = true;
           _value2.ItemForeColor = cInfo;
-          _value2.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_managed_ft;
+          _value2.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_selSlot_ft;
         }
         else {
           // the Alt Ref currently holding (can get NaN)

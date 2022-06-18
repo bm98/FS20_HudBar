@@ -44,7 +44,7 @@ namespace FS20_HudBar.Bar.Items
       _label.Click += _label_Click;
 
       item = VItem.NAV2_STDBY;
-      _value1 = new V_Text( value2Proto ) { ItemForeColor = cInfo, ItemBackColor = cDivBG1 };
+      _value1 = new V_Text( value2Proto ) { ItemForeColor = cInfo, ItemBackColor = cValBG };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
       _value1.MouseWheel += _value1_MouseWheel;
       _value1.Cursor = Cursors.SizeNS;

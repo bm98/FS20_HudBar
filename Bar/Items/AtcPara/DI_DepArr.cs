@@ -32,7 +32,7 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     public static readonly string Desc = "Departure / Arrival";
 
-    private readonly V_Base _label;
+    private readonly B_Base _label;
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
@@ -40,9 +40,11 @@ namespace FS20_HudBar.Bar.Items
     public DI_DepArr( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
-      _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-
       var item = VItem.DEPARR_DEP;
+      _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
+      _label.Cursor = Cursors.Hand;
+      _label.MouseClick += _label_MouseClick;
+
       _value1 = new V_ICAO_L( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
@@ -53,25 +55,82 @@ namespace FS20_HudBar.Bar.Items
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
     }
 
+    private void _label_MouseClick( object sender, MouseEventArgs e )
+    {
+      if (!SC.SimConnectClient.Instance.IsConnected) return;
+
+      var TTX = new Config.frmApt( );
+      // load default
+      if (SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.HasFlightPlan) {
+        // dest from FPLan
+        TTX.DepAptICAO = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Departure;
+        TTX.ArrAptICAO = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Destination;
+      }
+      else {
+        // no Flightplan
+        if (AirportMgr.IsDepAvailable) {
+          // departure from Mgr (prev entry)
+          TTX.DepAptICAO = AirportMgr.DepAirportICAO;
+        }
+        else {
+          // no preset
+          TTX.DepAptICAO = "";
+        }
+
+        if (AirportMgr.IsArrAvailable) {
+          // destination from Mgr (prev entry)
+          TTX.ArrAptICAO = AirportMgr.ArrAirportICAO;
+        }
+        else {
+          // no preset
+          TTX.ArrAptICAO = "";
+        }
+      }
+
+      if (TTX.ShowDialog( this ) == DialogResult.OK) {
+        // Update DEP
+        if (string.IsNullOrWhiteSpace( TTX.DepAptICAO )) {
+          // empty entry to clear
+          if (SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.HasFlightPlan) {
+            // update with FP destination
+            AirportMgr.UpdateDep( SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Departure );
+          }
+          else {
+            // clear with N.A. airport
+            AirportMgr.UpdateDep( AirportMgr.AirportNA_Icao );
+          }
+        }
+        else {
+          // user entry - will be checked in the Mgr
+          AirportMgr.UpdateDep( TTX.DepAptICAO );
+        }
+        // Update ARR
+        if (string.IsNullOrWhiteSpace( TTX.ArrAptICAO )) {
+          // empty entry to clear
+          if (SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.HasFlightPlan) {
+            // update with FP destination
+            AirportMgr.UpdateArr( SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Destination );
+          }
+          else {
+            // clear with N.A. airport
+            AirportMgr.UpdateArr( AirportMgr.AirportNA_Icao );
+          }
+        }
+        else {
+          // user entry - will be checked in the Mgr
+          AirportMgr.UpdateArr( TTX.ArrAptICAO );
+        }
+      }
+    }
+
     /// <summary>
     /// Update from Sim
     /// </summary>
     public void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        // ATC Airport
-        if (AirportMgr.HasChanged)
-          _value1.Text = AirportMgr.Read( ); // update only when changed
-
-        if (HudBar.AtcFlightPlan.HasFlightPlan) {
-          _value1.Text = HudBar.AtcFlightPlan.Departure;
-          _value2.Text = HudBar.AtcFlightPlan.Destination;
-        }
-        else {
-          _value1.Text = "...."; // default text
-          _value2.Text = "...."; // default text
-        }
-
+        _value1.Text = AirportMgr.IsDepAvailable ? AirportMgr.DepAirportICAO : "...."; // default text
+        _value2.Text = AirportMgr.IsArrAvailable ? AirportMgr.ArrAirportICAO : "...."; // default text
       }
     }
 

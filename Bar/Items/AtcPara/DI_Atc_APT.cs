@@ -41,7 +41,7 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value3;
 
     // A HudBar standard ToolTip for the Metar Display
-    private ToolTip_Base _toolTip = new ToolTip_Base();
+    private ToolTip_Base _toolTip = new ToolTip_Base( );
 
 
     public DI_Atc_APT( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
@@ -66,6 +66,7 @@ namespace FS20_HudBar.Bar.Items
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
     }
 
+
     private void _metar_MetarDataEvent( object sender, MetarLib.MetarTafDataEventArgs e )
     {
       _metar.Update( e.MetarTafData );
@@ -73,13 +74,13 @@ namespace FS20_HudBar.Bar.Items
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
-      if ( SC.SimConnectClient.Instance.IsConnected ) {
+      if (SC.SimConnectClient.Instance.IsConnected) {
         _metar.Clear( );
-        if ( AirportMgr.IsAvailable ) {
-          if ( AirportMgr.Location != null )
-            _metar.PostMETAR_Request( AirportMgr.AirportICAO, AirportMgr.Location ); // station rec with Location
+        if (AirportMgr.IsArrAvailable) {
+          if (AirportMgr.ArrLocation != null)
+            _metar.PostMETAR_Request( AirportMgr.ArrAirportICAO, AirportMgr.ArrLocation ); // station rec with Location
           else
-            _metar.PostMETAR_Request( AirportMgr.AirportICAO ); // station rec
+            _metar.PostMETAR_Request( AirportMgr.ArrAirportICAO ); // station rec
         }
       }
     }
@@ -89,30 +90,34 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     public void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        // ATC Airport
-        if ( AirportMgr.HasChanged )
+      if (this.Visible) {
+        // ATC Arrival Airport
+        if (AirportMgr.HasChanged)
           _value1.Text = AirportMgr.Read( ); // update only when changed
 
-        if ( _metar.HasNewData ) {
+        // Distance to Destination
+        if (HudBar.AtcFlightPlan.HasFlightPlan) {
+          _value2.Value = HudBar.AtcFlightPlan.RemainingDist_nm(
+            SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
+            SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
+          _value2.ItemForeColor = cGps;
+        }
+        else {
+          // calc straight distance if we don't have an ATC flightplan with waypoints
+          var latLon = new LatLon( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon );
+          _value2.Value = AirportMgr.ArrDistance_nm( latLon );
+          _value2.ItemForeColor = cInfo;
+        }
+
+        _value3.Value = (AirportMgr.IsArrAvailable && (AirportMgr.ArrLocation != null)) ? Conversions.Ft_From_M( AirportMgr.ArrLocation.Altitude ) : float.NaN;
+
+        // METAR ToolTip Text and Button Color
+        if (_metar.HasNewData) {
           // avoiding redraw and flicker for every cycle
           _toolTip.SetToolTip( this.Label, _metar.Read( ) );
           this.ColorType.ItemBackColor = _metar.ConditionColor;
         }
 
-        // Distance to Destination
-        if ( HudBar.AtcFlightPlan.HasFlightPlan ) {
-          _value2.Value = HudBar.AtcFlightPlan.RemainingDist_nm(
-            SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
-            SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
-        }
-        else {
-          // calc straight distance if we don't have an ATC flightplan with waypoints
-          var latLon = new LatLon( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon );
-          _value2.Value = AirportMgr.Distance_nm( latLon );
-        }
-
-        _value3.Value = AirportMgr.IsAvailable ? Conversions.Ft_From_M( AirportMgr.Location.Altitude ) : float.NaN;
       }
     }
 

@@ -92,6 +92,12 @@
     <Compile Include="UC_FPA.Designer.cs">
       <DependentUpon>UC_FPA.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_WindDot.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_WindDot.Designer.cs">
+      <DependentUpon>UC_WindDot.cs</DependentUpon>
+    </Compile>
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +124,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UC_FPA.resx">
       <DependentUpon>UC_FPA.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_WindDot.resx">
+      <DependentUpon>UC_WindDot.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
