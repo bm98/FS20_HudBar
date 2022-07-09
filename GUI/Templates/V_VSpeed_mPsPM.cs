@@ -18,8 +18,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_VSpeed_mPsPM( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_VSpeed_mPsPM( Label proto )
+    : base( proto )
     {
       m_unit = "m/s";
       m_default = DefaultString( "±__.__↑" ); // ±NN.NN

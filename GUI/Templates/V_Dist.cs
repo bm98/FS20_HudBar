@@ -15,12 +15,17 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Dist( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Dist( Label proto )
+    : base( proto )
     {
       m_unit = "nm";
       m_default = DefaultString( "___._ " );
       Text = UnitString( m_default );
+    }
+
+    protected override void SetDistance_Metric( )
+    {
+      m_unit = _distance_metric ? "km" : "nm";
     }
 
     /// <summary>
@@ -35,7 +40,8 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:##0.0}" ); // 3.1 digits no sign expected, add a blank to aling better
+          float uValue = _distance_metric ? Conversions.Km_From_Nm( (float)value ) : (float)value;
+          this.Text = UnitString( $"{uValue,5:##0.0}" ); // 3.1 digits no sign expected, add a blank to aling better
         }
       }
     }

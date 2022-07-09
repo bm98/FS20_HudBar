@@ -25,7 +25,7 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     /// <param name="proto"></param>
     public V_ICAO( Label proto )
-    : base( proto, false )
+    : base( proto )
     {
       m_unit = "";
       m_default = new string( '_', MaxLen );

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace FS20_HudBar.Triggers.Base
     protected float? m_lastTriggered;
 
     // the registered callback list
-    protected Dictionary<float, EventProcFloat> m_actions = new Dictionary<float, EventProcFloat>();
+    protected ConcurrentDictionary<float, EventProcFloat> m_actions = new ConcurrentDictionary<float, EventProcFloat>( );
 
     /// <summary>
     /// cTor: get the speaker 
@@ -33,25 +33,31 @@ namespace FS20_HudBar.Triggers.Base
     protected void DetectStateChange( float level )
     {
       // goes through all registered levels and triggers the first fitting one if not done before
-      foreach ( var action in m_actions ) {
-        if ( action.Value.TriggerStateF.InBand( level ) ) {
-          if ( action.Key != m_lastTriggered ) {
-            action.Value.Callback.Invoke( action.Value.Text );
-            m_lastTriggered = action.Key; // save triggered level
+      try {
+        foreach (var action in m_actions) {
+          if (action.Value.TriggerStateF.InBand( level )) {
+            if (action.Key != m_lastTriggered) {
+              action.Value.Callback.Invoke( action.Value.Text );
+              m_lastTriggered = action.Key; // save triggered level
+            }
+            break; // hit only the first found
           }
-          break; // hit only the first found
         }
       }
-    /* alternative implementation...
-      var ac = m_actions.Where( x=> x.Value.TriggerStateF.InBand(level) );
-      if ( ac.Count( ) > 0 ) {
-        var kv = ac.First();
-        if ( kv.Key != m_lastTriggered ) {
-          kv.Value.Callback.Invoke( );
-          m_lastTriggered = kv.Key; // save triggered level
-        }
+      catch {
+        // ignore, just don't bail out...
       }
-    */
+
+      /* alternative implementation...
+        var ac = m_actions.Where( x=> x.Value.TriggerStateF.InBand(level) );
+        if ( ac.Count( ) > 0 ) {
+          var kv = ac.First();
+          if ( kv.Key != m_lastTriggered ) {
+            kv.Value.Callback.Invoke( );
+            m_lastTriggered = kv.Key; // save triggered level
+          }
+        }
+      */
 
     }
 
@@ -62,13 +68,19 @@ namespace FS20_HudBar.Triggers.Base
     /// <param name="callback">A Callback EventProc</param>
     public override void AddProc( EventProc callback )
     {
-      if ( !( callback is EventProcFloat ) ) throw new ArgumentException( "Requires a FloatEventProc as argument" ); // Program ERROR
+      if (!(callback is EventProcFloat)) throw new ArgumentException( "Requires a FloatEventProc as argument" ); // Program ERROR
 
       // override existing ones
-      if ( m_actions.ContainsKey( callback.TriggerStateF.Level ) )
-        m_actions.Remove( callback.TriggerStateF.Level );
+      m_actions.TryRemove( callback.TriggerStateF.Level, out _ );
+      m_actions.TryAdd( callback.TriggerStateF.Level, (EventProcFloat)callback );
+    }
 
-      m_actions.Add( callback.TriggerStateF.Level, (EventProcFloat)callback );
+    /// <summary>
+    /// Clears the Event Proc Stack
+    /// </summary>
+    public override void ClearProcs( )
+    {
+      m_actions.Clear( );
     }
 
     /// <summary>

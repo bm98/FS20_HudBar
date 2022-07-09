@@ -42,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
     // A HudBar standard ToolTip for the Metar Display
     private ToolTip_Base _toolTip = new ToolTip_Base();
 
-    public DI_Metar( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Metar( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       _metar.MetarDataEvent += _metar_MetarDataEvent;
       LabelID = LItem;

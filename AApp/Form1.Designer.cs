@@ -47,7 +47,13 @@ namespace FS20_HudBar
       this.maDark = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.mShelf = new System.Windows.Forms.ToolStripMenuItem();
+      this.mCamera = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+      this.mUnits = new System.Windows.Forms.ToolStripMenuItem();
+      this.mAltMetric = new System.Windows.Forms.ToolStripMenuItem();
+      this.mDistMetric = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+      this.mShowUnits = new System.Windows.Forms.ToolStripMenuItem();
       this.mConfig = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
       this.mExit = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,7 +62,6 @@ namespace FS20_HudBar
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
-      this.mCamera = new System.Windows.Forms.ToolStripMenuItem();
       this.cMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -117,11 +122,12 @@ namespace FS20_HudBar
             this.mShelf,
             this.mCamera,
             this.toolStripSeparator4,
+            this.mUnits,
             this.mConfig,
             this.toolStripSeparator3,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(181, 207);
+      this.cMenu.Size = new System.Drawing.Size(181, 229);
       // 
       // mSelProfile
       // 
@@ -226,10 +232,57 @@ namespace FS20_HudBar
       this.mShelf.Text = "Flight Bag...";
       this.mShelf.Click += new System.EventHandler(this.mShelf_Click);
       // 
+      // mCamera
+      // 
+      this.mCamera.Name = "mCamera";
+      this.mCamera.Size = new System.Drawing.Size(180, 22);
+      this.mCamera.Text = "Camera...";
+      this.mCamera.Click += new System.EventHandler(this.mCamera_Click);
+      // 
       // toolStripSeparator4
       // 
       this.toolStripSeparator4.Name = "toolStripSeparator4";
       this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
+      // 
+      // mUnits
+      // 
+      this.mUnits.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mAltMetric,
+            this.mDistMetric,
+            this.toolStripSeparator5,
+            this.mShowUnits});
+      this.mUnits.Name = "mUnits";
+      this.mUnits.Size = new System.Drawing.Size(180, 22);
+      this.mUnits.Text = "Units";
+      // 
+      // mAltMetric
+      // 
+      this.mAltMetric.CheckOnClick = true;
+      this.mAltMetric.Name = "mAltMetric";
+      this.mAltMetric.Size = new System.Drawing.Size(184, 22);
+      this.mAltMetric.Text = "Metric Altitudes (m)";
+      this.mAltMetric.CheckedChanged += new System.EventHandler(this.mAltMetric_CheckedChanged);
+      // 
+      // mDistMetric
+      // 
+      this.mDistMetric.CheckOnClick = true;
+      this.mDistMetric.Name = "mDistMetric";
+      this.mDistMetric.Size = new System.Drawing.Size(184, 22);
+      this.mDistMetric.Text = "Metric Distance (km)";
+      this.mDistMetric.CheckedChanged += new System.EventHandler(this.mDistMetric_CheckedChanged);
+      // 
+      // toolStripSeparator5
+      // 
+      this.toolStripSeparator5.Name = "toolStripSeparator5";
+      this.toolStripSeparator5.Size = new System.Drawing.Size(181, 6);
+      // 
+      // mShowUnits
+      // 
+      this.mShowUnits.CheckOnClick = true;
+      this.mShowUnits.Name = "mShowUnits";
+      this.mShowUnits.Size = new System.Drawing.Size(184, 22);
+      this.mShowUnits.Text = "Show Units";
+      this.mShowUnits.CheckedChanged += new System.EventHandler(this.mShowUnits_CheckedChanged);
       // 
       // mConfig
       // 
@@ -321,13 +374,6 @@ namespace FS20_HudBar
       this.label1.UseCompatibleTextRendering = true;
       this.label1.Visible = false;
       // 
-      // mCamera
-      // 
-      this.mCamera.Name = "mCamera";
-      this.mCamera.Size = new System.Drawing.Size(180, 22);
-      this.mCamera.Text = "Camera...";
-      this.mCamera.Click += new System.EventHandler(this.mCamera_Click);
-      // 
       // frmMain
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -399,6 +445,11 @@ namespace FS20_HudBar
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     private System.Windows.Forms.ToolStripMenuItem mShelf;
     private System.Windows.Forms.ToolStripMenuItem mCamera;
+    private System.Windows.Forms.ToolStripMenuItem mUnits;
+    private System.Windows.Forms.ToolStripMenuItem mAltMetric;
+    private System.Windows.Forms.ToolStripMenuItem mDistMetric;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+    private System.Windows.Forms.ToolStripMenuItem mShowUnits;
   }
 }
 

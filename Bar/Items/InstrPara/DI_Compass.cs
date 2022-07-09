@@ -13,36 +13,44 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using System.Drawing;
 
 namespace FS20_HudBar.Bar.Items
 {
-  class DI_Gps_BRGm : DispItem
+  class DI_Compass : DispItem
   {
     /// <summary>
     /// The Label ID 
     /// </summary>
-    public static readonly LItem LItem = LItem.GPS_BRGm;
+    public static readonly LItem LItem = LItem.COMPASS;
     /// <summary>
     /// The GUI Name
     /// </summary>
-    public static readonly string Short = "BRG";
+    public static readonly string Short = "COMP";
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "Bearing to WYP (mag)";
+    public static readonly string Desc = "Compass degm";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
+    private readonly A_WindArrow _comp;
 
-    public DI_Gps_BRGm( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
+    public DI_Compass( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
-      var item = VItem.GPS_BRGm;
+      // Wind Direction, Speed
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Deg( valueProto ) { ItemForeColor = cGps };
+
+      var item = VItem.COMPASS;
+      _value1 = new V_Deg( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
+      item = VItem.COMPASS_ANI;
+      _comp = new A_WindArrow( ) { BorderStyle = BorderStyle.FixedSingle, AutoSizeWidth = true, ItemForeColor = cInfo };
+      this.AddItem( _comp ); vCat.AddLbl( item, _comp );
+
+      m_observerID = SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );
     }
 
     /// <summary>
@@ -50,21 +58,17 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     public void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
-          _value1.Value = SC.SimConnectClient.Instance.GpsModule.WYP_Brg;
-        }
-        else {
-          // No SIM GPS - Flightplan active
-          _value1.Value = null;
-        }
+      if (this.Visible) {
+        _value1.Value = SC.SimConnectClient.Instance.NavModule.Compass_degm;
+        _comp.DirectionFrom = (int)SC.SimConnectClient.Instance.NavModule.Compass_degm;
+        _comp.Heading = 180;
       }
     }
 
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      SC.SimConnectClient.Instance.GpsModule.RemoveObserver( m_observerID );
+      SC.SimConnectClient.Instance.NavModule.RemoveObserver( m_observerID );
     }
 
   }

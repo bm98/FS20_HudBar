@@ -18,8 +18,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Wind_X( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Wind_X( Label proto )
+    : base( proto )
     {
       m_unit = "kt";
       m_default = DefaultString( "___→" ); // L | R NNN kt
@@ -29,6 +29,11 @@ namespace FS20_HudBar.GUI.Templates
     private string c_fromLeft = "→";
     private string c_fromRight = "←";
     private string c_flat = " ";
+
+    protected override void SetDistance_Metric( )
+    {
+      m_unit = _distance_metric ? "m/s" : "kt";
+    }
 
     /// <summary>
     /// Set the value of the Control - formatted as +NN'NN0ft
@@ -42,14 +47,15 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
-          if ( value < 0 ) {
-            this.Text = UnitString( $"{-value,3:##0}{c_fromRight}" );
+          float uValue = _distance_metric ? Conversions.Mps_From_Kt( (float)value ) : (float)value;
+          if (uValue < 0 ) {
+            this.Text = UnitString( $"{-uValue,3:##0}{c_fromRight}" );
           }
-          else if ( value > 0 ) {
-            this.Text = UnitString( $"{value,3:##0}{c_fromLeft}" );
+          else if (uValue > 0 ) {
+            this.Text = UnitString( $"{uValue,3:##0}{c_fromLeft}" );
           }
           else {
-            this.Text = UnitString( $"{value,3:##0}{c_flat}" );
+            this.Text = UnitString( $"{uValue,3:##0}{c_flat}" );
           }
         }
       }

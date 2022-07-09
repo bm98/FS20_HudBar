@@ -16,7 +16,7 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     /// <param name="proto"></param>
     public V_TimeHHMM( Label proto )
-    : base( proto, false )
+    : base( proto )
     {
       m_unit = " ";
       m_default = DefaultString( $"{"__",5} " );

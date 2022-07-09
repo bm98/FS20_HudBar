@@ -15,8 +15,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Gallons( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Gallons( Label proto )
+    : base( proto )
     {
       m_unit = "gal";
       m_default = DefaultString( "____ " ); //NNNN

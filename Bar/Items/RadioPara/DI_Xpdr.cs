@@ -36,7 +36,7 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1; // Code
     private readonly V_Base _value2; // Status
 
-    public DI_Xpdr( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Xpdr( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       var item = VItem.XPDR_CODE;

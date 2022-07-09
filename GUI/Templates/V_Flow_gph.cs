@@ -15,8 +15,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Flow_gph( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Flow_gph( Label proto )
+    : base( proto )
     {
       m_unit = "gph";
       m_default = DefaultString( "___._ " );

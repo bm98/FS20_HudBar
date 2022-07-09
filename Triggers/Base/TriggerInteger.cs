@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace FS20_HudBar.Triggers.Base
     protected int? m_lastTriggered = null;
 
     // the registered callback list
-    protected Dictionary<int, EventProcInteger> m_actions = new Dictionary<int, EventProcInteger>();
+    protected ConcurrentDictionary<int, EventProcInteger> m_actions = new ConcurrentDictionary<int, EventProcInteger>( );
 
     /// <summary>
     /// cTor: get the speaker 
@@ -33,14 +33,19 @@ namespace FS20_HudBar.Triggers.Base
     protected void DetectStateChange( int level )
     {
       // goes through all registered levels and triggers the first fitting one if not done before
-      foreach ( var action in m_actions ) {
-        if ( action.Value.TriggerStateI.InBand( level ) ) {
-          if ( action.Key != m_lastTriggered ) {
-            action.Value.Callback.Invoke( action.Value.Text );
-            m_lastTriggered = action.Key; // save triggered level
+      try {
+        foreach (var action in m_actions) {
+          if (action.Value.TriggerStateI.InBand( level )) {
+            if (action.Key != m_lastTriggered) {
+              action.Value.Callback.Invoke( action.Value.Text );
+              m_lastTriggered = action.Key; // save triggered level
+            }
+            break; // hit only the first found
           }
-          break; // hit only the first found
         }
+      }
+      catch {
+        // ignore, just don't bail out...
       }
 
       /* alternative implementation...
@@ -63,12 +68,18 @@ namespace FS20_HudBar.Triggers.Base
     /// <param name="callback">A Callback EventProc</param>
     public override void AddProc( EventProc callback )
     {
-      if ( !( callback is EventProcInteger ) ) throw new ArgumentException( "Requires a IntEventProc as argument" ); // Program ERROR
-      // override existing ones
-      if ( m_actions.ContainsKey( callback.TriggerStateI.Level ) )
-        m_actions.Remove( callback.TriggerStateI.Level );
+      if (!(callback is EventProcInteger)) throw new ArgumentException( "Requires a IntEventProc as argument" ); // Program ERROR
+                                                                                                                 // override existing ones
+      m_actions.TryRemove( callback.TriggerStateI.Level, out _ );
+      m_actions.TryAdd( callback.TriggerStateI.Level, (EventProcInteger)callback );
+    }
 
-      m_actions.Add( callback.TriggerStateI.Level, (EventProcInteger)callback );
+    /// <summary>
+    /// Clears the Event Proc Stack
+    /// </summary>
+    public override void ClearProcs( )
+    {
+      m_actions.Clear( );
     }
 
     /// <summary>

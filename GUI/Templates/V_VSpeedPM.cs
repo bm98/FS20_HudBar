@@ -18,12 +18,17 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_VSpeedPM( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_VSpeedPM( Label proto )
+    : base( proto )
     {
-      m_unit = "fpm";
+      m_unit = "f/M";
       m_default = DefaultString( "±____ " + " " ); // ±NNNN
       Text = UnitString( RightAlign( m_default ) );
+    }
+
+    protected override void SetAltitude_Metric( )
+    {
+      m_unit = _altitude_metric ? "m/M" : "f/M";
     }
 
     /// <summary>
@@ -38,7 +43,8 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( RightAlign( m_default ) );
         }
         else {
-          this.Text = UnitString( RightAlign( $"{value,5:+###0;-###0} " + " " ) ); // show + and - signs, add a blank for alignment
+          float uValue = _altitude_metric ? Conversions.M_From_Ft( (float)value ) : (float)value;
+          this.Text = UnitString( RightAlign( $"{uValue,5:+###0;-###0} " + " " ) ); // show + and - signs, add a blank for alignment
         }
       }
     }

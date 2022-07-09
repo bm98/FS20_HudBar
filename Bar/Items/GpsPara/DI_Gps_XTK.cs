@@ -34,12 +34,12 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _label;
     private readonly V_Base _value1;
 
-    public DI_Gps_XTK( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Gps_XTK( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       var item = VItem.GPS_XTK;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Xtk( valueProto, showUnits ) { ItemForeColor = cGps };
+      _value1 = new V_Xtk( valueProto ) { ItemForeColor = cGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );

@@ -73,6 +73,11 @@ namespace FS20_HudBar.GUI.Templates.Base
     }
 
 
+    // Implement IValue Metric IF (but it is not used)
+    public bool Altitude_metric { get => false; set => _ = value; }
+    public bool Speed_metric { get => false; set => _ = value; }
+    public bool Distance_metric { get => false; set => _ = value; }
+
     /// <summary>
     /// Event triggered when the push button was clicked
     /// Sends the VItem ID set in the cTor
@@ -121,6 +126,24 @@ namespace FS20_HudBar.GUI.Templates.Base
       return ret;
     }
 
+
+    /// <summary>
+    /// Activates the Main Form in order to prevent that further (Mouse) events are sent to the prev. Active Application
+    /// This is used to switch to the HudBar for Mouse Wheel scrolling.
+    /// MSFS however will still capture the first scroll event as it receives the Event in parallel to the Mouse hovered control of the HudBar
+    /// But at least then it will stop getting further scroll events and usually Zoom in/out like crazy...
+    ///     basically one would be able to send a reverse scroll to Windows before this but it seems rather complicated to do so....
+    /// </summary>
+    /// <param name="e">The MouseEvents</param>
+    internal void ActivateForm( MouseEventArgs e )
+    {
+      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
+      //  NOTE: this will not prevent a single scroll event captured by DirectInput i.e. the Sim however...
+      if (Form.ActiveForm == null) {
+        this.FindForm( ).Activate( );
+      }
+      (e as HandledMouseEventArgs).Handled = true; // don't bubble up the scroll wheel
+    }
 
     /// <summary>
     /// cTor: Create a UserControl..

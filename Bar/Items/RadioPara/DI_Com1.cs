@@ -36,7 +36,7 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    public DI_Com1( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Com1( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       var item = VItem.COM1_SWAP;
@@ -61,8 +61,11 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
+      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
+      _value1.ActivateForm( e );
+
       // 1/2 - 1/2  dectection for Digits
-      var whole= e.Location.X < ( _value1.Width / 2 );
+      var whole = e.Location.X < ( _value1.Width / 2 );
 
       if ( e.Delta > 0 ) {
         SC.SimConnectClient.Instance.ComModule.COM1set( whole ? FSimClientIF.CmdMode.Inc : FSimClientIF.CmdMode.Inc_Fract );

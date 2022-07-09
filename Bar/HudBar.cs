@@ -127,6 +127,7 @@ namespace FS20_HudBar.Bar
       {LItem.EST_VS,DI_Est_VS.Desc },         {LItem.EST_ALT, DI_Est_ALT.Desc },
       {LItem.ENROUTE, DI_Enroute.Desc },
 
+      {LItem.COMPASS, DI_Compass.Desc },
       {LItem.HDG, DI_Hdg.Desc },              {LItem.HDGt, DI_HdgT.Desc },
       {LItem.ALT, DI_Alt_eff.Desc },          {LItem.ALT_INST, DI_Alt_Inst.Desc },
       {LItem.RA, DI_Ra.Desc },                {LItem.RA_VOICE, DI_Ra_Voice.Desc },
@@ -174,11 +175,6 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public CProfile Profile => m_profile;
     private CProfile m_profile = null;     // currently used profile
-
-    /// <summary>
-    /// Show Units if true
-    /// </summary>
-    public bool ShowUnits { get; private set; } = false;
 
     /// <summary>
     /// The Configured Hotkeys
@@ -299,20 +295,18 @@ namespace FS20_HudBar.Bar
     /// <param name="valueProto">A GUI prototype value, carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="value2Proto">A GUI prototype value type 2, carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="signProto">A GUI prototype icon(Wingdings), carrying fonts, colors etc (set in GUI design mode)</param>
-    /// <param name="showUnits">Showing units flag</param>
     /// <param name="cProfile">The current Profile</param>
     /// <param name="voiceName">The current VoiceName</param>
     /// <param name="userFonts">User Fonts as ConfigString</param>
     /// <param name="fRecorder">FlightRecorder Enabled</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
-                      bool showUnits, bool keyboardHook, bool inGameHook, WinHotkeyCat hotkeys,
+                      bool keyboardHook, bool inGameHook, WinHotkeyCat hotkeys,
                       int autoSave, string shelfFolder, CProfile cProfile, string voiceName, string userFonts,
                       bool fRecorder )
     {
       LOG.Log( "cTor HudBar: Start" );
       // just save them in the HUD mainly for config purpose
       m_profile = cProfile;
-      ShowUnits = showUnits;
       Hotkeys = hotkeys.Copy( );
       KeyboardHook = keyboardHook;
       InGameHook = inGameHook;
@@ -361,6 +355,7 @@ namespace FS20_HudBar.Bar
       // we take those and realize the Breaks at the proper location
 
       LOG.Log( "cTor HudBar: Adding DI Items" );
+
       // Sim Status
       m_dispItems.AddDisp( new DI_MsFS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_SimRate( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -373,16 +368,16 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Time( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ZuluTime( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_CompTime( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
-      m_dispItems.AddDisp( new DI_Oat_C( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Oat_F( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Vis( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Wind_SD( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Wind_XY( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Wind_V( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Oat_C( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Oat_F( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Vis( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Wind_SD( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Wind_XY( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Wind_V( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Aircraft
       m_dispItems.AddDisp( new DI_Acft_ID( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
-      m_dispItems.AddDisp( new DI_Baro_HPA( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Baro_InHg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Baro_HPA( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Baro_InHg( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gear( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Brakes( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Flaps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -391,13 +386,13 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_SpoilersGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_Lights( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Engine
-      m_dispItems.AddDisp( new DI_Man( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Torq( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Man( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Torq( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_TorqP( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_TorqPGraph( m_valueItems, lblProto ) );
-      m_dispItems.AddDisp( new DI_PRpm( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_PRpm( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_PRpmGraph( m_valueItems, lblProto ) );
-      m_dispItems.AddDisp( new DI_ERpm( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_ERpm( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ERpmGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_N1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_N1Graph( m_valueItems, lblProto ) );
@@ -405,26 +400,26 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_N2Graph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_Afterburner( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_AfterburnerGraph( m_valueItems, lblProto ) );
-      m_dispItems.AddDisp( new DI_Itt_C( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Egt_C( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Egt_F( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Cht_C( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Cht_F( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Itt_C( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Egt_C( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Egt_F( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Cht_C( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Cht_F( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Load_prct( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_CowlFlapsGraph( m_valueItems, lblProto ) );
       // Fuel
-      m_dispItems.AddDisp( new DI_FFlow_PPH( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_FFlow_GPH( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_FFlow_KGH( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Fuel_LR_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Fuel_LR_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Fuel_LR_Kg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Fuel_C_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Fuel_C_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Fuel_C_Kg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Fuel_Total_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Fuel_Total_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Fuel_Total_Kg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_FFlow_PPH( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_FFlow_GPH( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_FFlow_KGH( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Fuel_LR_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Fuel_LR_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Fuel_LR_Kg( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Fuel_C_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Fuel_C_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Fuel_C_Kg( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Fuel_Total_Gal( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Fuel_Total_Lb( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Fuel_Total_Kg( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_FuelGraph( m_valueItems, lblProto ) );
       // Trim
       m_dispItems.AddDisp( new DI_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -432,58 +427,59 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_RTrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ATrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // GPS
-      m_dispItems.AddDisp( new DI_Gps_TRK( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Gps_GS( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Gps_TRK( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Gps_GS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gps_ETE( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gps_WYP( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
-      m_dispItems.AddDisp( new DI_Gps_WP_Dist( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Gps_WP_Dist( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gps_WP_Ete( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
-      m_dispItems.AddDisp( new DI_Gps_BRGm( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Gps_DTRK( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Gps_XTK( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Gps_ALT( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Gps_BRGm( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Gps_DTRK( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Gps_XTK( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Gps_ALT( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gps_LatLon( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
-      m_dispItems.AddDisp( new DI_Est_VS( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Est_ALT( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Est_VS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Est_ALT( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Enroute( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Aeronautics
-      m_dispItems.AddDisp( new DI_Hdg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_HdgT( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Alt_eff( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Alt_Inst( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Ra( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Ra_Voice( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Ias( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Tas( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Mach( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Vs( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Vs_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_VarioTE_mps_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_VarioTE_kts_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_VarioGraph( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Aoa( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_FPAngle( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Compass( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Hdg( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_HdgT( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Alt_eff( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Alt_Inst( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ra( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ra_Voice( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ias( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Tas( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Mach( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Vs( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Vs_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_VarioTE_mps_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_VarioTE_kts_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_VarioGraph( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Aoa( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_FPAngle( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ESIGraph( m_valueItems, lblProto ) );
-      m_dispItems.AddDisp( new DI_GForce( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Gforce_MM( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Nav1( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Nav2( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Nav1_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Nav2_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Nav1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Nav2_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Xpdr( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Com1( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Com2( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Com1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Com2_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_GForce( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Gforce_MM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Nav1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Nav2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Nav1_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Nav2_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Nav1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Nav2_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Xpdr( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Com1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Com2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Com1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Com2_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Autopilot
       m_dispItems.AddDisp( new DI_Ap( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
-      m_dispItems.AddDisp( new DI_Ap_HdgSet( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Ap_AltSet( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Ap_VsSet( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Ap_FlcSet( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Ap_SpeedSet( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Ap_HdgSet( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ap_AltSet( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ap_VsSet( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ap_FlcSet( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ap_SpeedSet( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_BC( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_NavGps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_AprGs( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -494,17 +490,17 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Ap_AThrottle( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_ABrake( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // ATC
-      m_dispItems.AddDisp( new DI_Atc_APT( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Atc_RWY( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_Atc_AltHdg( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Atc_APT( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Atc_RWY( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Atc_AltHdg( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // METAR
-      m_dispItems.AddDisp( new DI_Metar( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_Metar( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // ROUTE
       m_dispItems.AddDisp( new DI_DepArr( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // METERS
-      m_dispItems.AddDisp( new DI_M_TimDist1( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_M_TimDist2( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
-      m_dispItems.AddDisp( new DI_M_TimDist3( m_valueItems, lblProto, valueProto, value2Proto, signProto, showUnits ) );
+      m_dispItems.AddDisp( new DI_M_TimDist1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_M_TimDist2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_M_TimDist3( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Controls
       m_dispItems.AddDisp( new DI_Thr_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Mix_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -516,10 +512,13 @@ namespace FS20_HudBar.Bar
 
       // **** post processing
 
+      // Apply Metric Setting from AppSettings
       // Apply Unit modifier (shown, not shown) to all Values
       LOG.Log( $"cTor HudBar: Post Processing" );
       foreach (var lx in m_valueItems) {
-        lx.Value.Value.ShowUnit = ShowUnits;
+        SetAltitudeMetric( AppSettings.Instance.Altitude_Metric );
+        SetDistanceMetric( AppSettings.Instance.Distance_Metric );
+        SetShowUnits( AppSettings.Instance.ShowUnits );
       }
 
       // Align the Vertical alignment accross the bar
@@ -610,11 +609,13 @@ namespace FS20_HudBar.Bar
 
     // track Aircraft changes
     private bool _aircraftChanged = true; // trigger this one on Load
+    private long _nextSecTic = 0;
+    private const long c_paceSec = 10; // 10sec pace to update the IAS tooltip 
 
     /// <summary>
     /// Update from values from Sim which are not part of the Item content update 
     /// </summary>
-    public void UpdateGUI( string dataRefName )
+    public void UpdateGUI( string dataRefName, long secondsTic )
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity..
 
@@ -655,7 +656,7 @@ namespace FS20_HudBar.Bar
         FltPlanMgr.Read( );
       }
 
-      if (_aircraftChanged) {
+      if (_aircraftChanged || (secondsTic > _nextSecTic)) {
         LOG.Log( $"UpdateGUI: Aircraft has changed to {SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile}" );
         string tt = "";
         if (!string.IsNullOrWhiteSpace( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile )) {
@@ -668,9 +669,13 @@ namespace FS20_HudBar.Bar
              + $"Vr  Min Rotation:  {ds.DesingSpeedMinRotation_kt:##0} kt\n"
              + $"Vs1 Stall Speed:   {ds.DesingSpeedVS1_kt:##0} kt\n"
              + $"Vs0 Stall Speed:   {ds.DesingSpeedVS0_kt:##0} kt\n\n"
+             + $"Fuel Weight:       {ds.FuelQuantityTotal_lb:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.FuelQuantityTotal_lb ):###,##0} kg)\n"
+             + $"Payload Weight:    {ds.AcftPLS_weight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.AcftPLS_weight_lbs ):###,##0} kg)\n"
+             + $"TOTAL Weight:      {ds.TotalAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.TotalAcftWeight_lbs ):###,##0} kg)\n"
+             + $"Zero Fuel Weight:  {ds.TotalAcftWeight_lbs - ds.FuelQuantityTotal_lb:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.TotalAcftWeight_lbs - ds.FuelQuantityTotal_lb ):###,##0} kg)\n"
+             + $"CG lon / lat:      {ds.AcftCGlong_perc * 100f:#0.0} % / {ds.AcftCGlat_perc * 100f:#0.0} %\n"
              + $"Empty Weight:      {ds.EmptyAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.EmptyAcftWeight_lbs ):###,##0} kg)\n"
              + $"Max. Weight:       {ds.MaxAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.MaxAcftWeight_lbs ):###,##0} kg)\n"
-             + $"TOTAL Weight:      {ds.TotalAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.TotalAcftWeight_lbs ):###,##0} kg)\n"
              ;
         }
         var di = this.DispItem( LItem.IAS );
@@ -679,6 +684,7 @@ namespace FS20_HudBar.Bar
           di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
         }
         _aircraftChanged = false; // no longer
+        _nextSecTic = secondsTic + c_paceSec;
       }
     }
 
@@ -686,15 +692,6 @@ namespace FS20_HudBar.Bar
     private void Instance_AircraftChange( object sender, EventArgs e )
     {
       _aircraftChanged = true; // will be handled in the GUIUpdate procedure
-    }
-
-    /// <summary>
-    /// Set the current show unit flag communicated by the HUD
-    /// </summary>
-    /// <param name="showUnits"></param>
-    public void SetShowUnits( bool showUnits )
-    {
-      ShowUnits = showUnits;
     }
 
     /// <summary>
@@ -759,6 +756,40 @@ namespace FS20_HudBar.Bar
     {
       ShelfFolder = folder;
     }
+
+    /// <summary>
+    /// Set the Altitude Display to Metric
+    /// </summary>
+    /// <param name="setting">True for Metric Unit</param>
+    public void SetAltitudeMetric( bool setting )
+    {
+      foreach (var lx in m_valueItems) {
+        lx.Value.Value.Altitude_metric = setting;
+      }
+    }
+
+    /// <summary>
+    /// Set the Distance Display to Metric
+    /// </summary>
+    /// <param name="setting">True for Metric Unit</param>
+    public void SetDistanceMetric( bool setting )
+    {
+      foreach (var lx in m_valueItems) {
+        lx.Value.Value.Distance_metric = setting;
+      }
+    }
+
+    /// <summary>
+    /// Set the current show unit flag communicated by the HUD
+    /// </summary>
+    /// <param name="setting"></param>
+    public void SetShowUnits( bool setting )
+    {
+      foreach (var lx in m_valueItems) {
+        lx.Value.Value.ShowUnit = setting;
+      }
+    }
+
 
     #endregion
 

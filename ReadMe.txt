@@ -47,7 +47,12 @@ Changelog:
 
 V 0.52-B49
 - Add Ambient Vertical Wind Item (LIFT)
-- Update Ability to enter the Route via Kbd (on RTE Item)
+- Add Compass degm and arrow (N-up) Item
+- Add Altitudes, Distances can be shown in Common (default) or Metric units
+- Update ShowUnits is now an interactive menu setting
+- Update Ability to enter the Route via Kbd when no ATC plan is available (on RTE Item)
+- Update Complete/improve actual weights data in IAS ToolTip (Design Speed and Weights)
+- Update Improve capturing of mouse wheel input focus (cannot prevent a single scroll event to the Sim though)
 - Update QuickGuide
 
 V 0.51-B48
@@ -199,9 +204,9 @@ V 0.37-B32
 V 0.37-B31
 - Add item Control Handle% readout for Throttle, Mix, Propeller
 - Add item Power LOAD %
-- Add item CHT in °C and °F
-- Add item EGT in °F
-- Add item OAT in °F
+- Add item CHT in ï¿½C and ï¿½F
+- Add item EGT in ï¿½F
+- Add item OAT in ï¿½F
 - Add Button Click for SimRate to set it to 1x (normal)
 - Add VoiceOut item for LowFuel Alert
 - Add Copy / Paste of Items between profiles in Config menu

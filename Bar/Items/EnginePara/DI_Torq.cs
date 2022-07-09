@@ -37,26 +37,26 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value3;
     private readonly V_Base _value4;
 
-    public DI_Torq( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Torq( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       var item = VItem.E1_TORQ;
-      _value1 = new V_Torque( value2Proto, showUnits );
+      _value1 = new V_Torque( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.E2_TORQ;
-      _value2 = new V_Torque( value2Proto, showUnits );
+      _value2 = new V_Torque( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       // add 2 more values
       this.TwoRows = true;
       item = VItem.E3_TORQ;
-      _value3 = new V_Torque( value2Proto, showUnits ) { Visible = false };
+      _value3 = new V_Torque( value2Proto ) { Visible = false };
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
       item = VItem.E4_TORQ;
-      _value4 = new V_Torque( value2Proto, showUnits ) { Visible = false };
+      _value4 = new V_Torque( value2Proto ) { Visible = false };
       this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
 
       this.IsEngineItem = true;

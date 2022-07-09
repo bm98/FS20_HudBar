@@ -15,8 +15,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Angle( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Angle( Label proto )
+    : base( proto )
     {
       m_unit = " "; // Deg always shows °
       m_default = DefaultString( "+__._°" + " " );

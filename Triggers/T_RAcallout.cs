@@ -44,22 +44,22 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAircraft object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if ( !Enabled ) return; // not enabled
-      if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity, capture odd cases
+      if (!Enabled) return; // not enabled
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
 
       var ds = SC.SimConnectClient.Instance.HudBarModule;
 
-      if ( ds.Sim_OnGround ) {
+      if (ds.Sim_OnGround) {
         // on ground we disable callouts, this lasts on the way up until we are above our highest RA level
         m_lastTriggered = -1;
       }
-      else if ( ds.AltAoG_ft >= c_detectionRA ) {
+      else if (ds.AltAoG_ft >= c_detectionRA) {
         // in air and above our detection RA - reset callout sequence
         m_lastTriggered = c_detectionRA; // set this above the initial callout level to start callouts if we get lower later
       }
       else {
         // in air and in the callout range
-        if ( ds.AltAoG_ft < m_lastTriggered ) {
+        if (ds.AltAoG_ft < m_lastTriggered) {
           // detect only when the current RA is lower than the last called out one
           DetectStateChange( ds.AltAoG_ft );
         }
@@ -69,17 +69,20 @@ namespace FS20_HudBar.Triggers
     // Implements the means to speak out the RA down count in ft above ground
 
     /// <summary>
-    /// cTor: 
+    /// Set Metric height callouts if true, else Imperial
     /// </summary>
-    /// <param name="speaker">A valid Speech obj to speak from</param>
-    public T_RAcallout( GUI.GUI_Speech speaker )
-      : base( speaker )
+    /// <param name="setting">True for Meters</param>
+    public void SetMetric( bool setting )
     {
-      m_name = "RA Callout";
-      m_test = "100";
+      if (setting)
+        SetMetricCallout( );
+      else 
+        SetImperialCallout( );
+    }
 
-      // need to set this below the lowest callout level, it will be activated only once we are above our detection RA
-      m_lastTriggered = -1;
+    private void SetImperialCallout( )
+    {
+      this.ClearProcs( );
 
       // the bands must accomodate for VSpeeds up to ~ -1000 fps on the way down and capture each of the levels with some margin
       // bands must never overlap and should not callout way too early or too late
@@ -100,6 +103,43 @@ namespace FS20_HudBar.Triggers
       // VS << 500
       this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + 23.0f, 3.0f ), Callback = Say, Text = "20" } ); // detect in 26..20
       this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + 13.0f, 2.0f ), Callback = Say, Text = "10" } ); // detect in 15..11
+    }
+
+    private void SetMetricCallout( )
+    {
+      this.ClearProcs( );
+
+      // logic see above calls for meters at 120, 90, 60, 30,   15, 12, 9,   6, 3 (input and detector is still feet)
+
+      // VS >500
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 120 ), 10.0f ), Callback = Say, Text = "120" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 90 ), 10.0f ), Callback = Say, Text = "90" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 60 ), 10.0f ), Callback = Say, Text = "60" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 30 ), 10.0f ), Callback = Say, Text = "30" } );
+      // VS ~500
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 15 ), 4.0f ), Callback = Say, Text = "15" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 12 ), 4.0f ), Callback = Say, Text = "12" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 9 ), 4.0f ), Callback = Say, Text = "9" } );
+      // VS << 500
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 6 ) + 3f, 3.0f ), Callback = Say, Text = "6" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 3 ) + 3f, 2.0f ), Callback = Say, Text = "3" } );
+    }
+
+
+    /// <summary>
+    /// cTor: 
+    /// </summary>
+    /// <param name="speaker">A valid Speech obj to speak from</param>
+    public T_RAcallout( GUI.GUI_Speech speaker )
+    : base( speaker )
+    {
+      m_name = "RA Callout";
+      m_test = "100";
+
+      // need to set this below the lowest callout level, it will be activated only once we are above our detection RA
+      m_lastTriggered = -1;
+
+      SetImperialCallout( );
     }
 
   }

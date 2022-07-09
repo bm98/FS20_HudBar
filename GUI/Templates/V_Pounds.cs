@@ -16,8 +16,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Pounds( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Pounds( Label proto )
+    : base( proto )
     {
       m_unit = "lb";
       m_default = DefaultString( "_____ " ); //NNNNN

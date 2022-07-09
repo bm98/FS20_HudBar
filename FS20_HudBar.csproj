@@ -201,6 +201,9 @@
     <Compile Include="Bar\Items\AtcPara\DI_DepArr.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_Compass.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\EnvPara\DI_Wind_V.cs">
       <SubType>Component</SubType>
     </Compile>

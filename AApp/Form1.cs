@@ -469,6 +469,10 @@ namespace FS20_HudBar
       LOG.Log( "frmMain: Load Colors" );
       Colorset = ToColorSet( AppSettings.Instance.Appearance );
 
+      mAltMetric.CheckState = AppSettings.Instance.Altitude_Metric ? CheckState.Checked : CheckState.Unchecked;
+      mDistMetric.CheckState = AppSettings.Instance.Distance_Metric ? CheckState.Checked: CheckState.Unchecked;
+      mShowUnits.CheckState = AppSettings.Instance.ShowUnits ? CheckState.Checked : CheckState.Unchecked;
+
       // Use CoordLib with no blanks as separator
       CoordLib.Dms.Separator = "";
 
@@ -650,6 +654,35 @@ namespace FS20_HudBar
       this.Close( ); // just call the main Close
     }
 
+    #region Units Menu
+
+    // Update if the user has changed it
+    private void mAltMetric_CheckedChanged( object sender, EventArgs e )
+    {
+      AppSettings.Instance.Altitude_Metric = mAltMetric.Checked;
+      AppSettings.Instance.Save( );
+      HUD?.SetAltitudeMetric( AppSettings.Instance.Altitude_Metric );
+    }
+
+    // Update if the user has changed it
+    private void mDistMetric_CheckedChanged( object sender, EventArgs e )
+    {
+      AppSettings.Instance.Distance_Metric = mDistMetric.Checked;
+      AppSettings.Instance.Save( );
+      HUD?.SetDistanceMetric( AppSettings.Instance.Distance_Metric );
+    }
+
+    // Update if the user has changed it
+    private void mShowUnits_CheckedChanged( object sender, EventArgs e )
+    {
+      AppSettings.Instance.ShowUnits = mShowUnits.Checked;
+      AppSettings.Instance.Save( );
+      HUD?.SetShowUnits( AppSettings.Instance.ShowUnits );
+    }
+
+    #endregion
+
+
     #region Config Menu
 
     // Menu Config Event
@@ -675,7 +708,6 @@ namespace FS20_HudBar
       if ( CFG.ShowDialog( this ) == DialogResult.OK ) {
         LOG.Log( $"mConfig_Click: Dialog OK" );
         // Save all configuration properties
-        AppSettings.Instance.ShowUnits = HUD.ShowUnits;
         AppSettings.Instance.FRecorder = HUD.FlightRecorder;
 
         AppSettings.Instance.HKShowHide = HUD.Hotkeys.HotkeyString( Hotkeys.Show_Hide );
@@ -1004,7 +1036,7 @@ namespace FS20_HudBar
       // start the HudBar from scratch
       LOG.Log( $"InitGUI: Create HudBar" );
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
-                          AppSettings.Instance.ShowUnits, AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook, _hotkeycat,
+                          AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook, _hotkeycat,
                           AppSettings.Instance.FltAutoSaveATC, AppSettings.Instance.ShelfFolder,
                           m_profiles[m_selProfile], AppSettings.Instance.VoiceName, AppSettings.Instance.UserFonts,
                           AppSettings.Instance.FRecorder );
@@ -1081,10 +1113,12 @@ namespace FS20_HudBar
       if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity..
       if ( !m_initDone ) return; // cannot access items at this time
 
+      var sec = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
       // maintain the Engine Visibility
       flp.SetEnginesVisible( SC.SimConnectClient.Instance.HudBarModule.NumEngines );
       // The Bar has it's own logic for data updates
-      HUD.UpdateGUI( dataRefName );
+      HUD.UpdateGUI( dataRefName, sec );
     }
 
     #endregion
@@ -1170,6 +1204,7 @@ namespace FS20_HudBar
         SimConnect( );
       }
     }
+
 
     #endregion
 

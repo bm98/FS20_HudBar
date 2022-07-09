@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace FS20_HudBar.Triggers.Base
     protected bool? m_lastTriggered = false;
 
     // the registered callback list
-    protected Dictionary<bool, EventProcBinary> m_actions = new Dictionary<bool, EventProcBinary>();
+    protected ConcurrentDictionary<bool, EventProcBinary> m_actions = new ConcurrentDictionary<bool, EventProcBinary>( );
 
     /// <summary>
     /// cTor: get the speaker 
@@ -32,11 +32,16 @@ namespace FS20_HudBar.Triggers.Base
     /// <param name="state"></param>
     protected void DetectStateChange( bool state )
     {
-      if ( state != m_lastTriggered ) {
-        if ( m_actions.ContainsKey( state ) ) {
-          m_actions[state].Callback.Invoke( m_actions[state].Text ); // trigger the callback
+      if (state != m_lastTriggered) {
+        try {
+          if (m_actions.ContainsKey( state )) {
+            m_actions[state].Callback.Invoke( m_actions[state].Text ); // trigger the callback
+          }
+          m_lastTriggered = state; // save new state in any case
         }
-        m_lastTriggered = state; // save new state in any case
+        catch {
+          // ignore, just don't bail out...
+        }
       }
     }
 
@@ -48,14 +53,20 @@ namespace FS20_HudBar.Triggers.Base
     /// <param name="callback">A Callback EventProc</param>
     public override void AddProc( EventProc callback )
     {
-      if ( !( callback is EventProcBinary ) ) throw new ArgumentException( "Requires a BinaryEventProc as argument" ); // Program ERROR
+      if (!(callback is EventProcBinary)) throw new ArgumentException( "Requires a BinaryEventProc as argument" ); // Program ERROR
 
       // override existing ones
-      if ( m_actions.ContainsKey( callback.TriggerState ) )
-        m_actions.Remove( callback.TriggerState );
+      m_actions.TryRemove( callback.TriggerState, out _ );
+      m_actions.TryAdd( callback.TriggerState, (EventProcBinary)callback );
 
-      m_actions.Add( callback.TriggerState, (EventProcBinary)callback );
+    }
 
+    /// <summary>
+    /// Clears the Event Proc Stack
+    /// </summary>
+    public override void ClearProcs( )
+    {
+      m_actions.Clear( );
     }
 
     /// <summary>

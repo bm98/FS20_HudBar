@@ -18,8 +18,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_DmeDist( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_DmeDist( Label proto )
+    : base( proto )
     {
       m_unit = "nm";
       m_default = DefaultString( "___._ " );
@@ -30,6 +30,11 @@ namespace FS20_HudBar.GUI.Templates
     private string c_to = "↑";
     private string c_flat = " ";
 
+    protected override void SetDistance_Metric( )
+    {
+      m_unit = _distance_metric ? "km" : "nm";
+    }
+
     /// <summary>
     /// Set the value of the Control
     ///  pos. values indicate dist towards the target
@@ -37,46 +42,31 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     override public float? Value {
       set {
-        if ( value == null ) {
+        if (value == null) {
           this.Text = UnitString( m_default );
         }
-        else if ( float.IsNaN( (float)value ) ) {
+        else if (float.IsNaN( (float)value )) {
           this.Text = UnitString( m_default );
-        }
-        else if ( Math.Abs( (float)value ) >= 1000.0f ) {
-          this.Text = UnitString( "> 999 " );
         }
         else {
-          if ( value > 0 ) {
-            this.Text = UnitString( $"{value,5:##0.0}{c_to}" );
-          }
-          else if ( value < 0 ) {
-            this.Text = UnitString( $"{-value,5:##0.0}{c_from}" );
+          float uValue = _distance_metric ? Conversions.Km_From_Nm( (float)value ) : (float)value;
+          if (Math.Abs( (float)uValue ) >= 1000.0f) {
+            this.Text = UnitString( "> 999 " );
           }
           else {
-            this.Text = UnitString( $"{value,5:##0.0}{c_flat}" );
+            if (value > 0) {
+              this.Text = UnitString( $"{uValue,5:##0.0}{c_to}" );
+            }
+            else if (value < 0) {
+              this.Text = UnitString( $"{-uValue,5:##0.0}{c_from}" );
+            }
+            else {
+              this.Text = UnitString( $"{uValue,5:##0.0}{c_flat}" );
+            }
           }
         }
       }
     }
-
-    #region STATIC DME Dist Sign
-
-    /// <summary>
-    /// Returns a signed distance for the DME readout Control V_DistDme 
-    /// flag==1 => To   + signed
-    /// flag==2 => From - signed
-    /// flag==0 => Off  NaN
-    /// 
-    /// </summary>
-    /// <param name="absValue">DME Input from Sim</param>
-    /// <param name="fromToFlag">FromTo Flag from Sim</param>
-    /// <returns></returns>
-    public static float DmeDistance( float absValue, int fromToFlag )
-    {
-      return (fromToFlag == 0) ? float.NaN : ((fromToFlag == 1) ? absValue : -absValue);
-    }
-    #endregion
 
 
   }

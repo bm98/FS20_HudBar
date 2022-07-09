@@ -43,7 +43,7 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     /// <param name="proto"></param>
     public V_Steps( Label proto)
-    : base( proto, false )
+    : base( proto )
     {
       Font = new Font( "Wingdings", proto.Font.Size );
       UseCompatibleTextRendering = true; // MUST for WingDings else it is not showing all chars properly...

@@ -44,7 +44,7 @@ namespace FS20_HudBar.Bar.Items
     private ToolTip_Base _toolTip = new ToolTip_Base( );
 
 
-    public DI_Atc_APT( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Atc_APT( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       _metar.MetarDataEvent += _metar_MetarDataEvent;
       LabelID = LItem;
@@ -54,11 +54,11 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.ATC_APT_DIST;
-      _value2 = new V_Dist( value2Proto, showUnits );
+      _value2 = new V_Dist( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       item = VItem.ATC_APT_ALT;
-      _value3 = new V_Alt( value2Proto, showUnits );
+      _value3 = new V_Alt( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
       _label.ButtonClicked += _label_ButtonClicked;

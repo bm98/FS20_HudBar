@@ -37,9 +37,10 @@ namespace FS20_HudBar.Bar.Items
 
     // align size with ABRK to make it look pleasant.. (m_alignWidth chars, same as other AP values)
     private const string c_active = "ACTIVE   ";
-    private const string c_armed  = "ARMED    ";
-    private const string c_off    = "OFF      ";
-    private const string c_toga   = "  toga   ";
+    private readonly string c_activeM = $"ACTIVE  {GUI_Fonts.ManagedTag}";
+    private const string c_armed = "ARMED    ";
+    private const string c_off = "OFF      ";
+    private const string c_toga = "  toga   ";
 
 
     public DI_Ap_AThrottle( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
@@ -66,9 +67,9 @@ namespace FS20_HudBar.Bar.Items
 
     private void _value1_Click( object sender, EventArgs e )
     {
-      if ( !SC.SimConnectClient.Instance.IsConnected ) return;
+      if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      if ( SC.SimConnectClient.Instance.AP_G1000Module.ATHR_active || SC.SimConnectClient.Instance.AP_G1000Module.ATHRmanaged_active ) {
+      if (SC.SimConnectClient.Instance.AP_G1000Module.ATHR_active || SC.SimConnectClient.Instance.AP_G1000Module.ATHRmanaged_active) {
         SC.SimConnectClient.Instance.AP_G1000Module.ATHR_disconnect( );
       }
       else {
@@ -78,7 +79,7 @@ namespace FS20_HudBar.Bar.Items
 
     private void _value2_Click( object sender, EventArgs e )
     {
-      if ( !SC.SimConnectClient.Instance.IsConnected ) return;
+      if (!SC.SimConnectClient.Instance.IsConnected) return;
 
       SC.SimConnectClient.Instance.AP_G1000Module.TOGA_toggle( );
     }
@@ -89,16 +90,18 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     public void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        if ( SC.SimConnectClient.Instance.AP_G1000Module.ATHR_active ) {
-          _value1.ItemForeColor = cOK;
-          _value1.Text = c_active;
+      if (this.Visible) {
+        if (SC.SimConnectClient.Instance.AP_G1000Module.ATHR_active) {
+          if (SC.SimConnectClient.Instance.AP_G1000Module.ATHRmanaged_active) {
+            _value1.ItemForeColor = cInfo;
+            _value1.Text = c_activeM;
+          }
+          else {
+            _value1.ItemForeColor = cOK;
+            _value1.Text = c_active;
+          }
         }
-        else if ( SC.SimConnectClient.Instance.AP_G1000Module.ATHRmanaged_active ) {
-          _value1.ItemForeColor = cOK;
-          _value1.Text = c_active;
-        }
-        else if ( SC.SimConnectClient.Instance.AP_G1000Module.ATHR_armed ) {
+        else if (SC.SimConnectClient.Instance.AP_G1000Module.ATHR_armed) {
           _value1.ItemForeColor = cSet;
           _value1.Text = c_armed;
         }

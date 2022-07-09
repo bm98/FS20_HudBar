@@ -37,20 +37,20 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value2;
     private readonly V_Base _value3;
 
-    public DI_Atc_RWY( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Atc_RWY( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       var item = VItem.ATC_RWY_LON;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_AptDist( value2Proto, showUnits );
+      _value1 = new V_AptDist( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.ATC_RWY_LAT;
-      _value2 = new V_LatDist( value2Proto, showUnits );
+      _value2 = new V_LatDist( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       item = VItem.ATC_RWY_ALT;
-      _value3 = new V_Alt( value2Proto, showUnits );
+      _value3 = new V_Alt( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer

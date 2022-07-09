@@ -61,6 +61,11 @@ namespace FS20_HudBar.Bar.Items
 
     private void _label_MouseWheel( object sender, MouseEventArgs e )
     {
+      if (!SC.SimConnectClient.Instance.IsConnected) return;
+
+      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
+      _label.ActivateForm( e );
+
       if ( e.Delta > 0 ) {
         // Wheel Up - nose down
         SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct -= c_incPerWheel;

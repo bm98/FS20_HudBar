@@ -227,6 +227,20 @@ namespace FS20_HudBar
     }
 
     [UserScopedSetting( )]
+    [DefaultSettingValue( "False" )]
+    public bool Altitude_Metric {
+      get { return (bool)this["Altitude_Metric"]; }
+      set { this["Altitude_Metric"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "False" )]
+    public bool Distance_Metric {
+      get { return (bool)this["Distance_Metric"]; }
+      set { this["Distance_Metric"] = value; }
+    }
+
+    [UserScopedSetting( )]
     [DefaultSettingValue( "" )]
     public string HKShowHide {
       get { return (string)this["HKShowHide"]; }

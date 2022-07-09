@@ -76,6 +76,9 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( !SC.SimConnectClient.Instance.IsConnected ) return;
 
+      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
+      _value1.ActivateForm( e );
+
       if ( e.Delta > 0 && SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level < AutoBrakeLevel.HIGH_4 ) {
         SC.SimConnectClient.Instance.AP_G1000Module.ABRK_set( CmdMode.Inc );
       }

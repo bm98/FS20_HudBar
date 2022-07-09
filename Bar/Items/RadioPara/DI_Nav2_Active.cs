@@ -37,7 +37,7 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value2;
     private readonly V_Base _value3;
 
-    public DI_Nav2_Active( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Nav2_Active( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       var item = VItem.NAV2_ID;
@@ -46,11 +46,11 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.NAV2_BRG;
-      _value2 = new V_Deg( value2Proto, showUnits );
+      _value2 = new V_Deg( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       item = VItem.NAV2_DST;
-      _value3 = new V_DmeDist( value2Proto, showUnits );
+      _value3 = new V_DmeDist( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
       m_observerID = SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );
@@ -83,7 +83,7 @@ namespace FS20_HudBar.Bar.Items
             toFromFlag = SC.SimConnectClient.Instance.NavModule.Nav2_Signal ? toFromFlag : 0; // no signal -> direction Off
 
             _value3.Value =
-                  V_DmeDist.DmeDistance( SC.SimConnectClient.Instance.NavModule.Nav2_DMEdist_nm, toFromFlag );
+                  Conversions.DmeDistance( SC.SimConnectClient.Instance.NavModule.Nav2_DMEdist_nm, toFromFlag );
           }
           else {
             _value3.Value = null;

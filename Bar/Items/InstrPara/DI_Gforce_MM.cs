@@ -35,7 +35,7 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    public DI_Gforce_MM( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Gforce_MM( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       TText = "G Force min/max\nClick to reset";
 
@@ -43,11 +43,11 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.GFORCE_Min;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += DI_Gforce_MM_ButtonClicked;
-      _value1 = new V_GForce( value2Proto, showUnits ) { ItemForeColor = cInfo };
+      _value1 = new V_GForce( value2Proto ) { ItemForeColor = cInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.GFORCE_Max;
-      _value2 = new V_GForce( value2Proto, showUnits ) { ItemForeColor = cLabel };
+      _value2 = new V_GForce( value2Proto ) { ItemForeColor = cLabel };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );

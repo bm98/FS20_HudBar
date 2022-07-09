@@ -64,6 +64,11 @@ namespace FS20_HudBar.Triggers.Base
     public abstract void AddProc( EventProc callback );
 
     /// <summary>
+    /// Clears the Event Proc Stack
+    /// </summary>
+    public abstract void ClearProcs( );
+
+    /// <summary>
     /// Calls to register for dataupdates
     ///   To be implemented in the derived class
     /// </summary>

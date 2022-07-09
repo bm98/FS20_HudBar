@@ -36,7 +36,7 @@ namespace FS20_HudBar.Bar.Items
     private readonly A_BiScale _scale;
     private readonly V_Base _value2;
 
-    public DI_VarioGraph( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_VarioGraph( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       var item = VItem.VARIO_ANI;
@@ -46,7 +46,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _scale ); vCat.AddLbl( item, _scale );
 
       item = VItem.VARIO_ANI_AVG;
-      _value2 = new V_VSpeed_mPsPM( value2Proto, showUnits ) { ItemForeColor = cAvg };
+      _value2 = new V_VSpeed_mPsPM( value2Proto ) { ItemForeColor = cAvg };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );

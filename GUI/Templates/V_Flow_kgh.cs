@@ -15,8 +15,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Flow_kgh( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Flow_kgh( Label proto )
+    : base( proto )
     {
       m_unit = "kgh";
       m_default = DefaultString( "___._ " );

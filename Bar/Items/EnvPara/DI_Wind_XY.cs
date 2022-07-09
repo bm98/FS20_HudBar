@@ -35,17 +35,17 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    public DI_Wind_XY( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Wind_XY( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       // Wind XY
       var item = VItem.WIND_LAT;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Wind_X( value2Proto, showUnits );
+      _value1 = new V_Wind_X( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.WIND_LON;
-      _value2 = new V_Wind_HT( value2Proto, showUnits );
+      _value2 = new V_Wind_HT( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );

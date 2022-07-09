@@ -9,6 +9,10 @@ using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.GUI.Templates
 {
+  /// <summary>
+  /// Altitude Value Formatter
+  ///  responds to Altitude_metric  Flag
+  /// </summary>
   class V_Alt : V_Base
   {
 
@@ -16,14 +20,18 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto">The proto Label to derive from</param>
-    /// <param name="showUnit">Wether or not to show units</param>
     /// <param name="width">Width in chars (right bound) 0 for no padding</param>
-    public V_Alt( Label proto, bool showUnit, int width = 0 )
-    : base( proto, showUnit, width )
+    public V_Alt( Label proto, int width = 0 )
+    : base( proto, width )
     {
       m_unit = "ft";
       m_default = DefaultString( "+__'___ " + " " ); // -nn,nnn + blank
       Text = UnitString( RightAlign( m_default ) );
+    }
+
+    protected override void SetAltitude_Metric( )
+    {
+      m_unit = _altitude_metric ? "m" : "ft";
     }
 
 
@@ -39,7 +47,8 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( RightAlign( m_default ) );
         }
         else {
-          this.Text = UnitString( RightAlign( $"{value,7:##,##0} {_cManaged}" ) ); // 9 chars: sign + 5 digits + 1000 separator, add a blank to aling better with ° values
+          float uValue = _altitude_metric ? Conversions.M_From_Ft( (float)value ) : (float)value;
+          this.Text = UnitString( RightAlign( $"{uValue,7:##,##0} {_cManaged}" ) ); // 9 chars: sign + 5 digits + 1000 separator, add a blank to aling better with ° values
         }
       }
     }

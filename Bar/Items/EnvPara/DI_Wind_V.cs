@@ -36,14 +36,14 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly A_WindDot _wind;
 
-    public DI_Wind_V( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Wind_V( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       // Wind Direction, Speed
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
 
       var item = VItem.VWIND;
-      _value1 = new V_Speed( value2Proto, showUnits );
+      _value1 = new V_Speed( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.VWIND_ANI;

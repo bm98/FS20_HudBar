@@ -18,8 +18,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Xtk( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Xtk( Label proto )
+    : base( proto )
     {
       m_unit = "nm";
       m_default = DefaultString( "__.__◄" ); // direction sign NN.NN   3.2 format
@@ -29,6 +29,11 @@ namespace FS20_HudBar.GUI.Templates
     private string c_left="◄";
     private string c_right="►";
     private string c_flat = " ";
+
+    protected override void SetDistance_Metric( )
+    {
+      m_unit = _distance_metric ? "km" : "nm";
+    }
 
     /// <summary>
     /// Set the value of the Control
@@ -42,14 +47,15 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
+          float uValue = _distance_metric ? Conversions.Km_From_Nm( (float)value ) : (float)value;
           if ( value <= -0.01 ) {
-            this.Text = UnitString( $"{-value,5:#0.00}{c_left}" );
+            this.Text = UnitString( $"{-uValue,5:#0.00}{c_left}" );
           }
           else if ( value >= 0.01 ) {
-            this.Text = UnitString( $"{value,5:#0.00}{c_right}" );
+            this.Text = UnitString( $"{uValue,5:#0.00}{c_right}" );
           }
           else {
-            this.Text = UnitString( $"{value,5:#0.00}{c_flat}" );
+            this.Text = UnitString( $"{uValue,5:#0.00}{c_flat}" );
           }
         }
       }

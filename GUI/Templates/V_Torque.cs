@@ -15,8 +15,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Torque( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Torque( Label proto )
+    : base( proto )
     {
       m_unit = "ftlb";
       m_default = DefaultString( "____ " );

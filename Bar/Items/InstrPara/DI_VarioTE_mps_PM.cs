@@ -36,17 +36,17 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    public DI_VarioTE_mps_PM( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_VarioTE_mps_PM( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       var item = VItem.VARIO_MPS;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += DI_Vario_ButtonClicked;
-      _value1 = new V_VSpeed_mPsPM( valueProto, showUnits );
+      _value1 = new V_VSpeed_mPsPM( valueProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.VARIO_MPS_AVG;
-      _value2 = new V_VSpeed_mPsPM( value2Proto, showUnits ) { ItemForeColor = cAvg };
+      _value2 = new V_VSpeed_mPsPM( value2Proto ) { ItemForeColor = cAvg };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );

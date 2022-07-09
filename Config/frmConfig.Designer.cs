@@ -31,7 +31,6 @@ namespace FS20_HudBar.Config
       this.components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmConfig));
       this.tlp = new System.Windows.Forms.TableLayoutPanel();
-      this.chkKeyboard = new System.Windows.Forms.CheckBox();
       this.flp1 = new System.Windows.Forms.FlowLayoutPanel();
       this.checkBox5 = new System.Windows.Forms.CheckBox();
       this.flp2 = new System.Windows.Forms.FlowLayoutPanel();
@@ -73,7 +72,6 @@ namespace FS20_HudBar.Config
       this.cbxCondP3 = new System.Windows.Forms.ComboBox();
       this.cbxCondP4 = new System.Windows.Forms.ComboBox();
       this.cbxCondP5 = new System.Windows.Forms.ComboBox();
-      this.cbxUnits = new System.Windows.Forms.CheckBox();
       this.cbxTrans1 = new System.Windows.Forms.ComboBox();
       this.cbxTrans2 = new System.Windows.Forms.ComboBox();
       this.cbxTrans3 = new System.Windows.Forms.ComboBox();
@@ -88,7 +86,6 @@ namespace FS20_HudBar.Config
       this.txHkProfile2 = new System.Windows.Forms.TextBox();
       this.txHkProfile3 = new System.Windows.Forms.TextBox();
       this.txHkProfile4 = new System.Windows.Forms.TextBox();
-      this.chkInGame = new System.Windows.Forms.CheckBox();
       this.cbxFlightRecorder = new System.Windows.Forms.CheckBox();
       this.btCancel = new System.Windows.Forms.Button();
       this.btAccept = new System.Windows.Forms.Button();
@@ -97,9 +94,11 @@ namespace FS20_HudBar.Config
       this.btShelfFolder = new System.Windows.Forms.Button();
       this.btDumpConfigs = new System.Windows.Forms.Button();
       this.btFonts = new System.Windows.Forms.Button();
+      this.chkInGame = new System.Windows.Forms.CheckBox();
+      this.chkKeyboard = new System.Windows.Forms.CheckBox();
+      this.txHkCamera = new System.Windows.Forms.TextBox();
       this.FBD = new System.Windows.Forms.FolderBrowserDialog();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
-      this.txHkCamera = new System.Windows.Forms.TextBox();
       this.tlp.SuspendLayout();
       this.flp1.SuspendLayout();
       this.flp2.SuspendLayout();
@@ -149,7 +148,6 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.cbxCondP3, 2, 7);
       this.tlp.Controls.Add(this.cbxCondP4, 3, 7);
       this.tlp.Controls.Add(this.cbxCondP5, 4, 7);
-      this.tlp.Controls.Add(this.cbxUnits, 0, 9);
       this.tlp.Controls.Add(this.cbxTrans1, 0, 8);
       this.tlp.Controls.Add(this.cbxTrans2, 1, 8);
       this.tlp.Controls.Add(this.cbxTrans3, 2, 8);
@@ -192,19 +190,6 @@ namespace FS20_HudBar.Config
       this.tlp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
       this.tlp.Size = new System.Drawing.Size(934, 766);
       this.tlp.TabIndex = 1;
-      // 
-      // chkKeyboard
-      // 
-      this.chkKeyboard.AutoSize = true;
-      this.chkKeyboard.BackColor = System.Drawing.Color.Honeydew;
-      this.chkKeyboard.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.chkKeyboard.Location = new System.Drawing.Point(783, 579);
-      this.chkKeyboard.Name = "chkKeyboard";
-      this.chkKeyboard.Size = new System.Drawing.Size(148, 24);
-      this.chkKeyboard.TabIndex = 30;
-      this.chkKeyboard.Text = "Keyboard Hotkeys";
-      this.chkKeyboard.UseVisualStyleBackColor = false;
-      this.chkKeyboard.CheckedChanged += new System.EventHandler(this.chkKeyboard_CheckedChanged);
       // 
       // flp1
       // 
@@ -689,17 +674,6 @@ namespace FS20_HudBar.Config
       this.cbxCondP5.Size = new System.Drawing.Size(150, 23);
       this.cbxCondP5.TabIndex = 23;
       // 
-      // cbxUnits
-      // 
-      this.cbxUnits.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.cbxUnits.AutoSize = true;
-      this.cbxUnits.Location = new System.Drawing.Point(3, 704);
-      this.cbxUnits.Name = "cbxUnits";
-      this.cbxUnits.Size = new System.Drawing.Size(85, 19);
-      this.cbxUnits.TabIndex = 8;
-      this.cbxUnits.Text = "Show Units";
-      this.cbxUnits.UseVisualStyleBackColor = true;
-      // 
       // cbxTrans1
       // 
       this.cbxTrans1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -767,7 +741,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxVoice.Location = new System.Drawing.Point(159, 702);
+      this.cbxVoice.Location = new System.Drawing.Point(159, 700);
       this.cbxVoice.Name = "cbxVoice";
       this.cbxVoice.Size = new System.Drawing.Size(150, 23);
       this.cbxVoice.TabIndex = 25;
@@ -806,7 +780,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxASave.Location = new System.Drawing.Point(315, 702);
+      this.cbxASave.Location = new System.Drawing.Point(315, 700);
       this.cbxASave.Name = "cbxASave";
       this.cbxASave.Size = new System.Drawing.Size(150, 23);
       this.cbxASave.TabIndex = 29;
@@ -870,18 +844,6 @@ namespace FS20_HudBar.Config
       this.txHkProfile4.Size = new System.Drawing.Size(150, 22);
       this.txHkProfile4.TabIndex = 41;
       this.txHkProfile4.DoubleClick += new System.EventHandler(this.txHkProfile4_DoubleClick);
-      // 
-      // chkInGame
-      // 
-      this.chkInGame.AutoSize = true;
-      this.chkInGame.BackColor = System.Drawing.Color.Azure;
-      this.chkInGame.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.chkInGame.Location = new System.Drawing.Point(783, 609);
-      this.chkInGame.Name = "chkInGame";
-      this.chkInGame.Size = new System.Drawing.Size(148, 24);
-      this.chkInGame.TabIndex = 31;
-      this.chkInGame.Text = "MSFS Hotkeys";
-      this.chkInGame.UseVisualStyleBackColor = false;
       // 
       // cbxFlightRecorder
       // 
@@ -977,16 +939,30 @@ namespace FS20_HudBar.Config
       this.btFonts.UseVisualStyleBackColor = true;
       this.btFonts.Click += new System.EventHandler(this.btFonts_Click);
       // 
-      // FBD
+      // chkInGame
       // 
-      this.FBD.Description = "Select Flight Bag Folder";
-      this.FBD.ShowNewFolderButton = false;
+      this.chkInGame.AutoSize = true;
+      this.chkInGame.BackColor = System.Drawing.Color.Azure;
+      this.chkInGame.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.chkInGame.Location = new System.Drawing.Point(783, 609);
+      this.chkInGame.Name = "chkInGame";
+      this.chkInGame.Size = new System.Drawing.Size(148, 24);
+      this.chkInGame.TabIndex = 31;
+      this.chkInGame.Text = "MSFS Hotkeys";
+      this.chkInGame.UseVisualStyleBackColor = false;
       // 
-      // timer1
+      // chkKeyboard
       // 
-      this.timer1.Enabled = true;
-      this.timer1.Interval = 5000;
-      this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+      this.chkKeyboard.AutoSize = true;
+      this.chkKeyboard.BackColor = System.Drawing.Color.Honeydew;
+      this.chkKeyboard.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.chkKeyboard.Location = new System.Drawing.Point(783, 579);
+      this.chkKeyboard.Name = "chkKeyboard";
+      this.chkKeyboard.Size = new System.Drawing.Size(148, 24);
+      this.chkKeyboard.TabIndex = 30;
+      this.chkKeyboard.Text = "Keyboard Hotkeys";
+      this.chkKeyboard.UseVisualStyleBackColor = false;
+      this.chkKeyboard.CheckedChanged += new System.EventHandler(this.chkKeyboard_CheckedChanged);
       // 
       // txHkCamera
       // 
@@ -999,6 +975,17 @@ namespace FS20_HudBar.Config
       this.txHkCamera.Size = new System.Drawing.Size(148, 22);
       this.txHkCamera.TabIndex = 35;
       this.txHkCamera.DoubleClick += new System.EventHandler(this.txHkCamera_DoubleClick);
+      // 
+      // FBD
+      // 
+      this.FBD.Description = "Select Flight Bag Folder";
+      this.FBD.ShowNewFolderButton = false;
+      // 
+      // timer1
+      // 
+      this.timer1.Enabled = true;
+      this.timer1.Interval = 5000;
+      this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
       // 
       // frmConfig
       // 
@@ -1042,7 +1029,6 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.TableLayoutPanel tlp;
     private System.Windows.Forms.Button btCancel;
     private System.Windows.Forms.Button btAccept;
-    private System.Windows.Forms.CheckBox cbxUnits;
     private System.Windows.Forms.TextBox txP5;
     private System.Windows.Forms.TextBox txP4;
     private System.Windows.Forms.TextBox txP3;

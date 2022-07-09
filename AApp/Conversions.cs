@@ -12,7 +12,10 @@ namespace FS20_HudBar
   class Conversions
   {
     private const double c_mPNm = 1852.0;
-    private const double c_nmPm = 1.0/c_mPNm;
+    private const double c_nmPm = 1.0 / c_mPNm;
+
+    private const double c_kmhPkt = 1.852;
+    private const double c_ktPkmh = 1.0 / c_kmhPkt;
 
     private const double c_mPFt = 0.3048;
     private const double c_ftPm = 1.0 / c_mPFt;
@@ -20,7 +23,7 @@ namespace FS20_HudBar
     private const double c_lbsPkg = 2.204622621848776;
     private const double c_kgPlbs = 1.0 / c_lbsPkg;
 
-    private const double c_degF = 9f/5f;
+    private const double c_degF = 9f / 5f;
 
     /// <summary>
     /// Kilograms from Pounds
@@ -29,7 +32,7 @@ namespace FS20_HudBar
     /// <returns>Pound</returns>
     public static float Lbs_From_Kg( double kg )
     {
-      return (float)( kg * c_lbsPkg );
+      return (float)(kg * c_lbsPkg);
     }
 
     /// <summary>
@@ -39,7 +42,7 @@ namespace FS20_HudBar
     /// <returns>Kilograms</returns>
     public static float Kg_From_Lbs( double lbs )
     {
-      return (float)( lbs * c_kgPlbs );
+      return (float)(lbs * c_kgPlbs);
     }
 
     /// <summary>
@@ -49,7 +52,7 @@ namespace FS20_HudBar
     /// <returns>Nautical Miles</returns>
     public static float Nm_From_M( double meter )
     {
-      return (float)( meter * c_nmPm );
+      return (float)(meter * c_nmPm);
     }
     /// <summary>
     /// Meters from Nautical Miles
@@ -58,7 +61,17 @@ namespace FS20_HudBar
     /// <returns>Meter</returns>
     public static float M_From_Nm( double nm )
     {
-      return (float)( nm * c_mPNm );
+      return (float)(nm * c_mPNm);
+    }
+
+    /// <summary>
+    /// Kilometers from Nautical Miles
+    /// </summary>
+    /// <param name="nm">Nautical Miles</param>
+    /// <returns>Kilometer</returns>
+    public static float Km_From_Nm( double nm )
+    {
+      return (float)(nm * c_mPNm / 1000.0);
     }
 
     /// <summary>
@@ -68,7 +81,7 @@ namespace FS20_HudBar
     /// <returns>Foot</returns>
     public static float Ft_From_M( double meter )
     {
-      return (float)( meter * c_ftPm );
+      return (float)(meter * c_ftPm);
     }
     /// <summary>
     /// Meters from Foot
@@ -77,7 +90,7 @@ namespace FS20_HudBar
     /// <returns>Meter</returns>
     public static float M_From_Ft( double ft )
     {
-      return (float)( ft * c_mPFt );
+      return (float)(ft * c_mPFt);
     }
 
     /// <summary>
@@ -87,7 +100,17 @@ namespace FS20_HudBar
     /// <returns>The meter/second value</returns>
     public static float Mps_From_Ftpm( float fpm )
     {
-      return (float)( fpm * c_mPFt / 60.0 );
+      return (float)(fpm * c_mPFt / 60.0);
+    }
+
+    /// <summary>
+    /// Returns m/s from kt
+    /// </summary>
+    /// <param name="kt">Knots value</param>
+    /// <returns>Meter / second</returns>
+    public static float Mps_From_Kt( float kt )
+    {
+      return (float)(kt * c_mPNm / 3600f);
     }
 
     /// <summary>
@@ -97,8 +120,30 @@ namespace FS20_HudBar
     /// <returns>Converted Knots value</returns>
     public static float Kt_From_Mps( float mps )
     {
-      return (float)( mps * 3600f * c_nmPm );
+      return (float)(mps * 3600f * c_nmPm);
     }
+
+    /// <summary>
+    /// Returns kmh from kt
+    /// </summary>
+    /// <param name="kt">Knots value</param>
+    /// <returns>Kilometer per hour</returns>
+    public static float Kmh_From_Kt( float kt )
+    {
+      return (float)(kt * c_kmhPkt);
+    }
+
+    /// <summary>
+    /// Returns kt from kmh
+    /// </summary>
+    /// <param name="kmh">Knots value</param>
+    /// <returns>Kilometer per hour</returns>
+    public static float Kt_From_Kmh( float kmh )
+    {
+      return (float)(kmh * c_ktPkmh);
+    }
+
+
 
     /// <summary>
     /// Returns DegF from DegC ((DEG°C * 9/5) + 32 = 32°F)
@@ -107,7 +152,7 @@ namespace FS20_HudBar
     /// <returns>Temp in deg F</returns>
     public static float DegF_From_DegC( double degC )
     {
-      return (float)( ( degC * c_degF ) + 32.0f );
+      return (float)((degC * c_degF) + 32.0f);
     }
 
     /// <summary>
@@ -117,11 +162,11 @@ namespace FS20_HudBar
     /// <returns>The ICAO Apt part</returns>
     public static string AptFromATCApt( string atcApt )
     {
-      if ( string.IsNullOrEmpty( atcApt ) ) return AirportMgr.AirportNA_Icao; // seen a null here...
+      if (string.IsNullOrEmpty( atcApt )) return AirportMgr.AirportNA_Icao; // seen a null here...
 
       // arrives as TT:AIRPORTLR.ICAO.name
-      string[] e = atcApt.Split ( new char[]{'.'});
-      if ( e.Length > 1 )
+      string[] e = atcApt.Split( new char[] { '.' } );
+      if (e.Length > 1)
         return e[1];
 
       return AirportMgr.AirportNA_Icao;
@@ -135,8 +180,26 @@ namespace FS20_HudBar
     /// <returns>The rounded number</returns>
     public static float Round( float number, int quant )
     {
-      return (float)( Math.Round( number / quant ) * quant );
+      return (float)(Math.Round( number / quant ) * quant);
     }
+
+    #region STATIC DME Dist Sign
+
+    /// <summary>
+    /// Returns a signed distance for the DME readout Control V_DistDme 
+    /// flag==1 => To   + signed
+    /// flag==2 => From - signed
+    /// flag==0 => Off  NaN
+    /// 
+    /// </summary>
+    /// <param name="absValue">DME Input from Sim</param>
+    /// <param name="fromToFlag">FromTo Flag from Sim</param>
+    /// <returns></returns>
+    public static float DmeDistance( float absValue, int fromToFlag )
+    {
+      return (fromToFlag == 0) ? float.NaN : ((fromToFlag == 1) ? absValue : -absValue);
+    }
+    #endregion
 
 
 

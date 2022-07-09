@@ -78,5 +78,16 @@ namespace FS20_HudBar.GUI
     /// </summary>
     bool ShowUnit { get; set; }
 
+    /// <summary>
+    /// Set true to show Altitude in meter rather than ft
+    /// </summary>
+    bool Altitude_metric { get; set; }
+
+    /// <summary>
+    /// Set true to show Distance in km rather than nm
+    /// </summary>
+    bool Distance_metric { get; set; }
+
+
   }
 }

@@ -15,8 +15,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Mach( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Mach( Label proto )
+    : base( proto )
     {
       m_unit = "M";
       m_default = DefaultString( "_.__ " + " " ); // N.NN 

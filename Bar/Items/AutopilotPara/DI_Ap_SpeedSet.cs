@@ -35,7 +35,7 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    public DI_Ap_SpeedSet( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Ap_SpeedSet( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       TText = "IAS Hold\nClick to toggle";
 
@@ -44,11 +44,11 @@ namespace FS20_HudBar.Bar.Items
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
 
       item = VItem.AP_SPDset;
-      _value1 = new V_Speed( value2Proto, showUnits, m_alignWidth ) { ItemForeColor = cSet, ItemBackColor = cValBG };
+      _value1 = new V_Speed( value2Proto, m_alignWidth ) { ItemForeColor = cSet, ItemBackColor = cValBG };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.AP_SPDset_man;
-      _value2 = new V_Speed( value2Proto, showUnits, m_alignWidth ) { ItemForeColor = cInfo, Visible = false };
+      _value2 = new V_Speed( value2Proto, m_alignWidth ) { ItemForeColor = cInfo, Visible = false };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       _label.ButtonClicked += _label_ButtonClicked;
@@ -63,6 +63,9 @@ namespace FS20_HudBar.Bar.Items
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
+
+      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
+      _value1.ActivateForm( e );
 
       if (e.Delta > 0) {
         // Up

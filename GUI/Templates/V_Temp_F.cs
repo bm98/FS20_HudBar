@@ -18,8 +18,8 @@ namespace FS20_HudBar.GUI
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Temp_F( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_Temp_F( Label proto )
+    : base( proto )
     {
       m_unit = "°F";
       m_default = DefaultString( "+____ " );

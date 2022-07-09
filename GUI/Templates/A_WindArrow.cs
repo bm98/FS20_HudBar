@@ -76,6 +76,11 @@ namespace FS20_HudBar.GUI.Templates
     }
 
 
+    // Implement IValue Metric IF (but it is not used)
+    public bool Altitude_metric { get => false; set => _ = value; }
+    public bool Speed_metric { get => false; set => _ = value; }
+    public bool Distance_metric { get => false; set => _ = value; }
+
     /// <summary>
     /// cTor: Create a UserControl based on a prototype control
     /// </summary>

@@ -39,7 +39,7 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    public DI_M_TimDist2( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_M_TimDist2( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       TText = "Click to enable Meter 2\nClick twice within 2 sec. to switch it off";
 
@@ -50,7 +50,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.M_Dist2;
-      _value2 = new V_Dist( value2Proto, showUnits );
+      _value2 = new V_Dist( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       _label.ButtonClicked += _label_ButtonClicked;

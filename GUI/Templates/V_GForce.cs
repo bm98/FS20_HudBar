@@ -15,8 +15,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_GForce( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_GForce( Label proto )
+    : base( proto )
     {
       m_unit = "g";
       m_default = DefaultString( "+_._ " );

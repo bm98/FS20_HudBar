@@ -174,6 +174,7 @@ namespace FS20_HudBar.Bar.Items
     DEPARR,       // Departure Arrival Apt
 
     VWIND,       // Vertical WindComponent
+    COMPASS,     // Mag Compass
   }
 
 
@@ -413,6 +414,8 @@ namespace FS20_HudBar.Bar.Items
     GFORCE_Cur,   // GForce Current
     GFORCE_Min,   // GForce Minimum
     GFORCE_Max,   // GForce Maximum
+    COMPASS,      // Mag Compass
+    COMPASS_ANI,  // Mag Compass Arrow
 
     // AVIONICS NAV
     NAV1_ID,      // NAV1 ID

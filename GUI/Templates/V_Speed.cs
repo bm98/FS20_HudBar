@@ -23,13 +23,18 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_Speed( Label proto, bool showUnit, int width = 0 )
-    : base( proto, showUnit, width )
+    public V_Speed( Label proto, int width = 0 )
+    : base( proto, width )
     {
       m_unit = "kt";
       _machMode = false;
       m_default = DefaultString( "____ " + " " ); // NNNN + blank
       Text = UnitString( RightAlign( m_default ) );
+    }
+
+    protected override void SetDistance_Metric( )
+    {
+      m_unit = _distance_metric ? "km/h" : "kt";
     }
 
     /// <summary>
@@ -39,7 +44,7 @@ namespace FS20_HudBar.GUI.Templates
       get => _machMode;
       set {
         _machMode = value;
-        m_unit = _machMode ? "M " : "kt";
+        m_unit = _machMode ? "M " : _distance_metric ? "km/h" : "kt"; ;
       }
     }
     /// <summary>
@@ -59,7 +64,8 @@ namespace FS20_HudBar.GUI.Templates
           }
           else {
             // kts Mode
-            this.Text = UnitString( RightAlign( $"{value,4:###0} {_cManaged}" ) ); // positive only 4 digits, add a blank for alignment with °
+            float uValue = _distance_metric ? Conversions.Kmh_From_Kt( (float)value ) : (float)value;
+            this.Text = UnitString( RightAlign( $"{uValue,4:###0} {_cManaged}" ) ); // positive only 4 digits, add a blank for alignment with °
           }
         }
       }

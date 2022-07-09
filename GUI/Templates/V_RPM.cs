@@ -15,8 +15,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_RPM( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_RPM( Label proto )
+    : base( proto )
     {
       m_unit = "rpm";
       m_default = DefaultString( "_____ " );

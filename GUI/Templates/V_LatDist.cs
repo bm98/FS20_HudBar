@@ -18,44 +18,51 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_LatDist( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_LatDist( Label proto )
+    : base( proto )
     {
       m_unit = "ft";
       m_default = DefaultString( "___►" );
       Text = UnitString( m_default );
     }
 
-    private string c_left="◄";
-    private string c_right="►";
+    private string c_left = "◄";
+    private string c_right = "►";
     private string c_flat = " ";
+
+    protected override void SetDistance_Metric( )
+    {
+      m_unit = _distance_metric ? "m" : "ft";
+    }
 
     /// <summary>
     /// Set the value of the Control
     /// </summary>
     override public float? Value {
       set {
-        if ( value == null ) {
+        if (value == null) {
           this.Text = UnitString( m_default );
         }
-        else if ( float.IsNaN( (float)value ) ) {
-          this.Text = UnitString( m_default );
-        }
-        else if ( Math.Abs((float)value) >=1000.0f ) {
+        else if (float.IsNaN( (float)value )) {
           this.Text = UnitString( m_default );
         }
         else {
-          if ( value <= -0.01 ) {
-            this.Text = UnitString( $"{-value,3:##0}{c_right}" );
-          }
-          else if ( value >= 0.01 ) {
-            this.Text = UnitString( $"{value,3:##0}{c_left}" );
+          float uValue = _distance_metric ? Conversions.M_From_Ft( (float)value ) : (float)value;
+          if (Math.Abs( uValue ) >= 1000.0f) {
+            this.Text = UnitString( m_default );
           }
           else {
-            this.Text = UnitString( $"{value,3:##0}{c_flat}" );
+            if (value <= -0.01) {
+              this.Text = UnitString( $"{-uValue,3:##0}{c_right}" );
+            }
+            else if (value >= 0.01) {
+              this.Text = UnitString( $"{uValue,3:##0}{c_left}" );
+            }
+            else {
+              this.Text = UnitString( $"{uValue,3:##0}{c_flat}" );
+            }
           }
         }
-
       }
     }
 

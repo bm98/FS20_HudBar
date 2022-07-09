@@ -18,8 +18,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_AptDist( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_AptDist( Label proto )
+    : base( proto )
     {
       m_unit = "nm";
       m_default = DefaultString( "__._ " );
@@ -29,6 +29,11 @@ namespace FS20_HudBar.GUI.Templates
     private string c_from = "↓";
     private string c_to = "↑";
     private string c_flat = " ";
+
+    protected override void SetDistance_Metric( )
+    {
+      m_unit = _distance_metric ? "km" : "nm";
+    }
 
     /// <summary>
     /// Set the value of the Control
@@ -47,14 +52,15 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( "> 999 " );
         }
         else {
-          if ( value < 0 ) {
-            this.Text = UnitString( $"{-value,4:#0.0}{c_to}" );
+          float uValue = _distance_metric ? Conversions.Km_From_Nm( (float)value ) : (float)value;
+          if (uValue < 0 ) {
+            this.Text = UnitString( $"{-uValue,4:#0.0}{c_to}" );
           }
-          else if ( value > 0 ) {
-            this.Text = UnitString( $"{value,4:#0.0}{c_from}" );
+          else if (uValue > 0 ) {
+            this.Text = UnitString( $"{uValue,4:#0.0}{c_from}" );
           }
           else {
-            this.Text = UnitString( $"{value,4:#0.0}{c_flat}" );
+            this.Text = UnitString( $"{uValue,4:#0.0}{c_flat}" );
           }
         }
       }

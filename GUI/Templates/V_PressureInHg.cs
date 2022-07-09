@@ -15,8 +15,8 @@ namespace FS20_HudBar.GUI.Templates
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_PressureInHg( Label proto, bool showUnit )
-    : base( proto, showUnit )
+    public V_PressureInHg( Label proto )
+    : base( proto )
     {
       m_unit = "inHg";
       m_default = DefaultString( "__.__ " );

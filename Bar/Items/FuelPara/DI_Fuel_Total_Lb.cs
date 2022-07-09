@@ -35,12 +35,12 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-    public DI_Fuel_Total_Lb( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto, bool showUnits )
+    public DI_Fuel_Total_Lb( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
       var item = VItem.FUEL_TOT_lb;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Pounds( value2Proto, showUnits );
+      _value1 = new V_Pounds( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.FUEL_REACH_lb;
