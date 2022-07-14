@@ -13,8 +13,10 @@ namespace FS20_HudBar.Config
   /// </summary>
   public enum Hotkeys
   {
-    Show_Hide=0,
-    Profile_1, Profile_2, Profile_3, Profile_4, Profile_5,
+    // must start with enum=0 (not what enums are for - but then, it makes things easier...)
+    Profile_1=0, Profile_2, Profile_3, Profile_4, Profile_5,
+    Profile_6, Profile_7, Profile_8, Profile_9, Profile_10,
+    Show_Hide,
     FlightBag,
     Camera
   }
@@ -40,15 +42,31 @@ namespace FS20_HudBar.Config
 
     /// <summary>
     /// Add a hotkey from a string
+    /// Remove it when existing and the string is empty
+    /// Replace if it exists
     /// </summary>
     /// <param name="hotkey">The hotkey item</param>
     /// <param name="hkString">The hotkey string</param>
-    public void AddHotkeyString(Hotkeys hotkey, string hkString )
+    public void MaintainHotkeyString(Hotkeys hotkey, string hkString )
     {
-      if ( string.IsNullOrWhiteSpace( hkString ) ) return; // cannot add an empty one
-
+      // remove if empty string and exists
+      if (string.IsNullOrWhiteSpace( hkString )) {
+        if (this.ContainsKey( hotkey )) {
+          this.Remove( hotkey );
+          return;
+        }
+      }
+      // replace, add
       var hk = new WinHotkey(hkString);
-      if ( hk.isValid ) this.Add( hotkey, hk );
+      if (hk.isValid) {
+        // replace or add if valid
+        if (this.ContainsKey( hotkey )) {
+          // remove to replace
+          this.Remove( hotkey );
+        }
+        // now add
+        this.Add( hotkey, hk );
+      }
     }
 
     /// <summary>

@@ -66,8 +66,9 @@ namespace FS20_HudBar
     // Our interaction hooks 
     private enum Hooks
     {
-      Show_Hide=0, // toggle show/hide of the bar
-      Profile_1, Profile_2, Profile_3, Profile_4, Profile_5, // Profile selection
+      Profile_1 = 0, Profile_2, Profile_3, Profile_4, Profile_5, // Profile selection
+      Profile_6, Profile_7, Profile_8, Profile_9, Profile_10,
+      Show_Hide, // toggle show/hide of the bar
       FlightBag,
       Camera
     }
@@ -76,7 +77,7 @@ namespace FS20_HudBar
     Win.HotkeyController _keyHook;
 
     // MSFS Input handlers
-    private Dictionary<Hooks, SC.Input.InputHandler> _fsInputCat = new Dictionary<Hooks, SC.Input.InputHandler>();
+    private Dictionary<Hotkeys, SC.Input.InputHandler> _fsInputCat = new Dictionary<Hotkeys, SC.Input.InputHandler>();
 
     // The Flightbag
     private Shelf.frmShelf m_shelf;
@@ -295,22 +296,24 @@ namespace FS20_HudBar
       if ( enabled ) {
         if ( _fsInputCat.Count <= 0 ) {
           // reinitiate the hooks
-          _fsInputCat.Add( Hooks.Show_Hide, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_01 ) );
-          _fsInputCat[Hooks.Show_Hide].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hooks.Profile_1, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_02 ) );
-          _fsInputCat[Hooks.Profile_1].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hooks.Profile_2, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_03 ) );
-          _fsInputCat[Hooks.Profile_2].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hooks.Profile_3, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_04 ) );
-          _fsInputCat[Hooks.Profile_3].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hooks.Profile_4, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_05 ) );
-          _fsInputCat[Hooks.Profile_4].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hooks.Profile_5, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_06 ) );
-          _fsInputCat[Hooks.Profile_5].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hooks.FlightBag, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_07 ) );
-          _fsInputCat[Hooks.FlightBag].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hooks.Camera, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_08 ) );
-          _fsInputCat[Hooks.Camera].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Show_Hide, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_01 ) );
+          _fsInputCat[Hotkeys.Show_Hide].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.FlightBag, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_07 ) );
+          _fsInputCat[Hotkeys.FlightBag].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Camera, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_08 ) );
+          _fsInputCat[Hotkeys.Camera].InputArrived += FSInput_InputArrived;
+
+          // ONLY the first 5 have SimKey Hooks (6..10 do not have this hotkey)
+          _fsInputCat.Add( Hotkeys.Profile_1, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_02 ) );
+          _fsInputCat[Hotkeys.Profile_1].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Profile_2, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_03 ) );
+          _fsInputCat[Hotkeys.Profile_2].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Profile_3, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_04 ) );
+          _fsInputCat[Hotkeys.Profile_3].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Profile_4, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_05 ) );
+          _fsInputCat[Hotkeys.Profile_4].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Profile_5, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_06 ) );
+          _fsInputCat[Hotkeys.Profile_5].InputArrived += FSInput_InputArrived;
         }
       }
       else {
@@ -335,14 +338,14 @@ namespace FS20_HudBar
       if ( _fsInputCat.Count <= 0 ) return;
 
       // _fsInputCat should be valid when this event fires..
-      if ( e.ActionName == _fsInputCat[Hooks.Show_Hide].Inputname ) SynchGUIVisible( !this.Visible );
-      else if ( e.ActionName == _fsInputCat[Hooks.Profile_1].Inputname ) mP1_Click( null, new EventArgs( ) );
-      else if ( e.ActionName == _fsInputCat[Hooks.Profile_2].Inputname ) mP2_Click( null, new EventArgs( ) );
-      else if ( e.ActionName == _fsInputCat[Hooks.Profile_3].Inputname ) mP3_Click( null, new EventArgs( ) );
-      else if ( e.ActionName == _fsInputCat[Hooks.Profile_4].Inputname ) mP4_Click( null, new EventArgs( ) );
-      else if ( e.ActionName == _fsInputCat[Hooks.Profile_5].Inputname ) mP5_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hooks.FlightBag].Inputname) mShelf_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hooks.Camera].Inputname) mCamera_Click( null, new EventArgs( ) );
+      if ( e.ActionName == _fsInputCat[Hotkeys.Show_Hide].Inputname ) SynchGUIVisible( !this.Visible );
+      else if (e.ActionName == _fsInputCat[Hotkeys.FlightBag].Inputname) mShelf_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Camera].Inputname) mCamera_Click( null, new EventArgs( ) );
+      else if ( e.ActionName == _fsInputCat[Hotkeys.Profile_1].Inputname ) mP1_Click( null, new EventArgs( ) );
+      else if ( e.ActionName == _fsInputCat[Hotkeys.Profile_2].Inputname ) mP2_Click( null, new EventArgs( ) );
+      else if ( e.ActionName == _fsInputCat[Hotkeys.Profile_3].Inputname ) mP3_Click( null, new EventArgs( ) );
+      else if ( e.ActionName == _fsInputCat[Hotkeys.Profile_4].Inputname ) mP4_Click( null, new EventArgs( ) );
+      else if ( e.ActionName == _fsInputCat[Hotkeys.Profile_5].Inputname ) mP5_Click( null, new EventArgs( ) );
     }
 
     /// <summary>
@@ -380,14 +383,13 @@ namespace FS20_HudBar
         _keyHook.KeyHandling( false ); // disable momentarily
                                        // reload the bindings
         _keyHook.RemoveAllKeys( );
-        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Show_Hide ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Show_Hide], Hooks.Show_Hide.ToString( ), OnHookKey );
-        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_1 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_1], Hooks.Profile_1.ToString( ), OnHookKey );
-        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_2 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_2], Hooks.Profile_2.ToString( ), OnHookKey );
-        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_3 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_3], Hooks.Profile_3.ToString( ), OnHookKey );
-        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_4 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_4], Hooks.Profile_4.ToString( ), OnHookKey );
-        if ( HUD.Hotkeys.ContainsKey( Hotkeys.Profile_5 ) ) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Profile_5], Hooks.Profile_5.ToString( ), OnHookKey );
-        if (HUD.Hotkeys.ContainsKey( Hotkeys.FlightBag )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.FlightBag], Hooks.FlightBag.ToString( ), OnHookKey );
-        if (HUD.Hotkeys.ContainsKey( Hotkeys.Camera )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Camera], Hooks.Camera.ToString( ), OnHookKey );
+        if (HUD.Hotkeys.ContainsKey( Hotkeys.Show_Hide )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Show_Hide], Hotkeys.Show_Hide.ToString( ), OnHookKey );
+        if (HUD.Hotkeys.ContainsKey( Hotkeys.FlightBag )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.FlightBag], Hotkeys.FlightBag.ToString( ), OnHookKey );
+        if (HUD.Hotkeys.ContainsKey( Hotkeys.Camera )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Camera], Hotkeys.Camera.ToString( ), OnHookKey );
+        // profile switchers
+        for (int p = 0; p < CProfile.c_numProfiles; p++) {
+          if (HUD.Hotkeys.ContainsKey( (Hotkeys)p )) _keyHook.AddKey( HUD.Hotkeys[(Hotkeys)p], ((Hotkeys)p).ToString( ), OnHookKey );
+        }
 
         _keyHook.KeyHandling( true );
       }
@@ -403,14 +405,21 @@ namespace FS20_HudBar
     // Callback - handles the Keyboard Hooks
     private void OnHookKey( string tag )
     {
-      if ( tag == Hooks.Show_Hide.ToString( ) ) SynchGUIVisible( !this.Visible );
-      else if ( tag == Hooks.Profile_1.ToString( ) ) mP1_Click( null, new EventArgs( ) );
-      else if ( tag == Hooks.Profile_2.ToString( ) ) mP2_Click( null, new EventArgs( ) );
-      else if ( tag == Hooks.Profile_3.ToString( ) ) mP3_Click( null, new EventArgs( ) );
-      else if ( tag == Hooks.Profile_4.ToString( ) ) mP4_Click( null, new EventArgs( ) );
-      else if ( tag == Hooks.Profile_5.ToString( ) ) mP5_Click( null, new EventArgs( ) );
-      else if (tag == Hooks.FlightBag.ToString( )) mShelf_Click( null, new EventArgs( ) );
-      else if (tag == Hooks.Camera.ToString( )) mCamera_Click( null, new EventArgs( ) );
+      if ( tag == Hotkeys.Show_Hide.ToString( ) ) SynchGUIVisible( !this.Visible );
+      else if (tag == Hotkeys.FlightBag.ToString( )) mShelf_Click( null, new EventArgs( ) );
+      else if (tag == Hotkeys.Camera.ToString( )) mCamera_Click( null, new EventArgs( ) );
+      else {
+        // check if a profile was triggered
+        for (int p = 0; p < CProfile.c_numProfiles; p++) {
+          if (tag == ((Hotkeys)p).ToString( )) {
+            // switch Profile - this may take too long for some Profiles if they contain a lot of items
+            // Windows may unhook in such cases (see MS doc rsp. code in HookController)
+            m_selProfile = p;
+            InitGUI( );
+            return;
+          }
+        }
+      }
     }
 
     #endregion
@@ -461,10 +470,45 @@ namespace FS20_HudBar
                                        AppSettings.Instance.Profile_5_Condensed,
                                        AppSettings.Instance.Profile_5_Trans ) );
 
+      m_profiles.Add( new CProfile( 6, AppSettings.Instance.Profile_6_Name,
+                                       AppSettings.Instance.Profile_6, AppSettings.Instance.FlowBreak_6, AppSettings.Instance.Sequence_6,
+                                       AppSettings.Instance.Profile_6_FontSize, AppSettings.Instance.Profile_6_Placement,
+                                       AppSettings.Instance.Profile_6_Kind, AppSettings.Instance.Profile_6_Location,
+                                       AppSettings.Instance.Profile_6_Condensed,
+                                       AppSettings.Instance.Profile_6_Trans ) );
+
+      m_profiles.Add( new CProfile( 7, AppSettings.Instance.Profile_7_Name,
+                                       AppSettings.Instance.Profile_7, AppSettings.Instance.FlowBreak_7, AppSettings.Instance.Sequence_7,
+                                       AppSettings.Instance.Profile_7_FontSize, AppSettings.Instance.Profile_7_Placement,
+                                       AppSettings.Instance.Profile_7_Kind, AppSettings.Instance.Profile_7_Location,
+                                       AppSettings.Instance.Profile_7_Condensed,
+                                       AppSettings.Instance.Profile_7_Trans ) );
+
+      m_profiles.Add( new CProfile( 8, AppSettings.Instance.Profile_8_Name,
+                                       AppSettings.Instance.Profile_8, AppSettings.Instance.FlowBreak_8, AppSettings.Instance.Sequence_8,
+                                       AppSettings.Instance.Profile_8_FontSize, AppSettings.Instance.Profile_8_Placement,
+                                       AppSettings.Instance.Profile_8_Kind, AppSettings.Instance.Profile_8_Location,
+                                       AppSettings.Instance.Profile_8_Condensed,
+                                       AppSettings.Instance.Profile_8_Trans ) );
+
+      m_profiles.Add( new CProfile( 9, AppSettings.Instance.Profile_9_Name,
+                                       AppSettings.Instance.Profile_9, AppSettings.Instance.FlowBreak_9, AppSettings.Instance.Sequence_9,
+                                       AppSettings.Instance.Profile_9_FontSize, AppSettings.Instance.Profile_9_Placement,
+                                       AppSettings.Instance.Profile_9_Kind, AppSettings.Instance.Profile_9_Location,
+                                       AppSettings.Instance.Profile_9_Condensed,
+                                       AppSettings.Instance.Profile_9_Trans ) );
+
+      m_profiles.Add( new CProfile( 10, AppSettings.Instance.Profile_10_Name,
+                                       AppSettings.Instance.Profile_10, AppSettings.Instance.FlowBreak_10, AppSettings.Instance.Sequence_10,
+                                       AppSettings.Instance.Profile_10_FontSize, AppSettings.Instance.Profile_10_Placement,
+                                       AppSettings.Instance.Profile_10_Kind, AppSettings.Instance.Profile_10_Location,
+                                       AppSettings.Instance.Profile_10_Condensed,
+                                       AppSettings.Instance.Profile_10_Trans ) );
+
       m_selProfile = AppSettings.Instance.SelProfile;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
       // collect the Menus for the profiles
-      m_profileMenu = new ToolStripMenuItem[] { mP1, mP2, mP3, mP4, mP5 };
+      m_profileMenu = new ToolStripMenuItem[] { mP1, mP2, mP3, mP4, mP5, mP6, mP7, mP8, mP9, mP10 };
 
       LOG.Log( "frmMain: Load Colors" );
       Colorset = ToColorSet( AppSettings.Instance.Appearance );
@@ -595,6 +639,11 @@ namespace FS20_HudBar
         case 2: AppSettings.Instance.Profile_3_Location = this.Location; break;
         case 3: AppSettings.Instance.Profile_4_Location = this.Location; break;
         case 4: AppSettings.Instance.Profile_5_Location = this.Location; break;
+        case 5: AppSettings.Instance.Profile_6_Location = this.Location; break;
+        case 6: AppSettings.Instance.Profile_7_Location = this.Location; break;
+        case 7: AppSettings.Instance.Profile_8_Location = this.Location; break;
+        case 8: AppSettings.Instance.Profile_9_Location = this.Location; break;
+        case 9: AppSettings.Instance.Profile_10_Location = this.Location; break;
         default: AppSettings.Instance.Profile_1_Location = this.Location; break;
       }
       AppSettings.Instance.Save( );
@@ -716,6 +765,11 @@ namespace FS20_HudBar
         AppSettings.Instance.HKProfile3 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_3 );
         AppSettings.Instance.HKProfile4 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_4 );
         AppSettings.Instance.HKProfile5 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_5 );
+        AppSettings.Instance.HKProfile6 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_6 );
+        AppSettings.Instance.HKProfile7 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_7 );
+        AppSettings.Instance.HKProfile8 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_8 );
+        AppSettings.Instance.HKProfile9 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_9 );
+        AppSettings.Instance.HKProfile10 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_10 );
         AppSettings.Instance.HKShelf = HUD.Hotkeys.HotkeyString( Hotkeys.FlightBag );
         AppSettings.Instance.HKCamera = HUD.Hotkeys.HotkeyString( Hotkeys.Camera );
         AppSettings.Instance.KeyboardHook = HUD.KeyboardHook;
@@ -780,6 +834,56 @@ namespace FS20_HudBar
         AppSettings.Instance.Profile_5_Kind = (int)m_profiles[pIndex].Kind;
         AppSettings.Instance.Profile_5_Condensed = m_profiles[pIndex].Condensed;
         AppSettings.Instance.Profile_5_Trans = (int)m_profiles[pIndex].Transparency;
+        pIndex++;
+        AppSettings.Instance.Profile_6_Name = m_profiles[pIndex].PName;
+        AppSettings.Instance.Profile_6 = m_profiles[pIndex].ProfileString( );
+        AppSettings.Instance.FlowBreak_6 = m_profiles[pIndex].FlowBreakString( );
+        AppSettings.Instance.Sequence_6 = m_profiles[pIndex].ItemPosString( );
+        AppSettings.Instance.Profile_6_FontSize = (int)m_profiles[pIndex].FontSize;
+        AppSettings.Instance.Profile_6_Placement = (int)m_profiles[pIndex].Placement;
+        AppSettings.Instance.Profile_6_Kind = (int)m_profiles[pIndex].Kind;
+        AppSettings.Instance.Profile_6_Condensed = m_profiles[pIndex].Condensed;
+        AppSettings.Instance.Profile_6_Trans = (int)m_profiles[pIndex].Transparency;
+        pIndex++;
+        AppSettings.Instance.Profile_7_Name = m_profiles[pIndex].PName;
+        AppSettings.Instance.Profile_7 = m_profiles[pIndex].ProfileString( );
+        AppSettings.Instance.FlowBreak_7 = m_profiles[pIndex].FlowBreakString( );
+        AppSettings.Instance.Sequence_7 = m_profiles[pIndex].ItemPosString( );
+        AppSettings.Instance.Profile_7_FontSize = (int)m_profiles[pIndex].FontSize;
+        AppSettings.Instance.Profile_7_Placement = (int)m_profiles[pIndex].Placement;
+        AppSettings.Instance.Profile_7_Kind = (int)m_profiles[pIndex].Kind;
+        AppSettings.Instance.Profile_7_Condensed = m_profiles[pIndex].Condensed;
+        AppSettings.Instance.Profile_7_Trans = (int)m_profiles[pIndex].Transparency;
+        pIndex++;
+        AppSettings.Instance.Profile_8_Name = m_profiles[pIndex].PName;
+        AppSettings.Instance.Profile_8 = m_profiles[pIndex].ProfileString( );
+        AppSettings.Instance.FlowBreak_8 = m_profiles[pIndex].FlowBreakString( );
+        AppSettings.Instance.Sequence_8 = m_profiles[pIndex].ItemPosString( );
+        AppSettings.Instance.Profile_8_FontSize = (int)m_profiles[pIndex].FontSize;
+        AppSettings.Instance.Profile_8_Placement = (int)m_profiles[pIndex].Placement;
+        AppSettings.Instance.Profile_8_Kind = (int)m_profiles[pIndex].Kind;
+        AppSettings.Instance.Profile_8_Condensed = m_profiles[pIndex].Condensed;
+        AppSettings.Instance.Profile_8_Trans = (int)m_profiles[pIndex].Transparency;
+        pIndex++;
+        AppSettings.Instance.Profile_9_Name = m_profiles[pIndex].PName;
+        AppSettings.Instance.Profile_9 = m_profiles[pIndex].ProfileString( );
+        AppSettings.Instance.FlowBreak_9 = m_profiles[pIndex].FlowBreakString( );
+        AppSettings.Instance.Sequence_9 = m_profiles[pIndex].ItemPosString( );
+        AppSettings.Instance.Profile_9_FontSize = (int)m_profiles[pIndex].FontSize;
+        AppSettings.Instance.Profile_9_Placement = (int)m_profiles[pIndex].Placement;
+        AppSettings.Instance.Profile_9_Kind = (int)m_profiles[pIndex].Kind;
+        AppSettings.Instance.Profile_9_Condensed = m_profiles[pIndex].Condensed;
+        AppSettings.Instance.Profile_9_Trans = (int)m_profiles[pIndex].Transparency;
+        pIndex++;
+        AppSettings.Instance.Profile_10_Name = m_profiles[pIndex].PName;
+        AppSettings.Instance.Profile_10 = m_profiles[pIndex].ProfileString( );
+        AppSettings.Instance.FlowBreak_10 = m_profiles[pIndex].FlowBreakString( );
+        AppSettings.Instance.Sequence_10 = m_profiles[pIndex].ItemPosString( );
+        AppSettings.Instance.Profile_10_FontSize = (int)m_profiles[pIndex].FontSize;
+        AppSettings.Instance.Profile_10_Placement = (int)m_profiles[pIndex].Placement;
+        AppSettings.Instance.Profile_10_Kind = (int)m_profiles[pIndex].Kind;
+        AppSettings.Instance.Profile_10_Condensed = m_profiles[pIndex].Condensed;
+        AppSettings.Instance.Profile_10_Trans = (int)m_profiles[pIndex].Transparency;
 
         // Finally Save
         AppSettings.Instance.Save( );
@@ -830,6 +934,36 @@ namespace FS20_HudBar
     private void mP5_Click( object sender, EventArgs e )
     {
       m_selProfile = 4;
+      InitGUI( );
+    }
+
+    private void mP6_Click( object sender, EventArgs e )
+    {
+      m_selProfile = 5;
+      InitGUI( );
+    }
+
+    private void mP7_Click( object sender, EventArgs e )
+    {
+      m_selProfile = 6;
+      InitGUI( );
+    }
+
+    private void mP8_Click( object sender, EventArgs e )
+    {
+      m_selProfile = 7;
+      InitGUI( );
+    }
+
+    private void mP9_Click( object sender, EventArgs e )
+    {
+      m_selProfile = 8;
+      InitGUI( );
+    }
+
+    private void mP10_Click( object sender, EventArgs e )
+    {
+      m_selProfile = 9;
       InitGUI( );
     }
 
@@ -1021,14 +1155,19 @@ namespace FS20_HudBar
       // create a catalog from Settings (serialized as item strings..)
       LOG.Log( $"InitGUI: Setup Hotkeys" );
       var _hotkeycat = new WinHotkeyCat();
-      _hotkeycat.AddHotkeyString( Hotkeys.Show_Hide, AppSettings.Instance.HKShowHide );
-      _hotkeycat.AddHotkeyString( Hotkeys.Profile_1, AppSettings.Instance.HKProfile1 );
-      _hotkeycat.AddHotkeyString( Hotkeys.Profile_2, AppSettings.Instance.HKProfile2 );
-      _hotkeycat.AddHotkeyString( Hotkeys.Profile_3, AppSettings.Instance.HKProfile3 );
-      _hotkeycat.AddHotkeyString( Hotkeys.Profile_4, AppSettings.Instance.HKProfile4 );
-      _hotkeycat.AddHotkeyString( Hotkeys.Profile_5, AppSettings.Instance.HKProfile5 );
-      _hotkeycat.AddHotkeyString( Hotkeys.FlightBag, AppSettings.Instance.HKShelf );
-      _hotkeycat.AddHotkeyString( Hotkeys.Camera, AppSettings.Instance.HKCamera );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Show_Hide, AppSettings.Instance.HKShowHide );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_1, AppSettings.Instance.HKProfile1 );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_2, AppSettings.Instance.HKProfile2 );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_3, AppSettings.Instance.HKProfile3 );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_4, AppSettings.Instance.HKProfile4 );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_5, AppSettings.Instance.HKProfile5 );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_6, AppSettings.Instance.HKProfile6 );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_7, AppSettings.Instance.HKProfile7 );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_8, AppSettings.Instance.HKProfile8 );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_9, AppSettings.Instance.HKProfile9 );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_10, AppSettings.Instance.HKProfile10 );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.FlightBag, AppSettings.Instance.HKShelf );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Camera, AppSettings.Instance.HKCamera );
       foreach ( var hk in _hotkeycat ) {
         LOG.Log( $"InitGUI: {hk.Key} - {hk.Value.AsString}" );
       }

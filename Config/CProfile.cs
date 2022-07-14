@@ -18,18 +18,18 @@ namespace FS20_HudBar.Config
   /// </summary>
   class CProfile
   {
-    public const int c_numProfiles = 5; // Supported number of profiles
+    public const int c_numProfiles = 10; // Supported number of profiles
 
     private int m_pNumber = 0; // Profile Number 1...
 
-    private Dictionary<LItem, bool> m_profile = new Dictionary<LItem, bool>();   // true to show the item
-    private Dictionary<LItem, GUI.BreakType> m_flowBreak = new Dictionary<LItem, GUI.BreakType>(); // true to break the flow
-    private Dictionary<LItem, int> m_sequence = new Dictionary<LItem, int>();    // display position 0...
+    private Dictionary<LItem, bool> m_profile = new Dictionary<LItem, bool>( );   // true to show the item
+    private Dictionary<LItem, GUI.BreakType> m_flowBreak = new Dictionary<LItem, GUI.BreakType>( ); // true to break the flow
+    private Dictionary<LItem, int> m_sequence = new Dictionary<LItem, int>( );    // display position 0...
 
     private GUI.FontSize m_fontSize = GUI.FontSize.Regular;
     private GUI.Placement m_placement = GUI.Placement.Bottom;
     private GUI.Kind m_kind = GUI.Kind.Bar;
-    private Point m_location = new Point(0,0);
+    private Point m_location = new Point( 0, 0 );
     private bool m_condensed = false;
     private GUI.Transparent m_transparent = GUI.Transparent.T0;
 
@@ -74,9 +74,9 @@ namespace FS20_HudBar.Config
     /// <returns>A Break Enum</returns>
     public static GUI.BreakType EnumFromBreakTag( char breakTag )
     {
-      if ( breakTag == FlowBreakTag ) return GUI.BreakType.FlowBreak;
-      if ( breakTag == DivBreakTag1 ) return GUI.BreakType.DivBreak1;
-      if ( breakTag == DivBreakTag2 ) return GUI.BreakType.DivBreak2;
+      if (breakTag == FlowBreakTag) return GUI.BreakType.FlowBreak;
+      if (breakTag == DivBreakTag1) return GUI.BreakType.DivBreak1;
+      if (breakTag == DivBreakTag2) return GUI.BreakType.DivBreak2;
       return GUI.BreakType.None;
     }
 
@@ -87,9 +87,9 @@ namespace FS20_HudBar.Config
     /// <returns>A Break Enum</returns>
     public static GUI.BreakType EnumFromBreakTagString( string breakTag )
     {
-      if ( breakTag == FlowBreakTag.ToString( ) ) return GUI.BreakType.FlowBreak;
-      if ( breakTag == DivBreakTag1.ToString( ) ) return GUI.BreakType.DivBreak1;
-      if ( breakTag == DivBreakTag2.ToString( ) ) return GUI.BreakType.DivBreak2;
+      if (breakTag == FlowBreakTag.ToString( )) return GUI.BreakType.FlowBreak;
+      if (breakTag == DivBreakTag1.ToString( )) return GUI.BreakType.DivBreak1;
+      if (breakTag == DivBreakTag2.ToString( )) return GUI.BreakType.DivBreak2;
       return GUI.BreakType.None;
     }
 
@@ -100,9 +100,9 @@ namespace FS20_HudBar.Config
     /// <returns>A Break Tag Color</returns>
     public static Color BreakColorFromEnum( GUI.BreakType breakType )
     {
-      if ( breakType == GUI.BreakType.FlowBreak ) return GUI.GUI_Colors.c_FBCol;
-      if ( breakType == GUI.BreakType.DivBreak1 ) return GUI.GUI_Colors.c_DB1Col;
-      if ( breakType == GUI.BreakType.DivBreak2 ) return GUI.GUI_Colors.c_DB2Col;
+      if (breakType == GUI.BreakType.FlowBreak) return GUI.GUI_Colors.c_FBCol;
+      if (breakType == GUI.BreakType.DivBreak1) return GUI.GUI_Colors.c_DB1Col;
+      if (breakType == GUI.BreakType.DivBreak2) return GUI.GUI_Colors.c_DB2Col;
       return GUI.GUI_Colors.c_NBCol;
     }
 
@@ -155,17 +155,29 @@ namespace FS20_HudBar.Config
 
 
     /// <summary>
-    /// Create an empty profile with all items enabled
+    /// cTor:  Create an empty profile with all items enabled
     /// </summary>
     public CProfile( )
     {
-      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
+      foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
         m_profile.Add( i, true );
       }
     }
 
     /// <summary>
-    /// Create a profile from the profile string, must match, no existing items are set to true
+    /// cTor: Copy constructor
+    /// </summary>
+    /// <param name="other"></param>
+    public CProfile( CProfile other )
+    {
+      m_pNumber = other.m_pNumber;
+      LoadProfile( other.PName,
+        other.ProfileString( ), other.FlowBreakString( ), other.ItemPosString( ),
+        other.FontSize, other.Placement, other.Kind, other.Location, other.Condensed, other.Transparency );
+    }
+
+    /// <summary>
+    /// cTor: Create a profile from the profile string, must match, no existing items are set to true
     /// </summary>
     /// <param name="profileName">The Name of the Profile</param>
     /// <param name="profile">A semicolon separated string of 0 or 1 (shown) </param>
@@ -190,34 +202,35 @@ namespace FS20_HudBar.Config
     /// </summary>
     /// <param name="item">An Item</param>
     /// <returns>The Key/Name</returns>
-    public static string Key( int pNum, LItem item )
-    {
-      return $"P{pNum}_{item}";
-    }
-    /// <summary>
-    /// The Key or Name of the CheckBox
-    /// </summary>
-    /// <param name="item">An Item</param>
-    /// <returns>The Key/Name</returns>
     private string Key( LItem item )
     {
       return Key( m_pNumber, item );
     }
 
+    /// <summary>
+    /// The Key or Name of the CheckBox
+    /// </summary>
+    /// <param name="item">An Item</param>
+    /// <returns>The Key/Name</returns>
+    public static string Key( int pNum, LItem item )
+    {
+      return $"P{pNum}_{item}";
+    }
 
     /// <summary>
     /// Update this profile from the FLPanel
     /// </summary>
     /// <param name="flp">The FLPanel</param>
-    public void GetItemsFromFlp( FlowLayoutPanel flp )
+    /// <param name="flpIndex">The index of the columns 0..</param>
+    public void GetItemsFromFlp( FlowLayoutPanel flp, int flpIndex )
     {
       // process along the Enum sequence
-      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
+      foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
         // find the item with its Key in the layout panel - no checks - may break if not consistent
         try {
-          var cb = flp.Controls[Key(i)] as CheckBox;
-          int pos = flp.Controls.IndexOf(cb); // can be -1 if not found
-          if ( pos >= 0 ) {
+          var cb = flp.Controls[Key(flpIndex, i )] as CheckBox;
+          int pos = flp.Controls.IndexOf( cb ); // can be -1 if not found
+          if (pos >= 0) {
             // store along the Enum sequence
             m_sequence[i] = pos;
             m_profile[i] = cb.Checked;
@@ -237,15 +250,6 @@ namespace FS20_HudBar.Config
     public void LoadFontSize( ComboBox box )
     {
       box.SelectedIndex = (int)m_fontSize;
-    }
-
-    /// <summary>
-    /// Update this profile from the FontSize ComboBox
-    /// </summary>
-    /// <param name="box">The ComboBox</param>
-    public void GetFontSizeFromCombo( ComboBox box )
-    {
-      m_fontSize = (GUI.FontSize)box.SelectedIndex;
     }
 
     /// <summary>
@@ -285,12 +289,48 @@ namespace FS20_HudBar.Config
     }
 
     /// <summary>
+    /// Set the font size Setting
+    /// </summary>
+    /// <param name="fontSize">A valid font size</param>
+    public void SetFontSize( GUI.FontSize fontSize )
+    {
+      m_fontSize = fontSize;
+    }
+
+    /// <summary>
+    /// Update this profile from the FontSize ComboBox
+    /// </summary>
+    /// <param name="box">The ComboBox</param>
+    public void GetFontSizeFromCombo( ComboBox box )
+    {
+      m_fontSize = (GUI.FontSize)box.SelectedIndex;
+    }
+
+    /// <summary>
+    /// Set the placement Setting
+    /// </summary>
+    /// <param name="placement">A valid placement</param>
+    public void SetPlacement( GUI.Placement placement)
+    {
+      m_placement = placement;
+    }
+
+    /// <summary>
     /// Update this profile from the Placement ComboBox
     /// </summary>
     /// <param name="box">The ComboBox</param>
     public void GetPlacementFromCombo( ComboBox box )
     {
       m_placement = (GUI.Placement)box.SelectedIndex;
+    }
+
+    /// <summary>
+    /// Set the kind Setting
+    /// </summary>
+    /// <param name="kind">A valid kind</param>
+    public void SetKind(GUI.Kind kind )
+    {
+      m_kind = kind;
     }
 
     /// <summary>
@@ -303,19 +343,37 @@ namespace FS20_HudBar.Config
     }
 
     /// <summary>
+    /// Set the condensed Setting
+    /// </summary>
+    /// <param name="condensed">A condensed flag</param>
+    public void SetCondensed(bool condensed )
+    {
+      m_condensed = condensed;
+    }
+
+    /// <summary>
     /// Update this profile from the Condensed ComboBox
     /// </summary>
     /// <param name="box">The ComboBox</param>
-    public void GetCondFromCombo( ComboBox box )
+    public void GetCondensedFromCombo( ComboBox box )
     {
       m_condensed = box.SelectedIndex == 1;
+    }
+
+    /// <summary>
+    /// Set the transparent Setting
+    /// </summary>
+    /// <param name="transparent">A valid transparency</param>
+    public void SetTransparency(GUI.Transparent transparent )
+    {
+      m_transparent = transparent;
     }
 
     /// <summary>
     /// Update this profile from the Transparent ComboBox
     /// </summary>
     /// <param name="box">The ComboBox</param>
-    public void GetTramsFromCombo( ComboBox box )
+    public void GetTransparencyFromCombo( ComboBox box )
     {
       m_transparent = (GUI.Transparent)box.SelectedIndex;
     }
@@ -340,47 +398,11 @@ namespace FS20_HudBar.Config
       // i.e. we always want a complete Dictionary when leaving the method!!!
 
       // Get the visibility status for each item
-      string[] e = profile.Split(new char[]{ Divider }, StringSplitOptions.RemoveEmptyEntries );
-      m_profile.Clear( );
-      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
-        bool show = (i== LItem.MSFS)?true : false; // default OFF except the first 20210708
-        if ( e.Length > (int)i ) {
-          show = e[(int)i] == "1"; // found an element in the string
-        }
-        m_profile.Add( i, show );
-      }
-
+      SetProfileString( profile );
       // Get the flow break status for each item
-      e = flowBreak.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
-      m_flowBreak.Clear( );
-      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
-        GUI.BreakType fbreak = GUI.BreakType.None; // default OFF
-        if ( e.Length > (int)i ) {
-          fbreak = EnumFromBreakTagString( e[(int)i] ); // found an element in the string
-        }
-        m_flowBreak.Add( i, fbreak );
-      }
-
+      SetFlowBreakString( flowBreak );
       // Get the item position - don't validate the sequence here
-      e = sequence.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
-      m_sequence.Clear( );
-      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
-        int idx = (int)i; // default Enum Sequence
-        if ( e.Length > idx ) {
-          if ( int.TryParse( e[idx], NumberStyles.Integer, CultureInfo.InvariantCulture, out int iPos ) ) {
-            if ( iPos < m_profile.Count )
-              m_sequence.Add( i, iPos ); // found an integer
-            else
-              m_sequence.Add( i, m_profile.Count - 1 ); // found an integer - was out of the range ??
-          }
-          else {
-            m_sequence.Add( i, idx ); // default
-          }
-        }
-        else {
-          m_sequence.Add( i, idx ); // default
-        }
-      }
+      SetItemPosString( sequence );
     }
 
 
@@ -422,7 +444,7 @@ namespace FS20_HudBar.Config
     public bool DivItem( LItem item )
     {
       try {
-        return (m_flowBreak[item] == GUI.BreakType.DivBreak1) || ( m_flowBreak[item] == GUI.BreakType.DivBreak2 );
+        return (m_flowBreak[item] == GUI.BreakType.DivBreak1) || (m_flowBreak[item] == GUI.BreakType.DivBreak2);
       }
       catch {
         return false;
@@ -482,7 +504,7 @@ namespace FS20_HudBar.Config
     public LItem ItemKeyFromPos( int pos )
     {
       // find the item to be shown at this position (find the pos value in m_sequence and get the item with it's Key)
-      if ( m_sequence.ContainsValue( pos ) ) {
+      if (m_sequence.ContainsValue( pos )) {
         return m_sequence.Where( x => x.Value == pos ).FirstOrDefault( ).Key;
       }
       else {
@@ -492,17 +514,53 @@ namespace FS20_HudBar.Config
     }
 
     /// <summary>
+    /// Set the profile Settings
+    /// </summary>
+    /// <param name="profileString">A valid profile string</param>
+    public void SetProfileString(string profileString )
+    {
+      // Get the visibility status for each item
+      string[] e = profileString.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
+      m_profile.Clear( );
+      foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
+        bool show = (i == LItem.MSFS) ? true : false; // default OFF except the first 20210708
+        if (e.Length > (int)i) {
+          show = e[(int)i] == "1"; // found an element in the string
+        }
+        m_profile.Add( i, show );
+      }
+    }
+
+    /// <summary>
     /// Returns the profile Settings string 
     /// </summary>
     /// <returns>A profile string </returns>
     public string ProfileString( )
     {
-      string ret="";
+      string ret = "";
 
-      foreach ( var kv in m_profile ) {
-        ret += ( kv.Value ? $"1" : "0" ) + Divider;
+      foreach (var kv in m_profile) {
+        ret += (kv.Value ? $"1" : "0") + Divider;
       }
       return ret;
+    }
+
+    /// <summary>
+    /// Set the flowBreak Settings
+    /// </summary>
+    /// <param name="flowBreakString">A valid flow break string</param>
+    public void SetFlowBreakString(string flowBreakString )
+    {
+      // Get the flow break status for each item
+      string[] e = flowBreakString.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
+      m_flowBreak.Clear( );
+      foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
+        GUI.BreakType fbreak = GUI.BreakType.None; // default OFF
+        if (e.Length > (int)i) {
+          fbreak = EnumFromBreakTagString( e[(int)i] ); // found an element in the string
+        }
+        m_flowBreak.Add( i, fbreak );
+      }
     }
 
     /// <summary>
@@ -511,12 +569,39 @@ namespace FS20_HudBar.Config
     /// <returns>A flowBreak string </returns>
     public string FlowBreakString( )
     {
-      string ret="";
+      string ret = "";
 
-      foreach ( var kv in m_flowBreak ) {
+      foreach (var kv in m_flowBreak) {
         ret += BreakTagFromEnum( kv.Value ).ToString( ) + Divider;
       }
       return ret;
+    }
+
+    /// <summary>
+    /// Set the item position Setting
+    /// </summary>
+    /// <param name="itemPosString">a valid item position string</param>
+    public void SetItemPosString(string itemPosString )
+    {
+      string[] e = itemPosString.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
+      m_sequence.Clear( );
+      foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
+        int idx = (int)i; // default Enum Sequence
+        if (e.Length > idx) {
+          if (int.TryParse( e[idx], NumberStyles.Integer, CultureInfo.InvariantCulture, out int iPos )) {
+            if (iPos < m_profile.Count)
+              m_sequence.Add( i, iPos ); // found an integer
+            else
+              m_sequence.Add( i, m_profile.Count - 1 ); // found an integer - was out of the range ??
+          }
+          else {
+            m_sequence.Add( i, idx ); // default
+          }
+        }
+        else {
+          m_sequence.Add( i, idx ); // default
+        }
+      }
     }
 
     /// <summary>
@@ -525,9 +610,9 @@ namespace FS20_HudBar.Config
     /// <returns>A item position string </returns>
     public string ItemPosString( )
     {
-      string ret="";
+      string ret = "";
 
-      foreach ( var kv in m_sequence ) {
+      foreach (var kv in m_sequence) {
         ret += $"{kv.Value}" + Divider;
       }
       return ret;
@@ -540,13 +625,13 @@ namespace FS20_HudBar.Config
     /// <returns></returns>
     public List<LItem> ItemPosList( )
     {
-      var ret = new List<LItem>();
+      var ret = new List<LItem>( );
 
-      foreach ( LItem i in Enum.GetValues( typeof( LItem ) ) ) {
+      foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
         // we use the Enum only as position index 0... max here
         int idx = (int)i;
         // find the item to be shown at this position (find the pos value in m_sequence and get the item with it's Key)
-        if ( m_sequence.ContainsValue( idx ) ) {
+        if (m_sequence.ContainsValue( idx )) {
           // the item to put as next one / Add sequentially to the layout panel
           ret.Add( ItemKeyFromPos( idx ) );
         }

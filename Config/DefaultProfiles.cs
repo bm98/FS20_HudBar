@@ -17,7 +17,12 @@ namespace FS20_HudBar.Config
     Profile_2,
     Profile_3,
     Profile_4,
-    Profile_5,    // all items checked
+    Profile_5,
+    Profile_6,
+    Profile_7,
+    Profile_8,
+    Profile_9,
+    Profile_10,
   }
 
   /// <summary>

@@ -5,7 +5,7 @@
 
 * Displays more than 100 essential aircraft and flight information items as Bar, Tile or Window
 * Supports 1, 2, 3 and 4 engine aircrafts (Prop/Engine RPM, FuelFlow for each)
-* Provides 5 different content profiles which are fully configurable
+* Provides 10 different content profiles which are fully configurable
 * The pilot can directly activate Autopilot and other commands
 * Auto Elevator Trim on a click
 * Saves FLT backup file

@@ -97,6 +97,8 @@ namespace FS20_HudBar.Config
       this.chkInGame = new System.Windows.Forms.CheckBox();
       this.chkKeyboard = new System.Windows.Forms.CheckBox();
       this.txHkCamera = new System.Windows.Forms.TextBox();
+      this.panel1 = new System.Windows.Forms.Panel();
+      this.btOtherProfileSet = new System.Windows.Forms.Button();
       this.FBD = new System.Windows.Forms.FolderBrowserDialog();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.tlp.SuspendLayout();
@@ -106,6 +108,7 @@ namespace FS20_HudBar.Config
       this.flp4.SuspendLayout();
       this.ctxMenu.SuspendLayout();
       this.flp5.SuspendLayout();
+      this.panel1.SuspendLayout();
       this.SuspendLayout();
       // 
       // tlp
@@ -173,6 +176,7 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.chkInGame, 5, 6);
       this.tlp.Controls.Add(this.chkKeyboard, 5, 5);
       this.tlp.Controls.Add(this.txHkCamera, 5, 4);
+      this.tlp.Controls.Add(this.panel1, 5, 2);
       this.tlp.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tlp.Location = new System.Drawing.Point(0, 0);
       this.tlp.Name = "tlp";
@@ -408,6 +412,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxFontP1
       // 
+      this.cbxFontP1.BackColor = System.Drawing.Color.Beige;
       this.cbxFontP1.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxFontP1.Items.AddRange(new object[] {
             "Regular Size",
@@ -420,6 +425,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxFontP2
       // 
+      this.cbxFontP2.BackColor = System.Drawing.Color.Beige;
       this.cbxFontP2.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxFontP2.Items.AddRange(new object[] {
             "Regular Size",
@@ -432,6 +438,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxFontP3
       // 
+      this.cbxFontP3.BackColor = System.Drawing.Color.Beige;
       this.cbxFontP3.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxFontP3.Items.AddRange(new object[] {
             "Regular Size",
@@ -444,6 +451,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxFontP4
       // 
+      this.cbxFontP4.BackColor = System.Drawing.Color.Beige;
       this.cbxFontP4.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxFontP4.Items.AddRange(new object[] {
             "Regular Size",
@@ -456,6 +464,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxFontP5
       // 
+      this.cbxFontP5.BackColor = System.Drawing.Color.Beige;
       this.cbxFontP5.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxFontP5.Items.AddRange(new object[] {
             "Regular Size",
@@ -468,6 +477,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxPlaceP1
       // 
+      this.cbxPlaceP1.BackColor = System.Drawing.Color.Beige;
       this.cbxPlaceP1.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxPlaceP1.Items.AddRange(new object[] {
             "Regular Size",
@@ -480,6 +490,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxPlaceP2
       // 
+      this.cbxPlaceP2.BackColor = System.Drawing.Color.Beige;
       this.cbxPlaceP2.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxPlaceP2.Items.AddRange(new object[] {
             "Regular Size",
@@ -492,6 +503,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxPlaceP3
       // 
+      this.cbxPlaceP3.BackColor = System.Drawing.Color.Beige;
       this.cbxPlaceP3.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxPlaceP3.Items.AddRange(new object[] {
             "Regular Size",
@@ -504,6 +516,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxPlaceP4
       // 
+      this.cbxPlaceP4.BackColor = System.Drawing.Color.Beige;
       this.cbxPlaceP4.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxPlaceP4.Items.AddRange(new object[] {
             "Regular Size",
@@ -516,6 +529,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxPlaceP5
       // 
+      this.cbxPlaceP5.BackColor = System.Drawing.Color.Beige;
       this.cbxPlaceP5.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxPlaceP5.Items.AddRange(new object[] {
             "Regular Size",
@@ -556,6 +570,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxKindP1
       // 
+      this.cbxKindP1.BackColor = System.Drawing.Color.Beige;
       this.cbxKindP1.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxKindP1.Items.AddRange(new object[] {
             "Regular Size",
@@ -568,6 +583,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxKindP2
       // 
+      this.cbxKindP2.BackColor = System.Drawing.Color.Beige;
       this.cbxKindP2.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxKindP2.Items.AddRange(new object[] {
             "Regular Size",
@@ -580,6 +596,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxKindP3
       // 
+      this.cbxKindP3.BackColor = System.Drawing.Color.Beige;
       this.cbxKindP3.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxKindP3.Items.AddRange(new object[] {
             "Regular Size",
@@ -592,6 +609,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxKindP4
       // 
+      this.cbxKindP4.BackColor = System.Drawing.Color.Beige;
       this.cbxKindP4.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxKindP4.Items.AddRange(new object[] {
             "Regular Size",
@@ -604,6 +622,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxKindP5
       // 
+      this.cbxKindP5.BackColor = System.Drawing.Color.Beige;
       this.cbxKindP5.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxKindP5.Items.AddRange(new object[] {
             "Regular Size",
@@ -616,6 +635,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxCondP1
       // 
+      this.cbxCondP1.BackColor = System.Drawing.Color.Beige;
       this.cbxCondP1.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxCondP1.Items.AddRange(new object[] {
             "Regular Size",
@@ -628,6 +648,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxCondP2
       // 
+      this.cbxCondP2.BackColor = System.Drawing.Color.Beige;
       this.cbxCondP2.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxCondP2.Items.AddRange(new object[] {
             "Regular Size",
@@ -640,6 +661,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxCondP3
       // 
+      this.cbxCondP3.BackColor = System.Drawing.Color.Beige;
       this.cbxCondP3.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxCondP3.Items.AddRange(new object[] {
             "Regular Size",
@@ -652,6 +674,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxCondP4
       // 
+      this.cbxCondP4.BackColor = System.Drawing.Color.Beige;
       this.cbxCondP4.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxCondP4.Items.AddRange(new object[] {
             "Regular Size",
@@ -664,6 +687,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxCondP5
       // 
+      this.cbxCondP5.BackColor = System.Drawing.Color.Beige;
       this.cbxCondP5.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxCondP5.Items.AddRange(new object[] {
             "Regular Size",
@@ -676,6 +700,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxTrans1
       // 
+      this.cbxTrans1.BackColor = System.Drawing.Color.Beige;
       this.cbxTrans1.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxTrans1.Items.AddRange(new object[] {
             "Regular Size",
@@ -688,6 +713,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxTrans2
       // 
+      this.cbxTrans2.BackColor = System.Drawing.Color.Beige;
       this.cbxTrans2.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxTrans2.Items.AddRange(new object[] {
             "Regular Size",
@@ -700,6 +726,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxTrans3
       // 
+      this.cbxTrans3.BackColor = System.Drawing.Color.Beige;
       this.cbxTrans3.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxTrans3.Items.AddRange(new object[] {
             "Regular Size",
@@ -712,6 +739,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxTrans4
       // 
+      this.cbxTrans4.BackColor = System.Drawing.Color.Beige;
       this.cbxTrans4.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxTrans4.Items.AddRange(new object[] {
             "Regular Size",
@@ -724,6 +752,7 @@ namespace FS20_HudBar.Config
       // 
       // cbxTrans5
       // 
+      this.cbxTrans5.BackColor = System.Drawing.Color.Beige;
       this.cbxTrans5.Dock = System.Windows.Forms.DockStyle.Top;
       this.cbxTrans5.Items.AddRange(new object[] {
             "Regular Size",
@@ -976,6 +1005,29 @@ namespace FS20_HudBar.Config
       this.txHkCamera.TabIndex = 35;
       this.txHkCamera.DoubleClick += new System.EventHandler(this.txHkCamera_DoubleClick);
       // 
+      // panel1
+      // 
+      this.panel1.Controls.Add(this.btOtherProfileSet);
+      this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+      this.panel1.Location = new System.Drawing.Point(783, 279);
+      this.panel1.Name = "panel1";
+      this.panel1.Size = new System.Drawing.Size(148, 107);
+      this.panel1.TabIndex = 50;
+      // 
+      // btOtherProfileSet
+      // 
+      this.btOtherProfileSet.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+      this.btOtherProfileSet.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btOtherProfileSet.Image = global::FS20_HudBar.Properties.Resources.Button_Next_01;
+      this.btOtherProfileSet.Location = new System.Drawing.Point(24, 17);
+      this.btOtherProfileSet.Name = "btOtherProfileSet";
+      this.btOtherProfileSet.Size = new System.Drawing.Size(109, 75);
+      this.btOtherProfileSet.TabIndex = 0;
+      this.btOtherProfileSet.Text = "Show other Profile Set";
+      this.btOtherProfileSet.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+      this.btOtherProfileSet.UseVisualStyleBackColor = true;
+      this.btOtherProfileSet.Click += new System.EventHandler(this.btOtherProfileSet_Click);
+      // 
       // FBD
       // 
       this.FBD.Description = "Select Flight Bag Folder";
@@ -1021,6 +1073,7 @@ namespace FS20_HudBar.Config
       this.ctxMenu.ResumeLayout(false);
       this.flp5.ResumeLayout(false);
       this.flp5.PerformLayout();
+      this.panel1.ResumeLayout(false);
       this.ResumeLayout(false);
 
     }
@@ -1095,5 +1148,7 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.Timer timer1;
     private System.Windows.Forms.Button btFonts;
     private System.Windows.Forms.TextBox txHkCamera;
+    private System.Windows.Forms.Panel panel1;
+    private System.Windows.Forms.Button btOtherProfileSet;
   }
 }

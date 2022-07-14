@@ -1,5 +1,5 @@
 FS20_HudBar V 0.52 - Build 49 BETA
-(c) M. Burri - 05-Jun-2022
+(c) M. Burri - 14-Jul-2022
 
 Contains files:
 
@@ -46,8 +46,9 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.52-B49
+- Add 5 more profiles (total of 10 now)
 - Add Ambient Vertical Wind Item (LIFT)
-- Add Compass degm and arrow (N-up) Item
+- Add Compass [degm] and arrow (N-up) Item
 - Add Altitudes, Distances can be shown in Common (default) or Metric units
 - Update ShowUnits is now an interactive menu setting
 - Update Ability to enter the Route via Kbd when no ATC plan is available (on RTE Item)

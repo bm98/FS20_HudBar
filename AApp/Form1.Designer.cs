@@ -41,6 +41,11 @@ namespace FS20_HudBar
       this.mP3 = new System.Windows.Forms.ToolStripMenuItem();
       this.mP4 = new System.Windows.Forms.ToolStripMenuItem();
       this.mP5 = new System.Windows.Forms.ToolStripMenuItem();
+      this.mP6 = new System.Windows.Forms.ToolStripMenuItem();
+      this.mP7 = new System.Windows.Forms.ToolStripMenuItem();
+      this.mP8 = new System.Windows.Forms.ToolStripMenuItem();
+      this.mP9 = new System.Windows.Forms.ToolStripMenuItem();
+      this.mP10 = new System.Windows.Forms.ToolStripMenuItem();
       this.mAppearance = new System.Windows.Forms.ToolStripMenuItem();
       this.maBright = new System.Windows.Forms.ToolStripMenuItem();
       this.maDimm = new System.Windows.Forms.ToolStripMenuItem();
@@ -148,7 +153,12 @@ namespace FS20_HudBar
             this.mP2,
             this.mP3,
             this.mP4,
-            this.mP5});
+            this.mP5,
+            this.mP6,
+            this.mP7,
+            this.mP8,
+            this.mP9,
+            this.mP10});
       this.mProfile.Name = "mProfile";
       this.mProfile.Size = new System.Drawing.Size(180, 22);
       this.mProfile.Text = "Select Profile";
@@ -156,37 +166,72 @@ namespace FS20_HudBar
       // mP1
       // 
       this.mP1.Name = "mP1";
-      this.mP1.Size = new System.Drawing.Size(117, 22);
+      this.mP1.Size = new System.Drawing.Size(180, 22);
       this.mP1.Text = "Profile 1";
       this.mP1.Click += new System.EventHandler(this.mP1_Click);
       // 
       // mP2
       // 
       this.mP2.Name = "mP2";
-      this.mP2.Size = new System.Drawing.Size(117, 22);
+      this.mP2.Size = new System.Drawing.Size(180, 22);
       this.mP2.Text = "Profile 2";
       this.mP2.Click += new System.EventHandler(this.mP2_Click);
       // 
       // mP3
       // 
       this.mP3.Name = "mP3";
-      this.mP3.Size = new System.Drawing.Size(117, 22);
+      this.mP3.Size = new System.Drawing.Size(180, 22);
       this.mP3.Text = "Profile 3";
       this.mP3.Click += new System.EventHandler(this.mP3_Click);
       // 
       // mP4
       // 
       this.mP4.Name = "mP4";
-      this.mP4.Size = new System.Drawing.Size(117, 22);
+      this.mP4.Size = new System.Drawing.Size(180, 22);
       this.mP4.Text = "Profile 4";
       this.mP4.Click += new System.EventHandler(this.mP4_Click);
       // 
       // mP5
       // 
       this.mP5.Name = "mP5";
-      this.mP5.Size = new System.Drawing.Size(117, 22);
+      this.mP5.Size = new System.Drawing.Size(180, 22);
       this.mP5.Text = "Profile 5";
       this.mP5.Click += new System.EventHandler(this.mP5_Click);
+      // 
+      // mP6
+      // 
+      this.mP6.Name = "mP6";
+      this.mP6.Size = new System.Drawing.Size(180, 22);
+      this.mP6.Text = "Profile 6";
+      this.mP6.Click += new System.EventHandler(this.mP6_Click);
+      // 
+      // mP7
+      // 
+      this.mP7.Name = "mP7";
+      this.mP7.Size = new System.Drawing.Size(180, 22);
+      this.mP7.Text = "Profile 7";
+      this.mP7.Click += new System.EventHandler(this.mP7_Click);
+      // 
+      // mP8
+      // 
+      this.mP8.Name = "mP8";
+      this.mP8.Size = new System.Drawing.Size(180, 22);
+      this.mP8.Text = "Profile 8";
+      this.mP8.Click += new System.EventHandler(this.mP8_Click);
+      // 
+      // mP9
+      // 
+      this.mP9.Name = "mP9";
+      this.mP9.Size = new System.Drawing.Size(180, 22);
+      this.mP9.Text = "Profile 9";
+      this.mP9.Click += new System.EventHandler(this.mP9_Click);
+      // 
+      // mP10
+      // 
+      this.mP10.Name = "mP10";
+      this.mP10.Size = new System.Drawing.Size(180, 22);
+      this.mP10.Text = "Profile 10";
+      this.mP10.Click += new System.EventHandler(this.mP10_Click);
       // 
       // mAppearance
       // 
@@ -450,6 +495,11 @@ namespace FS20_HudBar
     private System.Windows.Forms.ToolStripMenuItem mDistMetric;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
     private System.Windows.Forms.ToolStripMenuItem mShowUnits;
+    private System.Windows.Forms.ToolStripMenuItem mP6;
+    private System.Windows.Forms.ToolStripMenuItem mP7;
+    private System.Windows.Forms.ToolStripMenuItem mP8;
+    private System.Windows.Forms.ToolStripMenuItem mP9;
+    private System.Windows.Forms.ToolStripMenuItem mP10;
   }
 }
 
