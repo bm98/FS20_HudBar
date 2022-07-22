@@ -250,6 +250,21 @@ namespace FS20_HudBar
       set { this["UserFonts"] = value; }
     }
 
+    // Checklist Box Settings
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "10, 10" )]
+    public Point ChecklistBoxLocation {
+      get { return (Point)this["ChecklistBoxLocation"]; }
+      set { this["ChecklistBoxLocation"] = value; }
+    }
+
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string HKChecklistBox {
+      get { return (string)this["HKChecklistBox"]; }
+      set { this["HKChecklistBox"] = value; }
+    }
+
     // User Config Settings
 
     [UserScopedSetting( )]

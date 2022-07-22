@@ -1,4 +1,4 @@
-# MSFS HudBar V 0.52.0.49
+# MSFS HudBar V 0.53.0.50
 
 ### Display essential Information as Bar or Tile at any side of the primary screen or as Window anywhere you like  
 
@@ -23,8 +23,12 @@
 -----
 
 #### Full Credit goes to JayDeeGaming
-where the idea of this HudBar is 'borrowed' from   
+where the idea of this HudBar is 'borrowed' from  
 https://www.youtube.com/c/JayDeeGaming/about
+
+#### Credit goes to Missionary Bush Pilot
+where the idea of the Checklist box is 'borrowed' from  
+https://www.missionarybushpilot.com/checklistbox
 
 -----
 
@@ -70,6 +74,7 @@ My FlightSim Libraries (included in the release package)
 * PingLib.dll                 -- An audio lib using Win10 Audio facilities (new since V0.43)
 * MetarLib.dll                -- A METAR access library 
 * bm98_Album.dll              -- A UserControl for displaying images (zoom & drag new since V0.43)
+* bm98_Checklist.dll          -- A UserControl for displaying the Checklist Box (new since V0.53)
 * bm98_hb_Controls.dll        -- UserControls for displaying graphs (new since V0.45)
 <br>
 * SimConnectClient.dll        -- FlightSim interface to MSFS2020 SimConnect

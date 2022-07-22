@@ -175,6 +175,8 @@ namespace FS20_HudBar.Bar.Items
 
     VWIND,       // Vertical WindComponent
     COMPASS,     // Mag Compass
+
+    GPS_DST,     // GPS or Calc Distance to Destination
   }
 
 
@@ -374,6 +376,7 @@ namespace FS20_HudBar.Bar.Items
     // GPS
     GPS_PWYP,     // GPS Prev Waypoint
     GPS_NWYP,     // GPS Next Waypoint
+    GPS_DST,      // GPS or Calc Distance to Destination
     GPS_ETE,      // GPS Time to Destination
     GPS_WP_DIST,  // GPS Distance to next Waypoint
     GPS_WP_ETE,   // GPS Time to next Waypoint

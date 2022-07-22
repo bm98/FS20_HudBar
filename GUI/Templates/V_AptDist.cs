@@ -49,7 +49,7 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else if ( Math.Abs( (float)value ) >= 100.0f ) {
-          this.Text = UnitString( "> 999 " );
+          this.Text = UnitString( "> 99 " );
         }
         else {
           float uValue = _distance_metric ? Conversions.Km_From_Nm( (float)value ) : (float)value;

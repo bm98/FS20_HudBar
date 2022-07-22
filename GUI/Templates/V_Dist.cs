@@ -19,7 +19,7 @@ namespace FS20_HudBar.GUI.Templates
     : base( proto )
     {
       m_unit = "nm";
-      m_default = DefaultString( "___._ " );
+      m_default = DefaultString( "____._ " );
       Text = UnitString( m_default );
     }
 
@@ -41,7 +41,7 @@ namespace FS20_HudBar.GUI.Templates
         }
         else {
           float uValue = _distance_metric ? Conversions.Km_From_Nm( (float)value ) : (float)value;
-          this.Text = UnitString( $"{uValue,5:##0.0}" ); // 3.1 digits no sign expected, add a blank to aling better
+          this.Text = UnitString( $"{uValue,6:###0.0}" ); // 4.1 digits no sign expected, add a blank to aling better
         }
       }
     }

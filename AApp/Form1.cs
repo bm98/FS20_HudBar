@@ -63,16 +63,6 @@ namespace FS20_HudBar
     private int m_selProfile = 0;
     private ToolStripMenuItem[] m_profileMenu; // enable array access for the MenuItems
 
-    // Our interaction hooks 
-    private enum Hooks
-    {
-      Profile_1 = 0, Profile_2, Profile_3, Profile_4, Profile_5, // Profile selection
-      Profile_6, Profile_7, Profile_8, Profile_9, Profile_10,
-      Show_Hide, // toggle show/hide of the bar
-      FlightBag,
-      Camera
-    }
-
     // Handles the RawInput from HID Keyboards
     Win.HotkeyController _keyHook;
 
@@ -84,6 +74,9 @@ namespace FS20_HudBar
 
     // Camera Selector
     private Camera.frmCamera m_camera;
+
+    // Checklist Box
+    private ChecklistBox.frmChecklistBox m_checklistBox;
 
     // Configuration Dialog
     private readonly frmConfig CFG = new frmConfig( );
@@ -302,6 +295,8 @@ namespace FS20_HudBar
           _fsInputCat[Hotkeys.FlightBag].InputArrived += FSInput_InputArrived;
           _fsInputCat.Add( Hotkeys.Camera, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_08 ) );
           _fsInputCat[Hotkeys.Camera].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.ChecklistBox, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_09 ) );
+          _fsInputCat[Hotkeys.ChecklistBox].InputArrived += FSInput_InputArrived;
 
           // ONLY the first 5 have SimKey Hooks (6..10 do not have this hotkey)
           _fsInputCat.Add( Hotkeys.Profile_1, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_02 ) );
@@ -341,6 +336,7 @@ namespace FS20_HudBar
       if ( e.ActionName == _fsInputCat[Hotkeys.Show_Hide].Inputname ) SynchGUIVisible( !this.Visible );
       else if (e.ActionName == _fsInputCat[Hotkeys.FlightBag].Inputname) mShelf_Click( null, new EventArgs( ) );
       else if (e.ActionName == _fsInputCat[Hotkeys.Camera].Inputname) mCamera_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.ChecklistBox].Inputname) mChecklistBox_Click( null, new EventArgs( ) );
       else if ( e.ActionName == _fsInputCat[Hotkeys.Profile_1].Inputname ) mP1_Click( null, new EventArgs( ) );
       else if ( e.ActionName == _fsInputCat[Hotkeys.Profile_2].Inputname ) mP2_Click( null, new EventArgs( ) );
       else if ( e.ActionName == _fsInputCat[Hotkeys.Profile_3].Inputname ) mP3_Click( null, new EventArgs( ) );
@@ -386,6 +382,7 @@ namespace FS20_HudBar
         if (HUD.Hotkeys.ContainsKey( Hotkeys.Show_Hide )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Show_Hide], Hotkeys.Show_Hide.ToString( ), OnHookKey );
         if (HUD.Hotkeys.ContainsKey( Hotkeys.FlightBag )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.FlightBag], Hotkeys.FlightBag.ToString( ), OnHookKey );
         if (HUD.Hotkeys.ContainsKey( Hotkeys.Camera )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Camera], Hotkeys.Camera.ToString( ), OnHookKey );
+        if (HUD.Hotkeys.ContainsKey( Hotkeys.ChecklistBox )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.ChecklistBox], Hotkeys.ChecklistBox.ToString( ), OnHookKey );
         // profile switchers
         for (int p = 0; p < CProfile.c_numProfiles; p++) {
           if (HUD.Hotkeys.ContainsKey( (Hotkeys)p )) _keyHook.AddKey( HUD.Hotkeys[(Hotkeys)p], ((Hotkeys)p).ToString( ), OnHookKey );
@@ -408,6 +405,7 @@ namespace FS20_HudBar
       if ( tag == Hotkeys.Show_Hide.ToString( ) ) SynchGUIVisible( !this.Visible );
       else if (tag == Hotkeys.FlightBag.ToString( )) mShelf_Click( null, new EventArgs( ) );
       else if (tag == Hotkeys.Camera.ToString( )) mCamera_Click( null, new EventArgs( ) );
+      else if (tag == Hotkeys.ChecklistBox.ToString( )) mChecklistBox_Click( null, new EventArgs( ) );
       else {
         // check if a profile was triggered
         for (int p = 0; p < CProfile.c_numProfiles; p++) {
@@ -543,12 +541,22 @@ namespace FS20_HudBar
 
       // Setup the Camera and put it somewhere we can see it (either last location or default)
       LOG.Log( "frmMain: Load Camera" );
-      m_camera = new  Camera.frmCamera {
+      m_camera = new Camera.frmCamera {
         //Size = AppSettings.Instance.CameraSize,  // Fixed Size
         Location = AppSettings.Instance.CameraLocation
       };
       if (!IsOnScreen( m_camera.Location )) {
         m_camera.Location = new Point( 100, 100 );// default if not visible
+      }
+
+      // Setup the Checklist Box and put it somewhere we can see it (either last location or default)
+      LOG.Log( "frmMain: Load Checklist Box" );
+      m_checklistBox = new ChecklistBox.frmChecklistBox {
+        //Size = AppSettings.Instance.CameraSize,  // Fixed Size
+        Location = AppSettings.Instance.ChecklistBoxLocation
+      };
+      if (!IsOnScreen( m_checklistBox.Location )) {
+        m_checklistBox.Location = new Point( 100, 100 );// default if not visible
       }
 
       // Setup the Shelf and put it somewhere we can see it (either last location or default)
@@ -772,6 +780,7 @@ namespace FS20_HudBar
         AppSettings.Instance.HKProfile10 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_10 );
         AppSettings.Instance.HKShelf = HUD.Hotkeys.HotkeyString( Hotkeys.FlightBag );
         AppSettings.Instance.HKCamera = HUD.Hotkeys.HotkeyString( Hotkeys.Camera );
+        AppSettings.Instance.HKChecklistBox = HUD.Hotkeys.HotkeyString( Hotkeys.ChecklistBox );
         AppSettings.Instance.KeyboardHook = HUD.KeyboardHook;
         AppSettings.Instance.InGameHook = HUD.InGameHook;
 
@@ -1025,7 +1034,8 @@ namespace FS20_HudBar
     #region Camera Selector
     private void mCamera_Click( object sender, EventArgs e )
     {
-      if ( m_camera == null ) return; // sanity check 
+      // sanity check 
+      if ( m_camera == null ) return; 
 
       if (m_camera.Visible ) {
         m_camera.TopMost = false;
@@ -1034,6 +1044,25 @@ namespace FS20_HudBar
       else {
         m_camera.TopMost = true;
         m_camera.Show( );
+      }
+    }
+
+    #endregion
+
+    #region Checklist Box Selector
+
+    private void mChecklistBox_Click( object sender, EventArgs e )
+    {
+      // sanity check
+      if (m_checklistBox == null) return;
+
+      if (m_checklistBox.Visible) {
+        m_checklistBox.TopMost = false;
+        m_checklistBox.Hide( );
+      }
+      else {
+        m_checklistBox.TopMost = true;
+        m_checklistBox.Show( );
       }
     }
 
@@ -1168,6 +1197,7 @@ namespace FS20_HudBar
       _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_10, AppSettings.Instance.HKProfile10 );
       _hotkeycat.MaintainHotkeyString( Hotkeys.FlightBag, AppSettings.Instance.HKShelf );
       _hotkeycat.MaintainHotkeyString( Hotkeys.Camera, AppSettings.Instance.HKCamera );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.ChecklistBox, AppSettings.Instance.HKChecklistBox );
       foreach ( var hk in _hotkeycat ) {
         LOG.Log( $"InitGUI: {hk.Key} - {hk.Value.AsString}" );
       }

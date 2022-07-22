@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bm98_hbControls", "bm98_hbC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbgLib", "DbgLib\DbgLib.csproj", "{45F076AB-787B-434D-A4CD-E6B7D0A423DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bm98_Checklist", "bm98_Checklist\bm98_Checklist.csproj", "{D1F781D3-9111-48B3-8D12-AD42997672E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,14 @@ Global
 		{45F076AB-787B-434D-A4CD-E6B7D0A423DF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{45F076AB-787B-434D-A4CD-E6B7D0A423DF}.Release|x64.ActiveCfg = Release|Any CPU
 		{45F076AB-787B-434D-A4CD-E6B7D0A423DF}.Release|x64.Build.0 = Release|Any CPU
+		{D1F781D3-9111-48B3-8D12-AD42997672E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1F781D3-9111-48B3-8D12-AD42997672E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1F781D3-9111-48B3-8D12-AD42997672E1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D1F781D3-9111-48B3-8D12-AD42997672E1}.Debug|x64.Build.0 = Debug|Any CPU
+		{D1F781D3-9111-48B3-8D12-AD42997672E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1F781D3-9111-48B3-8D12-AD42997672E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1F781D3-9111-48B3-8D12-AD42997672E1}.Release|x64.ActiveCfg = Release|Any CPU
+		{D1F781D3-9111-48B3-8D12-AD42997672E1}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -18,7 +18,8 @@ namespace FS20_HudBar.Config
     Profile_6, Profile_7, Profile_8, Profile_9, Profile_10,
     Show_Hide,
     FlightBag,
-    Camera
+    Camera,
+    ChecklistBox,
   }
 
   /// <summary>

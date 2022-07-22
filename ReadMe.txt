@@ -1,5 +1,5 @@
-FS20_HudBar V 0.52 - Build 49 BETA
-(c) M. Burri - 14-Jul-2022
+FS20_HudBar V 0.53 - Build 50 BETA
+(c) M. Burri - 20-Jul-2022
 
 Contains files:
 
@@ -9,10 +9,11 @@ FS20_HudBar.exe               The program
 
 - All libraries below MUST be in the same folder as the Exe file
 bm98_Album.dll              A UserControl for displaying images (zoom & drag new since V0.43)
+bm98_Checklist.dll          A UserControl for displaying the Checklist Box (new since V0.53)
 bm98_hb_Controls.dll        UserControls for displaying graphs (new since V0.45)
 SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new since V0.35)
 PingLib.dll                 An audio lib using Win10 Audio facilities (new since V0.43)
-MetarLib.dll				A METAR access library (new since V0.29)
+MetarLib.dll                A METAR access library (new since V0.29)
 
 FS20_AptLib.dll             MSFS2020 Airport DB (updated)
 FSimClientIF.dll            Generic FSim Client interface definition (updated)
@@ -44,6 +45,11 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.53-B50
+- Add Checklist Box as independent feature
+- Add Distance to Destination item (calculated or from FPLan)
+- Update QuickGuide
 
 V 0.52-B49
 - Add 5 more profiles (total of 10 now)

@@ -67,6 +67,7 @@ namespace FS20_HudBar
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
+      this.mChecklistBox = new System.Windows.Forms.ToolStripMenuItem();
       this.cMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -126,13 +127,14 @@ namespace FS20_HudBar
             this.toolStripSeparator2,
             this.mShelf,
             this.mCamera,
+            this.mChecklistBox,
             this.toolStripSeparator4,
             this.mUnits,
             this.mConfig,
             this.toolStripSeparator3,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(181, 229);
+      this.cMenu.Size = new System.Drawing.Size(181, 251);
       // 
       // mSelProfile
       // 
@@ -166,70 +168,70 @@ namespace FS20_HudBar
       // mP1
       // 
       this.mP1.Name = "mP1";
-      this.mP1.Size = new System.Drawing.Size(180, 22);
+      this.mP1.Size = new System.Drawing.Size(123, 22);
       this.mP1.Text = "Profile 1";
       this.mP1.Click += new System.EventHandler(this.mP1_Click);
       // 
       // mP2
       // 
       this.mP2.Name = "mP2";
-      this.mP2.Size = new System.Drawing.Size(180, 22);
+      this.mP2.Size = new System.Drawing.Size(123, 22);
       this.mP2.Text = "Profile 2";
       this.mP2.Click += new System.EventHandler(this.mP2_Click);
       // 
       // mP3
       // 
       this.mP3.Name = "mP3";
-      this.mP3.Size = new System.Drawing.Size(180, 22);
+      this.mP3.Size = new System.Drawing.Size(123, 22);
       this.mP3.Text = "Profile 3";
       this.mP3.Click += new System.EventHandler(this.mP3_Click);
       // 
       // mP4
       // 
       this.mP4.Name = "mP4";
-      this.mP4.Size = new System.Drawing.Size(180, 22);
+      this.mP4.Size = new System.Drawing.Size(123, 22);
       this.mP4.Text = "Profile 4";
       this.mP4.Click += new System.EventHandler(this.mP4_Click);
       // 
       // mP5
       // 
       this.mP5.Name = "mP5";
-      this.mP5.Size = new System.Drawing.Size(180, 22);
+      this.mP5.Size = new System.Drawing.Size(123, 22);
       this.mP5.Text = "Profile 5";
       this.mP5.Click += new System.EventHandler(this.mP5_Click);
       // 
       // mP6
       // 
       this.mP6.Name = "mP6";
-      this.mP6.Size = new System.Drawing.Size(180, 22);
+      this.mP6.Size = new System.Drawing.Size(123, 22);
       this.mP6.Text = "Profile 6";
       this.mP6.Click += new System.EventHandler(this.mP6_Click);
       // 
       // mP7
       // 
       this.mP7.Name = "mP7";
-      this.mP7.Size = new System.Drawing.Size(180, 22);
+      this.mP7.Size = new System.Drawing.Size(123, 22);
       this.mP7.Text = "Profile 7";
       this.mP7.Click += new System.EventHandler(this.mP7_Click);
       // 
       // mP8
       // 
       this.mP8.Name = "mP8";
-      this.mP8.Size = new System.Drawing.Size(180, 22);
+      this.mP8.Size = new System.Drawing.Size(123, 22);
       this.mP8.Text = "Profile 8";
       this.mP8.Click += new System.EventHandler(this.mP8_Click);
       // 
       // mP9
       // 
       this.mP9.Name = "mP9";
-      this.mP9.Size = new System.Drawing.Size(180, 22);
+      this.mP9.Size = new System.Drawing.Size(123, 22);
       this.mP9.Text = "Profile 9";
       this.mP9.Click += new System.EventHandler(this.mP9_Click);
       // 
       // mP10
       // 
       this.mP10.Name = "mP10";
-      this.mP10.Size = new System.Drawing.Size(180, 22);
+      this.mP10.Size = new System.Drawing.Size(123, 22);
       this.mP10.Text = "Profile 10";
       this.mP10.Click += new System.EventHandler(this.mP10_Click);
       // 
@@ -419,6 +421,13 @@ namespace FS20_HudBar
       this.label1.UseCompatibleTextRendering = true;
       this.label1.Visible = false;
       // 
+      // mChecklistBox
+      // 
+      this.mChecklistBox.Name = "mChecklistBox";
+      this.mChecklistBox.Size = new System.Drawing.Size(180, 22);
+      this.mChecklistBox.Text = "Checklist Box...";
+      this.mChecklistBox.Click += new System.EventHandler(this.mChecklistBox_Click);
+      // 
       // frmMain
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -500,6 +509,7 @@ namespace FS20_HudBar
     private System.Windows.Forms.ToolStripMenuItem mP8;
     private System.Windows.Forms.ToolStripMenuItem mP9;
     private System.Windows.Forms.ToolStripMenuItem mP10;
+    private System.Windows.Forms.ToolStripMenuItem mChecklistBox;
   }
 }
 

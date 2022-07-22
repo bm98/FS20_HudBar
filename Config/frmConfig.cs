@@ -159,6 +159,7 @@ namespace FS20_HudBar.Config
       txHkShowHide.Text = m_hotkeys.ContainsKey( Hotkeys.Show_Hide ) ? m_hotkeys[Hotkeys.Show_Hide].AsString : "";
       txHkShelf.Text = m_hotkeys.ContainsKey( Hotkeys.FlightBag ) ? m_hotkeys[Hotkeys.FlightBag].AsString : "";
       txHkCamera.Text = m_hotkeys.ContainsKey( Hotkeys.Camera ) ? m_hotkeys[Hotkeys.Camera].AsString : "";
+      txHkChecklistBox.Text = m_hotkeys.ContainsKey( Hotkeys.ChecklistBox ) ? m_hotkeys[Hotkeys.ChecklistBox].AsString : "";
     }
 
 
@@ -206,6 +207,7 @@ namespace FS20_HudBar.Config
       m_tooltip.SetToolTip( txHkProfile5, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
       m_tooltip.SetToolTip( txHkShelf, "Hotkey to toggle the Flight Bag\nDouble click to edit the Hotkey" );
       m_tooltip.SetToolTip( txHkCamera, "Hotkey to toggle the Camera Selector\nDouble click to edit the Hotkey" );
+      m_tooltip.SetToolTip( txHkChecklistBox, "Hotkey to toggle the Checklist Box Selector\nDouble click to edit the Hotkey" );
 
       // indexed access for profile controls in the Form
       m_flps[0] = flp1; m_flps[1] = flp2; m_flps[2] = flp3; m_flps[3] = flp4; m_flps[4] = flp5;
@@ -528,6 +530,7 @@ namespace FS20_HudBar.Config
       txHkProfile5.Visible = chkKeyboard.Checked;
       txHkShelf.Visible = chkKeyboard.Checked;
       txHkCamera.Visible = chkKeyboard.Checked;
+      txHkChecklistBox.Visible = chkKeyboard.Checked;
     }
 
 
@@ -598,6 +601,12 @@ namespace FS20_HudBar.Config
     {
       txHkCamera.Text = HandleHotkey( Hotkeys.Camera );
       txHkCamera.Select( 0, 0 );
+    }
+
+    private void txHkChecklistBox_DoubleClick( object sender, EventArgs e )
+    {
+      txHkChecklistBox.Text = HandleHotkey( Hotkeys.ChecklistBox );
+      txHkChecklistBox.Select( 0, 0 );
     }
 
     #endregion
@@ -685,5 +694,6 @@ namespace FS20_HudBar.Config
       m_profileSectionInUse = (m_profileSectionInUse + 1) % c_ProfileSectionStart.Length; // walks through the sets
       InitProfileSection( );
     }
+
   }
 }

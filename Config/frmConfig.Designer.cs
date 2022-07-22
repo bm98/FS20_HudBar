@@ -93,12 +93,13 @@ namespace FS20_HudBar.Config
       this.txShelfFolder = new System.Windows.Forms.TextBox();
       this.btShelfFolder = new System.Windows.Forms.Button();
       this.btDumpConfigs = new System.Windows.Forms.Button();
-      this.btFonts = new System.Windows.Forms.Button();
-      this.chkInGame = new System.Windows.Forms.CheckBox();
-      this.chkKeyboard = new System.Windows.Forms.CheckBox();
       this.txHkCamera = new System.Windows.Forms.TextBox();
       this.panel1 = new System.Windows.Forms.Panel();
       this.btOtherProfileSet = new System.Windows.Forms.Button();
+      this.btFonts = new System.Windows.Forms.Button();
+      this.chkInGame = new System.Windows.Forms.CheckBox();
+      this.chkKeyboard = new System.Windows.Forms.CheckBox();
+      this.txHkChecklistBox = new System.Windows.Forms.TextBox();
       this.FBD = new System.Windows.Forms.FolderBrowserDialog();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.tlp.SuspendLayout();
@@ -172,11 +173,12 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.txShelfFolder, 1, 10);
       this.tlp.Controls.Add(this.btShelfFolder, 0, 10);
       this.tlp.Controls.Add(this.btDumpConfigs, 5, 9);
-      this.tlp.Controls.Add(this.btFonts, 5, 7);
-      this.tlp.Controls.Add(this.chkInGame, 5, 6);
-      this.tlp.Controls.Add(this.chkKeyboard, 5, 5);
       this.tlp.Controls.Add(this.txHkCamera, 5, 4);
       this.tlp.Controls.Add(this.panel1, 5, 2);
+      this.tlp.Controls.Add(this.btFonts, 5, 8);
+      this.tlp.Controls.Add(this.chkInGame, 5, 7);
+      this.tlp.Controls.Add(this.chkKeyboard, 5, 6);
+      this.tlp.Controls.Add(this.txHkChecklistBox, 5, 5);
       this.tlp.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tlp.Location = new System.Drawing.Point(0, 0);
       this.tlp.Name = "tlp";
@@ -957,42 +959,6 @@ namespace FS20_HudBar.Config
       this.btDumpConfigs.Visible = false;
       this.btDumpConfigs.Click += new System.EventHandler(this.btDumpConfigs_Click);
       // 
-      // btFonts
-      // 
-      this.btFonts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.btFonts.Location = new System.Drawing.Point(825, 640);
-      this.btFonts.Name = "btFonts";
-      this.btFonts.Size = new System.Drawing.Size(106, 23);
-      this.btFonts.TabIndex = 49;
-      this.btFonts.Text = "Fonts...";
-      this.btFonts.UseVisualStyleBackColor = true;
-      this.btFonts.Click += new System.EventHandler(this.btFonts_Click);
-      // 
-      // chkInGame
-      // 
-      this.chkInGame.AutoSize = true;
-      this.chkInGame.BackColor = System.Drawing.Color.Azure;
-      this.chkInGame.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.chkInGame.Location = new System.Drawing.Point(783, 609);
-      this.chkInGame.Name = "chkInGame";
-      this.chkInGame.Size = new System.Drawing.Size(148, 24);
-      this.chkInGame.TabIndex = 31;
-      this.chkInGame.Text = "MSFS Hotkeys";
-      this.chkInGame.UseVisualStyleBackColor = false;
-      // 
-      // chkKeyboard
-      // 
-      this.chkKeyboard.AutoSize = true;
-      this.chkKeyboard.BackColor = System.Drawing.Color.Honeydew;
-      this.chkKeyboard.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.chkKeyboard.Location = new System.Drawing.Point(783, 579);
-      this.chkKeyboard.Name = "chkKeyboard";
-      this.chkKeyboard.Size = new System.Drawing.Size(148, 24);
-      this.chkKeyboard.TabIndex = 30;
-      this.chkKeyboard.Text = "Keyboard Hotkeys";
-      this.chkKeyboard.UseVisualStyleBackColor = false;
-      this.chkKeyboard.CheckedChanged += new System.EventHandler(this.chkKeyboard_CheckedChanged);
-      // 
       // txHkCamera
       // 
       this.txHkCamera.BackColor = System.Drawing.Color.Honeydew;
@@ -1027,6 +993,54 @@ namespace FS20_HudBar.Config
       this.btOtherProfileSet.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
       this.btOtherProfileSet.UseVisualStyleBackColor = true;
       this.btOtherProfileSet.Click += new System.EventHandler(this.btOtherProfileSet_Click);
+      // 
+      // btFonts
+      // 
+      this.btFonts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btFonts.Location = new System.Drawing.Point(825, 670);
+      this.btFonts.Name = "btFonts";
+      this.btFonts.Size = new System.Drawing.Size(106, 23);
+      this.btFonts.TabIndex = 49;
+      this.btFonts.Text = "Fonts...";
+      this.btFonts.UseVisualStyleBackColor = true;
+      this.btFonts.Click += new System.EventHandler(this.btFonts_Click);
+      // 
+      // chkInGame
+      // 
+      this.chkInGame.AutoSize = true;
+      this.chkInGame.BackColor = System.Drawing.Color.Azure;
+      this.chkInGame.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.chkInGame.Location = new System.Drawing.Point(783, 639);
+      this.chkInGame.Name = "chkInGame";
+      this.chkInGame.Size = new System.Drawing.Size(148, 24);
+      this.chkInGame.TabIndex = 31;
+      this.chkInGame.Text = "MSFS Hotkeys";
+      this.chkInGame.UseVisualStyleBackColor = false;
+      // 
+      // chkKeyboard
+      // 
+      this.chkKeyboard.AutoSize = true;
+      this.chkKeyboard.BackColor = System.Drawing.Color.Honeydew;
+      this.chkKeyboard.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.chkKeyboard.Location = new System.Drawing.Point(783, 609);
+      this.chkKeyboard.Name = "chkKeyboard";
+      this.chkKeyboard.Size = new System.Drawing.Size(148, 24);
+      this.chkKeyboard.TabIndex = 30;
+      this.chkKeyboard.Text = "Keyboard Hotkeys";
+      this.chkKeyboard.UseVisualStyleBackColor = false;
+      this.chkKeyboard.CheckedChanged += new System.EventHandler(this.chkKeyboard_CheckedChanged);
+      // 
+      // txHkChecklistBox
+      // 
+      this.txHkChecklistBox.BackColor = System.Drawing.Color.Honeydew;
+      this.txHkChecklistBox.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.txHkChecklistBox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txHkChecklistBox.Location = new System.Drawing.Point(783, 579);
+      this.txHkChecklistBox.Name = "txHkChecklistBox";
+      this.txHkChecklistBox.ReadOnly = true;
+      this.txHkChecklistBox.Size = new System.Drawing.Size(148, 22);
+      this.txHkChecklistBox.TabIndex = 35;
+      this.txHkChecklistBox.DoubleClick += new System.EventHandler(this.txHkChecklistBox_DoubleClick);
       // 
       // FBD
       // 
@@ -1150,5 +1164,6 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.TextBox txHkCamera;
     private System.Windows.Forms.Panel panel1;
     private System.Windows.Forms.Button btOtherProfileSet;
+    private System.Windows.Forms.TextBox txHkChecklistBox;
   }
 }
