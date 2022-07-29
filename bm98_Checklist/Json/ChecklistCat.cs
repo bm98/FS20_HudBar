@@ -33,8 +33,37 @@ namespace bm98_Checklist.Json
     [DataMember( IsRequired = false, Name = "userfont" )]
     public string UserFont { get; internal set; } = "";
 
+    /// <summary>
+    /// A user CheckColor config item
+    /// </summary>
+    [DataMember( IsRequired = false, Name = "checkcolor" )]
+    public int CheckColor { get; internal set; } = (int)bm98_Checklist.SwitchColor.Blue;
+
+    /// <summary>
+    /// A user CheckBox Size config item
+    /// </summary>
+    [DataMember( IsRequired = false, Name = "checksize" )]
+    public int CheckSize { get; internal set; } = (int)bm98_Checklist.CheckSize.SizeMedium;
+
+    /// <summary>
+    /// Json Version
+    /// </summary>
+    [DataMember( IsRequired = false, Name = "version" )]
+    public int LayoutVersion { get; internal set; }
+
 
     // non Json
+
+    /// <summary>
+    /// The Json Layout version 
+    /// </summary>
+    public static int LAYOUT_VERSION = 0;
+
+    internal static void VersionUp(ChecklistCat cat )
+    {
+      if (cat.LayoutVersion == LAYOUT_VERSION) return; // nothing to do
+
+    }
 
     internal void Populate( )
     {

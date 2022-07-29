@@ -20,7 +20,7 @@ FSimClientIF.dll            Generic FSim Client interface definition (updated)
 FSimIF.dll                  Generic FSim interface definition (updated)
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
 BM98CH_WasmClient.dll       WASM Module client to get LVars (new since V0.51)
-CoordLib.dll				A coord. handling library (new since V0.29)
+CoordLib.dll				A coord. handling library (updated V0.53)
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg
@@ -48,7 +48,10 @@ Changelog:
 
 V 0.53-B50
 - Add Checklist Box as independent feature
+- Add ADF(1 only) Items Freq, Name, ID + Bearing + Needle
 - Add Distance to Destination item (calculated or from FPLan)
+- Add Scroll Wheel Inc/Dec for SimRate
+- Fix Some memory disposal of unused resources
 - Update QuickGuide
 
 V 0.52-B49

@@ -56,6 +56,24 @@ namespace bm98_Checklist
     // the default checklist with some values
     private Json.Checklist _defaultChecklist = null;
 
+    private void PopupateCheckSize( )
+    {
+      cbxCheckSize.Items.Clear( );
+      cbxCheckSize.Items.Add( "Medium" );
+      cbxCheckSize.Items.Add( "Small" );
+      cbxCheckSize.Items.Add( "Large" );
+    }
+
+    private void PopulateCheckColor( )
+    {
+      cbxCheckColor.Items.Clear( );
+      cbxCheckColor.Items.Add( "Blue" );
+      cbxCheckColor.Items.Add( "Red" );
+      cbxCheckColor.Items.Add( "Green" );
+      cbxCheckColor.Items.Add( "Yellow" );
+      cbxCheckColor.Items.Add( "White" );
+    }
+
     /// <summary>
     /// cTor:
     /// </summary>
@@ -63,6 +81,8 @@ namespace bm98_Checklist
     {
       InitializeComponent( );
 
+      PopulateCheckColor( );
+      PopupateCheckSize( );
     }
 
     private void frmConfig_Load( object sender, EventArgs e )
@@ -84,13 +104,18 @@ namespace bm98_Checklist
 
         tabCfg.TabPages[0].Controls.Add( cp );
         tabCfg.SelectedIndex = 0;
+        cbxCheckColor.SelectedIndex = 0; // Blue
+        cbxCheckSize.SelectedIndex = 0;  // Medium
       }
       else {
+        Json.ChecklistCat.VersionUp( cfg );
         // load from File
-        chkOrientation.Checked = cfg.Horizontal;
         foreach (var checklist in cfg.Checklists) {
           AddNewTab( checklist );
         }
+        chkOrientation.Checked = cfg.Horizontal;
+        cbxCheckColor.SelectedIndex = (cfg.CheckColor >= 0) ? cfg.CheckColor : (int)SwitchColor.Blue;
+        cbxCheckSize.SelectedIndex = (cfg.CheckSize >= 0) ? cfg.CheckSize : (int)CheckSize.SizeMedium;
       }
       tabCfg.SelectedIndex = 0;
     }
@@ -189,13 +214,27 @@ namespace bm98_Checklist
       }
     }
 
+    // Checkbox Size changed
+    private void cbxCheckSize_SelectedIndexChanged( object sender, EventArgs e )
+    {
+      foreach (TabPage tab in tabCfg.TabPages) {
+        if (tab.Controls[0] is UC_CheckPage) {
+          var cp = tab.Controls[0] as UC_CheckPage;
+          cp.SetBoxSize( (CheckSize)cbxCheckSize.SelectedIndex );
+        }
+      }
+    }
 
     private void btAccept_Click( object sender, EventArgs e )
     {
       //Save Config
-      Json.ChecklistCat cfg = new Json.ChecklistCat( );
-      cfg.Horizontal = chkOrientation.Checked;
-      cfg.UserFont = frmConfig.FontManager.GetUserConfigString( );
+      Json.ChecklistCat cfg = new Json.ChecklistCat {
+        Horizontal = chkOrientation.Checked,
+        CheckColor = cbxCheckColor.SelectedIndex,
+        CheckSize = cbxCheckSize.SelectedIndex,
+        UserFont = frmConfig.FontManager.GetUserConfigString( ),
+        LayoutVersion = Json.ChecklistCat.LAYOUT_VERSION,
+      };
       foreach (TabPage tab in tabCfg.TabPages) {
         if (tab.Controls[0] is UC_CheckPage) {
           var cp = tab.Controls[0] as UC_CheckPage;
@@ -217,6 +256,5 @@ namespace bm98_Checklist
       this.DialogResult = DialogResult.Cancel;
       this.Hide( );
     }
-
   }
 }

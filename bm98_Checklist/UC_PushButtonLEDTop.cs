@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -19,8 +20,6 @@ namespace bm98_Checklist
   public partial class UC_PushButtonLEDTop : UserControl
   {
     private bool m_track = false;
-    private bool m_wheel = false;
-
     private bool m_state = false;
 
     private SwitchColor m_colorON = SwitchColor.Red;
@@ -55,7 +54,7 @@ namespace bm98_Checklist
     {
       InitializeComponent( );
       lblText.Dock = DockStyle.Fill;
-      lblText.Padding = new Padding( 10, 20, 10, 5 );
+      lblText.Padding = Helper.BtPadding;
       lblText.Text = "";
     }
 
@@ -160,5 +159,11 @@ namespace bm98_Checklist
       }
     }
 
+    private void lblText_ClientSizeChanged( object sender, EventArgs e )
+    {
+#if DEBUG
+      Debug.WriteLine( $"BT {this.Name} - Label Size: {lblText.Size} - ClientSize: {lblText.ClientSize- lblText.Padding.Size}" );
+#endif
+    }
   }
 }

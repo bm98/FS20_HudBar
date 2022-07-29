@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace bm98_Checklist
   internal partial class UC_CheckPage : UserControl
   {
     // number of Phases
-    private const int c_numPhase = 4;
+    private const int c_numPhase = 5;
     // number of Checks / Phase
     private const int c_numChecks = 10;
 
@@ -32,6 +33,7 @@ namespace bm98_Checklist
       foreach (var t in _pTxt[1]) t.Text = ""; chkPhaseB.Checked = false; txPhaseB.Text = "";
       foreach (var t in _pTxt[2]) t.Text = ""; chkPhaseC.Checked = false; txPhaseC.Text = "";
       foreach (var t in _pTxt[3]) t.Text = ""; chkPhaseD.Checked = false; txPhaseD.Text = "";
+      foreach (var t in _pTxt[4]) t.Text = ""; chkPhaseE.Checked = false; txPhaseE.Text = "";
     }
 
     /// <summary>
@@ -66,6 +68,22 @@ namespace bm98_Checklist
     /// </summary>
     public string Header => txCListName.Text;
 
+    /// <summary>
+    /// Set the Box Size of the Check Input fields
+    /// </summary>
+    /// <param name="size">A Size</param>
+    public void SetBoxSize( CheckSize size )
+    {
+      flpPhases.SuspendLayout( );
+      Size newSize = Helper.WriteBoxSizes[(int)size];
+      for (int phase = 0; phase < c_numPhase; phase++) {
+        for (int i = 0; i < _pTxt[phase].Length; i++) {
+          _pTxt[phase][i].Size = newSize;
+        }
+      }
+      flpPhases.ResumeLayout( );
+    }
+
     public UC_CheckPage( )
     {
       InitializeComponent( );
@@ -91,6 +109,11 @@ namespace bm98_Checklist
       _pName[phase] = txPhaseD; _pEnabled[phase] = chkPhaseD;
       _pTxt[phase][0] = txChkItem_D_0; _pTxt[phase][1] = txChkItem_D_1; _pTxt[phase][2] = txChkItem_D_2; _pTxt[phase][3] = txChkItem_D_3; _pTxt[phase][4] = txChkItem_D_4;
       _pTxt[phase][5] = txChkItem_D_5; _pTxt[phase][6] = txChkItem_D_6; _pTxt[phase][7] = txChkItem_D_7; _pTxt[phase][8] = txChkItem_D_8; _pTxt[phase][9] = txChkItem_D_9;
+
+      phase++;
+      _pName[phase] = txPhaseE; _pEnabled[phase] = chkPhaseE;
+      _pTxt[phase][0] = txChkItem_E_0; _pTxt[phase][1] = txChkItem_E_1; _pTxt[phase][2] = txChkItem_E_2; _pTxt[phase][3] = txChkItem_E_3; _pTxt[phase][4] = txChkItem_E_4;
+      _pTxt[phase][5] = txChkItem_E_5; _pTxt[phase][6] = txChkItem_E_6; _pTxt[phase][7] = txChkItem_E_7; _pTxt[phase][8] = txChkItem_E_8; _pTxt[phase][9] = txChkItem_E_9;
     }
 
     // Page Loading
@@ -191,5 +214,14 @@ namespace bm98_Checklist
       txPhaseD.BackColor = (chkPhaseD.Checked) ? Color.LightGreen : txChkItem_A_0.BackColor;
     }
 
+    private void chkPhaseE_CheckedChanged( object sender, EventArgs e )
+    {
+      txPhaseE.BackColor = (chkPhaseE.Checked) ? Color.LightGreen : txChkItem_A_0.BackColor;
+    }
+
+    private void txChkItem_A_0_ClientSizeChanged( object sender, EventArgs e )
+    {
+      Debug.WriteLine( $"BT TextBox Size: {txChkItem_A_0.Size} - ClientSize: {txChkItem_A_0.ClientSize}" );
+    }
   }
 }

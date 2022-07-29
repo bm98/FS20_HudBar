@@ -206,11 +206,11 @@ namespace FS20_HudBar.GUI
       { ColorType.cValBG, Color.FromArgb(16,26,67) },// Clickable Value Background, blueish dark
 
       { ColorType.cScale0, Color.MintCream }, // Color Scale light greenish .. Magenta
-      { ColorType.cScale1, Color.LawnGreen }, // Color Scale light greenish .. Magenta
-      { ColorType.cScale2, Color.Gold }, // Color Scale light greenish .. Magenta
-      { ColorType.cScale3, Color.Orange }, // Color Scale light greenish .. Magenta
-      { ColorType.cScale4, Color.Red }, // Color Scale light greenish .. Magenta
-      { ColorType.cScale5, Color.Magenta }, // Color Scale light greenish .. Magenta
+      { ColorType.cScale1, Color.LawnGreen },
+      { ColorType.cScale2, Color.Gold },
+      { ColorType.cScale3, Color.Orange },
+      { ColorType.cScale4, Color.Red },
+      { ColorType.cScale5, Color.Magenta },
 
       //{ ColorType.cDivBG, Dimm( Color.LightSteelBlue, 50) },// Separator Background
       //{ ColorType.cDivBG, Color.FromArgb(79,83,43) },// Separator Background Yellowish

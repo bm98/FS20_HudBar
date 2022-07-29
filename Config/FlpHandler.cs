@@ -17,7 +17,8 @@ namespace FS20_HudBar.Config
   /// <summary>
   /// Handles the FlowLayout Panel
   /// </summary>
-  class FlpHandler
+  class FlpHandler : IDisposable
+
   {
     private int m_pIndex = 0; // Profile Number 0...
 
@@ -91,9 +92,9 @@ namespace FS20_HudBar.Config
         tmp.Add( cb );
       }
 
+      ClearOldControls( );// m_flp.Controls.Clear( );
       // now load the real panel accordingly from display position 0...
       m_flp.SuspendLayout( ); // avoid performance issued while loading all checkboxes
-      m_flp.Controls.Clear( );
 
       foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
         // we use the Enum only as position index 0... max here
@@ -112,6 +113,17 @@ namespace FS20_HudBar.Config
       m_flp.ResumeLayout( );
     }
 
+
+    private void ClearOldControls( )
+    {
+      m_flp.SuspendLayout( );
+      while (m_flp.Controls.Count > 0) {
+        var c = m_flp.Controls[0];
+        m_flp.Controls.Remove( c );
+        c.Dispose( );
+      }
+      m_flp.ResumeLayout( );
+    }
 
     #region Mouse + Drag and Drop Handling
 
@@ -487,6 +499,38 @@ namespace FS20_HudBar.Config
       return ret;
     }
 
+    #region DISPOSE
 
+    private bool disposedValue;
+
+    protected virtual void Dispose( bool disposing )
+    {
+      if (!disposedValue) {
+        if (disposing) {
+          // TODO: dispose managed state (managed objects)
+          ClearOldControls( );
+        }
+
+        // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+        // TODO: set large fields to null
+        disposedValue = true;
+      }
+    }
+
+    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    // ~FlpHandler()
+    // {
+    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+    //     Dispose(disposing: false);
+    // }
+
+    public void Dispose( )
+    {
+      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+      Dispose( disposing: true );
+      GC.SuppressFinalize( this );
+    }
+
+    #endregion
   }
 }

@@ -87,9 +87,9 @@ namespace FS20_HudBar.Bar
       {LItem.FLAPS_ANI, DI_FlapsGraph.Desc }, {LItem.SPOILER_ANI, DI_SpoilersGraph.Desc },
       {LItem.Lights, DI_Lights.Desc },
 
-      {LItem.NAV1_F, DI_Nav1.Desc },          {LItem.NAV2_F, DI_Nav2.Desc },
-      {LItem.NAV1, DI_Nav1_Active.Desc },     {LItem.NAV2, DI_Nav2_Active.Desc },
-      {LItem.NAV1_NAME, DI_Nav1_Name.Desc },  {LItem.NAV2_NAME, DI_Nav2_Name.Desc },
+      {LItem.NAV1_F, DI_Nav1.Desc },          {LItem.NAV2_F, DI_Nav2.Desc },          {LItem.ADF1_F, DI_Adf1.Desc },
+      {LItem.NAV1, DI_Nav1_Active.Desc },     {LItem.NAV2, DI_Nav2_Active.Desc },     {LItem.ADF1, DI_Adf1_Active.Desc },
+      {LItem.NAV1_NAME, DI_Nav1_Name.Desc },  {LItem.NAV2_NAME, DI_Nav2_Name.Desc },  {LItem.ADF1_NAME, DI_Adf1_Name.Desc },
 
       {LItem.COM1, DI_Com1.Desc },            {LItem.COM2, DI_Com2.Desc },
       {LItem.COM1_NAME, DI_Com1_Name.Desc },  {LItem.COM2_NAME, DI_Com2_Name.Desc },
@@ -465,10 +465,13 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Gforce_MM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Adf1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav1_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav2_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Adf1_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav2_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Adf1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Xpdr( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Com1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Com2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -996,6 +999,10 @@ namespace FS20_HudBar.Bar
           // TODO: dispose managed state (managed objects)
           SC.SimConnectClient.Instance.AircraftChange -= Instance_AircraftChange;
           FONTS.Dispose( );
+          foreach (var di in m_dispItems) {
+            di.Value.Dispose( );
+          }
+          m_toolTipFP.Dispose( );
         }
 
         // TODO: free unmanaged resources (unmanaged objects) and override finalizer

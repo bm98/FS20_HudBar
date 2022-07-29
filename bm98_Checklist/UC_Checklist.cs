@@ -16,12 +16,11 @@ namespace bm98_Checklist
   /// </summary>
   public partial class UC_Checklist : UserControl
   {
-    private const int c_bWidth = 164; // Check Button Width
-    private const int c_bHeight = 70; // Check Button Height
     private readonly Color c_AllDoneColor = Color.FromArgb( 0, 48, 0 );
 
+
     private readonly Color c_CheckText = Color.LightYellow;
-    private  readonly Color c_CheckTextDone = Color.Pink; // will be changed in cTor..
+    private readonly Color c_CheckTextDone = Color.Pink; // will be changed in cTor..
 
     private frmConfig CFG;
 
@@ -45,6 +44,7 @@ namespace bm98_Checklist
     /// Get; Set: The UserDir where the config file should be found (or not...)
     /// Note the Dir shall exist - will not be created here
     /// </summary>
+    [Description( "The UserDir where the config file should be found" ), Category( "Data" )]
     public string UserDir {
       get => frmConfig.UserDir;
       set {
@@ -71,7 +71,9 @@ namespace bm98_Checklist
       // clear all from the first separator upwards and before the ListName (item 0)
       int tss = ctxMenu.Items.IndexOf( tssPhase );
       for (int i = tss - 1; i > 0; i--) {
+        var item = ctxMenu.Items[i];
         ctxMenu.Items.RemoveAt( i );
+        item.Dispose( );
       }
 
       if (_currentChecklist == null) return; // ??
@@ -97,7 +99,11 @@ namespace bm98_Checklist
     private void PopulateChecks( )
     {
       flp.SuspendLayout( );
-      flp.Controls.Clear( );
+      while (flp.Controls.Count > 0) {
+        var item = flp.Controls[0];
+        flp.Controls.RemoveAt( 0 );
+        item.Dispose( );
+      }
       if (_currentPhase == null) return; // when all Phases are disabled ...
 
       int checkIndex = 0;
@@ -110,10 +116,9 @@ namespace bm98_Checklist
             ButtonText = check,
             OnState = false,
             ForeColor = c_CheckText,
-            PushOffColor = SwitchColor.Blue,
+            PushOffColor = (SwitchColor)_currentCatalog.CheckColor,
             PushOnColor = SwitchColor.Dark,
-            Width = c_bWidth,
-            Height = c_bHeight,
+            Size = Helper.CheckBoxSizes[_currentCatalog.CheckSize],
             Font = frmConfig.FontManager.GetFont( "DEFAULT" ),
           };
           flp.Controls.Add( uc );
@@ -137,12 +142,17 @@ namespace bm98_Checklist
       Json.ChecklistCat cfg = Json.Formatter.FromJsonFile<Json.ChecklistCat>( cFilename );
       if (cfg == null) {
         // no valid Config File.. create a dummy one for a start
-        _currentCatalog = new Json.ChecklistCat( );
-        _currentCatalog.UserFont = "";
+        _currentCatalog = new Json.ChecklistCat {
+          UserFont = "",
+          CheckSize = (int)CheckSize.SizeMedium,
+          CheckColor = (int)SwitchColor.Blue,
+          LayoutVersion = Json.ChecklistCat.LAYOUT_VERSION,
+        };
         _currentCatalog.Checklists.Add( new Json.Checklist { Name = "USE CONFIGURE" } );
         _currentCatalog.Checklists[0].Phases.Add( new Json.CheckPhase( ) { Name = "EMPTY", Enabled = true, Checks = new List<string>( ) { "DUMMY" } } );
       }
       else {
+        Json.ChecklistCat.VersionUp( cfg );
         //Load Config
         _currentCatalog = cfg;
       }
@@ -151,7 +161,12 @@ namespace bm98_Checklist
         frmConfig.FontManager.SetUserConfigString( _currentCatalog.UserFont );
       }
       // fill GUI
-      flp.FlowDirection = (_currentCatalog.Horizontal) ? FlowDirection.LeftToRight : FlowDirection.TopDown;
+      FlowDirection newDirection = (_currentCatalog.Horizontal) ? FlowDirection.LeftToRight : FlowDirection.TopDown;
+      if (flp.FlowDirection != newDirection) {
+        // assign only if needed
+        flp.FlowDirection = newDirection;
+      }
+//      flp.FlowDirection = (_currentCatalog.Horizontal) ? FlowDirection.LeftToRight : FlowDirection.TopDown;
       PopulateChecklists( );
       _currentChecklist = _currentCatalog.Checklists[0];
       PopulatePhases( );
@@ -166,7 +181,7 @@ namespace bm98_Checklist
     {
       InitializeComponent( );
 
-      c_CheckTextDone = Color.FromArgb(c_CheckText.R - 75, c_CheckText.G - 75, c_CheckText.B - 75 ); // Dimm
+      c_CheckTextDone = Color.FromArgb( c_CheckText.R - 75, c_CheckText.G - 75, c_CheckText.B - 75 ); // Dimm
 
       // register fonts on init
       frmConfig.FontManager.RegisterFont( "DEFAULT", ucPbReference.Font ); // base font
@@ -184,7 +199,7 @@ namespace bm98_Checklist
     {
       if (!(sender is ToolStripMenuItem)) return;
       var tsi = sender as ToolStripMenuItem;
-      int checklistIndex = (tsi.Tag is int) ? (int)tsi.Tag : -1;
+      int checklistIndex = (tsi.Tag is int @tag) ? @tag : -1;
       if (checklistIndex < 0) return;
       // load the checklist with index and make the first phase visible
       _currentChecklist = _currentCatalog.Checklists[checklistIndex];
@@ -198,7 +213,7 @@ namespace bm98_Checklist
     {
       if (!(sender is ToolStripMenuItem)) return;
       var tsi = sender as ToolStripMenuItem;
-      int phaseIndex = (tsi.Tag is int) ? (int)tsi.Tag : -1;
+      int phaseIndex = (tsi.Tag is int @tag) ? @tag : -1;
       if (phaseIndex < 0) return;
       // load Phase with index
       _currentPhase = _currentChecklist.Phases[phaseIndex];

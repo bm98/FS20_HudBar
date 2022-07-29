@@ -41,6 +41,7 @@ namespace FS20_HudBar.ChecklistBox
       this.chklistBox.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("chklistBox.BackgroundImage")));
       this.chklistBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
       this.chklistBox.CausesValidation = false;
+      this.chklistBox.Cursor = System.Windows.Forms.Cursors.SizeAll;
       this.chklistBox.Dock = System.Windows.Forms.DockStyle.Fill;
       this.chklistBox.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.chklistBox.Location = new System.Drawing.Point(10, 10);
@@ -64,7 +65,7 @@ namespace FS20_HudBar.ChecklistBox
       this.ClientSize = new System.Drawing.Size(265, 387);
       this.ControlBox = false;
       this.Controls.Add(this.chklistBox);
-      this.Cursor = System.Windows.Forms.Cursors.SizeAll;
+      this.Cursor = System.Windows.Forms.Cursors.Default;
       this.DoubleBuffered = true;
       this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -73,6 +74,7 @@ namespace FS20_HudBar.ChecklistBox
       this.MinimizeBox = false;
       this.Name = "frmChecklistBox";
       this.Padding = new System.Windows.Forms.Padding(10);
+      this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
       this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
       this.Text = "Checklist Box";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmChecklistBox_FormClosing);

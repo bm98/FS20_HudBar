@@ -177,6 +177,9 @@ namespace FS20_HudBar.Bar.Items
     COMPASS,     // Mag Compass
 
     GPS_DST,     // GPS or Calc Distance to Destination
+    ADF1,        // ADF1 Direction
+    ADF1_NAME,   // ADF1 ID,Name
+    ADF1_F,      // ADF1 Frequ
   }
 
 
@@ -438,6 +441,15 @@ namespace FS20_HudBar.Bar.Items
     NAV2_SWAP,    // NAV2 Swap
     NAV2_STDBY,   // NAV2 Standby Frequency
     NAV2_ACTIVE,  // NAV2 Active Frequency
+
+    ADF1_ID,      // ADF1 ID
+    ADF1_NAME,    // ADF1 Name
+    ADF1_BRG,     // ADF1 Radial
+    ADF1_ANI,     // ADF1 Needle
+
+    ADF1_SWAP,    // ADF1 Swap
+    ADF1_STDBY,   // ADF1 Standby Frequency
+    ADF1_ACTIVE,  // ADF1 Active Frequency
 
     COM1_SWAP,    // COM1 Swap
     COM1_STDBY,   // COM1 Standby Frequency

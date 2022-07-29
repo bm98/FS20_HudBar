@@ -44,7 +44,6 @@
       this.flpMain = new System.Windows.Forms.FlowLayoutPanel();
       this.lblChecklist = new System.Windows.Forms.Label();
       this.lblPhase = new System.Windows.Forms.Label();
-      this.btReset = new System.Windows.Forms.Button();
       this.ucPbReference = new bm98_Checklist.UC_PushButtonLEDTop();
       this.uC_PushButtonLEDTop5 = new bm98_Checklist.UC_PushButtonLEDTop();
       this.flp.SuspendLayout();
@@ -60,14 +59,14 @@
       this.flp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.flp.Controls.Add(this.ucPbReference);
       this.flp.Controls.Add(this.uC_PushButtonLEDTop5);
-      this.flp.Dock = System.Windows.Forms.DockStyle.Top;
       this.flp.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
       this.flp.ForeColor = System.Drawing.SystemColors.ControlText;
-      this.flp.Location = new System.Drawing.Point(3, 48);
+      this.flp.Location = new System.Drawing.Point(3, 36);
       this.flp.Name = "flp";
       this.flp.Padding = new System.Windows.Forms.Padding(5);
-      this.flp.Size = new System.Drawing.Size(181, 152);
+      this.flp.Size = new System.Drawing.Size(168, 124);
       this.flp.TabIndex = 0;
+      this.flp.WrapContents = false;
       // 
       // ctxMenu
       // 
@@ -86,7 +85,6 @@
       // mListName
       // 
       this.mListName.BackColor = System.Drawing.Color.Gainsboro;
-      this.mListName.Font = new System.Drawing.Font("Segoe UI", 9F);
       this.mListName.Name = "mListName";
       this.mListName.ReadOnly = true;
       this.mListName.Size = new System.Drawing.Size(150, 23);
@@ -151,23 +149,23 @@
       this.flpMain.Controls.Add(this.lblChecklist);
       this.flpMain.Controls.Add(this.lblPhase);
       this.flpMain.Controls.Add(this.flp);
-      this.flpMain.Controls.Add(this.btReset);
       this.flpMain.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
       this.flpMain.Location = new System.Drawing.Point(23, 23);
       this.flpMain.Name = "flpMain";
-      this.flpMain.Size = new System.Drawing.Size(187, 249);
+      this.flpMain.Size = new System.Drawing.Size(174, 163);
       this.flpMain.TabIndex = 1;
       this.flpMain.WrapContents = false;
       // 
       // lblChecklist
       // 
+      this.lblChecklist.AutoSize = true;
       this.lblChecklist.CausesValidation = false;
       this.lblChecklist.Dock = System.Windows.Forms.DockStyle.Top;
       this.lblChecklist.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.lblChecklist.ForeColor = System.Drawing.Color.MediumTurquoise;
       this.lblChecklist.Location = new System.Drawing.Point(3, 0);
       this.lblChecklist.Name = "lblChecklist";
-      this.lblChecklist.Size = new System.Drawing.Size(181, 20);
+      this.lblChecklist.Size = new System.Drawing.Size(168, 15);
       this.lblChecklist.TabIndex = 0;
       this.lblChecklist.Text = "Checklist";
       this.lblChecklist.MouseDown += new System.Windows.Forms.MouseEventHandler(this.propagate_MouseDown);
@@ -179,13 +177,14 @@
       // 
       // lblPhase
       // 
+      this.lblPhase.AutoSize = true;
       this.lblPhase.CausesValidation = false;
       this.lblPhase.Dock = System.Windows.Forms.DockStyle.Top;
       this.lblPhase.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.lblPhase.ForeColor = System.Drawing.Color.Aquamarine;
-      this.lblPhase.Location = new System.Drawing.Point(3, 20);
+      this.lblPhase.Location = new System.Drawing.Point(3, 15);
       this.lblPhase.Name = "lblPhase";
-      this.lblPhase.Size = new System.Drawing.Size(181, 25);
+      this.lblPhase.Size = new System.Drawing.Size(168, 18);
       this.lblPhase.TabIndex = 0;
       this.lblPhase.Text = "Phase";
       this.lblPhase.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -196,35 +195,22 @@
       this.lblPhase.MouseMove += new System.Windows.Forms.MouseEventHandler(this.propagate_MouseMove);
       this.lblPhase.MouseUp += new System.Windows.Forms.MouseEventHandler(this.propagate_MouseUp);
       // 
-      // btReset
-      // 
-      this.btReset.Dock = System.Windows.Forms.DockStyle.Left;
-      this.btReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btReset.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btReset.ForeColor = System.Drawing.Color.SteelBlue;
-      this.btReset.Location = new System.Drawing.Point(3, 206);
-      this.btReset.Name = "btReset";
-      this.btReset.Size = new System.Drawing.Size(167, 40);
-      this.btReset.TabIndex = 1;
-      this.btReset.Text = "RESET";
-      this.btReset.UseVisualStyleBackColor = true;
-      this.btReset.Visible = false;
-      this.btReset.Click += new System.EventHandler(this.mReset_Click);
-      // 
       // ucPbReference
       // 
       this.ucPbReference.BackColor = System.Drawing.Color.Transparent;
       this.ucPbReference.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("ucPbReference.BackgroundImage")));
       this.ucPbReference.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
       this.ucPbReference.ButtonText = "EASDASD";
+      this.ucPbReference.Dock = System.Windows.Forms.DockStyle.Left;
       this.ucPbReference.ForeColor = System.Drawing.Color.LightYellow;
       this.ucPbReference.HotTracking = false;
       this.ucPbReference.Location = new System.Drawing.Point(8, 8);
+      this.ucPbReference.MinimumSize = new System.Drawing.Size(150, 50);
       this.ucPbReference.Name = "ucPbReference";
       this.ucPbReference.OnState = false;
       this.ucPbReference.PushOffColor = bm98_Checklist.SwitchColor.White;
       this.ucPbReference.PushOnColor = bm98_Checklist.SwitchColor.Red;
-      this.ucPbReference.Size = new System.Drawing.Size(163, 64);
+      this.ucPbReference.Size = new System.Drawing.Size(150, 50);
       this.ucPbReference.TabIndex = 1;
       // 
       // uC_PushButtonLEDTop5
@@ -233,14 +219,16 @@
       this.uC_PushButtonLEDTop5.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("uC_PushButtonLEDTop5.BackgroundImage")));
       this.uC_PushButtonLEDTop5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
       this.uC_PushButtonLEDTop5.ButtonText = "EASDASD";
+      this.uC_PushButtonLEDTop5.Dock = System.Windows.Forms.DockStyle.Left;
       this.uC_PushButtonLEDTop5.ForeColor = System.Drawing.Color.LightYellow;
       this.uC_PushButtonLEDTop5.HotTracking = false;
-      this.uC_PushButtonLEDTop5.Location = new System.Drawing.Point(8, 78);
+      this.uC_PushButtonLEDTop5.Location = new System.Drawing.Point(8, 64);
+      this.uC_PushButtonLEDTop5.MinimumSize = new System.Drawing.Size(150, 50);
       this.uC_PushButtonLEDTop5.Name = "uC_PushButtonLEDTop5";
       this.uC_PushButtonLEDTop5.OnState = false;
       this.uC_PushButtonLEDTop5.PushOffColor = bm98_Checklist.SwitchColor.Dark;
       this.uC_PushButtonLEDTop5.PushOnColor = bm98_Checklist.SwitchColor.Red;
-      this.uC_PushButtonLEDTop5.Size = new System.Drawing.Size(163, 64);
+      this.uC_PushButtonLEDTop5.Size = new System.Drawing.Size(150, 50);
       this.uC_PushButtonLEDTop5.TabIndex = 1;
       // 
       // UC_Checklist
@@ -258,7 +246,7 @@
       this.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.Name = "UC_Checklist";
       this.Padding = new System.Windows.Forms.Padding(20);
-      this.Size = new System.Drawing.Size(233, 295);
+      this.Size = new System.Drawing.Size(220, 209);
       this.Load += new System.EventHandler(this.UC_Checklist_Load);
       this.flp.ResumeLayout(false);
       this.ctxMenu.ResumeLayout(false);
@@ -285,7 +273,6 @@
     private System.Windows.Forms.FlowLayoutPanel flpMain;
     private System.Windows.Forms.Label lblChecklist;
     private System.Windows.Forms.Label lblPhase;
-    private System.Windows.Forms.Button btReset;
     private System.Windows.Forms.ToolStripTextBox mListName;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     private System.Windows.Forms.ToolStripMenuItem mHide;

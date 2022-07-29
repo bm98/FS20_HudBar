@@ -57,14 +57,15 @@ namespace bm98_Checklist
       public Font Font {
         get {
           if (UserSize > 1) {
-            return UserFont ?? StdFont; // return UserFont only if valid
+            // return UserFont only if valid
+            return (Font)(UserFont ?? StdFont).Clone(); // returns a Clone, else we get Font.Height Exceptions (when Font Refs of Controls are Disposed)
           }
-          return StdFont;
+          return (Font)StdFont.Clone();
         }
       }
 
       // returns the Standard Font (alloc when needed)
-      public Font StdFont {
+      private Font StdFont {
         get {
           if (_stdFont == null) {
             _stdFont = new Font( Name, Size, FontStyle, FontSizeUnit );
@@ -74,7 +75,7 @@ namespace bm98_Checklist
       }
 
       // returns the UserFont (alloc when needed)
-      public Font UserFont {
+      private Font UserFont {
         get {
           if (_userFont == null) {
             try {
@@ -204,7 +205,7 @@ namespace bm98_Checklist
       if (_fontSpecs.ContainsKey( fontDescriptor )) {
         return _fontSpecs[fontDescriptor].Font;
       }
-      else if( _fontSpecs.ContainsKey( _baseDescriptor ) ) {
+      else if (_fontSpecs.ContainsKey( _baseDescriptor )) {
         return _fontSpecs[_baseDescriptor].Font;
       }
       return _defaultFont;

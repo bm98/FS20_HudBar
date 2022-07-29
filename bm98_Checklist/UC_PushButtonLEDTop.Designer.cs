@@ -36,11 +36,11 @@ namespace bm98_Checklist
       this.lblText.Cursor = System.Windows.Forms.Cursors.Hand;
       this.lblText.Location = new System.Drawing.Point(15, 31);
       this.lblText.Name = "lblText";
-      this.lblText.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
       this.lblText.Size = new System.Drawing.Size(54, 22);
       this.lblText.TabIndex = 3;
       this.lblText.Text = "TEST";
       this.lblText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+      this.lblText.ClientSizeChanged += new System.EventHandler(this.lblText_ClientSizeChanged);
       this.lblText.Click += new System.EventHandler(this.lblText_Click);
       this.lblText.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblText_MouseDown);
       this.lblText.MouseEnter += new System.EventHandler(this.lblText_MouseEnter);

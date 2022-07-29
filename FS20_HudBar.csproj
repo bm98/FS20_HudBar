@@ -203,6 +203,15 @@
     <Compile Include="Bar\Items\AtcPara\DI_DepArr.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Adf1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Adf1_Active.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Adf1_Name.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\GpsPara\DI_Gps_DST.cs">
       <SubType>Component</SubType>
     </Compile>

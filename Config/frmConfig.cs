@@ -83,7 +83,7 @@ namespace FS20_HudBar.Config
       cbx.Items.Add( "AutoBackup + ATC" );
     }
 
-    private void PopulateVoiceCallouts( )
+    private void SetVoiceCalloutState( )
     {
       clbVoice.Items.Clear( );
       foreach (var vt in HudBarRef.VoicePack.Triggers) {
@@ -154,7 +154,29 @@ namespace FS20_HudBar.Config
       cbx.Items.Add( $"{(int)GUI.Transparent.T90 * 10}%  Transparent" );
     }
 
-    private void PopulateHotkeys( )
+    // Load the combo from installed voices
+    private void PopulateVoice( ComboBox cbx )
+    {
+      cbx.Items.Clear( );
+      foreach (var vn in GUI.GUI_Speech.AvailableVoices) {
+        cbx.Items.Add( vn );
+      }
+    }
+
+    // select the current voice from settings
+    public void LoadVoice( ComboBox cbx )
+    {
+      if (cbx.Items.Contains( HudBarRef.VoiceName ))
+        cbx.SelectedItem = HudBarRef.VoiceName;
+      else if (cbx.Items.Count > 0) {
+        cbx.SelectedIndex = 0;
+      }
+      else {
+        // no voices installed...
+      }
+    }
+
+    private void SetHotkeyTexts( )
     {
       txHkShowHide.Text = m_hotkeys.ContainsKey( Hotkeys.Show_Hide ) ? m_hotkeys[Hotkeys.Show_Hide].AsString : "";
       txHkShelf.Text = m_hotkeys.ContainsKey( Hotkeys.FlightBag ) ? m_hotkeys[Hotkeys.FlightBag].AsString : "";
@@ -163,12 +185,55 @@ namespace FS20_HudBar.Config
     }
 
 
-    // Load the combo from installed voices
-    private void PopulateVoice( ComboBox cbx )
+    // Initializes the selected Profile Section
+    // from m_profileSectionInUse
+    private void InitProfileSection( )
     {
-      cbx.Items.Clear( );
-      foreach (var vn in GUI.GUI_Speech.AvailableVoices) {
-        cbx.Items.Add( vn );
+      LoadProfileSection( SectionStart );
+    }
+
+    // Loads a section of profiles 
+    // i.e. the number of shown profiles starting from the startProfileNum (1..N)
+    private void LoadProfileSection( int startProfileNum )
+    {
+      // for all profiles
+      for (int p = 0; p < c_NumProfilesShown; p++) {
+        m_pName[p].Text = ProfilesCache[(p + startProfileNum)].PName;
+        m_flpHandler[p]?.Dispose( );
+        m_flpHandler[p] = new FlpHandler(
+          m_flps[p], p,
+          ProfilesCache[(p + startProfileNum)].ProfileString( ),
+          ProfilesCache[(p + startProfileNum)].FlowBreakString( ),
+          ProfilesCache[(p + startProfileNum)].ItemPosString( )
+        );
+        m_flpHandler[p].LoadFlp( HudBarRef );
+        ProfilesCache[(p + startProfileNum)].LoadFontSize( m_pFont[p] );
+        ProfilesCache[(p + startProfileNum)].LoadPlacement( m_pPlace[p] );
+        ProfilesCache[(p + startProfileNum)].LoadKind( m_pKind[p] );
+        ProfilesCache[(p + startProfileNum)].LoadCond( m_pCondensed[p] );
+        ProfilesCache[(p + startProfileNum)].LoadTrans( m_pTransparency[p] );
+
+        m_pHotkey[p].Text = m_hotkeys.ContainsKey( (Hotkeys)(p + startProfileNum) ) ? m_hotkeys[(Hotkeys)(p + startProfileNum)].AsString : "";
+
+        // mark the selected one 
+        m_pName[p].BackColor = (SelectedProfile == (p + startProfileNum)) ? Color.LimeGreen : txShelfFolder.BackColor; // use another text fields back as default if not selected
+      }
+    }
+
+    // temp store the edits of the Section starting with the given profile number
+    private void CacheProfileSection( int startProfileNum )
+    {
+      // record profile Updates from the controls
+      for (int p = 0; p < c_NumProfilesShown; p++) {
+        ProfilesCache[p + startProfileNum].PName = m_pName[p].Text.Trim( );
+        ProfilesCache[p + startProfileNum].GetItemsFromFlp( m_flps[p], p );
+        ProfilesCache[p + startProfileNum].GetFontSizeFromCombo( m_pFont[p] );
+        ProfilesCache[p + startProfileNum].GetPlacementFromCombo( m_pPlace[p] );
+        ProfilesCache[p + startProfileNum].GetKindFromCombo( m_pKind[p] );
+        ProfilesCache[p + startProfileNum].GetCondensedFromCombo( m_pCondensed[p] );
+        ProfilesCache[p + startProfileNum].GetTransparencyFromCombo( m_pTransparency[p] );
+
+        m_hotkeys.MaintainHotkeyString( (Hotkeys)(p + startProfileNum), m_pHotkey[p].Text );
       }
     }
 
@@ -228,74 +293,7 @@ namespace FS20_HudBar.Config
         PopulateTrans( m_pTransparency[p] );
       }
 
-
-    }
-
-
-
-    // select the current voice from settings
-    public void LoadVoice( ComboBox cbx )
-    {
-      if (cbx.Items.Contains( HudBarRef.VoiceName ))
-        cbx.SelectedItem = HudBarRef.VoiceName;
-      else if (cbx.Items.Count > 0) {
-        cbx.SelectedIndex = 0;
-      }
-      else {
-        // no voices installed...
-      }
-    }
-
-
-    // Initializes the selected Profile Section
-    // from m_profileSectionInUse
-    private void InitProfileSection( )
-    {
-      LoadProfileSection( SectionStart );
-    }
-
-    // Loads a section of profiles 
-    // i.e. the number of shown profiles starting from the startProfileNum (1..N)
-    private void LoadProfileSection( int startProfileNum )
-    {
-      // for all profiles
-      for (int p = 0; p < c_NumProfilesShown; p++) {
-        m_pName[p].Text = ProfilesCache[(p + startProfileNum)].PName;
-        m_flpHandler[p] = new FlpHandler(
-          m_flps[p], p,
-          ProfilesCache[(p + startProfileNum)].ProfileString( ),
-          ProfilesCache[(p + startProfileNum)].FlowBreakString( ),
-          ProfilesCache[(p + startProfileNum)].ItemPosString( )
-        );
-        m_flpHandler[p].LoadFlp( HudBarRef );
-        ProfilesCache[(p + startProfileNum)].LoadFontSize( m_pFont[p] );
-        ProfilesCache[(p + startProfileNum)].LoadPlacement( m_pPlace[p] );
-        ProfilesCache[(p + startProfileNum)].LoadKind( m_pKind[p] );
-        ProfilesCache[(p + startProfileNum)].LoadCond( m_pCondensed[p] );
-        ProfilesCache[(p + startProfileNum)].LoadTrans( m_pTransparency[p] );
-
-        m_pHotkey[p].Text = m_hotkeys.ContainsKey( (Hotkeys)(p + startProfileNum) ) ? m_hotkeys[(Hotkeys)(p + startProfileNum)].AsString : "";
-
-        // mark the selected one 
-        m_pName[p].BackColor = (SelectedProfile == (p + startProfileNum)) ? Color.LimeGreen : txShelfFolder.BackColor; // use another text fields back as default if not selected
-      }
-    }
-
-    // temp store the edits of the Section starting with the given profile number
-    private void CacheProfileSection( int startProfileNum )
-    {
-      // record profile Updates from the controls
-      for (int p = 0; p < c_NumProfilesShown; p++) {
-        ProfilesCache[p + startProfileNum].PName = m_pName[p].Text.Trim( );
-        ProfilesCache[p + startProfileNum].GetItemsFromFlp( m_flps[p], p );
-        ProfilesCache[p + startProfileNum].GetFontSizeFromCombo( m_pFont[p] );
-        ProfilesCache[p + startProfileNum].GetPlacementFromCombo( m_pPlace[p] );
-        ProfilesCache[p + startProfileNum].GetKindFromCombo( m_pKind[p] );
-        ProfilesCache[p + startProfileNum].GetCondensedFromCombo( m_pCondensed[p] );
-        ProfilesCache[p + startProfileNum].GetTransparencyFromCombo( m_pTransparency[p] );
-
-        m_hotkeys.MaintainHotkeyString( (Hotkeys)(p + startProfileNum), m_pHotkey[p].Text );
-      }
+      PopulateASave( cbxASave ); //20211204
     }
 
     // LOAD is called on any invocation of the Dialog
@@ -309,18 +307,17 @@ namespace FS20_HudBar.Config
 
       cbxFlightRecorder.Checked = HudBarRef.FlightRecorder;
 
-      PopulateASave( cbxASave ); //20211204
       cbxASave.SelectedIndex = (int)HudBarRef.FltAutoSave;
       PopulateVoice( cbxVoice );// 20211006
       LoadVoice( cbxVoice );
       _speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
       _speech.Enabled = true;
+      SetVoiceCalloutState( ); // 20211018
 
-      PopulateVoiceCallouts( ); // 20211018
 
       // Hotkeys // 20211211
       m_hotkeys = HudBarRef.Hotkeys.Copy( );
-      PopulateHotkeys( );
+      SetHotkeyTexts( );
       chkKeyboard.Checked = HudBarRef.KeyboardHook; // 20211208
       chkInGame.Checked = HudBarRef.InGameHook; // 20211208
 

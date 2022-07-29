@@ -131,8 +131,7 @@ namespace FS20_HudBar.Bar.Items.Base
     {
       // don't fail if an unknown obj is tried to be removed
       try {
-        var c = this.Controls[ this.Controls.IndexOf(control) ];
-        GUI_Colors.Unregister( c as IColorType ); // we checked this on arrival - should have that IF anyway
+        GUI_Colors.Unregister( control as IColorType ); // we checked this on arrival - should have that IF anyway
         this.Controls.Remove( control );
         control.Dispose( );
       }
@@ -169,7 +168,8 @@ namespace FS20_HudBar.Bar.Items.Base
           // dispose managed state (managed objects)
           UnregisterDataSource( );
           while ( this.Controls.Count > 0 ) {
-            RemoveItem( this.Controls[0] );
+            var c = this.Controls[0];
+            RemoveItem( c ); // Disposes
           }
         }
 

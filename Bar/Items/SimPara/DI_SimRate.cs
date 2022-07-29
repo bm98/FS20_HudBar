@@ -41,12 +41,30 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.SimRate;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_SRate( value2Proto );
+      _value1 = new V_SRate( value2Proto ) { ItemBackColor=cValBG };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       _label.ButtonClicked += _label_ButtonClicked;
+      _value1.MouseWheel += _value1_MouseWheel;
+      _value1.Cursor = Cursors.SizeNS;
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+    }
+
+    private void _value1_MouseWheel( object sender, MouseEventArgs e )
+    {
+      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
+      _value1.ActivateForm( e );
+
+      if (e.Delta > 0) {
+        // Up
+        SC.SimConnectClient.Instance.HudBarModule.SimRate_setting( FSimClientIF.CmdMode.Inc );
+      }
+      else if (e.Delta < 0) {
+        // Down
+        SC.SimConnectClient.Instance.HudBarModule.SimRate_setting( FSimClientIF.CmdMode.Dec );
+      }
+
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
@@ -70,7 +88,7 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         _value1.Value = SC.SimConnectClient.Instance.HudBarModule.SimRate_rate;
         _value1.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.SimRate_rate != 1.0f ) ? cInverse : cInfo;
-        _value1.ItemBackColor = ( SC.SimConnectClient.Instance.HudBarModule.SimRate_rate != 1.0f ) ? cSRATE : cBG;
+        _value1.ItemBackColor = ( SC.SimConnectClient.Instance.HudBarModule.SimRate_rate != 1.0f ) ? cSRATE : cValBG;
       }
     }
 

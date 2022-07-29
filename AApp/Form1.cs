@@ -1204,6 +1204,7 @@ namespace FS20_HudBar
 
       // start the HudBar from scratch
       LOG.Log( $"InitGUI: Create HudBar" );
+      HUD?.Dispose( ); // MUST ..
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
                           AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook, _hotkeycat,
                           AppSettings.Instance.FltAutoSaveATC, AppSettings.Instance.ShelfFolder,

@@ -43,7 +43,7 @@ namespace FS20_HudBar.GUI.Templates.Base
     }
 
     private const string c_numbers = "0123456789";
-    private Random random = new Random( );
+    private Random _random = new Random( );
 
     /// <summary>
     /// Set the numeric Value
@@ -209,5 +209,29 @@ namespace FS20_HudBar.GUI.Templates.Base
       GUI_Colors.Register( this );
     }
 
+    /*
+    #region  DISPOSE 
+
+    bool _disposed = false;
+    protected override void Dispose(bool disposing )
+    {
+      if (_disposed) {
+        return;
+      }
+
+      if (disposing) {
+        // TODO: dispose managed state (managed objects).
+
+      }
+
+      // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+      // TODO: set large fields to null.
+
+      _disposed = true;
+
+      base.Dispose( disposing );
+    }
+    #endregion
+    */
   }
 }
