@@ -1,4 +1,4 @@
-# MSFS HudBar V 0.53.0.50
+# MSFS HudBar Version: see Releases
 
 ### Display essential Information as Bar or Tile at any side of the primary screen or as Window anywhere you like  
 
@@ -49,7 +49,7 @@ Best is to start MSFS first, then the Bar
 Also note that the bar is shown on the ++PRIMARY monitor++ at the bottom of the screen
 <br>
 * Right Click the Bar and choose from the pop up menu
-  * To select a Profile (1..5 - your names)
+  * To select a Profile (1..10 - your names)
   * To Configure.. to check or uncheck the items to be shown
   * To Exit and stop the program
 <br>
@@ -65,34 +65,6 @@ Find more information in the QuickGuide here:
 
 https://github.com/bm98/FS20_HudBar/tree/main/doc/MSFS_HudBar-QuickGuide.pdf
 
-
------
-
-My FlightSim Libraries (included in the release package)
-<br>
-* SpeechLib.dll               -- A voice synth lib using Win10 TTS facilities (new since V0.35)
-* PingLib.dll                 -- An audio lib using Win10 Audio facilities (new since V0.43)
-* MetarLib.dll                -- A METAR access library 
-* bm98_Album.dll              -- A UserControl for displaying images (zoom & drag new since V0.43)
-* bm98_Checklist.dll          -- A UserControl for displaying the Checklist Box (new since V0.53)
-* bm98_hb_Controls.dll        -- UserControls for displaying graphs (new since V0.45)
-<br>
-* SimConnectClient.dll        -- FlightSim interface to MSFS2020 SimConnect
-* FSimClientIF.dll            -- Generic FSim Client interface definition
-* FSimIF.dll                  -- Generic FSim interface definition
-* FS20_AptLib.dll             -- MSFS2020 Airport DB (SU8 updated)
-* CoordLib.dll                -- A coord. handling library (https://github.com/bm98/CoordLib)
-<br>
-
-From Google Fonts Library embedded:
-  Share_Tech_Mono			(Used as condensed font)
-<br>
-From MSFS2020 Developer Kit for convenience included:
-* SimConnect.cfg
-* Microsoft.FlightSimulator.SimConnect.dll 
-* SimConnect.dll
-  
-.\DemoBag                   Contains some images to showcase the Flight Bag (new since V0.43)
 
 -----
 

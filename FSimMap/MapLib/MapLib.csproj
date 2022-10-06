@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4F1641BB-CA1F-4AEC-84B7-8DC71BA3DBCF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MapLib</RootNamespace>
+    <AssemblyName>MapLib</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;TIMING_CAPTURE_off</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\MapLib.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\MapLib.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CoordLib, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Redist\CoordLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="LoadCompleteEventArgs.cs" />
+    <Compile Include="MapImage.cs" />
+    <Compile Include="MSiniHelper\IniItem.cs" />
+    <Compile Include="MSiniHelper\IniSection.cs" />
+    <Compile Include="MSiniHelper\ItemCat.cs" />
+    <Compile Include="MSiniHelper\MSiniFile.cs" />
+    <Compile Include="MSiniHelper\SectionCat.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Sources\DiskCache\DiskCacheJob.cs" />
+    <Compile Include="Sources\DiskCache\DiskSource.cs" />
+    <Compile Include="Sources\DiskCache\LiteDBCache.cs" />
+    <Compile Include="Sources\MemCache\CacheV2.cs" />
+    <Compile Include="Sources\MemCache\ICacheItem.cs" />
+    <Compile Include="Sources\MemCache\MemCacheItem.cs" />
+    <Compile Include="Sources\MemCache\MemCacheItemCat.cs" />
+    <Compile Include="Sources\MemCache\MemorySource.cs" />
+    <Compile Include="Extensions\MInteger.cs" />
+    <Compile Include="Extensions\MPoint.cs" />
+    <Compile Include="Extensions\MRect.cs" />
+    <Compile Include="Extensions\MSize.cs" />
+    <Compile Include="Sources\Providers\Bing\BingManager.cs" />
+    <Compile Include="Sources\Providers\Bing\Bing_Imagery.cs" />
+    <Compile Include="Sources\Providers\Bing\Bing_ImageryLabels.cs" />
+    <Compile Include="Sources\Providers\Bing\Bing_OSMap.cs" />
+    <Compile Include="Sources\Providers\ProviderIni.cs" />
+    <Compile Include="Sources\Providers\OpenSrc\StamenTerrainProvider.cs" />
+    <Compile Include="Sources\Providers\User\UserTiles3Provider.cs" />
+    <Compile Include="Sources\Providers\User\UserTiles2Provider.cs" />
+    <Compile Include="Sources\Providers\User\UserTiles1Provider.cs" />
+    <Compile Include="Sources\Providers\User\UserTileBase.cs" />
+    <Compile Include="StreamImage.cs" />
+    <Compile Include="MapImageID.cs" />
+    <Compile Include="MapManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sources\IImgSource.cs" />
+    <Compile Include="Service\LoaderJobWrapper.cs" />
+    <Compile Include="Sources\Providers\OpenSrc\OSM_OpenStreetMap.cs" />
+    <Compile Include="Tiles\MapTile.cs" />
+    <Compile Include="Tiles\TileMatrix.cs" />
+    <Compile Include="Tiles\TrackingCat.cs" />
+    <Compile Include="Tools.cs" />
+    <Compile Include="Sources\Providers\EmptyProvider.cs" />
+    <Compile Include="Sources\Providers\ESRI\ESRI_Imagery.cs" />
+    <Compile Include="Sources\Providers\ESRI\ESRI_StreetMap.cs" />
+    <Compile Include="Sources\Providers\ESRI\ESRI_WorldTopo.cs" />
+    <Compile Include="Sources\Providers\OpenSrc\OpenTopoProvider.cs" />
+    <Compile Include="Sources\Providers\MapProviderBase.cs" />
+    <Compile Include="Service\RequestScheduler.cs" />
+    <Compile Include="Tiles\TileWorkflowCat.cs" />
+    <Compile Include="Tiles\TileLoaderJob.cs" />
+    <Compile Include="Sources\Providers\WebProxy.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Extensions\RefImage.png" />
+    <None Include="MapLibProvider.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BingMapsRESTToolkit">
+      <Version>1.1.4</Version>
+    </PackageReference>
+    <PackageReference Include="LiteDB">
+      <Version>5.0.12</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Extensions\DummyImage.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName) == Release copy $(TargetDir)*.* $(SolutionDir)..\Redist\
+if $(ConfigurationName) == Release del $(SolutionDir)..\Redist\*.tmp</PostBuildEvent>
+  </PropertyGroup>
+</Project>

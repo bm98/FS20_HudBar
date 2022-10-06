@@ -1,0 +1,132 @@
+; MapLib Provider Overrides
+;
+;  Format:
+;  /// DefaultProvider=PROVIDER
+;  /// BingKey=KEY
+;  /// 
+;  /// [PROVIDER]
+;  /// Enabled=TRUE
+;  /// Http=URL
+;
+; Text after a semicolon is treated as comment
+;
+; => File name must be 'MapLibProvider.ini'
+; 
+; Define the DefaultProvider from the [PROVIDER] names
+; 
+; In each providers section:
+;   Set 'Enabled=true' to be able to use it
+;   Uncomment 'Http=http....' to override the URL used to retrieve map tiles
+;    -> If unsure, leave it alone (The App may break or not respond any longer)
+;
+; For URLs:
+;   There are 3 placeholders for {x},{y},{z} (xy tile coords + zoom)
+;   When multiple server instances are available - {s} can be used
+; For some you need an accees key (personal, subscription etc)
+;   Key=sadfsdfsdf
+;
+;  NOTE there is not privacy or protection when typing the key here
+;       the key is only used in the tile loading HTTP request as per provider guidance
+;
+;
+; Default Provider to use => one of the Provider Chapter IDs ([NAME] from below)
+DefaultProvider=OSM_OpenStreetMap    ; OSM_OpenStreetMap is the free default provider
+
+;DefaultProvider=OpenTopo
+;DefaultProvider=Stamen_Terrain
+
+; Here comes your Bing Map Key if you want to use Bing Maps
+BingKey=<YOUR KEY>
+
+;DefaultProvider=Bing_Imagery
+;DefaultProvider=Bing_ImageryLabels
+;DefaultProvider=Bing_OStreetMap
+
+;DefaultProvider=ESRI_Imagery
+;DefaultProvider=ESRI_StreetMap
+;DefaultProvider=ESRI_WorldTopo
+
+
+[OSM_OpenStreetMap]
+; OpenStreetMap (see terms of use before using it)
+Enabled=true   ; should never be disabled
+;Http=https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png  ; default, labeled according to the region (e.g. Japanese etc)
+;Http=https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png   ; adds translated names to the local ones
+;Http=https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ; focus on french translation; international items are partly translated
+
+[OpenTopo]
+; Street Map 3D enhanced
+; OpenTopo (see terms of use before using it)
+Enabled=true
+;Http=https://tile.opentopomap.org/{z}/{x}/{y}.png  ; default
+
+[Stamen_Terrain]
+; Street Map 3D shaped
+; Stamen.com (see terms of use before using it)
+Enabled=true
+;Http=https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg  ; default
+
+
+; ***************
+; Microsoft Bing MAPS (needs a Key to access ->  https://www.microsoft.com/en-us/maps/create-a-bing-maps-key)
+; ***************
+; Note: Bing URLs are retrieved dynamically and changing the Provider here has no effect (for reference only)
+
+[Bing_Imagery]
+; Satellite Imagery
+Enabled=false
+;Http=https://ecn.{subdomain}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=12552 ; not used, for reference only
+
+[Bing_ImageryLabels]
+; Satellite Imagery with road labels
+Enabled=false
+;Http=https://ecn.{subdomain}.tiles.virtualearth.net/tiles/h{quadkey}.jpeg?g=12552&mkt={culture} ; not used, for reference only
+
+[Bing_OStreetMap]
+; Street Map
+Enabled=false
+;Http=https://ecn.{subdomain}.tiles.virtualearth.net/tiles/r{quadkey}.jpeg?g=12552&mkt={culture}&shading=hill ; not used, for reference only
+
+
+; ***************
+; ESRI/ARCGIS Maps (subject to terms of use - your at your own here...)
+; ***************
+
+[ESRI_Imagery]
+; Satellite Imagery
+; ESRI/ARCGIS World Imagery (see terms of use before using it)
+Enabled=false
+;Http=https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}  ; default
+
+[ESRI_StreetMap]
+; Street Map
+; ESRI/ARCGIS StreetMap (see terms of use before using it)
+Enabled=false
+;Http=https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}  ; default
+
+[ESRI_WorldTopo]
+; Street Map 3D shaped
+; ESRI/ARCGIS WorldTopo (see terms of use before using it)
+Enabled=false
+;Http=https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}  ; default
+
+
+; ***************
+; USER Maps (your at your own here...)
+; ***************
+
+[USER_TILES_1]
+; User defines Tile Server No 1
+Enabled=false
+;Http=https://ip_or_address/route/{z}/{y}/{x}.imageformat ; MUST be changed to something meaningful
+
+[USER_TILES_2]
+; User defines Tile Server No 2
+Enabled=false
+;Http=https://ip_or_address/route/{z}/{y}/{x}.imageformat ; MUST be changed to something meaningful
+
+[USER_TILES_3]
+; User defines Tile Server No 3
+Enabled=false
+;Http=https://ip_or_address/route/{z}/{y}/{x}.imageformat ; MUST be changed to something meaningful
+

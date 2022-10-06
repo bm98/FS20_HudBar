@@ -30,10 +30,10 @@ namespace bm98_Album
     private string _shelfFilename = "";     // currently shown image filename
     private List<string> _shelfList = new List<string>(); // current list of avialable Images in the Shelf
 
-    private readonly Color c_BackBwDark = Color.FromArgb(32,32,32);
+    private readonly Color c_BackBwDark = Color.FromArgb(46,69,97);
     private readonly Color c_BackBwMid = Color.FromArgb(48,48,48);
     //    private readonly Color c_BackBwBright = Color.FromArgb(64,64,64);
-    private readonly Color c_BackBwBright = Color.FromArgb(64,64,96);
+    private readonly Color c_BackBwBright = Color.FromArgb(64,81,102);
     // Image Frame
     private Rectangle _frame = new Rectangle();
     private readonly Pen _framePen = new Pen(Brushes.LightSteelBlue, 5);

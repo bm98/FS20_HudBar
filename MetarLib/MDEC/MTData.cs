@@ -149,7 +149,7 @@ namespace MetarLib.MDEC
       ret += $"{t}";
       t = ObsTime.Pretty; if ( string.IsNullOrEmpty( t ) ) t = "NO OBS TIME";
       ret += $" @ {t}";
-      t = ( MsgModifier == MsgModifier.COR ) ? "Correction " + t : t;
+      t = ( MsgModifier == MsgModifier.COR ) ? "Correction " + t : "";
       ret += $" - {t}\n";
       ret += ( MsgType == MsgType.SPECI ) ? "Special Meteo Report\n" : "";
 

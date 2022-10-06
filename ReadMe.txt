@@ -1,9 +1,9 @@
-FS20_HudBar V 0.53 - Build 50 BETA
-(c) M. Burri - 20-Jul-2022
+FS20_HudBar V 0.55 - Build 55 BETA
+(c) M. Burri - 10-Oct-2022
 
 Contains files:
 
-FS20_HudBar.exe               The program
+FS20_HudBar.exe             The program
 
 .\DemoBag                   Contains some images to showcase the Flight Bag (new since V0.43)
 
@@ -14,13 +14,19 @@ bm98_hb_Controls.dll        UserControls for displaying graphs (new since V0.45)
 SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new since V0.35)
 PingLib.dll                 An audio lib using Win10 Audio facilities (new since V0.43)
 MetarLib.dll                A METAR access library (new since V0.29)
-
+CoordLib.dll                A coord. handling library
+SettingsLib.dll             Application settings persistence library
 FS20_AptLib.dll             MSFS2020 Airport DB (updated)
-FSimClientIF.dll            Generic FSim Client interface definition (updated)
 FSimIF.dll                  Generic FSim interface definition (updated)
+FSimClientIF.dll            Generic FSim Client interface definition (updated)
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
+FSimFacilityIF.dll          MS facility database interface definition
+FSimFacilityDataLib.dll     MS facility database access library
 BM98CH_WasmClient.dll       WASM Module client to get LVars (new since V0.51)
-CoordLib.dll				A coord. handling library (updated V0.53)
+
+3rd Party:
+BingMapsRESTToolkit.dll     Microsoft provided library for accessing Bing Map data
+LiteDB.dll                  3rd party data management library
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg
@@ -30,11 +36,22 @@ From MSFS2020 Developer Kit for convenience included:
 From Google Fonts Library embedded:
   Share_Tech_Mono			(Used as condensed font)
 
+dataLoader\ folder:
+FacilityDataLoader.exe      MSFS Facility conversion tool
+BGLlib.dll                  BGL and LLM decoder
+CoordLib.dll                A coord. handling library
+FSimFacilityIF.dll          MS facility database interface definition
+FSimFacilityDataLib.dll     MS facility database access library
+LiteDB.dll                  3rd party data management library
+System.Data.SQLite.dll      3rd party data management library
+x64\SQLite.Interop.dll      3rd party data management library 64bit C-library
+x86\SQLite.Interop.dll      3rd party data management library 32bit C-library
+
 ReadMe.txt                   This file
 
 MSFS Hud Bar (.Net 4.7.2)
 
-Put all files into one folder and hit FS20_HudBar.exe to run it
+Extract the Zip File into a folder and hit FS20_HudBar.exe to run it
 
 For Updates and information visit:
 
@@ -45,6 +62,19 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.55-B55
+- Fix Bar/Window Location was not stored for profiles 5..10
+- Add Performance Tab and Notes Tab to FlightBag
+- Add Move Bar/Tile to next screen (Monitor) with RShift+RCtrl+Break
+- Cleanup of all new features
+- SU10 compatibility checks
+
+V 0.54-B51
+- Add Map, Metar, and Config in FlightBag
+- Refactoring part 1 of AppSettings transition to a new Settings Library
+- Refactoring to allow for standalone Apps (Cam, ChecklistBox, FlightBag)
+- Update QuickGuide
 
 V 0.53-B50
 - Add Checklist Box as independent feature

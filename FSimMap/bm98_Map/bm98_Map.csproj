@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A840B347-F147-45BD-B84B-B400F1B3DECA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>bm98_Map</RootNamespace>
+    <AssemblyName>bm98_Map</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\bm98_Map.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\bm98_Map.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CoordLib">
+      <HintPath>..\..\Redist\CoordLib.dll</HintPath>
+    </Reference>
+    <Reference Include="FSimFacilityIF">
+      <HintPath>..\..\Redist\FSimFacilityIF.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\Airport.cs" />
+    <Compile Include="Data\AverageCls.cs" />
+    <Compile Include="Data\ITrackedAircraft.cs" />
+    <Compile Include="Data\Track.cs" />
+    <Compile Include="Data\TrackedAircraft.cs" />
+    <Compile Include="Data\TrackedAircraftCls.cs" />
+    <Compile Include="Drawing\AcftRangeItem.cs" />
+    <Compile Include="Drawing\AcftTrackItem.cs" />
+    <Compile Include="Drawing\DisplayListMgr.cs" />
+    <Compile Include="Drawing\AirportRangeItem.cs" />
+    <Compile Include="Drawing\AlternateAptItem.cs" />
+    <Compile Include="Drawing\AptVFRMarksItem.cs" />
+    <Compile Include="Drawing\CanvasItem.cs" />
+    <Compile Include="Drawing\ColorScale.cs" />
+    <Compile Include="Drawing\HookItem.cs" />
+    <Compile Include="Drawing\LabelEngine.cs" />
+    <Compile Include="Drawing\ManagedHookItem.cs" />
+    <Compile Include="Drawing\MapGridItem.cs" />
+    <Compile Include="Drawing\MapImage.cs" />
+    <Compile Include="Drawing\NavaidItem.cs" />
+    <Compile Include="Drawing\RunwayItem.cs" />
+    <Compile Include="Drawing\AircraftItem.cs" />
+    <Compile Include="Drawing\ScaleItem.cs" />
+    <Compile Include="Drawing\AcftTargetRangeItem.cs" />
+    <Compile Include="Drawing\RwyVFRMarksItem.cs" />
+    <Compile Include="Drawing\TrackHookItem.cs" />
+    <Compile Include="Drawing\VPort2.cs" />
+    <Compile Include="Extensions\MOther.cs" />
+    <Compile Include="Extensions\MPoint.cs" />
+    <Compile Include="Extensions\MRect.cs" />
+    <Compile Include="Extensions\MSize.cs" />
+    <Compile Include="Drawing\FontsAndColors.cs" />
+    <Compile Include="Drawing\PanelConst.cs" />
+    <Compile Include="Data\Facility_Extensions.cs" />
+    <Compile Include="Drawing\DisplayItem.cs" />
+    <Compile Include="Drawing\DisplayList.cs" />
+    <Compile Include="Drawing\GProc.cs" />
+    <Compile Include="Drawing\IDrawing.cs" />
+    <Compile Include="MapCreator.cs" />
+    <Compile Include="MapEventArgs.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Tools.cs" />
+    <Compile Include="UC_Map.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_Map.Designer.cs">
+      <DependentUpon>UC_Map.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_Map.resx">
+      <DependentUpon>UC_Map.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\background.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tower-255.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aircraft_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aircraft_mid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aircraft_large.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\airport_facility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\airport-large.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\airport-small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\apt_waypoint_facility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ndb_facility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vor_dme_facility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vor_facility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vor_loc_facility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vor_loc_gs_facility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vortac_facility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\waypoint_facility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dme_facility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MapLib\MapLib.csproj">
+      <Project>{4f1641bb-ca1f-4aec-84b7-8dc71ba3dbcf}</Project>
+      <Name>MapLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\map-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aircraft_smaller.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\navaid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dme.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vor_dme.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loc.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vortac.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ndb.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loc_gs.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wyp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wyp_apt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aircraft-dia.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\grid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\vfr.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\navaids.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\runway_alt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wyp_faf.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\airport.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\alt_ladder.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName) == Release copy $(TargetDir)*.* $(SolutionDir)..\Redist\
+if $(ConfigurationName) == Release del $(SolutionDir)..\Redist\*.tmp</PostBuildEvent>
+  </PropertyGroup>
+</Project>

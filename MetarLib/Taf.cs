@@ -15,7 +15,7 @@ namespace MetarLib
   public class Taf
   {
     // Ranges we will scan while no results are returned
-    private static readonly List<int> c_MaxRangeSM = new List<int>{ 50, 100, 250, 500, 750 };
+    private static readonly List<int> c_MaxRangeSM = new List<int> { 50, 100, 250, 500, 750 };
 
     /// <summary>
     /// The TAF Message provider 
@@ -52,9 +52,9 @@ namespace MetarLib
     public void PostTAF_Request( string station, double lat = double.NaN, double lon = double.NaN )
     {
       // Sanity checks
-      if ( string.IsNullOrWhiteSpace( station ) ) return;
-      if ( !double.IsNaN( lat ) && ( ( lat < -90.0 ) || ( lat > 90.0 ) ) ) return;
-      if ( !double.IsNaN( lat ) && ( ( lon < -180.0 ) || ( lon > 180.0 ) ) ) return;
+      if (string.IsNullOrWhiteSpace( station )) return;
+      if (!double.IsNaN( lat ) && ((lat < -90.0) || (lat > 90.0))) return;
+      if (!double.IsNaN( lat ) && ((lon < -180.0) || (lon > 180.0))) return;
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
       GetData( station, lat, lon );
@@ -71,10 +71,10 @@ namespace MetarLib
     /// <param name="latLon">A LatLon location</param>
     public void PostTAF_Request( string station, LatLon latLon )
     {
-      if ( latLon != null )
-        PostTAF_Request( station, latLon.Lat, latLon.Lon );
-      else
+      if (latLon.IsEmpty)
         PostTAF_Request( station );
+      else
+        PostTAF_Request( station, latLon.Lat, latLon.Lon );
     }
 
 
@@ -87,8 +87,8 @@ namespace MetarLib
     public void PostTAF_Request( double lat, double lon )
     {
       // Sanity checks
-      if ( !double.IsNaN( lat ) && ( ( lat < -90.0 ) || ( lat > 90.0 ) ) ) return;
-      if ( !double.IsNaN( lat ) && ( ( lon < -180.0 ) || ( lon > 180.0 ) ) ) return;
+      if (!double.IsNaN( lat ) && ((lat < -90.0) || (lat > 90.0))) return;
+      if (!double.IsNaN( lat ) && ((lon < -180.0) || (lon > 180.0))) return;
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
       GetData( lat, lon );
@@ -103,7 +103,7 @@ namespace MetarLib
     public void PostTAF_Request( LatLon latLon )
     {
       // Sanity checks
-      if ( latLon == null ) return;
+      if (latLon.IsEmpty) return;
 
       PostTAF_Request( latLon.Lat, latLon.Lon );
     }
@@ -119,9 +119,9 @@ namespace MetarLib
     public void PostTAF_Request( double lat, double lon, float bearing )
     {
       // Sanity checks
-      if ( !double.IsNaN( lat ) && ( ( lat < -90.0 ) || ( lat > 90.0 ) ) ) return;
-      if ( !double.IsNaN( lat ) && ( ( lon < -180.0 ) || ( lon > 180.0 ) ) ) return;
-      if ( !float.IsNaN( bearing ) && ( ( bearing < 0.0 ) || ( bearing > 360.0 ) ) ) return;
+      if (!double.IsNaN( lat ) && ((lat < -90.0) || (lat > 90.0))) return;
+      if (!double.IsNaN( lat ) && ((lon < -180.0) || (lon > 180.0))) return;
+      if (!float.IsNaN( bearing ) && ((bearing < 0.0) || (bearing > 360.0))) return;
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
       GetData( lat, lon, bearing );
@@ -137,7 +137,7 @@ namespace MetarLib
     public void PostTAF_Request( LatLon latLon, float bearing )
     {
       // Sanity checks
-      if ( latLon == null ) return;
+      if (latLon.IsEmpty) return;
 
       PostTAF_Request( latLon.Lat, latLon.Lon, bearing );
     }
@@ -154,9 +154,9 @@ namespace MetarLib
     public void PostTAF_Request( double lat, double lon, string destICAO )
     {
       // Sanity checks
-      if ( !double.IsNaN( lat ) && ( ( lat < -90.0 ) || ( lat > 90.0 ) ) ) return;
-      if ( !double.IsNaN( lat ) && ( ( lon < -180.0 ) || ( lon > 180.0 ) ) ) return;
-      if ( string.IsNullOrWhiteSpace( destICAO ) ) return;
+      if (!double.IsNaN( lat ) && ((lat < -90.0) || (lat > 90.0))) return;
+      if (!double.IsNaN( lat ) && ((lon < -180.0) || (lon > 180.0))) return;
+      if (string.IsNullOrWhiteSpace( destICAO )) return;
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
       GetData( lat, lon, destICAO );
@@ -173,7 +173,7 @@ namespace MetarLib
     public void PostTAF_Request( LatLon latLon, string destICAO )
     {
       // Sanity checks
-      if ( latLon == null ) return;
+      if (latLon.IsEmpty) return;
 
       PostTAF_Request( latLon.Lat, latLon.Lon, destICAO );
     }
@@ -186,8 +186,8 @@ namespace MetarLib
     /// </summary>
     private async Task GetData( string station )
     {
-      var response = new MetarTafDataList();
-      switch ( TafProvider ) {
+      var response = new MetarTafDataList( );
+      switch (TafProvider) {
         case Providers.AviationWeatherDotGov:
           response = await Provider.AviationWeatherDotGov.TafRequest.GetTaf( station );
           break;
@@ -204,14 +204,14 @@ namespace MetarLib
     /// </summary>
     private async Task GetData( string station, double lat, double lon )
     {
-      var response = new MetarTafDataList();
-      switch ( TafProvider ) {
+      var response = new MetarTafDataList( );
+      switch (TafProvider) {
         case Providers.AviationWeatherDotGov:
           response = await Provider.AviationWeatherDotGov.TafRequest.GetTaf( station );
           break;
         default: break;
       }
-      if ( response.Count > 0 && response.Valid ) {
+      if (response.Count > 0 && response.Valid) {
         // signal response and end
         OnTafDataEvent( response );
         return;
@@ -230,18 +230,18 @@ namespace MetarLib
     private async Task GetData( double lat, double lon )
     {
       // Sanity checks
-      if ( double.IsNaN( lat ) ) return;
-      if ( double.IsNaN( lon ) ) return;
+      if (double.IsNaN( lat )) return;
+      if (double.IsNaN( lon )) return;
 
-      var response = new MetarTafDataList();
-      foreach ( var range in c_MaxRangeSM ) {
-        switch ( TafProvider ) {
+      var response = new MetarTafDataList( );
+      foreach (var range in c_MaxRangeSM) {
+        switch (TafProvider) {
           case Providers.AviationWeatherDotGov:
             response = await Provider.AviationWeatherDotGov.TafRequest.GetTaf( lat, lon, range );
             break;
           default: break;
         }
-        if ( response.Count > 0 && response.Valid )
+        if (response.Count > 0 && response.Valid)
           break; // We have found an entry.. Return
       }
       // signal response
@@ -255,19 +255,19 @@ namespace MetarLib
     private async Task GetData( double lat, double lon, string dest )
     {
       // Sanity checks
-      if ( double.IsNaN( lat ) ) return;
-      if ( double.IsNaN( lon ) ) return;
-      if ( string.IsNullOrWhiteSpace( dest ) ) return;
+      if (double.IsNaN( lat )) return;
+      if (double.IsNaN( lon )) return;
+      if (string.IsNullOrWhiteSpace( dest )) return;
 
-      var response = new MetarTafDataList();
-      foreach ( var range in c_MaxRangeSM ) {
-        switch ( TafProvider ) {
+      var response = new MetarTafDataList( );
+      foreach (var range in c_MaxRangeSM) {
+        switch (TafProvider) {
           case Providers.AviationWeatherDotGov:
             response = await Provider.AviationWeatherDotGov.TafRequest.GetTaf( lat, lon, dest, range );
             break;
           default: break;
         }
-        if ( response.Count > 0 && response.Valid )
+        if (response.Count > 0 && response.Valid)
           break; // We have found an entry.. Return
       }
       // signal response
@@ -281,23 +281,23 @@ namespace MetarLib
     private async Task GetData( double lat, double lon, float bearing )
     {
       // Sanity checks
-      if ( double.IsNaN( lat ) ) return;
-      if ( double.IsNaN( lon ) ) return;
-      if ( float.IsNaN( bearing ) ) return;
+      if (double.IsNaN( lat )) return;
+      if (double.IsNaN( lon )) return;
+      if (float.IsNaN( bearing )) return;
 
-      var response = new MetarTafDataList();
-      foreach ( var range in c_MaxRangeSM ) {
+      var response = new MetarTafDataList( );
+      foreach (var range in c_MaxRangeSM) {
 
-        var pos = new LatLon(lat, lon);
-        var dest = pos.DestinationPoint( range*2, bearing, ConvConsts.EarthRadiusSM ); // pt at end of range*2
+        var pos = new LatLon( lat, lon );
+        var dest = pos.DestinationPoint( range * 2, bearing, ConvConsts.EarthRadiusSM ); // pt at end of range*2
 
-        switch ( TafProvider ) {
+        switch (TafProvider) {
           case Providers.AviationWeatherDotGov:
             response = await Provider.AviationWeatherDotGov.TafRequest.GetTaf( lat, lon, dest.Lat, dest.Lon, range );
             break;
           default: break;
         }
-        if ( response.Count > 0 && response.Valid )
+        if (response.Count > 0 && response.Valid)
           break; // We have found an entry.. Return
       }
       // signal response
