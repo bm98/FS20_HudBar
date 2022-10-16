@@ -1,5 +1,5 @@
-FS20_FlightBag V 0.54 - Build 51 BETA
-(c) M. Burri - 03-Oct-2022
+FS20_FlightBag V 0.55 - Build 55 BETA
+(c) M. Burri - 10-Oct-2022
 
 Contains files:
 
@@ -27,7 +27,7 @@ BingMapsRESTToolkit.dll     Microsoft provided library for accessing Bing Map da
 LiteDB.dll                  3rd party data management library
 
 From MSFS2020 Developer Kit for convenience included:
-  SimConnect.cfg
+  SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
   Microsoft.FlightSimulator.SimConnect.dll 
   SimConnect.dll
 
@@ -59,6 +59,14 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.55-B55
+- Add Performance Tab and Notes Tab to FlightBag
+- Add Touchdown log (MyDocuments\MSFS_HudBarSave\TouchDownLog.csv)
+- Disabled SimConnect.cfg (as per MS it is only needed when connecting MSFS via Network)
+- Add Check if the Facility DB is available and pop a msg box if not
+- Moved to Visual Studio 2022 Community Edition
+- Update QuickGuide
 
 V 0.54-B51
 - initial upload

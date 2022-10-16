@@ -55,7 +55,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( )
+    private void OnDataArrival( )
     {
       // NOT USED
     }

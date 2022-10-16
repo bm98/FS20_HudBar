@@ -60,10 +60,7 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      if (m_observerID > 0) {
-        SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
-        m_observerID = 0;
-      }
+      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
     }
 
     private void TSetValue( V_Text value, float tPerc )
@@ -103,7 +100,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( string dataRefName )
+    private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
         TSetValue( _value1 as V_Text, SC.SimConnectClient.Instance.HudBarModule.ThrottleLever1_prct );

@@ -59,9 +59,8 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      if (m_observerID > 0) {
-        SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
-        m_observerID = 0;
+      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      if (_obs2 > 0) {
         SC.SimConnectClient.Instance.GpsModule.RemoveObserver( _obs2 );
         _obs2 = 0;
       }
@@ -75,19 +74,8 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( string dataRefName )
+    private void OnDataArrival( string dataRefName )
     {
-      // Maintain the Waypoint Tracker here to support the GPS Flightplan 
-      if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
-        // WP Enroute Tracker
-        WPTracker.Track(
-          SC.SimConnectClient.Instance.GpsModule.WYP_prevID,
-          SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
-          SC.SimConnectClient.Instance.HudBarModule.SimTime_loc_sec,
-          SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround
-        );
-      }
-
       if ( this.Visible ) {
         if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
           _value1.Value = WPTracker.WPTimeEnroute_sec;

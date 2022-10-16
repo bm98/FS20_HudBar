@@ -91,6 +91,7 @@
     <Compile Include="frmShelf.Designer.cs">
       <DependentUpon>frmShelf.cs</DependentUpon>
     </Compile>
+    <Compile Include="PerfTracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -128,7 +129,7 @@
       <Name>MetarLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\SettingsLib\SettingsLib\SettingsLib.csproj">
-      <Project>{405093c1-a6c3-48a8-8e8c-9bdae438fba0}</Project>
+      <Project>{f17750f6-0652-42e8-a966-72936f558331}</Project>
       <Name>SettingsLib</Name>
     </ProjectReference>
   </ItemGroup>

@@ -22,10 +22,13 @@ namespace FShelf
   public partial class frmShelf : Form
   {
     // airport which was requested by the user
-    private FSimFacilityIF.IAirport airport = null;
+    private FSimFacilityIF.IAirport _airport = null;
     // registered obs ID for the aircraft update subscription
     private int _observerID = -1;
     private string _observerName = "SHELF_FORM";
+
+    // flags a missing Facility database
+    private bool _dbMissing = false;
 
     // data update tracker to allow to pace down the updates towards the user control
     private int _updates;
@@ -42,10 +45,7 @@ namespace FShelf
     private Point _lastLiveLocation;
     private Size _lastLiveSize;
 
-    private float _tdRate_fps = 0;
-    private float _tdPitch_deg = 0;
-    private float _tdBank_deg = 0;
-    private DateTime _tdCapture = DateTime.Now - TimeSpan.FromSeconds( 60 ); // capture the current
+    private PerfTracker _perfTracker = new PerfTracker();
 
     /// <summary>
     /// Set true to run in standalone mode
@@ -152,6 +152,14 @@ namespace FShelf
       cx.Items.Add( new RwyLenItem( "4 000 m (13 000 ft)", 4000f ) );
     }
 
+    private readonly string c_facDBmsg = "The Facility Database could not be found!\n\nPlease visit the QuickGuide, head for 'DataLoader' and proceed accordingly";
+    private void CheckFacilityDB( )
+    {
+      if (_dbMissing) {
+        _ = MessageBox.Show( c_facDBmsg, "Facility Database Missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+      }
+    }
+
     #region Form
 
     // FORM
@@ -165,6 +173,7 @@ namespace FShelf
       // the first thing to do
       Standalone = standalone;
       AppSettings.InitInstance( Folders.SettingsFile, instance );
+      _dbMissing = !File.Exists( Folders.GenAptDBFile ); // facilities DB missing
       MapLib.MapManager.Instance.InitMapLib( Folders.UserFilePath ); // Init before anything else
       MapLib.MapManager.Instance.SetDiskCacheLocation( Folders.CachePath ); // Map cache location
       // ---------------
@@ -174,6 +183,8 @@ namespace FShelf
       tab.Dock = DockStyle.Fill;
       aShelf.Dock = DockStyle.Fill;
       aMap.Dock = DockStyle.Fill;
+
+      lblFacDBMissing.Visible = _dbMissing;
 
       _metar = new MetarLib.Metar( );
       _metar.MetarDataEvent += _metar_MetarDataEvent;
@@ -264,20 +275,26 @@ namespace FShelf
       aMap.MapCreator.SetAirport( aMap.MapCreator.DummyAirport( loc ) );
       aMap.MapCreator.Commit( );
 
+      _perfTracker.Reset( );
+
+      if (Standalone) {
+        CheckFacilityDB( );
+      }
+
       // Pacer interval 
-      timer1.Interval = 500;
+      timer1.Interval = 1000;
+      timer1.Enabled = true;
     }
 
     // form got attention
     private void frmShelf_Activated( object sender, EventArgs e )
     {
       this.TopMost = true;
-      timer1.Enabled = Standalone && true;
+      this.timer1.Enabled = true;
       // register DataUpdates if in shared mode and if not yet done 
       if (!Standalone && SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
         _observerID = SC.SimConnectClient.Instance.AircraftTrackingModule.AddObserver( _observerName, OnDataArrival );
       }
-
     }
 
     // track last known location while visible
@@ -353,6 +370,10 @@ namespace FShelf
     /// </summary>
     private void timer1_Tick( object sender, EventArgs e )
     {
+      // register DataUpdates if in shared mode and if not yet done 
+      if (!Standalone && SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
+        _observerID = SC.SimConnectClient.Instance.AircraftTrackingModule.AddObserver( _observerName, OnDataArrival );
+      }
       // Call SimConnect if needed and Standalone
       if (Standalone && --_simConnectTrigger <= 0) {
         SimConnectPacer( );
@@ -372,8 +393,15 @@ namespace FShelf
         _tAircraft.ShowAircraftTrack = cbxAcftTrack.Checked;
         var rwLen = comboCfgRunwayLength.SelectedItem as RwyLenItem;
         // also update Navaids and Alt Airports (we were disconnected for an unknown time)
-        aMap.SetNavaidList( NavaidList( aMap.MapCenter( ) ) );
-        aMap.SetAltAirportList( AltAirportList( aMap.MapCenter( ), rwLen.Length_m ) );
+
+        // sanity
+        if (_dbMissing) {
+          ; // cannot get facilities
+        }
+        else {
+          aMap.SetNavaidList( NavaidList( aMap.MapCenter( ) ) );
+          aMap.SetAltAirportList( AltAirportList( aMap.MapCenter( ), rwLen.Length_m ) );
+        }
         aMap.RenderItems( ); // will update if there is a need for it
       }
       else if (tab.SelectedTab == tabPerf) {
@@ -400,8 +428,8 @@ namespace FShelf
       }
 
       // APT IFR Waypoints if set in Config
-      if (airport != null && cbxIFRwaypoints.Checked) {
-        nList.AddRange( airport.Navaids.Where( x => x.IsWaypoint ) );
+      if (_airport != null && cbxIFRwaypoints.Checked) {
+        nList.AddRange( _airport.Navaids.Where( x => x.IsWaypoint ) );
       }
 
       return nList;
@@ -433,7 +461,11 @@ namespace FShelf
     // fires when the Map Center has changed from the Map interaction or airport change
     private void AMap_MapCenterChanged( object sender, MapEventArgs e )
     {
-      Console.WriteLine( $"{e.CenterCoordinate}" );
+      //Console.WriteLine( $"{e.CenterCoordinate}" );
+
+      // sanity
+      if (_dbMissing) return; // cannot get facilities
+
       aMap.SetNavaidList( NavaidList( e.CenterCoordinate ) );
       var rwLen = comboCfgRunwayLength.SelectedItem as RwyLenItem;
       aMap.SetAltAirportList( AltAirportList( e.CenterCoordinate, rwLen.Length_m ) );
@@ -446,28 +478,32 @@ namespace FShelf
     }
 
     // retrieve an airport from the DB
-    private IAirport GetAirport( string aptICAO )
+    private void SetAirport( string aptICAO )
     {
+      // sanity
+      if (_dbMissing) {
+        _airport = null; // cannot get facilities
+        return;
+      }
+
       using (var _db = new FSimFacilityDataLib.AirportDB.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
         if (!_db.Open( Folders.GenAptDBFile )) {
           txEntry.ForeColor = Color.Red; // clear the one not available
           txEntry.Text = "No DB";
-          return null; // no db available
+          _airport = null; // no db available
         }
-
-        airport = _db.DbReader.GetAirport( aptICAO );
-        return airport;
+        _airport = _db.DbReader.GetAirport( aptICAO ); ;
       }
     }
 
     // try to load an airport from the Database into the Map
     private void LoadAirport( string aptICAO )
     {
-      var airport = GetAirport( aptICAO );
-      if (airport != null) {
+      SetAirport( aptICAO );
+      if (_airport != null) {
         txEntry.ForeColor = _txForeColorDefault; // clear the one not available
         aMap.MapCreator.Reset( );
-        aMap.MapCreator.SetAirport( airport );
+        aMap.MapCreator.SetAirport( _airport );
         aMap.MapCreator.Commit( );
       }
       else {
@@ -511,20 +547,10 @@ namespace FShelf
       // sanity
       if (!SC.SimConnectClient.Instance.IsConnected) return; // cannot..
 
+      // track landing performance
+      _perfTracker.Update( );
+
       var simData = SC.SimConnectClient.Instance.AircraftTrackingModule;
-
-      if (_tdRate_fps != simData.TouchDownVS_fps) {
-        // changed
-        // try to avoid bouncing landings, get the first one i.e. wait 30 sec before registering the next one
-        // and then only when moving faster than usual taxiing
-        if ((simData.GS > 30) && (DateTime.Now > (_tdCapture + TimeSpan.FromSeconds( 30 )))) {
-          _tdRate_fps = simData.TouchDownVS_fps;
-          _tdPitch_deg = simData.TouchDownPitch_deg;
-          _tdBank_deg = simData.TouchDownBank_deg;
-          _tdCapture = DateTime.Now;
-        }
-      }
-
       // TODO: the next two selectors will cause loosing tracking of the Acft, may be update it anyway
       if (!this.Visible) return;  // no need to update while the shelf is not visible ???? TODO decide if or if not cut reporting ????
       //if (!(tab.SelectedTab == tabMap)) return;  //don't update while not showing the MapTab - this causes track disruptions when in METAR etc
@@ -652,10 +678,9 @@ namespace FShelf
       RTF.RBold = true;
       RTF.Write( $"Last Touchdown Data:" ); RTF.WriteLn( );
       RTF.RBold = false;
-      value = Conversions.Fpm_From_Fps( _tdRate_fps );
-      RTF.Write( $"Vertical" ); RTF.WriteTab( $"{value:#,##0} fpm" ); RTF.WriteLn( );
-      RTF.Write( $"Pitch" ); RTF.WriteTab( $"{_tdPitch_deg:##0.0}°" ); RTF.WriteLn( );
-      RTF.Write( $"Bank" ); RTF.WriteTab( $"{_tdBank_deg:##0.0}°" ); RTF.WriteLn( );
+      RTF.Write( $"Vertical" ); RTF.WriteTab( $"{_perfTracker.Rate_fpm:#,##0} fpm" ); RTF.WriteLn( );
+      RTF.Write( $"Pitch" ); RTF.WriteTab( $"{_perfTracker.Pitch_deg:##0.0}°" ); RTF.WriteLn( );
+      RTF.Write( $"Bank" ); RTF.WriteTab( $"{_perfTracker.Bank_deg:##0.0}°" ); RTF.WriteLn( );
 
       RTF.WriteLn( );
       RTF.RBold = true;
@@ -707,8 +732,8 @@ namespace FShelf
       txCfgDep.ForeColor = _txForeColorDefault; // clear the one not available
       if (e.KeyChar == (char)Keys.Return) {
         e.Handled = true;
-        var airport = GetAirport( txCfgDep.Text );
-        if (airport == null) {
+        SetAirport( txCfgDep.Text );
+        if (_airport == null) {
           txCfgDep.ForeColor = Color.Red;
           this.DEP_Airport = "n.a.";
           lblCfgDep.Text = this.DEP_Airport;
@@ -716,7 +741,7 @@ namespace FShelf
         else {
           txCfgDep.ForeColor = Color.GreenYellow;
           this.DEP_Airport = txCfgDep.Text;
-          lblCfgDep.Text = airport.Name;
+          lblCfgDep.Text = _airport.Name;
         }
       }
     }
@@ -727,8 +752,8 @@ namespace FShelf
       txCfgArr.ForeColor = _txForeColorDefault; // clear the one not available
       if (e.KeyChar == (char)Keys.Return) {
         e.Handled = true;
-        var airport = GetAirport( txCfgArr.Text );
-        if (airport == null) {
+        SetAirport( txCfgArr.Text );
+        if (_airport == null) {
           txCfgArr.ForeColor = Color.Red;
           this.ARR_Airport = "n.a.";
           lblCfgArr.Text = this.ARR_Airport;
@@ -736,7 +761,7 @@ namespace FShelf
         else {
           txCfgArr.ForeColor = Color.GreenYellow;
           this.ARR_Airport = txCfgArr.Text;
-          lblCfgArr.Text = airport.Name;
+          lblCfgArr.Text = _airport.Name;
         }
       }
     }

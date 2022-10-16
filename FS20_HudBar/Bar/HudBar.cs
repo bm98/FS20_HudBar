@@ -147,6 +147,7 @@ namespace FS20_HudBar.Bar
       {LItem.AP_SPDs, DI_Ap_SpeedSet.Desc },
       {LItem.AP_BC, DI_Ap_BC.Desc },
       {LItem.AP_NAVg, DI_Ap_NavGps.Desc },
+      {LItem.AP_VNAV, DI_Ap_VNav.Desc },
       {LItem.AP_APR_GS, DI_Ap_AprGs.Desc },
       {LItem.AP_ATT, DI_Ap_ATT.Desc },
       {LItem.AP_YD, DI_Ap_YD.Desc },
@@ -218,13 +219,6 @@ namespace FS20_HudBar.Bar
       get => m_speech.Enabled;
       set => m_speech.Enabled = value;
     }
-
-    /// <summary>
-    /// The used FlightBag Folder
-    /// </summary>
-    public string ShelfFolder { get; private set; } = "";
-
-
 
     /// <summary>
     /// Returns the Show state of an item
@@ -300,7 +294,7 @@ namespace FS20_HudBar.Bar
     /// <param name="fRecorder">FlightRecorder Enabled</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
                       bool keyboardHook, bool inGameHook, WinHotkeyCat hotkeys,
-                      int autoSave, string shelfFolder, CProfile cProfile, string voiceName, string userFonts,
+                      int autoSave, CProfile cProfile, string voiceName, string userFonts,
                       bool fRecorder )
     {
       LOG.Log( "cTor HudBar: Start" );
@@ -314,7 +308,6 @@ namespace FS20_HudBar.Bar
       VoiceName = voiceName;
       FlightRecorder = fRecorder;
       _ = m_speech.SetVoice( VoiceName );
-      ShelfFolder = shelfFolder;
       ProtoLabelRef = lblProto;
       ProtoValueRef = valueProto;
       ProtoValue2Ref = value2Proto;
@@ -485,6 +478,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Ap_SpeedSet( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_BC( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_NavGps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Ap_VNav( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_AprGs( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_ATT( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Ap_YD( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -626,8 +620,18 @@ namespace FS20_HudBar.Bar
       // update calculations
       Calculator.PaceCalculator( );
 
-      // ATC Airport
-      AirportMgr.Update( AtcFlightPlan.Departure, AtcFlightPlan.Destination ); // maintain APTs (we should always have a Destination here)
+      // ATC Airport - maintain APTs (we should always have a Destination here)
+      AirportMgr.Update( AtcFlightPlan.Departure, AtcFlightPlan.Destination ); 
+      // Maintain the Waypoint Tracker to support the GPS Flightplan 
+      if (SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active) {
+        // WP Enroute Tracker
+        WPTracker.Track(
+          SC.SimConnectClient.Instance.GpsModule.WYP_prevID,
+          SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
+          SC.SimConnectClient.Instance.HudBarModule.SimTime_loc_sec,
+          SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround
+        );
+      }
 
       // Load Remaining Plan if the WYP or Flightplan has changed
       if (WPTracker.HasChanged || FltPlanMgr.HasChanged) {
@@ -750,15 +754,6 @@ namespace FS20_HudBar.Bar
     public void SetVoiceName( string voiceName )
     {
       VoiceName = voiceName;
-    }
-
-    /// <summary>
-    /// Set the current Flight Bag Folder
-    /// </summary>
-    /// <param name="folder"></param>
-    public void SetShelfFolder( string folder )
-    {
-      ShelfFolder = folder;
     }
 
     /// <summary>

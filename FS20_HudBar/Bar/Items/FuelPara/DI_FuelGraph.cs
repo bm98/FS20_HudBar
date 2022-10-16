@@ -52,16 +52,13 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      if (m_observerID > 0) {
-        SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
-        m_observerID = 0;
-      }
+      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( string dataRefName )
+    private void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         // we need to set the visibility and limits each time as we cannot guess when a new plane is loaded..

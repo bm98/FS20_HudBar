@@ -90,8 +90,6 @@ namespace FS20_HudBar.Config
       this.btCancel = new System.Windows.Forms.Button();
       this.btAccept = new System.Windows.Forms.Button();
       this.txHkShelf = new System.Windows.Forms.TextBox();
-      this.txShelfFolder = new System.Windows.Forms.TextBox();
-      this.btShelfFolder = new System.Windows.Forms.Button();
       this.btDumpConfigs = new System.Windows.Forms.Button();
       this.txHkCamera = new System.Windows.Forms.TextBox();
       this.panel1 = new System.Windows.Forms.Panel();
@@ -169,16 +167,14 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.cbxFlightRecorder, 3, 9);
       this.tlp.Controls.Add(this.btCancel, 5, 10);
       this.tlp.Controls.Add(this.btAccept, 4, 10);
-      this.tlp.Controls.Add(this.txHkShelf, 3, 10);
-      this.tlp.Controls.Add(this.txShelfFolder, 1, 10);
-      this.tlp.Controls.Add(this.btShelfFolder, 0, 10);
       this.tlp.Controls.Add(this.btDumpConfigs, 5, 9);
-      this.tlp.Controls.Add(this.txHkCamera, 5, 4);
       this.tlp.Controls.Add(this.panel1, 5, 2);
       this.tlp.Controls.Add(this.btFonts, 5, 8);
       this.tlp.Controls.Add(this.chkInGame, 5, 7);
       this.tlp.Controls.Add(this.chkKeyboard, 5, 6);
-      this.tlp.Controls.Add(this.txHkChecklistBox, 5, 5);
+      this.tlp.Controls.Add(this.txHkShelf, 0, 10);
+      this.tlp.Controls.Add(this.txHkCamera, 1, 10);
+      this.tlp.Controls.Add(this.txHkChecklistBox, 2, 10);
       this.tlp.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tlp.Location = new System.Drawing.Point(0, 0);
       this.tlp.Name = "tlp";
@@ -772,7 +768,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxVoice.Location = new System.Drawing.Point(159, 702);
+      this.cbxVoice.Location = new System.Drawing.Point(159, 700);
       this.cbxVoice.Name = "cbxVoice";
       this.cbxVoice.Size = new System.Drawing.Size(150, 23);
       this.cbxVoice.TabIndex = 25;
@@ -811,7 +807,7 @@ namespace FS20_HudBar.Config
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxASave.Location = new System.Drawing.Point(315, 702);
+      this.cbxASave.Location = new System.Drawing.Point(315, 700);
       this.cbxASave.Name = "cbxASave";
       this.cbxASave.Size = new System.Drawing.Size(150, 23);
       this.cbxASave.TabIndex = 29;
@@ -917,36 +913,13 @@ namespace FS20_HudBar.Config
       this.txHkShelf.BackColor = System.Drawing.Color.Honeydew;
       this.txHkShelf.Dock = System.Windows.Forms.DockStyle.Top;
       this.txHkShelf.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txHkShelf.Location = new System.Drawing.Point(471, 734);
+      this.txHkShelf.Location = new System.Drawing.Point(3, 734);
       this.txHkShelf.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
       this.txHkShelf.Name = "txHkShelf";
       this.txHkShelf.ReadOnly = true;
       this.txHkShelf.Size = new System.Drawing.Size(150, 22);
       this.txHkShelf.TabIndex = 45;
       this.txHkShelf.DoubleClick += new System.EventHandler(this.txHkShelf_DoubleClick);
-      // 
-      // txShelfFolder
-      // 
-      this.tlp.SetColumnSpan(this.txShelfFolder, 2);
-      this.txShelfFolder.Dock = System.Windows.Forms.DockStyle.Top;
-      this.txShelfFolder.Location = new System.Drawing.Point(159, 734);
-      this.txShelfFolder.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
-      this.txShelfFolder.Name = "txShelfFolder";
-      this.txShelfFolder.ReadOnly = true;
-      this.txShelfFolder.Size = new System.Drawing.Size(306, 23);
-      this.txShelfFolder.TabIndex = 47;
-      // 
-      // btShelfFolder
-      // 
-      this.btShelfFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.btShelfFolder.Location = new System.Drawing.Point(15, 731);
-      this.btShelfFolder.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-      this.btShelfFolder.Name = "btShelfFolder";
-      this.btShelfFolder.Size = new System.Drawing.Size(138, 27);
-      this.btShelfFolder.TabIndex = 48;
-      this.btShelfFolder.Text = "Flight Bag Folder...";
-      this.btShelfFolder.UseVisualStyleBackColor = true;
-      this.btShelfFolder.Click += new System.EventHandler(this.btShelfFolder_Click);
       // 
       // btDumpConfigs
       // 
@@ -963,12 +936,13 @@ namespace FS20_HudBar.Config
       // txHkCamera
       // 
       this.txHkCamera.BackColor = System.Drawing.Color.Honeydew;
-      this.txHkCamera.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.txHkCamera.Dock = System.Windows.Forms.DockStyle.Top;
       this.txHkCamera.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txHkCamera.Location = new System.Drawing.Point(783, 549);
+      this.txHkCamera.Location = new System.Drawing.Point(159, 734);
+      this.txHkCamera.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
       this.txHkCamera.Name = "txHkCamera";
       this.txHkCamera.ReadOnly = true;
-      this.txHkCamera.Size = new System.Drawing.Size(148, 22);
+      this.txHkCamera.Size = new System.Drawing.Size(150, 22);
       this.txHkCamera.TabIndex = 35;
       this.txHkCamera.DoubleClick += new System.EventHandler(this.txHkCamera_DoubleClick);
       // 
@@ -1034,12 +1008,13 @@ namespace FS20_HudBar.Config
       // txHkChecklistBox
       // 
       this.txHkChecklistBox.BackColor = System.Drawing.Color.Honeydew;
-      this.txHkChecklistBox.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.txHkChecklistBox.Dock = System.Windows.Forms.DockStyle.Top;
       this.txHkChecklistBox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txHkChecklistBox.Location = new System.Drawing.Point(783, 579);
+      this.txHkChecklistBox.Location = new System.Drawing.Point(315, 734);
+      this.txHkChecklistBox.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
       this.txHkChecklistBox.Name = "txHkChecklistBox";
       this.txHkChecklistBox.ReadOnly = true;
-      this.txHkChecklistBox.Size = new System.Drawing.Size(148, 22);
+      this.txHkChecklistBox.Size = new System.Drawing.Size(150, 22);
       this.txHkChecklistBox.TabIndex = 35;
       this.txHkChecklistBox.DoubleClick += new System.EventHandler(this.txHkChecklistBox_DoubleClick);
       // 
@@ -1156,8 +1131,6 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.TextBox txHkProfile5;
     private System.Windows.Forms.CheckBox cbxFlightRecorder;
     private System.Windows.Forms.TextBox txHkShelf;
-    private System.Windows.Forms.TextBox txShelfFolder;
-    private System.Windows.Forms.Button btShelfFolder;
     private System.Windows.Forms.FolderBrowserDialog FBD;
     private System.Windows.Forms.Timer timer1;
     private System.Windows.Forms.Button btFonts;

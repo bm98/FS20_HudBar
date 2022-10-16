@@ -47,7 +47,13 @@ namespace FS20_HudBar.Bar.Items
 
     }
 
-    /// <summary>
+     // Disconnect from updates
+    protected override void UnregisterDataSource( )
+    {
+      ; // not a Sim driven item
+    }
+
+   /// <summary>
     /// Enter the FreeText
     /// </summary>
     /// <param name="sender"></param>
@@ -63,16 +69,11 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from FreeText Update
     /// </summary>
-    public void OnDataArrival( string data )
+    private void OnDataArrival( string data )
     {
       if ( this.Visible ) {
         _value1.Text = data;
       }
-    }
-
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
     }
 
   }

@@ -30,17 +30,14 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-    m_observerID=  SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( m_name, OnDataArrival );
+      RegisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module, OnDataArrival ); // use generic
     }
     /// <summary>
     /// Calls to un-register for dataupdates
     /// </summary>
     public override void UnRegisterObserver( )
     {
-      if (m_observerID > 0) {
-        SC.SimConnectClient.Instance.AP_G1000Module.RemoveObserver( m_observerID );
-        m_observerID = 0;
-      }
+      UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use generic
     }
 
     /// <summary>

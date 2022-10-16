@@ -216,7 +216,7 @@ namespace FS20_HudBar.Config
         m_pHotkey[p].Text = m_hotkeys.ContainsKey( (Hotkeys)(p + startProfileNum) ) ? m_hotkeys[(Hotkeys)(p + startProfileNum)].AsString : "";
 
         // mark the selected one 
-        m_pName[p].BackColor = (SelectedProfile == (p + startProfileNum)) ? Color.LimeGreen : txShelfFolder.BackColor; // use another text fields back as default if not selected
+        m_pName[p].BackColor = (SelectedProfile == (p + startProfileNum)) ? Color.LimeGreen : Color.White;
       }
     }
 
@@ -327,7 +327,6 @@ namespace FS20_HudBar.Config
         ProfilesCache.Add( new CProfile( profile ) );
       }
 
-      txShelfFolder.Text = HudBarRef.ShelfFolder; // 20220212
       // init with the first Section 
       InitProfileSection( );
 
@@ -378,8 +377,6 @@ namespace FS20_HudBar.Config
         vt.Enabled = clbVoice.GetItemChecked( idx++ );
       }
       HudBarRef.VoicePack.SaveSettings( );
-
-      HudBarRef.SetShelfFolder( txShelfFolder.Text );
 
       // Update global fonts
       if (m_applyFontChanges) {
@@ -608,7 +605,6 @@ namespace FS20_HudBar.Config
 
     #endregion
 
-
     #region Dump Profile (R&D Mode..)
 
     // For Debug and Setup only
@@ -631,25 +627,6 @@ namespace FS20_HudBar.Config
           sw.WriteLine( ProfilesCache[p].ItemPosString( ) );
           sw.WriteLine( ProfilesCache[p].FlowBreakString( ) );
         }
-      }
-    }
-
-    #endregion
-
-    #region Shelf Config
-
-    private void btShelfFolder_Click( object sender, EventArgs e )
-    {
-      if (Directory.Exists( txShelfFolder.Text )) {
-        FBD.SelectedPath = Path.GetFullPath( txShelfFolder.Text );
-      }
-      else {
-        FBD.SelectedPath = "";
-        FBD.RootFolder = Environment.SpecialFolder.Desktop;
-      }
-
-      if (FBD.ShowDialog( this ) == DialogResult.OK) {
-        txShelfFolder.Text = FBD.SelectedPath;
       }
     }
 

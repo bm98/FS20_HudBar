@@ -180,6 +180,8 @@ namespace FS20_HudBar.Bar.Items
     ADF1,        // ADF1 Direction
     ADF1_NAME,   // ADF1 ID,Name
     ADF1_F,      // ADF1 Frequ
+
+    AP_VNAV,     // VNAV on G1000
   }
 
 
@@ -485,6 +487,7 @@ namespace FS20_HudBar.Bar.Items
     AP_SPDset,    // AP SPD IAS set
     AP_SPDset_man,// AP SPD IAS set managed slot
     AP_NAV,       // AP NAV active
+    AP_VNAV,      // AP VNAV on G1000
     AP_NAVgps,    // AP NAV follow GPS
     AP_BC,        // AP BC signal
     AP_APR,       // AP APR hold active

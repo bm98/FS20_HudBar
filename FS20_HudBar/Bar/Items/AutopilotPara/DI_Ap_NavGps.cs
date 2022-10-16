@@ -55,9 +55,8 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      if (m_observerID > 0) {
-        SC.SimConnectClient.Instance.AP_G1000Module.RemoveObserver( m_observerID );
-        m_observerID = 0;
+      UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use the generic one
+      if (_obs2 > 0) {
         SC.SimConnectClient.Instance.NavModule.RemoveObserver( _obs2 );
         _obs2 = 0;
       }
@@ -73,7 +72,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( string dataRefName )
+    private void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
         this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.NAVhold_active ? cAP : cLabel;

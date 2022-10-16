@@ -29,6 +29,13 @@ namespace PingLib
       LOG.Log( $"Init Module" );
     }
 
+    /// <summary>
+    /// Deletes the temp sound files deployed by this module (Streamed files)
+    /// </summary>
+    public static void RemoveTempSounds( )
+    {
+      WaveProc.RemoveTempSounds( );
+    }
 
     /// <summary>
     ///  Returns all of the installed sounds.

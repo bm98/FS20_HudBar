@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using FS20_HudBar.Triggers;
+using FSimClientIF.Modules;
 
 namespace FS20_HudBar.Triggers.Base
 {
@@ -92,6 +93,25 @@ namespace FS20_HudBar.Triggers.Base
     /// Reset the trigger to callout the current state on the next update
     /// </summary>
     public abstract void Reset( );
+
+    // generic register method
+    protected void RegisterObserver_low( IModule module, Action<string> callback )
+    {
+      // not registered
+      if (m_observerID < 1) {
+        var obsID = module.AddObserver( m_name, OnDataArrival );
+        m_observerID = (obsID > 0) ? obsID : m_observerID;
+      }
+    }
+
+    // generic unregister method
+    protected void UnregisterObserver_low( IModule module )
+    {
+      if (m_observerID > 0) {
+        module.RemoveObserver( m_observerID );
+        m_observerID = 0;
+      }
+    }
 
 
   }

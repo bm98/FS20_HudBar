@@ -40,7 +40,7 @@ namespace FS20_HudBar.Bar.Items
 
     private const float c_incPerWheel = 0.001f; // Get 0.1% per mouse inc
     private const int c_aETrim_sec = 20; // sec  AutoETrim active time when clicked
-    private DateTime  _endTime = DateTime.Now; // to switch AET off when expired
+    private DateTime _endTime = DateTime.Now; // to switch AET off when expired
 
     public DI_A_ETrim( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
@@ -61,10 +61,7 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      if (m_observerID > 0) {
-        SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
-        m_observerID = 0;
-      }
+      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
     }
 
     private void _label_MouseWheel( object sender, MouseEventArgs e )
@@ -74,11 +71,11 @@ namespace FS20_HudBar.Bar.Items
       // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
       _label.ActivateForm( e );
 
-      if ( e.Delta > 0 ) {
+      if (e.Delta > 0) {
         // Wheel Up - nose down
         SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct -= c_incPerWheel;
       }
-      else if ( e.Delta < 0 ) {
+      else if (e.Delta < 0) {
         // Wheel Down
         SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct += c_incPerWheel;
       }
@@ -86,7 +83,7 @@ namespace FS20_HudBar.Bar.Items
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
-      if ( SC.SimConnectClient.Instance.IsConnected ) {
+      if (SC.SimConnectClient.Instance.IsConnected) {
         SC.SimConnectClient.Instance.AutoETrimModule.Enabled = !SC.SimConnectClient.Instance.AutoETrimModule.Enabled; // toggles
         _endTime = DateTime.Now + TimeSpan.FromSeconds( c_aETrim_sec ); // does not matter if it is off, else it starts again
       }
@@ -95,15 +92,15 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( string dataRefName )
+    private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
+      if (this.Visible) {
         this.ColorType.ItemBackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? cLiveBG : cActBG;
         _value1.Value = SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct;
       }
 
       // switch the module off if the end time has passed
-      if ( SC.SimConnectClient.Instance.AutoETrimModule.Enabled && ( DateTime.Now > _endTime ) ) {
+      if (SC.SimConnectClient.Instance.AutoETrimModule.Enabled && (DateTime.Now > _endTime)) {
         SC.SimConnectClient.Instance.AutoETrimModule.Enabled = false;
       }
     }

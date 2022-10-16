@@ -56,10 +56,7 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      if (m_observerID > 0) {
-        SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
-        m_observerID = 0;
-      }
+      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
     }
 
     private void _label_MouseWheel( object sender, MouseEventArgs e )
@@ -89,7 +86,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( string dataRefName )
+    private void OnDataArrival( string dataRefName )
     {
       // SimRate
       if ( this.Visible ) {

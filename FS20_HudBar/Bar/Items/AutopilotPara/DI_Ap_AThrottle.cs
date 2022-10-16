@@ -67,10 +67,7 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      if (m_observerID > 0) {
-        SC.SimConnectClient.Instance.AP_G1000Module.RemoveObserver( m_observerID );
-        m_observerID = 0;
-      }
+      UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use the generic one
     }
 
     private void _value1_Click( object sender, EventArgs e )
@@ -96,7 +93,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( string dataRefName )
+    private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
         if (SC.SimConnectClient.Instance.AP_G1000Module.ATHR_active) {

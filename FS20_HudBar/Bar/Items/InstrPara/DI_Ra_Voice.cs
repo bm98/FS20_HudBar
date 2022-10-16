@@ -32,7 +32,7 @@ namespace FS20_HudBar.Bar.Items
     public static readonly string Desc = "Aircraft RA ft audible";
 
     private readonly V_Base _label;
-    private readonly V_Base _value1;
+    private readonly V_RAaudio _value1;
 
     public DI_Ra_Voice( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
@@ -47,19 +47,18 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      if (m_observerID > 0) {
-        SC.SimConnectClient.Instance.HudBarModule.RemoveObserver( m_observerID );
-        m_observerID = 0;
-      }
+      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      // must unregister the callout as well
+      _value1.UnregisterDataSource( );
     }
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( string dataRefName )
+    private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        if ( SC.SimConnectClient.Instance.HudBarModule.AltAoG_ft <= 1500 ) {
+      if (this.Visible) {
+        if (SC.SimConnectClient.Instance.HudBarModule.AltAoG_ft <= 1500) {
           _value1.Value = SC.SimConnectClient.Instance.HudBarModule.AltAoG_ft;
         }
         else {

@@ -63,10 +63,7 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      if (m_observerID > 0) {
-        SC.SimConnectClient.Instance.AP_G1000Module.RemoveObserver( m_observerID );
-        m_observerID = 0;
-      }
+      UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use the generic one
     }
 
     private void _value1_MouseClick( object sender, MouseEventArgs e )
@@ -80,16 +77,33 @@ namespace FS20_HudBar.Bar.Items
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
+      // 1/2 - 1/2  dectection for Digits
+      var largeChange = e.Location.X < (_value1.Width / 2);
+
       // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
       _value1.ActivateForm( e );
 
       if (e.Delta > 0) {
         // Up
-        SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting( FSimClientIF.CmdMode.Inc );
+        if (largeChange) {
+          int value = (int)SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting_degm  + 10;
+          value = (int)CoordLib.Geo.Wrap360(value);
+          SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting_degm = value;
+        }
+        else {
+          SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting( FSimClientIF.CmdMode.Inc );
+        }
       }
       else if (e.Delta < 0) {
         // Down
-        SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting( FSimClientIF.CmdMode.Dec );
+        if (largeChange) {
+          int value = (int)SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting_degm - 10;
+          value = (int)CoordLib.Geo.Wrap360( value );
+          SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting_degm = value;
+        }
+        else {
+          SC.SimConnectClient.Instance.AP_G1000Module.HDG_setting( FSimClientIF.CmdMode.Dec );
+        }
       }
     }
 
@@ -104,7 +118,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( string dataRefName )
+    private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
         this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.HDGhold_active ? cAP : cLabel;

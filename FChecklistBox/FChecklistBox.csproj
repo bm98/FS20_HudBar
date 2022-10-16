@@ -64,7 +64,7 @@
       <Name>bm98_Checklist</Name>
     </ProjectReference>
     <ProjectReference Include="..\SettingsLib\SettingsLib\SettingsLib.csproj">
-      <Project>{405093c1-a6c3-48a8-8e8c-9bdae438fba0}</Project>
+      <Project>{f17750f6-0652-42e8-a966-72936f558331}</Project>
       <Name>SettingsLib</Name>
     </ProjectReference>
   </ItemGroup>

@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using FS20_AptLib;
+using FSimFacilityIF;
+using System.IO;
 
 namespace FS20_HudBar
 {
@@ -83,10 +84,10 @@ namespace FS20_HudBar
         DepLocation = LatLon.Empty;
         DepAirportName = "";
 
-        var apt = Airports.FindAirport( icao );
+        var apt = GetAirport( icao ); //  Airports.FindAirport( icao );
         if (apt != null) {
           // Apt found in DB
-          DepLocation = new LatLon( apt.Lat, apt.Lon, apt.Elevation );
+          DepLocation = new LatLon( apt.Lat, apt.Lon, apt.Elevation_m );
           DepAirportName = apt.Name;
           DepAirportICAO = icao;
         }
@@ -114,10 +115,10 @@ namespace FS20_HudBar
         ArrLocation = LatLon.Empty;
         ArrAirportName = "";
 
-        var apt = Airports.FindAirport( icao );
+        var apt = GetAirport( icao ); // Airports.FindAirport( icao );
         if (apt != null) {
           // Apt found in DB
-          ArrLocation = new LatLon( apt.Lat, apt.Lon, apt.Elevation );
+          ArrLocation = new LatLon( apt.Lat, apt.Lon, apt.Elevation_m );
           ArrAirportName = apt.Name;
           ArrAirportICAO = icao;
         }
@@ -133,7 +134,7 @@ namespace FS20_HudBar
     /// </summary>
     /// <param name="depIcao">The departure airport ICAO code or an empty string</param>
     /// <param name="arrIcao">The arrival airport ICAO code or an empty string</param>
-    public static void Update( string depIcao , string arrIcao )
+    public static void Update( string depIcao, string arrIcao )
     {
       UpdateDep( depIcao );
       UpdateArr( arrIcao );
@@ -167,11 +168,28 @@ namespace FS20_HudBar
     public static float ArrDistance_nm( LatLon currentLocation )
     {
       // Sanity
-      if ( currentLocation.IsEmpty ) return float.NaN;
-      if ( ArrLocation.IsEmpty ) return float.NaN;
+      if (currentLocation.IsEmpty) return float.NaN;
+      if (ArrLocation.IsEmpty) return float.NaN;
 
       return (float)currentLocation.DistanceTo( ArrLocation, CoordLib.ConvConsts.EarthRadiusNm );
     }
+
+    // access the facility database
+    // retrieve an airport from the DB
+    private static IAirport GetAirport( string aptICAO )
+    {
+      // sanity
+      if (!File.Exists( Folders.GenAptDBFile )) return null; // cannot get facilities
+
+      using (var _db = new FSimFacilityDataLib.AirportDB.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
+        if (!_db.Open( Folders.GenAptDBFile )) {
+          return null; // no db available
+        }
+        return _db.DbReader.GetAirport( aptICAO );
+      }
+    }
+
+
 
   }
 }

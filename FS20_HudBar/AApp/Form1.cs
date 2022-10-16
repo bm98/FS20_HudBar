@@ -18,6 +18,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.Bar.Items;
 using FS20_HudBar.Bar;
 using FS20_HudBar.Config;
+using System.IO;
 
 namespace FS20_HudBar
 {
@@ -52,7 +53,7 @@ namespace FS20_HudBar
     // the screen the bar is attached to
     private Screen m_barScreen;
     // the screen number of the above
-    private int m_barScreenNumber = 0; 
+    private int m_barScreenNumber = 0;
 
     // This will be the GUI form
     private frmGui m_frmGui;
@@ -104,6 +105,7 @@ namespace FS20_HudBar
     }
 
     #region Settings Concept Update 
+
     // needed for transition to new AppSettings concept
     private void UpdateCamSettings( )
     {
@@ -464,6 +466,15 @@ namespace FS20_HudBar
 
     #endregion
 
+    private readonly string c_facDBmsg = "The Facility Database could not be found!\n\nPlease visit the QuickGuide, head for 'DataLoader' and proceed accordingly";
+    private void CheckFacilityDB( )
+    {
+      if (!File.Exists( Folders.GenAptDBFile )) {
+        _ = MessageBox.Show( c_facDBmsg, "Facility Database Missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+      }
+    }
+
+
     /// <summary>
     /// Main Form Init
     /// </summary>
@@ -638,6 +649,8 @@ namespace FS20_HudBar
       this.TopMost = true; // make sure we float on top
       this.BackColor = c_WinBG;
 
+      CheckFacilityDB( );
+
       // Get the controls the first time from Config
       InitGUI( );
       WPTracker.Reset( );
@@ -723,6 +736,9 @@ namespace FS20_HudBar
       AppSettings.Instance.Save( );
       // stop connecting tries
       timer1.Enabled = false;
+
+      // Cleanup Sounds / Loops
+      PingLib.Sounds.RemoveTempSounds( ); // Sounds and Loops share the same cleanup - need only one to call
 
       // Unhook Hotkeys
       SetupKeyboardHook( false );
@@ -827,8 +843,6 @@ namespace FS20_HudBar
         AppSettings.Instance.HKChecklistBox = HUD.Hotkeys.HotkeyString( Hotkeys.ChecklistBox );
         AppSettings.Instance.KeyboardHook = HUD.KeyboardHook;
         AppSettings.Instance.InGameHook = HUD.InGameHook;
-
-        AppSettings.Instance.ShelfFolder = HUD.ShelfFolder;
 
         AppSettings.Instance.FltAutoSaveATC = (int)HUD.FltAutoSave;
         AppSettings.Instance.VoiceName = HUD.VoiceName;
@@ -1250,7 +1264,7 @@ namespace FS20_HudBar
       HUD?.Dispose( ); // MUST ..
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
                           AppSettings.Instance.KeyboardHook, AppSettings.Instance.InGameHook, _hotkeycat,
-                          AppSettings.Instance.FltAutoSaveATC, AppSettings.Instance.ShelfFolder,
+                          AppSettings.Instance.FltAutoSaveATC,
                           m_profiles[m_selProfile], AppSettings.Instance.VoiceName, AppSettings.Instance.UserFonts,
                           AppSettings.Instance.FRecorder );
 
@@ -1258,7 +1272,6 @@ namespace FS20_HudBar
       LOG.Log( $"InitGUI: Reread Config changes" );
       SetupKeyboardHook( AppSettings.Instance.KeyboardHook );
       SetupInGameHook( AppSettings.Instance.InGameHook );
-      //m_shelf?.SetShelfFolder( AppSettings.Instance.ShelfFolder ); // not longer done here TODO remove line
 
       // Prepare FLPanel to load controls
       // DON'T Suspend the Layout else the calculations below will not be valid, the form is invisible and no painting is done here
@@ -1327,23 +1340,35 @@ namespace FS20_HudBar
       if (!m_initDone) return; // cannot access items at this time
 
       var sec = DateTimeOffset.UtcNow.ToUnixTimeSeconds( );
-      // update map airports if there are 
-      if (AirportMgr.HasChanged) {
-        if (AirportMgr.IsDepAvailable)
-          m_shelf.DEP_Airport = AirportMgr.DepAirportICAO;
-        if (AirportMgr.IsArrAvailable)
-          m_shelf.ARR_Airport = AirportMgr.ArrAirportICAO;
-      }
-
       // maintain the Engine Visibility
       flp.SetEnginesVisible( SC.SimConnectClient.Instance.HudBarModule.NumEngines );
-      // The Bar has it's own logic for data updates
-      HUD.UpdateGUI( dataRefName, sec );
+      // It is called prematurely when the Bar connects or a flight is loaded - reset if no acft is selected
+      if (string.IsNullOrEmpty( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile )) {
+        AirportMgr.Reset( );
+        WPTracker.Reset( );
+      }
+      else {
+        // The Bar has it's own logic for data updates
+        HUD.UpdateGUI( dataRefName, sec );
+        // update map airports if there are 
+        if (AirportMgr.HasChanged) {
+          if (AirportMgr.IsDepAvailable)
+            m_shelf.DEP_Airport = AirportMgr.DepAirportICAO;
+          if (AirportMgr.IsArrAvailable)
+            m_shelf.ARR_Airport = AirportMgr.ArrAirportICAO;
+
+          AirportMgr.Read( ); // reset changed flag
+        }
+
+      }
     }
 
     //  moves the bar/tile to the next screen
     private void MoveBarToNextScreen( )
     {
+      if (m_profiles.ElementAt( m_selProfile ).Kind == GUI.Kind.Window) return; // Window is not attached to monitor
+      if (m_profiles.ElementAt( m_selProfile ).Kind == GUI.Kind.WindowBL) return; // Window is not attached to monitor
+
       Screen[] screens = Screen.AllScreens;
       m_barScreenNumber++;
       m_barScreenNumber = (m_barScreenNumber >= screens.Length) ? 0 : m_barScreenNumber; // wrap around
@@ -1444,11 +1469,11 @@ namespace FS20_HudBar
             LOG.Log( "SimConnectPacer: Did not receive an Event for 5sec - Restarting Connection" );
             SimConnect( ); // Disconnect if we don't receive Events even the Sim is connected
           }
-          else {
-            // Confirm data arrival phase - assuming we are OK..
-            HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
-          }
           m_scGracePeriod--;
+        }
+        else {
+          // Confirm data arrival phase - assuming we are OK..
+          HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
         }
         // Voice is disabled when a new HUD is created, so enable if not yet done
         // The timer is enabled after InitGUI - so this one is always 5 sec later which should avoid some of the early talking..

@@ -30,6 +30,15 @@ namespace FS20_HudBar.GUI.Templates
       m_raCallout.RegisterObserver( ); // this one is not in the HUDVoice List - so call it here
     }
 
+    /// <summary>
+    /// Must be unregistered !!
+    /// </summary>
+    public void UnregisterDataSource( )
+    {
+      m_raCallout.UnRegisterObserver( );
+    }
+
+
     protected override void SetAltitude_Metric( )
     {
       m_unit = _altitude_metric ? "m" : "ft";

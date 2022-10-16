@@ -36,6 +36,7 @@ namespace FShelf
       this.tabMap = new System.Windows.Forms.TabPage();
       this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
       this.panel1 = new System.Windows.Forms.Panel();
+      this.lblFacDBMissing = new System.Windows.Forms.Label();
       this.lblSimConnectedMap = new System.Windows.Forms.Label();
       this.label3 = new System.Windows.Forms.Label();
       this.label2 = new System.Windows.Forms.Label();
@@ -183,6 +184,7 @@ namespace FShelf
       // 
       // panel1
       // 
+      this.panel1.Controls.Add(this.lblFacDBMissing);
       this.panel1.Controls.Add(this.lblSimConnectedMap);
       this.panel1.Controls.Add(this.label3);
       this.panel1.Controls.Add(this.label2);
@@ -197,6 +199,19 @@ namespace FShelf
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(599, 44);
       this.panel1.TabIndex = 0;
+      // 
+      // lblFacDBMissing
+      // 
+      this.lblFacDBMissing.BackColor = System.Drawing.Color.Black;
+      this.lblFacDBMissing.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.lblFacDBMissing.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblFacDBMissing.ForeColor = System.Drawing.Color.Red;
+      this.lblFacDBMissing.Location = new System.Drawing.Point(3, 11);
+      this.lblFacDBMissing.Name = "lblFacDBMissing";
+      this.lblFacDBMissing.Size = new System.Drawing.Size(592, 24);
+      this.lblFacDBMissing.TabIndex = 6;
+      this.lblFacDBMissing.Text = "Missing Facility Database - pls. use DataLoader to create one";
+      this.lblFacDBMissing.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       // 
       // lblSimConnectedMap
       // 
@@ -1017,5 +1032,6 @@ namespace FShelf
         private System.Windows.Forms.Label lblSimConnectedNotes;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btPerfRefresh;
+        private System.Windows.Forms.Label lblFacDBMissing;
     }
 }

@@ -1,5 +1,5 @@
-FS20_CamControl V 0.54 - Build 51 BETA
-(c) M. Burri - 04-Oct-2022
+FS20_CamControl V 0.55 - Build 55 BETA
+(c) M. Burri - 10-Oct-2022
 
 Contains files:
 
@@ -18,7 +18,7 @@ BM98CH_WasmClient.dll       WASM Module client to get LVars (new since V0.51)
 CoordLib.dll				A coord. handling library (updated V0.53)
 
 From MSFS2020 Developer Kit for convenience included:
-  SimConnect.cfg
+  SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
   Microsoft.FlightSimulator.SimConnect.dll 
   SimConnect.dll
 
@@ -38,7 +38,8 @@ github@mail.burri-web.org
 
 Changelog:
 
-V 0.54-B51
+V 0.55-B55
 - initial upload
+- Update QuickGuide
 
 

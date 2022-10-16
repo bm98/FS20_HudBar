@@ -52,26 +52,28 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      if (m_observerID > 0) {
-        SC.SimConnectClient.Instance.GpsModule.RemoveObserver( m_observerID );
-        m_observerID = 0;
-      }
+      UnregisterObserver_low( SC.SimConnectClient.Instance.GpsModule ); // use the generic one
     }
+
+    // format an empty wyp as null -> ____ readout
+    private string WypLabel( string wypName ) => string.IsNullOrWhiteSpace( wypName ) ? null : wypName;
+
 
     /// <summary>
     /// Update from Sim
     /// </summary>
-    public void OnDataArrival( string dataRefName )
+    private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
-          _value1.Text = SC.SimConnectClient.Instance.GpsModule.WYP_prevID;
-          _value2.Text = SC.SimConnectClient.Instance.GpsModule.WYP_nextID;
+      if (this.Visible) {
+        var module = SC.SimConnectClient.Instance.GpsModule;
+        if (module.IsGpsFlightplan_active) {
+          _value1.Text = module.IsGpsDirectTo_active ? "Ð→" : module.WYP_prevID;
+          _value2.Text = module.WYP_nextID;
         }
         else {
-          // No SIM GPS - Flightplan active
-          _value1.Text = null;
-          _value2.Text = null;
+          // No SIM GPS - Flightplan active (WYPs still valid??) provider returns "" when the GPS WYP is not set valid anyway
+          _value1.Text = module.IsGpsDirectTo_active ? "Ð→" : WypLabel( module.WYP_prevID );
+          _value2.Text = WypLabel( module.WYP_nextID );
         }
       }
     }

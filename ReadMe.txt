@@ -16,7 +16,6 @@ PingLib.dll                 An audio lib using Win10 Audio facilities (new since
 MetarLib.dll                A METAR access library (new since V0.29)
 CoordLib.dll                A coord. handling library
 SettingsLib.dll             Application settings persistence library
-FS20_AptLib.dll             MSFS2020 Airport DB (updated)
 FSimIF.dll                  Generic FSim interface definition (updated)
 FSimClientIF.dll            Generic FSim Client interface definition (updated)
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
@@ -29,7 +28,7 @@ BingMapsRESTToolkit.dll     Microsoft provided library for accessing Bing Map da
 LiteDB.dll                  3rd party data management library
 
 From MSFS2020 Developer Kit for convenience included:
-  SimConnect.cfg
+  SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
   Microsoft.FlightSimulator.SimConnect.dll 
   SimConnect.dll
 
@@ -64,11 +63,19 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.55-B55
-- Fix Bar/Window Location was not stored for profiles 5..10
-- Add Performance Tab and Notes Tab to FlightBag
+- Add VNAV Button (when using WASM module)
 - Add Move Bar/Tile to next screen (Monitor) with RShift+RCtrl+Break
+- Add Using the Facility DB for Aiport Management (replacing the FS20_AptLib)
+- Add Check if the Facility DB is available and pop a msg box if not
+- Add Performance Tab and Notes Tab to FlightBag
+- Add Touchdown log (MyDocuments\MSFS_HudBarSave\TouchDownLog.csv) to FlightBag
+- Upadate AP Settings allow for large change on the left side of the item field (mouse wheel)
+- Fix Bar/Window Location was not stored for profiles 5..10
 - Cleanup of all new features
+- Disable SimConnect.cfg (as per MS it is only needed when connecting MSFS via Network)
 - SU10 compatibility checks
+- Moved to Visual Studio 2022 Community Edition
+- Update QuickGuides
 
 V 0.54-B51
 - Add Map, Metar, and Config in FlightBag

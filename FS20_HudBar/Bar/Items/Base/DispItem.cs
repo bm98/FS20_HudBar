@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using FS20_HudBar.GUI;
+using FSimClientIF.Modules;
 
 namespace FS20_HudBar.Bar.Items.Base
 {
@@ -63,9 +64,18 @@ namespace FS20_HudBar.Bar.Items.Base
     protected int m_observerID = 0;
 
     /// <summary>
-    /// Unregister from the DataSource if needed
+    /// Unregister from the DataSource(s) if needed
     /// </summary>
     protected virtual void UnregisterDataSource( ) { }
+
+    // generic unregister method
+    protected void UnregisterObserver_low( IModule module )
+    {
+      if (m_observerID > 0) {
+        module.RemoveObserver( m_observerID );
+        m_observerID = 0;
+      }
+    }
 
     /// <summary>
     /// Width for Aligned AP items (defined only here..)
