@@ -182,6 +182,7 @@ namespace FS20_HudBar.Bar.Items
     ADF1_F,      // ADF1 Frequ
 
     AP_VNAV,     // VNAV on G1000
+    GPS_TOD,     // GPS distance to TOD 
   }
 
 
@@ -391,6 +392,7 @@ namespace FS20_HudBar.Bar.Items
     GPS_DTRK,     // GPS Desired Track to Waypoint 000°
     GPS_XTK,      // GPS CrossTrack Error nm
     GPS_ALT,      // GPS next Waypoint Altitude
+    GPS_TOD,      // GPS distance to TOD 
     GPS_LAT,      // Latitude
     GPS_LON,      // Longitude
 

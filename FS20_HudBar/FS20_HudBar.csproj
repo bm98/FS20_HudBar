@@ -211,6 +211,9 @@
     <Compile Include="Bar\Items\AutopilotPara\DI_Ap_VNav.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\GpsPara\DI_Gps_TOD.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\RadioPara\DI_Adf1.cs">
       <SubType>Component</SubType>
     </Compile>

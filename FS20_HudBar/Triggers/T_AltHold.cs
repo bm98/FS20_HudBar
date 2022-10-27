@@ -35,15 +35,86 @@ namespace FS20_HudBar.Triggers
       UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use generic
     }
 
-    // Returns either feet or flightlevel
-    // Transition is not known or fixed - we use 8000 feet...
-    private string AltText( float alt )
+    private string AvNum( int n, bool nine = false )
     {
-      if ( alt < 8000 ) {
-        return $"Holding {( (int)( alt / 100 ) ) * 100} feet"; // get it to hundreds else it is talking way to long
+      switch (n) {
+        case 0: return "zero";
+        case 1: return "one";
+        case 2: return "two";
+        case 3: return "three";
+        case 4: return "four";
+        case 5: return "five";
+        case 6: return "six";
+        case 7: return "seven";
+        case 8: return "eight";
+        case 9: return nine ? "nine" : "niner";
+        default: return "";
+      }
+    }
+
+    // Flightlevel text
+    //  three four zero 
+    //  one niner
+    private string AvTextAlt( int alt )
+    {
+      var s = "";
+      int n;
+      if (alt >= 10_000) {
+        n = alt / 10_000; s += AvNum( n ) + " "; alt -= n * 10_000;
+        n = alt / 1_000; s += AvNum( n ) + " "; alt -= n * 1_000;
+        s += "thousand ";
+        n = alt / 100;
+        if (n > 0) {
+          s += AvNum( n, true ) + " hundred"; // give nine hundred (not niner hundred)
+        }
+        return s;
       }
       else {
-        return $"Holding Flightlevel {(int)( alt / 100 ) }";
+        n = alt / 1_000; s += AvNum( n, true ) + " "; alt -= n * 1_000;
+        s += "thousand ";
+        n = alt / 100;
+        if (n > 0) {
+          s += AvNum( n, true ) + " hundred"; // give nine hundred (not niner hundred)
+        }
+        return s;
+      }
+    }
+
+    // Altitude text
+    //   one three thousand five hundred
+    //   two thousand five hundred
+    //   one thousand nine hundred
+    //   six thousand
+    private string AvTextFL( int fl )
+    {
+      var s = "";
+      int n;
+      if (fl >= 100) {
+        n = fl / 100; s += AvNum( n ) + " "; fl -= n * 100;
+        n = fl / 10; s += AvNum( n ) + " "; fl -= n * 10;
+        n = fl; s += AvNum( n ) + " ";
+        return s;
+      }
+      else if (fl >= 10) {
+        n = fl / 10; s += AvNum( n ) + " "; fl -= n * 10;
+        n = fl; s += AvNum( n ) + " ";
+        return s;
+      }
+      else {
+        n = fl; s += AvNum( n ) + " ";
+        return s;
+      }
+    }
+
+    // Returns either feet or flightlevel
+    // Transition is assumed when STD BARO is set, latest when at or above 18'000 ft
+    private string AltText( float alt, bool stdBaro )
+    {
+      if (stdBaro || alt > 17_900) {
+        return $"Holding Flightlevel {AvTextFL( (int)(alt / 100) )}";
+      }
+      else {
+        return $"Holding {AvTextAlt( ((int)(alt / 100)) * 100 )} feet"; // get it to hundreds else it is talking way to long
       }
     }
 
@@ -53,33 +124,33 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAP_G1000 object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if ( !Enabled ) return; // not enabled
-      if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity, capture odd cases
-      if ( SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) return; // not while on ground
+      if (!Enabled) return; // not enabled
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
+      if (SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround) return; // not while on ground
 
-      var ds = SC.SimConnectClient.Instance.AP_G1000Module;
-
+      var aps = SC.SimConnectClient.Instance.AP_G1000Module;
+      var hs = SC.SimConnectClient.Instance.HudBarModule;
       // if capturing ALT
-      if ( ds.ALThold_active && ( ds.AP_mode == FSimClientIF.APMode.On) ) {
+      if (aps.ALThold_active && (aps.AP_mode == FSimClientIF.APMode.On)) {
         // find out what ALT we are holding - if at all
         // ALT hold gets active while approaching the target Alt in ALTS mode
         // or holds the current ALT if the pilot hits the ALT hold button.
         // If the Setting is more than 500ft away from the current ALT we assume the pilot pushed the ALT hold button (best guess...)
-        float altHolding = ds.ALT_setting_ft; // target ALT
-        if ( altHolding > ( SC.SimConnectClient.Instance.HudBarModule.Altimeter_ft + 500f ) ) {
+        float altHolding = aps.ALT_setting_ft; // target ALT
+        if (altHolding > (hs.Altimeter_ft + 500f)) {
           // seems ALT button was pressed on the way UP to SET ALT
-          altHolding = (int)Math.Ceiling( SC.SimConnectClient.Instance.HudBarModule.Altimeter_ft / 100f ) * 100; // round current ALT UP 
+          altHolding = (int)Math.Ceiling( hs.Altimeter_ft / 100f ) * 100; // round current ALT UP 
         }
-        else if ( altHolding < ( SC.SimConnectClient.Instance.HudBarModule.Altimeter_ft - 500f ) ) {
+        else if (altHolding < (hs.Altimeter_ft - 500f)) {
           // seems ALT button was pressed on the way DOWN to SET ALT
-          altHolding = (int)Math.Floor( SC.SimConnectClient.Instance.HudBarModule.Altimeter_ft / 100f ) * 100; // round current ALT DOWN
+          altHolding = (int)Math.Floor( hs.Altimeter_ft / 100f ) * 100; // round current ALT DOWN
         }
-        m_actions.First( ).Value.Text = AltText( altHolding );
+        m_actions.First( ).Value.Text = AltText( altHolding, hs.AltimeterSetting_std( 0 ) );
       }
 
       // trigger Once and only if AP and ALT Hold is On
-      DetectStateChange( ( ds.AP_mode == FSimClientIF.APMode.On ) && ds.ALThold_active );
-      if ( ds.ALThold_active == false )
+      DetectStateChange( (aps.AP_mode == FSimClientIF.APMode.On) && aps.ALThold_active );
+      if (aps.ALThold_active == false)
         m_lastTriggered = false; // RESET if no longer captured
     }
 
@@ -93,7 +164,8 @@ namespace FS20_HudBar.Triggers
       : base( speaker )
     {
       m_name = "AP ALT Hold";
-      m_test = "Holding 5000 feet";
+      m_test = $"Holding {AvTextAlt( 5500 )} feet";
+      m_test = $"Holding Flightlevel {AvTextFL( 190 )}";
 
       // add the proc most likely to be hit as the first - saves some computing time on the long run
       m_lastTriggered = false;

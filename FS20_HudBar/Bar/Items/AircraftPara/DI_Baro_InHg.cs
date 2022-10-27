@@ -67,7 +67,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.AltimeterSetting_inHg;
+        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.AltimeterSetting_inHg(0);
       }
     }
 

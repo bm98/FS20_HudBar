@@ -58,10 +58,14 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         // Distance to Destination
-        if (HudBar.AtcFlightPlan.HasFlightPlan) {
+        if (SC.SimConnectClient.Instance.GpsModule.DEST_dist > 0) {
+          _value1.Value = SC.SimConnectClient.Instance.GpsModule.DEST_dist;
+          _value1.ItemForeColor = cGps;
+        }
+        else if (HudBar.AtcFlightPlan.HasFlightPlan) {
           _value1.Value = HudBar.AtcFlightPlan.RemainingDist_nm(
-            SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
-            SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
+          SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
+          SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
           _value1.ItemForeColor = cGps;
         }
         else {

@@ -118,6 +118,7 @@ namespace FS20_HudBar.Bar
       {LItem.GPS_WYP, DI_Gps_WYP.Desc },
       {LItem.GPS_WP_DIST, DI_Gps_WP_Dist.Desc }, {LItem.GPS_DST, DI_Gps_DST.Desc },
       {LItem.GPS_WP_ETE, DI_Gps_WP_Ete.Desc },   {LItem.GPS_ETE, DI_Gps_ETE.Desc },
+      {LItem.GPS_TOD, DI_Gps_TOD.Desc },
       {LItem.GPS_BRGm, DI_Gps_BRGm.Desc },
       {LItem.GPS_TRK, DI_Gps_TRK.Desc },      {LItem.GPS_DTRK, DI_Gps_DTRK.Desc },
       {LItem.GPS_XTK, DI_Gps_XTK.Desc },
@@ -423,6 +424,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Gps_GS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gps_DST( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gps_ETE( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Gps_TOD( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gps_WYP( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gps_WP_Dist( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gps_WP_Ete( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );

@@ -618,7 +618,6 @@
       this.Controls.Add(this.flpNavaids);
       this.Controls.Add(this.flpTower);
       this.Controls.Add(this.flpRunways);
-      this.Controls.Add(this.pbAltLadder);
       this.Controls.Add(this.btRangeFarFar);
       this.Controls.Add(this.btTogApt);
       this.Controls.Add(this.btTogVFR);
@@ -644,6 +643,7 @@
       this.Controls.Add(this.btTower);
       this.Controls.Add(this.btRunway);
       this.Controls.Add(this.pbDrawing);
+      this.Controls.Add(this.pbAltLadder);
       this.DoubleBuffered = true;
       this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.ForeColor = System.Drawing.Color.LightYellow;

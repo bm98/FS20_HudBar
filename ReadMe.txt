@@ -1,5 +1,5 @@
 FS20_HudBar V 0.55 - Build 55 BETA
-(c) M. Burri - 10-Oct-2022
+(c) M. Burri - 27-Oct-2022
 
 Contains files:
 
@@ -8,32 +8,41 @@ FS20_HudBar.exe             The program
 .\DemoBag                   Contains some images to showcase the Flight Bag (new since V0.43)
 
 - All libraries below MUST be in the same folder as the Exe file
-bm98_Album.dll              A UserControl for displaying images (zoom & drag new since V0.43)
-bm98_Checklist.dll          A UserControl for displaying the Checklist Box (new since V0.53)
-bm98_hb_Controls.dll        UserControls for displaying graphs (new since V0.45)
-SpeechLib.dll               A voice synth lib using Win10 TTS facilities (new since V0.35)
-PingLib.dll                 An audio lib using Win10 Audio facilities (new since V0.43)
-MetarLib.dll                A METAR access library (new since V0.29)
-CoordLib.dll                A coord. handling library
-SettingsLib.dll             Application settings persistence library
-FSimIF.dll                  Generic FSim interface definition (updated)
-FSimClientIF.dll            Generic FSim Client interface definition (updated)
-SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
-FSimFacilityIF.dll          MS facility database interface definition
+bm98_Album.dll              UserControl for displaying images
+bm98_Checklist.dll          UserControl for displaying the Checklist Box
+bm98_hb_Controls.dll        UserControls for displaying graphs
+bm98_Map.dll                Mapping display library
+BM98CH_WasmClient.dll       WASM Module client to get LVars
+CoordLib.dll                Coord. handling library
+DbgLib.dll                  Debug helper
+FCamControl.dll             Camera Control WinForms library
+FChecklistBox.dll           ChecklistBox WinForms library
+FShelf.dll                  Shelf WinForms library
+FSimClientIF.dll            Generic FSim Client interface definition
 FSimFacilityDataLib.dll     MS facility database access library
-BM98CH_WasmClient.dll       WASM Module client to get LVars (new since V0.51)
+FSimFacilityIF.dll          MS facility database interface definition
+FSimIF.dll                  Generic FSim interface definition (updated)
+MapLib.dll                  Mapping library
+MetarLib.dll                METAR access library
+PingLib.dll                 An audio lib using Win10 Audio facilities
+SettingsLib.dll             Application settings persistence library
+SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
+SpeechLib.dll               Voice synth lib using Win10 TTS facilities
 
 3rd Party:
 BingMapsRESTToolkit.dll     Microsoft provided library for accessing Bing Map data
 LiteDB.dll                  3rd party data management library
-
-From MSFS2020 Developer Kit for convenience included:
-  SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
-  Microsoft.FlightSimulator.SimConnect.dll 
-  SimConnect.dll
-
 From Google Fonts Library embedded:
   Share_Tech_Mono			(Used as condensed font)
+
+From MSFS2020 Developer Kit for convenience included:
+  Microsoft.FlightSimulator.SimConnect.dll 
+  SimConnect.dll
+  SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
+
+Simulator Extension Module (extr. to Community folder)
+  BM98CH_DataConnector_Wasm-V0.1.zip  
+
 
 dataLoader\ folder:
 FacilityDataLoader.exe      MSFS Facility conversion tool
@@ -64,12 +73,14 @@ Changelog:
 
 V 0.55-B55
 - Add VNAV Button (when using WASM module)
+- Add Item TOD (TopOfDescend for VNAV support)
 - Add Move Bar/Tile to next screen (Monitor) with RShift+RCtrl+Break
 - Add Using the Facility DB for Aiport Management (replacing the FS20_AptLib)
 - Add Check if the Facility DB is available and pop a msg box if not
 - Add Performance Tab and Notes Tab to FlightBag
 - Add Touchdown log (MyDocuments\MSFS_HudBarSave\TouchDownLog.csv) to FlightBag
-- Upadate AP Settings allow for large change on the left side of the item field (mouse wheel)
+- Update AP Settings allow for large change on the left side of the item field (mouse wheel)
+- Update AltHold readout is FL when STD BARO is set or above 18000ft
 - Fix Bar/Window Location was not stored for profiles 5..10
 - Cleanup of all new features
 - Disable SimConnect.cfg (as per MS it is only needed when connecting MSFS via Network)
