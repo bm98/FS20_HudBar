@@ -38,7 +38,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.GFORCE_Cur;
       _label = new V_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_GForce( valueProto ) { ItemForeColor = cInfo };
+      _value1 = new V_GForce( valueProto ) { ItemForeColor = cTxInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );

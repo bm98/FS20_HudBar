@@ -53,6 +53,7 @@ namespace FS20_HudBar
       this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.mShelf = new System.Windows.Forms.ToolStripMenuItem();
       this.mCamera = new System.Windows.Forms.ToolStripMenuItem();
+      this.mChecklistBox = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
       this.mUnits = new System.Windows.Forms.ToolStripMenuItem();
       this.mAltMetric = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,7 +68,6 @@ namespace FS20_HudBar
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
-      this.mChecklistBox = new System.Windows.Forms.ToolStripMenuItem();
       this.cMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -81,7 +81,7 @@ namespace FS20_HudBar
       this.lblProto.Location = new System.Drawing.Point(510, 44);
       this.lblProto.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
       this.lblProto.Name = "lblProto";
-      this.lblProto.Size = new System.Drawing.Size(44, 16);
+      this.lblProto.Size = new System.Drawing.Size(43, 16);
       this.lblProto.TabIndex = 0;
       this.lblProto.Text = "ETrim:";
       this.lblProto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -96,6 +96,7 @@ namespace FS20_HudBar
       this.flpMAIN.Name = "flpMAIN";
       this.flpMAIN.Size = new System.Drawing.Size(110, 31);
       this.flpMAIN.TabIndex = 1;
+      this.flpMAIN.Visible = false;
       this.flpMAIN.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseDown);
       this.flpMAIN.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseMove);
       this.flpMAIN.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseUp);
@@ -249,22 +250,22 @@ namespace FS20_HudBar
       // maBright
       // 
       this.maBright.Name = "maBright";
-      this.maBright.Size = new System.Drawing.Size(120, 22);
+      this.maBright.Size = new System.Drawing.Size(180, 22);
       this.maBright.Text = "Bright";
       this.maBright.Click += new System.EventHandler(this.maBright_Click);
       // 
       // maDimm
       // 
       this.maDimm.Name = "maDimm";
-      this.maDimm.Size = new System.Drawing.Size(120, 22);
+      this.maDimm.Size = new System.Drawing.Size(180, 22);
       this.maDimm.Text = "Dimmed";
       this.maDimm.Click += new System.EventHandler(this.maDimm_Click);
       // 
       // maDark
       // 
       this.maDark.Name = "maDark";
-      this.maDark.Size = new System.Drawing.Size(120, 22);
-      this.maDark.Text = "Dark";
+      this.maDark.Size = new System.Drawing.Size(180, 22);
+      this.maDark.Text = "Inverse";
       this.maDark.Click += new System.EventHandler(this.maDark_Click);
       // 
       // toolStripSeparator2
@@ -285,6 +286,13 @@ namespace FS20_HudBar
       this.mCamera.Size = new System.Drawing.Size(180, 22);
       this.mCamera.Text = "Camera...";
       this.mCamera.Click += new System.EventHandler(this.mCamera_Click);
+      // 
+      // mChecklistBox
+      // 
+      this.mChecklistBox.Name = "mChecklistBox";
+      this.mChecklistBox.Size = new System.Drawing.Size(180, 22);
+      this.mChecklistBox.Text = "Checklist Box...";
+      this.mChecklistBox.Click += new System.EventHandler(this.mChecklistBox_Click);
       // 
       // toolStripSeparator4
       // 
@@ -398,7 +406,7 @@ namespace FS20_HudBar
       this.B.ForeColor = System.Drawing.Color.Coral;
       this.B.Location = new System.Drawing.Point(734, 21);
       this.B.Name = "B";
-      this.B.Size = new System.Drawing.Size(26, 26);
+      this.B.Size = new System.Drawing.Size(25, 26);
       this.B.TabIndex = 4;
       this.B.Text = "B";
       this.B.UseVisualStyleBackColor = true;
@@ -420,13 +428,6 @@ namespace FS20_HudBar
       this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       this.label1.UseCompatibleTextRendering = true;
       this.label1.Visible = false;
-      // 
-      // mChecklistBox
-      // 
-      this.mChecklistBox.Name = "mChecklistBox";
-      this.mChecklistBox.Size = new System.Drawing.Size(180, 22);
-      this.mChecklistBox.Text = "Checklist Box...";
-      this.mChecklistBox.Click += new System.EventHandler(this.mChecklistBox_Click);
       // 
       // frmMain
       // 

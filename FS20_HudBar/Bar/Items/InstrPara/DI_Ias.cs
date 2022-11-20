@@ -54,16 +54,16 @@ namespace FS20_HudBar.Bar.Items
     // Retuns a ColorType for the IAS based on DesignSpeeds
     private ColorType IAScolor( )
     {
-      if ( SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) return cInfo;
+      if ( SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) return cTxInfo;
 
-      if ( SC.SimConnectClient.Instance.HudBarModule.Overspeed_warn ) return cAlert;
-      if ( SC.SimConnectClient.Instance.HudBarModule.Stall_warn ) return cAlert;
+      if ( SC.SimConnectClient.Instance.HudBarModule.Overspeed_warn ) return cTxAlert;
+      if ( SC.SimConnectClient.Instance.HudBarModule.Stall_warn ) return cTxAlert;
 
       var flapsSpeed = (SC.SimConnectClient.Instance.HudBarModule.FlapsDeployment_prct> 0.8 )
                         ? SC.SimConnectClient.Instance.HudBarModule.DesingSpeedVS0_kt
                         : SC.SimConnectClient.Instance.HudBarModule.DesingSpeedVS1_kt;
-      if ( SC.SimConnectClient.Instance.HudBarModule.IAS_kt <= flapsSpeed ) return cAlert;
-      if ( SC.SimConnectClient.Instance.HudBarModule.IAS_kt <= ( flapsSpeed + 5 ) ) return cWarn; // within 5kts of Flaps speed
+      if ( SC.SimConnectClient.Instance.HudBarModule.IAS_kt <= flapsSpeed ) return cTxAlert;
+      if ( SC.SimConnectClient.Instance.HudBarModule.IAS_kt <= ( flapsSpeed + 5 ) ) return cTxWarn; // within 5kts of Flaps speed
 
       return cInfo;
     }

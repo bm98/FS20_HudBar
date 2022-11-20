@@ -40,11 +40,11 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.GPS_PWYP;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_ICAO( value2Proto ) { ItemForeColor = cGps };
+      _value1 = new V_ICAO( value2Proto ) { ItemForeColor = cTxGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.GPS_NWYP;
-      _value2 = new V_ICAO_L( value2Proto ) { ItemForeColor = cGps };
+      _value2 = new V_ICAO_L( value2Proto ) { ItemForeColor = cTxGps };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );

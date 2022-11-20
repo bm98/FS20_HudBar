@@ -46,7 +46,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.VARIO_MPS_AVG;
-      _value2 = new V_VSpeed_mPsPM( value2Proto ) { ItemForeColor = cAvg };
+      _value2 = new V_VSpeed_mPsPM( value2Proto ) { ItemForeColor = cTxAvg };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );

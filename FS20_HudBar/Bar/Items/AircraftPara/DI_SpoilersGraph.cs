@@ -68,7 +68,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         if ( SC.SimConnectClient.Instance.HudBarModule.HasSpoiler ) {
-          _label.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.HasSpoiler && SC.SimConnectClient.Instance.HudBarModule.Spoilers_armed ) ? cArmed : cLabel;
+          _label.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.HasSpoiler && SC.SimConnectClient.Instance.HudBarModule.Spoilers_armed ) ? cTxLabelArmed : cTxLabel;
 
           _scale1.Value = SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct * 100; // 0..100
           _scale1.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.05 ) ? cOK : cStep;

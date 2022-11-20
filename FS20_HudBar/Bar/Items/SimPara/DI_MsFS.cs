@@ -48,8 +48,8 @@ namespace FS20_HudBar.Bar.Items
     {
       NextColorset( ); // MSFS, rotate colorset
                        // save as setting
-      AppSettings.Instance.Appearance = (int)Colorset;
-      AppSettings.Instance.Save( );
+      AppSettingsV2.Instance.Appearance = (int)Colorset;
+      AppSettingsV2.Instance.Save( );
     }
 
     /// <summary>

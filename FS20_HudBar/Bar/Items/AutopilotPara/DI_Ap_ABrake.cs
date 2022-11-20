@@ -49,14 +49,14 @@ namespace FS20_HudBar.Bar.Items
       _label = new V_Text( lblProto ) { Text = Short }; this.AddItem( _label );
 
       var item = VItem.AP_ABRK_armed;
-      _value1 = new V_Text( value2Proto ) { ItemForeColor = cLabel, ItemBackColor = cValBG, Text = AutoBrakeLevel.OFF.ToString().PadRight( m_alignWidth ) };
+      _value1 = new V_Text( value2Proto ) { ItemForeColor = cTxDim, ItemBackColor = cValBG, Text = AutoBrakeLevel.OFF.ToString().PadRight( m_alignWidth ) };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
       _value1.Click += _value1_Click;
       _value1.MouseWheel += _value1_MouseWheel;
       _value1.Cursor = Cursors.SizeNS;
 
       item = VItem.AP_ASKID;
-      _value2 = new V_Text( value2Proto ) { ItemForeColor = cLabel, Text = c_aSkid };
+      _value2 = new V_Text( value2Proto ) { ItemForeColor = cTxDim, Text = c_aSkid };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
@@ -99,23 +99,23 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         if ( SC.SimConnectClient.Instance.AP_G1000Module.ABRK_active ) {
-          _value1.ItemForeColor = cOK;
+          _value1.ItemForeColor = cTxActive;
           _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( m_alignWidth );
         }
         else {
           if ( SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level == AutoBrakeLevel.OFF ) {
-            _value1.ItemForeColor = cLabel;
+            _value1.ItemForeColor = cTxDim;
             _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( m_alignWidth );
           }
           else {
-            _value1.ItemForeColor = cSet;
+            _value1.ItemForeColor = cTxSet;
             _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.ABRK_level.ToString( ).PadRight( m_alignWidth );
           }
         }
 
         // Anti Skid (A320 only it seems)
         _value2.Text = SC.SimConnectClient.Instance.AP_G1000Module.ASKID_active ? c_aSkid.ToUpperInvariant() : c_aSkid;
-        _value2.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ASKID_active ? cOK : cLabel;
+        _value2.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ASKID_active ? cTxActive : cTxDim;
       }
     }
 

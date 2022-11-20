@@ -73,11 +73,11 @@ namespace FS20_HudBar.Bar.Items
 
           float f = SC.SimConnectClient.Instance.HudBarModule.AtcRunway_Displacement_ft;
           _value2.Value = f;
-          _value2.ItemForeColor = ( Math.Abs( f ) <= 3 ) ? cOK : cInfo; // green if within +- 3ft
+          _value2.ItemForeColor = ( Math.Abs( f ) <= 3 ) ? cTxActive : cTxInfo; // green if within +- 3ft
 
           f = SC.SimConnectClient.Instance.HudBarModule.AtcRunway_HeightAbove_ft;
           _value3.Value = f;
-          _value3.ItemForeColor = ( f <= 500 ) ? cRA : cInfo;  // RA yellow if below 500ft
+          _value3.ItemForeColor = ( f <= 1500 ) ? cTxRA : cTxInfo;  // yellow if below 1500ft
         }
         else {
           _value1.Value = null;

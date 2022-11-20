@@ -83,6 +83,15 @@ namespace SpeechLib
     }
 
     /// <summary>
+    /// Selects a specific output device by name.
+    /// </summary>
+    /// <param name="displayName">The name of the output to select</param>
+    public void SelectOutputDevice( string displayName )
+    {
+      _speaker?.SelectOutputDevice( displayName );
+    }
+
+    /// <summary>
     /// Add a word to speak (can be more than word but don't get terse here)
     /// </summary>
     /// <param name="text">The string to speak (Max 200 chars supported)</param>

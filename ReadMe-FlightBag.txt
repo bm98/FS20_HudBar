@@ -60,6 +60,9 @@ github@mail.burri-web.org
 
 Changelog:
 
+V 0.56-B56
+- Update SettingsLib - creates backups now
+
 V 0.55-B55
 - Add Performance Tab and Notes Tab to FlightBag
 - Add Touchdown log (MyDocuments\MSFS_HudBarSave\TouchDownLog.csv)

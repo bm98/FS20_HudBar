@@ -63,7 +63,7 @@ namespace FS20_HudBar.Bar.Items
       var TTX = new Config.frmText();
       TTX.ShowDialog( this );
       // Update in any case
-      OnDataArrival( AppSettings.Instance.FreeText );
+      OnDataArrival( AppSettingsV2.Instance.FreeText );
     }
 
     /// <summary>

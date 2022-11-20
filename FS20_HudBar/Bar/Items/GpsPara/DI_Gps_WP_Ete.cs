@@ -39,7 +39,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.GPS_WP_ETE;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_TimeHHMMSS( valueProto ) { ItemForeColor = cGps };
+      _value1 = new V_TimeHHMMSS( valueProto ) { ItemForeColor = cTxGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );

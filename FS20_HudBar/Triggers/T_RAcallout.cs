@@ -30,12 +30,27 @@ namespace FS20_HudBar.Triggers
     // the RA we start processing (not above)
     private const float c_detectionRA = 440f + c_RAgroundOffset; // must change if the higest det. level changes !!
 
+    // touch down detector
+    private TouchDownTrigger _tdTrigger = null;
+
+    /// <summary>
+    /// Get;Set; enabled state of this Voice Trigger Element
+    /// </summary>
+    public override bool Enabled {
+      get => m_enabled;
+      set {
+        m_enabled = value;
+        _tdTrigger.Enabled = value;
+      }
+    }
+
     /// <summary>
     /// Calls to register for dataupdates
     /// </summary>
     public override void RegisterObserver( )
     {
       RegisterObserver_low( SC.SimConnectClient.Instance.HudBarModule, OnDataArrival ); // use generic
+      _tdTrigger.RegisterObserver( );
     }
     /// <summary>
     /// Calls to un-register for dataupdates
@@ -43,6 +58,7 @@ namespace FS20_HudBar.Triggers
     public override void UnRegisterObserver( )
     {
       UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use generic
+      _tdTrigger.UnRegisterObserver( );
     }
 
     /// <summary>
@@ -142,6 +158,8 @@ namespace FS20_HudBar.Triggers
     {
       m_name = "RA Callout";
       m_test = "100";
+
+      _tdTrigger = new TouchDownTrigger( speaker );
 
       // need to set this below the lowest callout level, it will be activated only once we are above our detection RA
       m_lastTriggered = -1;

@@ -10,7 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using FS20_HudBar.Bar;
+using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates.Base;
+using static FS20_HudBar.GUI.GUI_Colors;
 
 namespace FS20_HudBar.Config
 {
@@ -48,7 +50,7 @@ namespace FS20_HudBar.Config
     private int m_profileSectionInUse = 0;
 
     // per profile indexed access
-    private FlowLayoutPanel[] m_flps = new FlowLayoutPanel[c_NumProfilesShown];
+    private FlowLayoutPanel[] m_flpCols = new FlowLayoutPanel[c_NumProfilesShown];
     private TextBox[] m_pName = new TextBox[c_NumProfilesShown];
     private FlpHandler[] m_flpHandler = new FlpHandler[c_NumProfilesShown];
     private ComboBox[] m_pFont = new ComboBox[c_NumProfilesShown];
@@ -65,6 +67,12 @@ namespace FS20_HudBar.Config
     private FrmFonts FONTSdialog;
     private GUI.GUI_Fonts m_configFonts;
     private bool m_applyFontChanges = false;
+
+    private FrmColors COLORSdialog;
+    private GUI_ColorSet m_configColCatReg;
+    private GUI_ColorSet m_configColCatDim;
+    private GUI_ColorSet m_configColCatInv;
+    private bool m_applyColorChanges = false;
 
     private ToolTip_Base m_tooltip = new ToolTip_Base( );
 
@@ -176,6 +184,30 @@ namespace FS20_HudBar.Config
       }
     }
 
+    // Load the combo from installed devices
+    private void PopulateOutputDevice( ComboBox cbx )
+    {
+      cbx.Items.Clear( );
+      foreach (var vn in GUI_Speech.AvailableOutputDevices) {
+        cbx.Items.Add( vn );
+      }
+    }
+
+    // select the current output device from settings
+    public void LoadOutputDevice( ComboBox cbx )
+    {
+      if (cbx.Items.Contains( HudBarRef.OutputDeviceName ))
+        cbx.SelectedItem = HudBarRef.OutputDeviceName;
+      else if (cbx.Items.Count > 0) {
+        cbx.SelectedIndex = 0;
+      }
+      else {
+        // no devices installed ???...
+      }
+    }
+
+
+
     private void SetHotkeyTexts( )
     {
       txHkShowHide.Text = m_hotkeys.ContainsKey( Hotkeys.Show_Hide ) ? m_hotkeys[Hotkeys.Show_Hide].AsString : "";
@@ -196,27 +228,28 @@ namespace FS20_HudBar.Config
     // i.e. the number of shown profiles starting from the startProfileNum (1..N)
     private void LoadProfileSection( int startProfileNum )
     {
-      // for all profiles
-      for (int p = 0; p < c_NumProfilesShown; p++) {
-        m_pName[p].Text = ProfilesCache[(p + startProfileNum)].PName;
-        m_flpHandler[p]?.Dispose( );
-        m_flpHandler[p] = new FlpHandler(
-          m_flps[p], p,
-          ProfilesCache[(p + startProfileNum)].ProfileString( ),
-          ProfilesCache[(p + startProfileNum)].FlowBreakString( ),
-          ProfilesCache[(p + startProfileNum)].ItemPosString( )
+      // for all profiles (p is the index of the visibile profile columns 0..4)
+      for (int colIndex = 0; colIndex < c_NumProfilesShown; colIndex++) {
+        m_pName[colIndex].Text = ProfilesCache[(colIndex + startProfileNum)].PName;
+        // each GUI column has its FlpHandler
+        m_flpHandler[colIndex]?.Dispose( );
+        m_flpHandler[colIndex] = new FlpHandler(
+          m_flpCols[colIndex], colIndex,
+          ProfilesCache[(colIndex + startProfileNum)].ProfileString( ),
+          ProfilesCache[(colIndex + startProfileNum)].FlowBreakString( ),
+          ProfilesCache[(colIndex + startProfileNum)].ItemPosString( )
         );
-        m_flpHandler[p].LoadFlp( HudBarRef );
-        ProfilesCache[(p + startProfileNum)].LoadFontSize( m_pFont[p] );
-        ProfilesCache[(p + startProfileNum)].LoadPlacement( m_pPlace[p] );
-        ProfilesCache[(p + startProfileNum)].LoadKind( m_pKind[p] );
-        ProfilesCache[(p + startProfileNum)].LoadCond( m_pCondensed[p] );
-        ProfilesCache[(p + startProfileNum)].LoadTrans( m_pTransparency[p] );
+        m_flpHandler[colIndex].LoadFlp( HudBarRef );
+        ProfilesCache[(colIndex + startProfileNum)].LoadFontSize( m_pFont[colIndex] );
+        ProfilesCache[(colIndex + startProfileNum)].LoadPlacement( m_pPlace[colIndex] );
+        ProfilesCache[(colIndex + startProfileNum)].LoadKind( m_pKind[colIndex] );
+        ProfilesCache[(colIndex + startProfileNum)].LoadCond( m_pCondensed[colIndex] );
+        ProfilesCache[(colIndex + startProfileNum)].LoadTrans( m_pTransparency[colIndex] );
 
-        m_pHotkey[p].Text = m_hotkeys.ContainsKey( (Hotkeys)(p + startProfileNum) ) ? m_hotkeys[(Hotkeys)(p + startProfileNum)].AsString : "";
+        m_pHotkey[colIndex].Text = m_hotkeys.ContainsKey( (Hotkeys)(colIndex + startProfileNum) ) ? m_hotkeys[(Hotkeys)(colIndex + startProfileNum)].AsString : "";
 
         // mark the selected one 
-        m_pName[p].BackColor = (SelectedProfile == (p + startProfileNum)) ? Color.LimeGreen : Color.White;
+        m_pName[colIndex].BackColor = (SelectedProfile == (colIndex + startProfileNum)) ? Color.LimeGreen : Color.White;
       }
     }
 
@@ -224,16 +257,16 @@ namespace FS20_HudBar.Config
     private void CacheProfileSection( int startProfileNum )
     {
       // record profile Updates from the controls
-      for (int p = 0; p < c_NumProfilesShown; p++) {
-        ProfilesCache[p + startProfileNum].PName = m_pName[p].Text.Trim( );
-        ProfilesCache[p + startProfileNum].GetItemsFromFlp( m_flps[p], p );
-        ProfilesCache[p + startProfileNum].GetFontSizeFromCombo( m_pFont[p] );
-        ProfilesCache[p + startProfileNum].GetPlacementFromCombo( m_pPlace[p] );
-        ProfilesCache[p + startProfileNum].GetKindFromCombo( m_pKind[p] );
-        ProfilesCache[p + startProfileNum].GetCondensedFromCombo( m_pCondensed[p] );
-        ProfilesCache[p + startProfileNum].GetTransparencyFromCombo( m_pTransparency[p] );
+      for (int colIndex = 0; colIndex < c_NumProfilesShown; colIndex++) {
+        ProfilesCache[colIndex + startProfileNum].PName = m_pName[colIndex].Text.Trim( );
+        ProfilesCache[colIndex + startProfileNum].GetItemsFromFlp( m_flpCols[colIndex], colIndex );
+        ProfilesCache[colIndex + startProfileNum].GetFontSizeFromCombo( m_pFont[colIndex] );
+        ProfilesCache[colIndex + startProfileNum].GetPlacementFromCombo( m_pPlace[colIndex] );
+        ProfilesCache[colIndex + startProfileNum].GetKindFromCombo( m_pKind[colIndex] );
+        ProfilesCache[colIndex + startProfileNum].GetCondensedFromCombo( m_pCondensed[colIndex] );
+        ProfilesCache[colIndex + startProfileNum].GetTransparencyFromCombo( m_pTransparency[colIndex] );
 
-        m_hotkeys.MaintainHotkeyString( (Hotkeys)(p + startProfileNum), m_pHotkey[p].Text );
+        m_hotkeys.MaintainHotkeyString( (Hotkeys)(colIndex + startProfileNum), m_pHotkey[colIndex].Text );
       }
     }
 
@@ -251,6 +284,7 @@ namespace FS20_HudBar.Config
       ctxMenu.Items.Clear( );
       ctxMenu.Items.Add( "Copy items", null, ctxCopy_Click );
       ctxMenu.Items.Add( "Paste items here", null, ctxPaste_Click );
+      ctxMenu.Items.Add( "Re-Order items", null, ctxReOrder_Click );
       ctxMenu.Items.Add( new ToolStripSeparator( ) );
 
       // Add Aircraft Merges
@@ -275,7 +309,7 @@ namespace FS20_HudBar.Config
       m_tooltip.SetToolTip( txHkChecklistBox, "Hotkey to toggle the Checklist Box Selector\nDouble click to edit the Hotkey" );
 
       // indexed access for profile controls in the Form
-      m_flps[0] = flp1; m_flps[1] = flp2; m_flps[2] = flp3; m_flps[3] = flp4; m_flps[4] = flp5;
+      m_flpCols[0] = flp1; m_flpCols[1] = flp2; m_flpCols[2] = flp3; m_flpCols[3] = flp4; m_flpCols[4] = flp5;
       m_pName[0] = txP1; m_pName[1] = txP2; m_pName[2] = txP3; m_pName[3] = txP4; m_pName[4] = txP5;
       m_pFont[0] = cbxFontP1; m_pFont[1] = cbxFontP2; m_pFont[2] = cbxFontP3; m_pFont[3] = cbxFontP4; m_pFont[4] = cbxFontP5;
       m_pPlace[0] = cbxPlaceP1; m_pPlace[1] = cbxPlaceP2; m_pPlace[2] = cbxPlaceP3; m_pPlace[3] = cbxPlaceP4; m_pPlace[4] = cbxPlaceP5;
@@ -308,12 +342,16 @@ namespace FS20_HudBar.Config
       cbxFlightRecorder.Checked = HudBarRef.FlightRecorder;
 
       cbxASave.SelectedIndex = (int)HudBarRef.FltAutoSave;
+
+      PopulateOutputDevice( cbxOutputDevice );
+      LoadOutputDevice( cbxOutputDevice );
+      _speech.SetOutputDevice( cbxOutputDevice.SelectedItem.ToString( ) );
+
       PopulateVoice( cbxVoice );// 20211006
       LoadVoice( cbxVoice );
       _speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
       _speech.Enabled = true;
       SetVoiceCalloutState( ); // 20211018
-
 
       // Hotkeys // 20211211
       m_hotkeys = HudBarRef.Hotkeys.Copy( );
@@ -337,6 +375,12 @@ namespace FS20_HudBar.Config
       // use a Config Copy to allow Cancel changes
       FONTSdialog = new FrmFonts( );
       m_configFonts = new GUI.GUI_Fonts( HudBarRef.FontRef );
+
+      // init Color Config and temp stores
+      COLORSdialog = new FrmColors( );
+      m_configColCatReg = GUI_Colors.GetColorSet( ColorSet.BrightSet );
+      m_configColCatDim = GUI_Colors.GetColorSet( ColorSet.DimmedSet );
+      m_configColCatInv = GUI_Colors.GetColorSet( ColorSet.InverseSet );
 
       initDone = true;
     }
@@ -371,6 +415,7 @@ namespace FS20_HudBar.Config
 
       HudBarRef.SetFltAutoSave( (FSimClientIF.FlightPlanMode)cbxASave.SelectedIndex );
 
+      HudBarRef.SetOutputDeviceName( cbxOutputDevice.SelectedItem.ToString( ) );
       HudBarRef.SetVoiceName( cbxVoice.SelectedItem.ToString( ) );
       int idx = 0;
       foreach (var vt in HudBarRef.VoicePack.Triggers) {
@@ -381,6 +426,13 @@ namespace FS20_HudBar.Config
       // Update global fonts
       if (m_applyFontChanges) {
         HudBarRef.FontRef.FromConfigString( m_configFonts.AsConfigString( ) );
+      }
+
+      // Update global colors
+      if (m_applyColorChanges) {
+        GUI_Colors.UpdateColorSet( ColorSet.BrightSet, m_configColCatReg );
+        GUI_Colors.UpdateColorSet( ColorSet.DimmedSet, m_configColCatDim );
+        GUI_Colors.UpdateColorSet( ColorSet.InverseSet, m_configColCatInv );
       }
 
       CacheProfileSection( SectionStart );
@@ -405,10 +457,13 @@ namespace FS20_HudBar.Config
     // local instance for tests
     private GUI.GUI_Speech _speech = new GUI.GUI_Speech( );
 
+    // voice selected
     private void cbxVoice_SelectedIndexChanged( object sender, EventArgs e )
     {
       _speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
     }
+
+    // test speech triggered
     private void cbxVoice_MouseClick( object sender, MouseEventArgs e )
     {
       if (cbxVoice.DroppedDown) return;
@@ -426,6 +481,11 @@ namespace FS20_HudBar.Config
       HudBarRef.VoicePack.Triggers[clbVoice.SelectedIndex].Test( _speech );
     }
 
+    // output device selected
+    private void cbxOutputDevice_SelectedIndexChanged( object sender, EventArgs e )
+    {
+      _speech.SetOutputDevice( cbxOutputDevice.SelectedItem.ToString( ) );
+    }
 
     #region Context Menu
 
@@ -439,7 +499,7 @@ namespace FS20_HudBar.Config
       var col = tlp.GetColumn( ctx.SourceControl );
       // col is the profile index assuming Col 0..4 carry the profiles...
       if (col > c_NumProfilesShown) return; // sanity
-      m_copyBuffer = m_flpHandler[col].GetItemsFromFlp( );
+      m_copyBuffer = m_flpHandler[col].GetProfileStoreFromFlp( );
     }
 
     // Paste items is clicked
@@ -454,6 +514,17 @@ namespace FS20_HudBar.Config
         m_flpHandler[col].LoadDefaultProfile( m_copyBuffer );
         m_flpHandler[col].LoadFlp( HudBarRef );
       }
+    }
+
+    // ReOrder items is clicked
+    private void ctxReOrder_Click( object sender, EventArgs e )
+    {
+      var ctx = (sender as ToolStripItem).Owner as ContextMenuStrip;
+      var col = tlp.GetColumn( ctx.SourceControl );
+      // col is the profile index assuming Col 0..4 carry the profiles...
+      if (col > c_NumProfilesShown) return; // sanity
+      m_flpHandler[col].ReOrderProfile( HudBarRef );
+      m_flpHandler[col].LoadFlp( HudBarRef );
     }
 
     // A default profile is clicked
@@ -657,6 +728,20 @@ namespace FS20_HudBar.Config
         m_configFonts.Dispose( );
         m_configFonts = new GUI.GUI_Fonts( FONTSdialog.Fonts ); // maintain the changes
         m_applyFontChanges = true; // if called multiple times it only stores the Accept one 
+      }
+    }
+
+    private void btColors_Click( object sender, EventArgs e )
+    {
+      COLORSdialog.RegColors = m_configColCatReg.Clone( );
+      COLORSdialog.DimColors = m_configColCatDim.Clone( );
+      COLORSdialog.InvColors = m_configColCatInv.Clone( );
+      if (COLORSdialog.ShowDialog( this ) == DialogResult.OK) {
+        // get from Dialog
+        m_configColCatReg = COLORSdialog.RegColors.Clone( );
+        m_configColCatDim = COLORSdialog.DimColors.Clone( );
+        m_configColCatInv = COLORSdialog.InvColors.Clone( );
+        m_applyColorChanges = true; // if called multiple times it only stores the Accept one 
       }
     }
 

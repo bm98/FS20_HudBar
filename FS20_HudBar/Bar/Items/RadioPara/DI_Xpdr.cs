@@ -67,20 +67,20 @@ namespace FS20_HudBar.Bar.Items
           _value1.Text = $"{SC.SimConnectClient.Instance.ComModule.Transponder_code:0000}";
           _value2.Text = $"{stat}";
           if ( stat == FSimClientIF.TransponderStatus.ALT ) {
-            _value1.ItemForeColor = cNav;
-            _value2.ItemForeColor = cNav;
+            _value1.ItemForeColor = cTxNav;
+            _value2.ItemForeColor = cTxNav;
           }
           else {
-            _value1.ItemForeColor = cInfo;
-            _value2.ItemForeColor = cInfo;
+            _value1.ItemForeColor = cTxInfo;
+            _value2.ItemForeColor = cTxInfo;
           }
 
         }
         else {
           _value1.Text = null;
           _value2.Text = null;
-          _value1.ItemForeColor = cInfo;
-          _value2.ItemForeColor = cInfo;
+          _value1.ItemForeColor = cTxInfo;
+          _value2.ItemForeColor = cTxInfo;
         }
       }
     }

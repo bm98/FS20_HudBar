@@ -92,8 +92,8 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         _value1.Value = SC.SimConnectClient.Instance.HudBarModule.SimRate_rate;
-        _value1.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.SimRate_rate != 1.0f ) ? cInverse : cInfo;
-        _value1.ItemBackColor = ( SC.SimConnectClient.Instance.HudBarModule.SimRate_rate != 1.0f ) ? cSRATE : cValBG;
+        _value1.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.SimRate_rate != 1.0f ) ? cTxInfoInverse : cTxInfo;
+        _value1.ItemBackColor = ( SC.SimConnectClient.Instance.HudBarModule.SimRate_rate != 1.0f ) ? cSimRateWarnBG : cValBG;
       }
     }
 

@@ -39,7 +39,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.RA;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Alt( valueProto ) { ItemForeColor = cRA };
+      _value1 = new V_Alt( valueProto ) { ItemForeColor = cTxRA };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
@@ -57,9 +57,11 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         if ( SC.SimConnectClient.Instance.HudBarModule.AltAoG_ft <= 1500 ) {
+          this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ? cTxActive : cTxLabel;
           _value1.Value = SC.SimConnectClient.Instance.HudBarModule.AltAoG_ft;
         }
         else {
+          this.ColorType.ItemForeColor = cTxLabel;
           _value1.Text = " .....";
         }
       }

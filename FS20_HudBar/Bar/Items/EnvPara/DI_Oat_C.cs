@@ -58,7 +58,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         _value1.Value = SC.SimConnectClient.Instance.HudBarModule.OutsideTemperature_degC;
-        _value1.ItemForeColor = Calculator.IcingCondition ? cSubZero : cInfo;
+        _value1.ItemForeColor = Calculator.IcingCondition ? cTxSubZero : cTxInfo;
       }
     }
 

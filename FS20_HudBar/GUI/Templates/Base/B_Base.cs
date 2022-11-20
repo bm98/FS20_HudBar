@@ -20,7 +20,7 @@ namespace FS20_HudBar.GUI.Templates.Base
     protected string m_default = "";
     protected string m_unit = "";
     protected bool m_showUnit = false;
-    protected GUI_Colors.ColorType m_foreColorType = GUI_Colors.ColorType.cLabel;
+    protected GUI_Colors.ColorType m_foreColorType = GUI_Colors.ColorType.cTxLabel;
     protected GUI_Colors.ColorType m_backColorType = GUI_Colors.ColorType.cBG;
 
     private const string c_numbers="0123456789";
@@ -155,7 +155,7 @@ namespace FS20_HudBar.GUI.Templates.Base
       m_mID = item;
       // Label props
       Font = proto.Font;
-      ItemForeColor = GUI_Colors.ColorType.cLabel; // forced BUTTONS get a cLabel Foreground
+      ItemForeColor = GUI_Colors.ColorType.cTxLabel; // forced BUTTONS get a cTxLabel Foreground
       ItemBackColor = GUI_Colors.ColorType.cActBG; // forced BUTTONS get a c_ActBG Background
       AutoSize = true;                // force AutoSize
       TextAlign = proto.TextAlign;

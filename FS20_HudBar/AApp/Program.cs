@@ -14,11 +14,11 @@ namespace FS20_HudBar
     // A logger
     private static readonly IDbg LOG = Dbg.Instance.GetLogger(
       System.Reflection.Assembly.GetCallingAssembly( ),
-      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
     #endregion
 
     internal static string Instance = ""; // default
-
+    internal static bool AppSettingsV1Available = false; // set true if V1 is initialized
 
     /// <summary>
     /// The main entry point for the application.
@@ -27,8 +27,8 @@ namespace FS20_HudBar
     static void Main( )
     {
       // get a command line arg (if there is)
-      var cl = Environment.GetCommandLineArgs();
-      if ( cl.Length>1 ) {
+      var cl = Environment.GetCommandLineArgs( );
+      if (cl.Length > 1) {
         Instance = cl[1];
       }
       // see if we start with Debug Out Enabled
@@ -36,9 +36,27 @@ namespace FS20_HudBar
 
       LOG.Log( $"Program Start with Instance ({Instance})" );
 
-      // init an AppSettings instance based on the command line argument
-      AppSettings.InitInstance( Instance );
-      var _ = AppSettings.Instance.Profile_1;
+      // init the V2 AppSettings instance based on the command line argument
+      AppSettingsV2.InitInstance( Folders.SettingsFile, Instance );
+      var v2Used = AppSettingsV2.Instance.V2InUse;
+
+      // check if never used and Upgrade if needed
+      if (v2Used) {
+        LOG.Log( $"AppSettings V2 is used for Instance ({Instance})" );
+      }
+      else {
+        // Init V1 settings with Instance
+        AppSettings.InitInstance( Instance );
+        AppSettingsV1Available = true;
+
+        var testLoc = AppSettings.Instance.FormLocation;
+        if (testLoc.X == 10 && testLoc.Y == 10) {
+          LOG.Log( $"AppSettings V1 is not used for Instance ({Instance})" );
+        }
+        // in any case Upgrade - else the V2Used flag will not be set
+        LOG.Log( $"Upgrading/Init AppSettings to V2 for Instance ({Instance})" );
+        AppSettingsUpgrade.UpgradeSettings( );
+      }
 
       // Standard Init follows here
       Application.EnableVisualStyles( );

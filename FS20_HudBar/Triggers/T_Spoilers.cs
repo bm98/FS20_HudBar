@@ -43,7 +43,7 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAircraft object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if (!Enabled) return; // not enabled
+      if (!m_enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
 
       var ds = SC.SimConnectClient.Instance.HudBarModule;
@@ -60,10 +60,10 @@ namespace FS20_HudBar.Triggers
       : base( speaker )
     {
       m_name = "Spoiler, Sp-Brake state";
-      m_test = "Spoilers Down";
+      m_test = "Spoilers out";
 
       // add the proc most likely to be hit as the first - saves some computing time on the long run
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.0f, 0.05f ), Callback = Say, Text = "Spoilers Up" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.0f, 0.05f ), Callback = Say, Text = "Spoilers retracted" } );
       this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.2f, 0.05f ), Callback = Say, Text = "Spoilers 20" } );
       this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.3f, 0.05f ), Callback = Say, Text = "Spoilers 30" } );
       this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.4f, 0.05f ), Callback = Say, Text = "Spoilers 40" } );
@@ -71,7 +71,7 @@ namespace FS20_HudBar.Triggers
       this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.6f, 0.05f ), Callback = Say, Text = "Spoilers 60" } );
       this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.7f, 0.05f ), Callback = Say, Text = "Spoilers 70" } );
       this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.8f, 0.05f ), Callback = Say, Text = "Spoilers 80" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 1.0f, 0.05f ), Callback = Say, Text = "Spoilers Down" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 1.0f, 0.05f ), Callback = Say, Text = "Spoilers out" } );
     }
 
   }

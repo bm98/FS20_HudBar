@@ -89,15 +89,17 @@ namespace FS20_HudBar.Config
       this.cbxFlightRecorder = new System.Windows.Forms.CheckBox();
       this.btCancel = new System.Windows.Forms.Button();
       this.btAccept = new System.Windows.Forms.Button();
-      this.txHkShelf = new System.Windows.Forms.TextBox();
-      this.btDumpConfigs = new System.Windows.Forms.Button();
-      this.txHkCamera = new System.Windows.Forms.TextBox();
       this.panel1 = new System.Windows.Forms.Panel();
       this.btOtherProfileSet = new System.Windows.Forms.Button();
-      this.btFonts = new System.Windows.Forms.Button();
       this.chkInGame = new System.Windows.Forms.CheckBox();
       this.chkKeyboard = new System.Windows.Forms.CheckBox();
+      this.txHkShelf = new System.Windows.Forms.TextBox();
+      this.txHkCamera = new System.Windows.Forms.TextBox();
       this.txHkChecklistBox = new System.Windows.Forms.TextBox();
+      this.btDumpConfigs = new System.Windows.Forms.Button();
+      this.btFonts = new System.Windows.Forms.Button();
+      this.btColors = new System.Windows.Forms.Button();
+      this.cbxOutputDevice = new System.Windows.Forms.ComboBox();
       this.FBD = new System.Windows.Forms.FolderBrowserDialog();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.tlp.SuspendLayout();
@@ -167,14 +169,16 @@ namespace FS20_HudBar.Config
       this.tlp.Controls.Add(this.cbxFlightRecorder, 3, 9);
       this.tlp.Controls.Add(this.btCancel, 5, 10);
       this.tlp.Controls.Add(this.btAccept, 4, 10);
-      this.tlp.Controls.Add(this.btDumpConfigs, 5, 9);
       this.tlp.Controls.Add(this.panel1, 5, 2);
-      this.tlp.Controls.Add(this.btFonts, 5, 8);
       this.tlp.Controls.Add(this.chkInGame, 5, 7);
       this.tlp.Controls.Add(this.chkKeyboard, 5, 6);
       this.tlp.Controls.Add(this.txHkShelf, 0, 10);
       this.tlp.Controls.Add(this.txHkCamera, 1, 10);
       this.tlp.Controls.Add(this.txHkChecklistBox, 2, 10);
+      this.tlp.Controls.Add(this.btDumpConfigs, 4, 9);
+      this.tlp.Controls.Add(this.btFonts, 5, 8);
+      this.tlp.Controls.Add(this.btColors, 5, 9);
+      this.tlp.Controls.Add(this.cbxOutputDevice, 0, 9);
       this.tlp.Dock = System.Windows.Forms.DockStyle.Fill;
       this.tlp.Location = new System.Drawing.Point(0, 0);
       this.tlp.Name = "tlp";
@@ -763,12 +767,13 @@ namespace FS20_HudBar.Config
       // 
       // cbxVoice
       // 
+      this.cbxVoice.BackColor = System.Drawing.Color.Thistle;
       this.cbxVoice.Dock = System.Windows.Forms.DockStyle.Bottom;
       this.cbxVoice.Items.AddRange(new object[] {
             "Regular Size",
             "Larger Size",
             "Largest Size"});
-      this.cbxVoice.Location = new System.Drawing.Point(159, 700);
+      this.cbxVoice.Location = new System.Drawing.Point(159, 702);
       this.cbxVoice.Name = "cbxVoice";
       this.cbxVoice.Size = new System.Drawing.Size(150, 23);
       this.cbxVoice.TabIndex = 25;
@@ -908,44 +913,6 @@ namespace FS20_HudBar.Config
       this.btAccept.UseVisualStyleBackColor = true;
       this.btAccept.Click += new System.EventHandler(this.btAccept_Click);
       // 
-      // txHkShelf
-      // 
-      this.txHkShelf.BackColor = System.Drawing.Color.Honeydew;
-      this.txHkShelf.Dock = System.Windows.Forms.DockStyle.Top;
-      this.txHkShelf.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txHkShelf.Location = new System.Drawing.Point(3, 734);
-      this.txHkShelf.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
-      this.txHkShelf.Name = "txHkShelf";
-      this.txHkShelf.ReadOnly = true;
-      this.txHkShelf.Size = new System.Drawing.Size(150, 22);
-      this.txHkShelf.TabIndex = 45;
-      this.txHkShelf.DoubleClick += new System.EventHandler(this.txHkShelf_DoubleClick);
-      // 
-      // btDumpConfigs
-      // 
-      this.btDumpConfigs.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btDumpConfigs.Location = new System.Drawing.Point(783, 699);
-      this.btDumpConfigs.Name = "btDumpConfigs";
-      this.btDumpConfigs.Size = new System.Drawing.Size(133, 24);
-      this.btDumpConfigs.TabIndex = 28;
-      this.btDumpConfigs.Text = "Dump Def.Profiles";
-      this.btDumpConfigs.UseVisualStyleBackColor = true;
-      this.btDumpConfigs.Visible = false;
-      this.btDumpConfigs.Click += new System.EventHandler(this.btDumpConfigs_Click);
-      // 
-      // txHkCamera
-      // 
-      this.txHkCamera.BackColor = System.Drawing.Color.Honeydew;
-      this.txHkCamera.Dock = System.Windows.Forms.DockStyle.Top;
-      this.txHkCamera.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txHkCamera.Location = new System.Drawing.Point(159, 734);
-      this.txHkCamera.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
-      this.txHkCamera.Name = "txHkCamera";
-      this.txHkCamera.ReadOnly = true;
-      this.txHkCamera.Size = new System.Drawing.Size(150, 22);
-      this.txHkCamera.TabIndex = 35;
-      this.txHkCamera.DoubleClick += new System.EventHandler(this.txHkCamera_DoubleClick);
-      // 
       // panel1
       // 
       this.panel1.Controls.Add(this.btOtherProfileSet);
@@ -968,17 +935,6 @@ namespace FS20_HudBar.Config
       this.btOtherProfileSet.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
       this.btOtherProfileSet.UseVisualStyleBackColor = true;
       this.btOtherProfileSet.Click += new System.EventHandler(this.btOtherProfileSet_Click);
-      // 
-      // btFonts
-      // 
-      this.btFonts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.btFonts.Location = new System.Drawing.Point(825, 670);
-      this.btFonts.Name = "btFonts";
-      this.btFonts.Size = new System.Drawing.Size(106, 23);
-      this.btFonts.TabIndex = 49;
-      this.btFonts.Text = "Fonts...";
-      this.btFonts.UseVisualStyleBackColor = true;
-      this.btFonts.Click += new System.EventHandler(this.btFonts_Click);
       // 
       // chkInGame
       // 
@@ -1005,6 +961,32 @@ namespace FS20_HudBar.Config
       this.chkKeyboard.UseVisualStyleBackColor = false;
       this.chkKeyboard.CheckedChanged += new System.EventHandler(this.chkKeyboard_CheckedChanged);
       // 
+      // txHkShelf
+      // 
+      this.txHkShelf.BackColor = System.Drawing.Color.Honeydew;
+      this.txHkShelf.Dock = System.Windows.Forms.DockStyle.Top;
+      this.txHkShelf.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txHkShelf.Location = new System.Drawing.Point(3, 734);
+      this.txHkShelf.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
+      this.txHkShelf.Name = "txHkShelf";
+      this.txHkShelf.ReadOnly = true;
+      this.txHkShelf.Size = new System.Drawing.Size(150, 22);
+      this.txHkShelf.TabIndex = 45;
+      this.txHkShelf.DoubleClick += new System.EventHandler(this.txHkShelf_DoubleClick);
+      // 
+      // txHkCamera
+      // 
+      this.txHkCamera.BackColor = System.Drawing.Color.Honeydew;
+      this.txHkCamera.Dock = System.Windows.Forms.DockStyle.Top;
+      this.txHkCamera.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txHkCamera.Location = new System.Drawing.Point(159, 734);
+      this.txHkCamera.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
+      this.txHkCamera.Name = "txHkCamera";
+      this.txHkCamera.ReadOnly = true;
+      this.txHkCamera.Size = new System.Drawing.Size(150, 22);
+      this.txHkCamera.TabIndex = 35;
+      this.txHkCamera.DoubleClick += new System.EventHandler(this.txHkCamera_DoubleClick);
+      // 
       // txHkChecklistBox
       // 
       this.txHkChecklistBox.BackColor = System.Drawing.Color.Honeydew;
@@ -1017,6 +999,55 @@ namespace FS20_HudBar.Config
       this.txHkChecklistBox.Size = new System.Drawing.Size(150, 22);
       this.txHkChecklistBox.TabIndex = 35;
       this.txHkChecklistBox.DoubleClick += new System.EventHandler(this.txHkChecklistBox_DoubleClick);
+      // 
+      // btDumpConfigs
+      // 
+      this.btDumpConfigs.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btDumpConfigs.Location = new System.Drawing.Point(627, 699);
+      this.btDumpConfigs.Name = "btDumpConfigs";
+      this.btDumpConfigs.Size = new System.Drawing.Size(133, 24);
+      this.btDumpConfigs.TabIndex = 28;
+      this.btDumpConfigs.Text = "Dump Def.Profiles";
+      this.btDumpConfigs.UseVisualStyleBackColor = true;
+      this.btDumpConfigs.Visible = false;
+      this.btDumpConfigs.Click += new System.EventHandler(this.btDumpConfigs_Click);
+      // 
+      // btFonts
+      // 
+      this.btFonts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btFonts.Location = new System.Drawing.Point(825, 670);
+      this.btFonts.Name = "btFonts";
+      this.btFonts.Size = new System.Drawing.Size(106, 23);
+      this.btFonts.TabIndex = 49;
+      this.btFonts.Text = "Fonts...";
+      this.btFonts.UseVisualStyleBackColor = true;
+      this.btFonts.Click += new System.EventHandler(this.btFonts_Click);
+      // 
+      // btColors
+      // 
+      this.btColors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btColors.Location = new System.Drawing.Point(825, 700);
+      this.btColors.Name = "btColors";
+      this.btColors.Size = new System.Drawing.Size(106, 23);
+      this.btColors.TabIndex = 51;
+      this.btColors.Text = "Colors...";
+      this.btColors.UseVisualStyleBackColor = true;
+      this.btColors.Click += new System.EventHandler(this.btColors_Click);
+      // 
+      // cbxOutputDevice
+      // 
+      this.cbxOutputDevice.BackColor = System.Drawing.Color.Thistle;
+      this.cbxOutputDevice.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.cbxOutputDevice.DropDownWidth = 300;
+      this.cbxOutputDevice.Items.AddRange(new object[] {
+            "Regular Size",
+            "Larger Size",
+            "Largest Size"});
+      this.cbxOutputDevice.Location = new System.Drawing.Point(3, 702);
+      this.cbxOutputDevice.Name = "cbxOutputDevice";
+      this.cbxOutputDevice.Size = new System.Drawing.Size(150, 23);
+      this.cbxOutputDevice.TabIndex = 52;
+      this.cbxOutputDevice.SelectedIndexChanged += new System.EventHandler(this.cbxOutputDevice_SelectedIndexChanged);
       // 
       // FBD
       // 
@@ -1138,5 +1169,7 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.Panel panel1;
     private System.Windows.Forms.Button btOtherProfileSet;
     private System.Windows.Forms.TextBox txHkChecklistBox;
-  }
+        private System.Windows.Forms.Button btColors;
+        private System.Windows.Forms.ComboBox cbxOutputDevice;
+    }
 }

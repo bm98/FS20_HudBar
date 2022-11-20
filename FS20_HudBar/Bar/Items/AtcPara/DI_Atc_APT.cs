@@ -104,13 +104,13 @@ namespace FS20_HudBar.Bar.Items
           _value2.Value = HudBar.AtcFlightPlan.RemainingDist_nm(
             SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
             SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
-          _value2.ItemForeColor = cGps;
+          _value2.ItemForeColor = cTxGps;
         }
         else {
           // calc straight distance if we don't have an ATC flightplan with waypoints
           var latLon = new LatLon( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon );
           _value2.Value = AirportMgr.ArrDistance_nm( latLon );
-          _value2.ItemForeColor = cInfo;
+          _value2.ItemForeColor = cTxInfo;
         }
 
         _value3.Value = (AirportMgr.IsArrAvailable && (!AirportMgr.ArrLocation.IsEmpty)) ? Conversions.Ft_From_M( AirportMgr.ArrLocation.Altitude ) : float.NaN;

@@ -183,6 +183,12 @@ namespace FS20_HudBar.Bar.Items
 
     AP_VNAV,     // VNAV on G1000
     GPS_TOD,     // GPS distance to TOD 
+
+    NETTO_MPS,    // Netto Variometer m/sec with +-
+    NETTO_KT,     // Netto Variometer kt with +-
+    NETTO_ANI,    // Netto Vario Graph
+    MCRAD_MPS,    // MacCready Speed and Setting [mps]
+    MCRAD_KT,     // MacCready Speed and Setting [kt]
   }
 
 
@@ -400,32 +406,42 @@ namespace FS20_HudBar.Bar.Items
     EST_ALT,      // Estimate ALT@WYP
 
     // AVIONICS ACFT
-    HDG,          // Heading Mag 000°
-    HDGt,         // True heading deg
-    ALT_INST,     // Instrument Altitude ft
-    ALT,          // Altitude 00000 ft
-    RA,           // Radio Altitude 000 ft 
-    RA_VOICE,     // Radio Altitude with voice output
-    IAS,          // Ind. Airspeed 000 kt
-    TAS,          // true airspeed kt
-    MACH,         // Mach speed indication
-    VS,           // Vertical Speed +-0000 fpm
-    VS_PM,        // Vertical Speed with +- fpm
-    VARIO_MPS,    // Total Energy Variometer m/sec with +-
+    HDG,           // Heading Mag 000°
+    HDGt,          // True heading deg
+    ALT_INST,      // Instrument Altitude ft
+    ALT,           // Altitude 00000 ft
+    RA,            // Radio Altitude 000 ft 
+    RA_VOICE,      // Radio Altitude with voice output
+    IAS,           // Ind. Airspeed 000 kt
+    TAS,           // true airspeed kt
+    MACH,          // Mach speed indication
+    VS,            // Vertical Speed +-0000 fpm
+    VS_PM,         // Vertical Speed with +- fpm
+    VARIO_MPS,     // Total Energy Variometer m/sec with +-
     VARIO_MPS_AVG, // Total Energy Variometer Average m/sec with +-
-    VARIO_KTS,    // Total Energy Variometer kts with +-
+    VARIO_KTS,     // Total Energy Variometer kts with +-
     VARIO_KTS_AVG, // Total Energy Variometer Average kts with +-
-    VARIO_ANI,    // Vario Graph
+    VARIO_ANI,     // Vario Graph
     VARIO_ANI_AVG, // Vario Graph AVG text
-    AOA,          // Angle of attack deg
-    FP_ANGLE,     // Flight Path Angle
-    ATT_ANI,      // Attitude Visual
-    FPA_ANI,      // FPA Visual
-    GFORCE_Cur,   // GForce Current
-    GFORCE_Min,   // GForce Minimum
-    GFORCE_Max,   // GForce Maximum
-    COMPASS,      // Mag Compass
-    COMPASS_ANI,  // Mag Compass Arrow
+    NETTO_MPS,     // Netto Variometer m/sec with +-
+    NETTO_MPS_AVG, // Netto Variometer Average m/sec with +-
+    NETTO_KTS,     // Netto Variometer kts with +-
+    NETTO_KTS_AVG, // Netto Variometer Average kts with +-
+    NETTO_ANI,     // Netto Vario Graph
+    NETTO_ANI_AVG, // Netto Vario Graph AVG text
+    MCRAD_MPS_SPD, // MacCready Speed [kt]
+    MCRAD_MPS_SET, // MacCready Setting [m/s]
+    MCRAD_KT_SPD,  // MacCready Speed [kt]
+    MCRAD_KT_SET,  // MacCready Setting [kts]
+    AOA,           // Angle of attack deg
+    FP_ANGLE,      // Flight Path Angle
+    ATT_ANI,       // Attitude Visual
+    FPA_ANI,       // FPA Visual
+    GFORCE_Cur,    // GForce Current
+    GFORCE_Min,    // GForce Minimum
+    GFORCE_Max,    // GForce Maximum
+    COMPASS,       // Mag Compass
+    COMPASS_ANI,   // Mag Compass Arrow
 
     // AVIONICS NAV
     NAV1_ID,      // NAV1 ID

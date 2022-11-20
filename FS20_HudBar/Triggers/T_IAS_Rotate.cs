@@ -36,7 +36,7 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAircraft object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if (!Enabled) return; // not enabled
+      if (!m_enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
 
       var ds = SC.SimConnectClient.Instance.HudBarModule;

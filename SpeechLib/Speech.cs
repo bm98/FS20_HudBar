@@ -4,10 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Media.Audio;
-using Windows.Media.Core;
-using Windows.Media.SpeechSynthesis;
-
+using Windows.Devices.Enumeration;
 
 using DbgLib;
 
@@ -28,7 +25,7 @@ namespace SpeechLib
     // A logger
     private static readonly IDbg LOG = Dbg.Instance.GetLogger(
       System.Reflection.Assembly.GetCallingAssembly( ),
-      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
 
     // Static cTor: Just report the Library to Dbg
     static Speech( )
@@ -42,6 +39,12 @@ namespace SpeechLib
     /// <returns>Returns a read-only collection of the voices currently installed on the system.</returns>
     public static IReadOnlyCollection<InstalledVoice> InstalledVoices => VoiceSynth.GetInstalledVoices( );
 
+    /// <summary>
+    /// Returns all installed output devices
+    /// </summary>
+    /// <returns>Returns a read-only collection of the output devices currently installed on the system.</returns>
+    public static IReadOnlyCollection<DeviceInformation> InstalledOutputDevices => VoiceSynth.GetInstalledOutputDevices( );
+
     #endregion
 
     // Background worker, Voice Output
@@ -53,7 +56,7 @@ namespace SpeechLib
     public Speech( )
     {
       _speaker = new SpeechWorker( );
-      _speaker.InitSpeaker( null ); 
+      _speaker.InitSpeaker( null );
       _speaker.ProgressChanged += _speaker_ProgressChanged;
     }
 
@@ -70,6 +73,15 @@ namespace SpeechLib
     public void SelectVoice( string displayName )
     {
       _speaker?.SelectVoice( displayName );
+    }
+
+    /// <summary>
+    /// Selects a specific Output device by name.
+    /// </summary>
+    /// <param name="displayName">The name of the device to select</param>
+    public void SelectOutputDevice( string displayName )
+    {
+      _speaker?.SelectOutputDevice( displayName );
     }
 
 
@@ -107,8 +119,8 @@ namespace SpeechLib
     /// <param name="disposing">Disposing flag</param>
     private void Dispose( bool disposing )
     {
-      if ( !disposedValue ) {
-        if ( disposing ) {
+      if (!disposedValue) {
+        if (disposing) {
           // dispose managed state (managed objects)
           _speaker.CancelAsync( );
           _speaker.Dispose( );

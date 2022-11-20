@@ -77,11 +77,11 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         if ( !SC.SimConnectClient.Instance.FlightLogModule.Enabled ) {
           _value1.Text = "disabled";
-          _value1.ItemForeColor = cLabel;
+          _value1.ItemForeColor = cTxDim;
         }
         else {
           _value1.Text = ( SC.SimConnectClient.Instance.FlightLogModule.LogMode == FlightLogMode.Off ) ? "not rec." : "recording";
-          _value1.ItemForeColor = ( SC.SimConnectClient.Instance.FlightLogModule.LogMode == FlightLogMode.Off ) ? cWarn : cOK;
+          _value1.ItemForeColor = ( SC.SimConnectClient.Instance.FlightLogModule.LogMode == FlightLogMode.Off ) ? cTxWarn : cTxActive;
         }
       }
     }

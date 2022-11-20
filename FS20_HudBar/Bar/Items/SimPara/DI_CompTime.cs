@@ -39,7 +39,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.CTIME;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Clock( value2Proto ) { ItemForeColor = cLabel };
+      _value1 = new V_Clock( value2Proto ) { ItemForeColor = cTxDim };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
       // just need a ping to update - not taking data from the Module
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );

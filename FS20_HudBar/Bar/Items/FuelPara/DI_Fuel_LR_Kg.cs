@@ -65,12 +65,12 @@ namespace FS20_HudBar.Bar.Items
         _value2.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_kg;
         // Color when there is a substantial unbalance
         if ( Calculator.HasFuelImbalance ) {
-          _value1.ItemForeColor = cWarn;
-          _value2.ItemForeColor = cWarn;
+          _value1.ItemForeColor = cTxWarn;
+          _value2.ItemForeColor = cTxWarn;
         }
         else {
-          _value1.ItemForeColor = cInfo;
-          _value2.ItemForeColor = cInfo;
+          _value1.ItemForeColor = cTxInfo;
+          _value2.ItemForeColor = cTxInfo;
         }
       }
     }

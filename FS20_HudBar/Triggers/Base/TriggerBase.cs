@@ -30,12 +30,12 @@ namespace FS20_HudBar.Triggers.Base
     /// <summary>
     /// Get;Set; enabled state of this Voice Trigger Element
     /// </summary>
-    public bool Enabled { get => m_enabled; set => m_enabled = value; }
+    public virtual bool Enabled { get => m_enabled; set => m_enabled = value; }
 
     /// <summary>
     /// Speak a test sentence
     /// </summary>
-    public void Test( GUI.GUI_Speech speech )
+    public virtual void Test( GUI.GUI_Speech speech )
     {
       speech.Say( m_test );
     }
@@ -53,7 +53,7 @@ namespace FS20_HudBar.Triggers.Base
     /// Generic Talk routine with one item to say
     /// </summary>
     /// <param name="text">The text to speak out</param>
-    protected void Say( string text )
+    protected virtual void Say( string text )
     {
       speakerRef?.Say( text );
     }
@@ -99,7 +99,7 @@ namespace FS20_HudBar.Triggers.Base
     {
       // not registered
       if (m_observerID < 1) {
-        var obsID = module.AddObserver( m_name, OnDataArrival );
+        var obsID = module.AddObserver( m_name, callback );
         m_observerID = (obsID > 0) ? obsID : m_observerID;
       }
     }

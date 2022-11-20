@@ -40,7 +40,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.AP_APR_INFO;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Text( value2Proto ) { ItemForeColor = cInfo };
+      _value1 = new V_Text( value2Proto ) { ItemForeColor = cTxInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
@@ -57,12 +57,12 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        ColorType fCol = cInfo; // default color
+        ColorType fCol = cTxInfo; // default color
         // The Approach Type 
         string info = $"{SC.SimConnectClient.Instance.GpsModule.GpsAPR_Type}"; // None, GPS, RNAV, ILS, VOR .... see enum
-        if ( SC.SimConnectClient.Instance.GpsModule.GpsAPR_Type == FSimClientIF.APRtype.GPS ) fCol = cGps;
-        else if ( SC.SimConnectClient.Instance.GpsModule.GpsAPR_Type == FSimClientIF.APRtype.RNAV ) fCol = cGps;
-        else fCol = cNav;
+        if ( SC.SimConnectClient.Instance.GpsModule.GpsAPR_Type == FSimClientIF.APRtype.GPS ) fCol = cTxGps;
+        else if ( SC.SimConnectClient.Instance.GpsModule.GpsAPR_Type == FSimClientIF.APRtype.RNAV ) fCol = cTxGps;
+        else fCol = cTxNav;
         // The Approach Phase
         if ( SC.SimConnectClient.Instance.GpsModule.IsGpsAPR_active
              && ( SC.SimConnectClient.Instance.GpsModule.GpsAPR_Mode != FSimClientIF.APRmode.None ) ) {

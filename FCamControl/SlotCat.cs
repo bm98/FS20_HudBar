@@ -63,8 +63,6 @@ namespace FCamControl
     private int _slotFolderNo = -1;
     private List<Slot> _slots = new List<Slot>( );
 
-    private bool _slotSaving = false;
-
     // Declare the delegate (if using non-generic pattern).
     public delegate void SlotSavedEventHandler( object sender, EventArgs e );
     public event SlotSavedEventHandler SlotSaved;
@@ -108,7 +106,6 @@ namespace FCamControl
     /// </summary>
     public void ExpectSlotSave( )
     {
-      _slotSaving = true;
       foreach (var s in _slots) {
         s.ExpectSlotSave = true;
       }
@@ -119,7 +116,6 @@ namespace FCamControl
     /// </summary>
     public void CancelSlotSave( )
     {
-      _slotSaving = false;
       foreach (var s in _slots) {
         s.ExpectSlotSave = false;
       }

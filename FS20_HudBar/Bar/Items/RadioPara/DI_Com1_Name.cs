@@ -41,11 +41,11 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.COM1_TYPE;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_ICAO_L( value2Proto ) { ItemForeColor = cInfo };
+      _value1 = new V_ICAO_L( value2Proto ) { ItemForeColor = cTxInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.COM1_ID;
-      _value2 = new V_Text( value2Proto ) { ItemForeColor = cInfo };
+      _value2 = new V_Text( value2Proto ) { ItemForeColor = cTxInfo };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       m_observerID = SC.SimConnectClient.Instance.ComModule.AddObserver( Short, OnDataArrival );

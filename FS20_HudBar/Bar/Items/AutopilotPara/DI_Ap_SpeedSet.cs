@@ -44,11 +44,11 @@ namespace FS20_HudBar.Bar.Items
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
 
       item = VItem.AP_SPDset;
-      _value1 = new V_Speed( value2Proto, m_alignWidth ) { ItemForeColor = cSet, ItemBackColor = cValBG };
+      _value1 = new V_Speed( value2Proto, m_alignWidth ) { ItemForeColor = cTxSet, ItemBackColor = cValBG };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.AP_SPDset_man;
-      _value2 = new V_Speed( value2Proto, m_alignWidth ) { ItemForeColor = cInfo, Visible = false };
+      _value2 = new V_Speed( value2Proto, m_alignWidth ) { ItemForeColor = cTxInfo, Visible = false };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       _label.ButtonClicked += _label_ButtonClicked;
@@ -127,7 +127,7 @@ namespace FS20_HudBar.Bar.Items
         // Set Value and color
         if (SC.SimConnectClient.Instance.AP_G1000Module.MACH_managed) {
           Label.Text = Short + "m";
-          this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.SPDhold_active ? cAP : cLabel;
+          this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.SPDhold_active ? cTxAPActive : cTxLabel;
           _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.MACH_setting_mach;
 
           // Managed Mode
@@ -138,7 +138,7 @@ namespace FS20_HudBar.Bar.Items
         else {
           // IAS managed
           Label.Text = Short;
-          this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.SPDhold_active ? cAP : cLabel;
+          this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.SPDhold_active ? cTxAPActive : cTxLabel;
           _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt;
 
           // Managed Mode

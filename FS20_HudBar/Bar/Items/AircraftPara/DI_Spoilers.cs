@@ -103,7 +103,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        _label.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.HasSpoiler && SC.SimConnectClient.Instance.HudBarModule.Spoilers_armed ) ? cArmed : cLabel;
+        _label.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.HasSpoiler && SC.SimConnectClient.Instance.HudBarModule.Spoilers_armed ) ? cTxLabelArmed : cTxLabel;
         _value1.Step = SpoilerState;
       }
     }

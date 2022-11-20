@@ -42,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.ADF1_ID;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_ICAO_L( valueProto ) { ItemForeColor = cInfo };
+      _value1 = new V_ICAO_L( valueProto ) { ItemForeColor = cTxInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.ADF1_BRG;
@@ -68,11 +68,11 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         if (SC.SimConnectClient.Instance.NavModule.Adf1_Ident != "") {
-          _value1.ItemForeColor = cNav;
+          _value1.ItemForeColor = cTxNav;
           _value1.Text = SC.SimConnectClient.Instance.NavModule.Adf1_Ident;
         }
         else {
-          _value1.ItemForeColor = cLabel;
+          _value1.ItemForeColor = cTxDim;
           _value1.Text = $"{SC.SimConnectClient.Instance.NavModule.Adf1_active_hz / 1_000f:#000.0}";
         }
 
@@ -84,7 +84,7 @@ namespace FS20_HudBar.Bar.Items
         }
         else {
           _value2.Value = null;
-          _brg.ItemForeColor = cLabel; // dimm
+          _brg.ItemForeColor = cTxDim; // dimm
           _brg.DirectionFrom = 0;
           _brg.Heading = 180; // Wind indicator is used - so inverse direction
         }

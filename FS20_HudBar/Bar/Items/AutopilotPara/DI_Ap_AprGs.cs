@@ -43,7 +43,7 @@ namespace FS20_HudBar.Bar.Items
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
 
       item = VItem.AP_GS;
-      _value1 = new V_Text( value2Proto ) { ItemForeColor= cLabel, Text = "►GS◄" };
+      _value1 = new V_Text( value2Proto ) { ItemForeColor= cTxDim, Text = "►GS◄" };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       _label.ButtonClicked += _label_ButtonClicked;
@@ -69,10 +69,10 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.APRhold_active ? cAP : cLabel;
+        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.APRhold_active ? cTxAPActive : cTxLabel;
         _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? "►GP◄" : "►GS◄";
-        _value1.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GS_active ? cAP :
-                                      ( SC.SimConnectClient.Instance.AP_G1000Module.GShold_active ? cInfo : cLabel);
+        _value1.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GS_active ? cTxAPActive :
+                                      ( SC.SimConnectClient.Instance.AP_G1000Module.GShold_active ? cTxInfo : cTxDim);
         
       }
     }

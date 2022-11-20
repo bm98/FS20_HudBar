@@ -258,6 +258,26 @@ namespace FS20_HudBar
       set { this["UserFonts"] = value; }
     }
 
+    // User Colors
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string UserColorsReg {
+      get { return (string)this["UserColorsReg"]; }
+      set { this["UserColorsReg"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string UserColorsDim {
+      get { return (string)this["UserColorsDim"]; }
+      set { this["UserColorsDim"] = value; }
+    }
+    [UserScopedSetting( )]
+    [DefaultSettingValue( "" )]
+    public string UserColorsInv {
+      get { return (string)this["UserColorsInv"]; }
+      set { this["UserColorsInv"] = value; }
+    }
+
     // Checklist Box Settings
     [UserScopedSetting( )]
     [DefaultSettingValue( "10, 10" )]

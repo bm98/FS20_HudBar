@@ -11,6 +11,7 @@ using Windows.Storage;
 using System.IO;
 
 using DbgLib;
+using Windows.Devices.Enumeration;
 
 namespace PingLib
 {
@@ -30,8 +31,8 @@ namespace PingLib
 
     // files we streamed to play - such files are put into the users Temp folder and remain there until someone cleans them up..
     private static List<SoundInfo> _installedSounds = new List<SoundInfo>( );
-
     private static List<string> _streamedSoundFiles = new List<string>( );
+    private static List<DeviceInformation> _installedOutputDevices = new List<DeviceInformation>( );
 
     // Define Library Resources
     private static void LoadAvailableSounds( )
@@ -80,18 +81,46 @@ namespace PingLib
       _streamedSoundFiles.Clear( );
     }
 
+    // Collect Audio Render Device(s) to see if any is available
+    private static void LoadInstalledOutputDevices( )
+    {
+      _installedOutputDevices.Clear( );
+      var ret = DeviceInformation.FindAllAsync( DeviceClass.AudioRender ).AsTask( );
+      ret.Wait( );
+      if (ret.Status == TaskStatus.RanToCompletion) {
+        foreach (DeviceInformation deviceInterface in ret.Result) {
+          _installedOutputDevices.Add( deviceInterface );
+        }
+      }
+      else {
+        LOG.LogError( $"LoadInstalledOutputDevices: Status {ret.Status}" );
+      }
+    }
+
+    /// <summary>
+    /// Returns all installed output devices
+    /// </summary>
+    /// <returns>Returns a read-only collection of the output devices currently installed on the system.</returns>
+    public static IReadOnlyCollection<DeviceInformation> GetInstalledOutputDevices( )
+    {
+      LoadInstalledOutputDevices( );
+      return _installedOutputDevices;
+    }
+
+
     #endregion
 
     // Wave Source
-    private AudioFileInputNode _fileInputNode;
-    private SoundInfo _sound;
-    private SoundInfo _soundInUse;
+    private AudioFileInputNode _fileInputNode = null;
+    private SoundInfo _sound = null;
+    private SoundInfo _soundInUse = null;
 
     // AudioGraph
-    private AudioGraph _audioGraph;
-    private AudioDeviceOutputNode _deviceOutputNode;
+    private AudioGraph _audioGraph = null;
+    private AudioDeviceOutputNode _deviceOutputNode = null;
+    private DeviceInformation _outputDevice = null;
 
-    private AutoResetEvent _playingWaitHandle; // will report the end of play
+    private AutoResetEvent _playingWaitHandle = null; // will report the end of play
 
     private bool _playing = false; // true while playing
 
@@ -124,7 +153,7 @@ namespace PingLib
       do {
         // Create an AudioGraph
         AudioGraphSettings settings = new AudioGraphSettings( _renderCat ) {
-          PrimaryRenderDevice = null, // If PrimaryRenderDevice is null, the default playback device will be used.
+          PrimaryRenderDevice = _outputDevice, // If PrimaryRenderDevice is null, the default playback device will be used.
         };
         LOG.Log( $"FindRenderCategory: About to test AudioGraph with RenderCategory: {_renderCat}" );
         // We await here the execution without providing an async method ...
@@ -164,19 +193,16 @@ namespace PingLib
     private void InitAudioGraph( )
     {
       LOG.Log( "InitAudioGraph: Begin" );
-      if (!_canPlay) {
-        LOG.Log( "InitAudioGraph: Canceled with _canPlay = false" );
-        return; // cannot even try..
-      }
-
       // MUST WAIT UNTIL all items are created, else one may call Play too early...
       // cleanup existing items
       if (_deviceOutputNode != null) { _deviceOutputNode.Dispose( ); _deviceOutputNode = null; }
       if (_audioGraph != null) { _audioGraph.Dispose( ); _audioGraph = null; }
+      _fileInputNode = null; // disposed when the graph is disposed
+      _soundInUse = null; 
 
       // Create an AudioGraph
       AudioGraphSettings settings = new AudioGraphSettings( _renderCat ) {
-        PrimaryRenderDevice = null, // If PrimaryRenderDevice is null, the default playback device will be used.
+        PrimaryRenderDevice = _outputDevice,  // If PrimaryRenderDevice is null, the default playback device will be used.
         MaxPlaybackSpeedFactor = 2, // should preserve some memory
       };
       // We await here the execution without providing an async method ...
@@ -187,7 +213,7 @@ namespace PingLib
         LOG.LogError( $"InitAudioGraph: AudioGraph creation: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
                         + $"\nExtError: {resultAG.Result.ExtendedError}" );
         _canPlay = false;
-        return;
+        return; // ERROR EXIT
       }
       _audioGraph = resultAG.Result.Graph;
       LOG.Log( $"InitAudioGraph: AudioGraph: [{_audioGraph.EncodingProperties}]" );
@@ -202,10 +228,13 @@ namespace PingLib
         LOG.LogError( $"InitAudioGraph: DeviceOutputNode creation: {resultDO.Result.Status}, TaskStatus: {resultDO.Status}"
                         + $"\nExtError: {resultDO.Result.ExtendedError}" );
         _canPlay = false;
-        return;
+        return; // ERROR EXIT
       }
       _deviceOutputNode = resultDO.Result.DeviceOutputNode;
-      LOG.Log( $"InitAudioGraph: DeviceOutputNode: [{_deviceOutputNode.Device}]" );
+      _canPlay= true; // finally
+      // log outcome
+      var devName = (_deviceOutputNode.Device == null) ? "Standard Output Device" : _deviceOutputNode.Device.Name;
+      LOG.Log( $"InitAudioGraph: DeviceOutputNode: [{devName}]" );
       LOG.Log( $"InitAudioGraph: InitAudioGraph-END" );
     }
 
@@ -263,6 +292,7 @@ namespace PingLib
 
       // don't reload if the sound is already in use
       if (soundBite.Melody != _soundInUse?.Melody) {
+        LOG.Log( $"RELOAD soundbite: {soundBite.Melody}" );
         // if a prev. Node exists, remove it
         if (_fileInputNode != null) {
           _audioGraph.Stop( );
@@ -289,6 +319,7 @@ namespace PingLib
           await EndOfSound( );
           return;
         }
+        LOG.Log( $"FileInputNode: CREATED, srcFile is {resultAF.FileInputNode.SourceFile}" );
         _fileInputNode = resultAF.FileInputNode;
         _fileInputNode.FileCompleted += _fileInputNode_FileCompleted;
         _fileInputNode.AddOutgoingConnection( _deviceOutputNode );
@@ -301,6 +332,8 @@ namespace PingLib
       // we capture problems through Exceptions here - the settings and restrictions seem not complete in the Docs
       try {
         // Play it
+        LOG.Log( $"Play {_fileInputNode.ConsumeInput}" );
+
         // cannot start after prev end - so set it null and seek to start of file
         _fileInputNode.StartTime = null;
         _fileInputNode.EndTime = null; // cannot start after prev end - so set it null
@@ -337,7 +370,7 @@ namespace PingLib
     public WaveProc( AutoResetEvent resetEvent, bool loolPlayer )
     {
       // Init - will be flaged during init if something goes wrong
-      _canPlay = true;
+      _canPlay = false; // not yet
 
       LoadAvailableSounds( );
 
@@ -348,6 +381,23 @@ namespace PingLib
       // find a render cat (see notes above)
       FindRenderCategory( );
       InitAudioGraph( );
+    }
+
+    /// <summary>
+    /// Selects a specific output device by name.
+    /// </summary>
+    /// <param name="displayName">The name of the output device to select</param>
+    public void SelectOutputDevice( string displayName )
+    {
+      LOG.Log( $"SelectOutputDevice: {displayName}" );
+      _canPlay = false; // not yet
+
+      // select the one requested
+      var oDevs = GetInstalledOutputDevices( );
+      _outputDevice = oDevs.FirstOrDefault( x => x.Name == displayName ); // null will select the defaultOutput
+      // find a render cat (see notes above)
+      FindRenderCategory( );
+      InitAudioGraph( ); // restart the Graph
     }
 
     /// <summary>

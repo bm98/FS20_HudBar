@@ -39,7 +39,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.BRAKES;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Steps( signProto ) { ItemForeColor = cRA };
+      _value1 = new V_Steps( signProto ) { ItemForeColor = cTxWarn };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );

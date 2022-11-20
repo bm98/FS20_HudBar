@@ -21,7 +21,7 @@ namespace FS20_HudBar.GUI.Templates
     public V_VSpeed_ktPM( Label proto )
     : base( proto )
     {
-      m_unit = "kts";
+      m_unit = "kt";
       m_default = DefaultString( "±__.__↑" ); // ±NN.NN
       Text = UnitString( m_default );
     }

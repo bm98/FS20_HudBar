@@ -75,10 +75,10 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.NAVhold_active ? cAP : cLabel;
+        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.NAVhold_active ? cTxAPActive : cTxLabel;
         _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? "GPS" :
             ( SC.SimConnectClient.Instance.NavModule.NavSource_current == FSimClientIF.NavSource.NAV1 ? "NAV1" : "NAV2" );
-        _value1.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? cGps : cNav;
+        _value1.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? cTxGps : cTxNav;
       }
     }
 

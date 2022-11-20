@@ -46,7 +46,7 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAP_G1000 object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if ( !Enabled ) return; // not enabled
+      if ( !m_enabled ) return; // not enabled
       if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity, capture odd cases
       if ( SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) return; // not while on ground
 

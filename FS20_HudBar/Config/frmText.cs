@@ -19,7 +19,7 @@ namespace FS20_HudBar.Config
 
     private void frmText_Load( object sender, EventArgs e )
     {
-      txFree.Text = AppSettings.Instance.FreeText;
+      txFree.Text = AppSettingsV2.Instance.FreeText;
     }
 
     private void frmText_FormClosing( object sender, FormClosingEventArgs e )
@@ -31,7 +31,7 @@ namespace FS20_HudBar.Config
     {
       var s = txFree.Text;
       if ( s.Length > 60 ) s = s.Substring( 0, 60 ); // limit for sanity
-      AppSettings.Instance.FreeText = s.TrimEnd();
+      AppSettingsV2.Instance.FreeText = s.TrimEnd();
     }
   }
 }

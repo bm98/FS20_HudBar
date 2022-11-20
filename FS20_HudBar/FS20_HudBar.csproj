@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>51</ApplicationRevision>
-    <ApplicationVersion>0.54.0.51</ApplicationVersion>
+    <ApplicationRevision>56</ApplicationRevision>
+    <ApplicationVersion>0.56.0.56</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -115,6 +115,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AApp\AppSettings.cs" />
+    <Compile Include="AApp\AppSettingsV2.cs" />
+    <Compile Include="AApp\AppSettingsUpgrade.cs" />
     <Compile Include="Bar\Calculator.cs" />
     <Compile Include="Bar\DispItemCat.cs" />
     <Compile Include="Bar\FltStateMgr.cs" />
@@ -211,6 +213,21 @@
     <Compile Include="Bar\Items\AutopilotPara\DI_Ap_VNav.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_VarioMCS_mps.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_VarioMCS_kt.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_VarioNettoGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_VarioNetto_kts_PM.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_VarioNetto_mps_PM.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\GpsPara\DI_Gps_TOD.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -277,7 +294,7 @@
     <Compile Include="Bar\Items\EnginePara\DI_N1Graph.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\InstrPara\DI_VarioGraph.cs">
+    <Compile Include="Bar\Items\InstrPara\DI_VarioTEGraph.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\FuelPara\DI_FuelGraph.cs">
@@ -551,11 +568,18 @@
     <Compile Include="Config\AcftMerges.cs" />
     <Compile Include="Config\DefaultProfiles.cs" />
     <Compile Include="Config\FlpHandler.cs" />
+    <Compile Include="Config\FlpItems.cs" />
     <Compile Include="Config\frmApt.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Config\frmApt.Designer.cs">
       <DependentUpon>frmApt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Config\FrmColors.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\FrmColors.Designer.cs">
+      <DependentUpon>FrmColors.cs</DependentUpon>
     </Compile>
     <Compile Include="Config\FrmFonts.cs">
       <SubType>Form</SubType>
@@ -602,6 +626,7 @@
     </Compile>
     <Compile Include="AApp\DebugStart.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="GUI\GUI_ColorSet.cs" />
     <Compile Include="GUI\IAlign.cs" />
     <Compile Include="GUI\Templates\A_AHor.cs">
       <SubType>UserControl</SubType>
@@ -730,6 +755,9 @@
     <Compile Include="GUI\Templates\V_TimeHHMM.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GUI\Templates\V_VSpeedPerSec.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\Templates\V_VSpeedPM.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -787,7 +815,7 @@
     <Compile Include="GUI\Templates\V_Torque.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\Templates\V_VSpeed.cs">
+    <Compile Include="GUI\Templates\V_VSpeedPerMin.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Templates\X_ToolTip.cs">
@@ -804,6 +832,7 @@
     <Compile Include="Triggers\Base\EventProcFloat.cs" />
     <Compile Include="Triggers\Base\EventProcInteger.cs" />
     <Compile Include="Triggers\Base\ITriggers.cs" />
+    <Compile Include="Triggers\Base\TouchDownTrigger.cs" />
     <Compile Include="Triggers\Base\TSmoother.cs" />
     <Compile Include="Triggers\Base\TriggerBand.cs" />
     <Compile Include="Triggers\Base\TriggerBase.cs" />
@@ -835,6 +864,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Config\frmApt.resx">
       <DependentUpon>frmApt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Config\FrmColors.resx">
+      <DependentUpon>FrmColors.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Config\frmConfig.resx">
       <DependentUpon>frmConfig.cs</DependentUpon>

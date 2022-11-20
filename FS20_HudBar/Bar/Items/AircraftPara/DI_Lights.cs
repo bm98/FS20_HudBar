@@ -58,17 +58,17 @@ namespace FS20_HudBar.Bar.Items
       if ( this.Visible ) {
         // Consolidated lights (RA colored for Taxi and/or Landing lights on)
         int lightsInt = 0;
-        _value1.ItemForeColor = cInfo;
+        _value1.ItemForeColor = cTxInfo;
         if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Beacon ) lightsInt |= (int)V_Lights.Lights.Beacon;
         if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Nav ) lightsInt |= (int)V_Lights.Lights.Nav;
         if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Strobe ) lightsInt |= (int)V_Lights.Lights.Strobe;
         if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Taxi ) {
           lightsInt |= (int)V_Lights.Lights.Taxi;
-          _value1.ItemForeColor = cWarn;
+          _value1.ItemForeColor = cTxWarn;
         }
         if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Landing ) {
           lightsInt |= (int)V_Lights.Lights.Landing;
-          _value1.ItemForeColor = cWarn;
+          _value1.ItemForeColor = cTxWarn;
         }
           _value1.IntValue = lightsInt;
       }

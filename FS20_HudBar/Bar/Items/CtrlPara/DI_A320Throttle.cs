@@ -68,32 +68,32 @@ namespace FS20_HudBar.Bar.Items
       if (tPerc > 0.99f) {
         // nominal 100%
         value.Text = c_tTOGA;
-        value.ItemForeColor = cInfo;
+        value.ItemForeColor = cTxInfo;
       }
       else if (tPerc > 0.93f) {
         // nominal 95%
         value.Text = c_tMCL;
-        value.ItemForeColor = cInfo;
+        value.ItemForeColor = cTxInfo;
       }
       else if (tPerc > 0.85f) {
         // nominal 89%
         value.Text = c_tCL;
-        value.ItemForeColor = cInfo;
+        value.ItemForeColor = cTxInfo;
       }
       else if (tPerc > 0.01) {
         // nominal > 0%
         value.Text = c_tATRH;
-        value.ItemForeColor = cInfo;
+        value.ItemForeColor = cTxInfo;
       }
       else if (tPerc > -0.01) {
         // nominal 0%
         value.Text = c_tIDLE;
-        value.ItemForeColor = cInfo;
+        value.ItemForeColor = cTxInfo;
       }
       else {
         // nominal < 0% .. -20%
         value.Text = c_tREV;
-        value.ItemForeColor = cWarn;
+        value.ItemForeColor = cTxWarn;
       }
     }
 

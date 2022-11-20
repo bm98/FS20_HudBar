@@ -10,18 +10,18 @@ using FS20_HudBar.GUI.Templates.Base;
 namespace FS20_HudBar.GUI.Templates
 {
   /// <summary>
-  /// Vertical Speed Formatter
+  /// Vertical Speed Formatter ft/sec (m/sec)
   /// </summary>
-  class V_VSpeed : V_Base
+  class V_VSpeedPerSec : V_Base
   {
     /// <summary>
     /// cTor:
     /// </summary>
     /// <param name="proto"></param>
-    public V_VSpeed( Label proto, int width = 0 )
+    public V_VSpeedPerSec( Label proto, int width = 0 )
     : base( proto, width )
     {
-      m_unit = "f/M";
+      m_unit = "f/s";
       m_default = DefaultString( "____↑" + " " ); // NNNN_Direction
       Text = UnitString( RightAlign( m_default ) );
     }
@@ -32,7 +32,7 @@ namespace FS20_HudBar.GUI.Templates
 
     protected override void SetAltitude_Metric( )
     {
-      m_unit = _altitude_metric ? "m/M" : "f/M";
+      m_unit = _altitude_metric ? "m/s" : "f/s";
     }
 
 
@@ -64,3 +64,4 @@ namespace FS20_HudBar.GUI.Templates
 
   }
 }
+

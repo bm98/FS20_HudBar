@@ -46,15 +46,19 @@ namespace FS20_HudBar.Bar
     public static FlightPlan AtcFlightPlan => FltPlanMgr.FlightPlan;
 
 
+    private static readonly PingLib.Loops m_ping = new PingLib.Loops( ); // Ping, Tone=0 will be Silence
+    private static readonly PingLib.SoundBite _silentLoop = new PingLib.SoundBite( PingLib.Melody.Silence, 0, 0, 0f ); // Use this Sound to set to Silence
     /// <summary>
     /// The Ping Library
     /// </summary>
     public static PingLib.Loops PingLoop => m_ping;
-    private static readonly PingLib.Loops m_ping = new PingLib.Loops( ); // Ping, Tone=0 will be Silence
-    private static readonly PingLib.SoundBite _silentLoop = new PingLib.SoundBite( PingLib.Melody.Silence, 0, 0, 0f ); // Use this Sound to set to Silence
 
-    public static PingLib.SoundBite LoopSound => _soundLoop;
+    // the sound to play
     private static readonly PingLib.SoundBite _soundLoop = new PingLib.SoundBite( PingLib.Melody.TSynth, 0, -1f, 0, 0.2f ); // Use this Sound to ping
+    /// <summary>
+    /// The Ping Sound
+    /// </summary>
+    public static PingLib.SoundBite LoopSound => _soundLoop;
 
     /// <summary>
     /// The Speech Library
@@ -136,7 +140,9 @@ namespace FS20_HudBar.Bar
       {LItem.TAS, DI_Tas.Desc },
       {LItem.MACH, DI_Mach.Desc },
       {LItem.VS, DI_Vs.Desc },                {LItem.VS_PM, DI_Vs_PM.Desc },
-      {LItem.VARIO_MPS, DI_VarioTE_mps_PM.Desc }, {LItem.VARIO_KTS, DI_VarioTE_kts_PM.Desc }, {LItem.VARIO_ANI, DI_VarioGraph.Desc },
+      {LItem.VARIO_MPS, DI_VarioTE_mps_PM.Desc },    {LItem.VARIO_KTS, DI_VarioTE_kts_PM.Desc },   {LItem.VARIO_ANI, DI_VarioTEGraph.Desc },
+      {LItem.NETTO_MPS, DI_VarioNetto_mps_PM.Desc }, {LItem.NETTO_KT,DI_VarioNetto_kts_PM.Desc }, {LItem.NETTO_ANI, DI_VarioNettoGraph.Desc },
+      {LItem.MCRAD_MPS, DI_VarioMCS_mps.Desc },      {LItem.MCRAD_KT,DI_VarioMCS_kt.Desc },
       {LItem.AOA, DI_Aoa.Desc },              {LItem.FP_ANGLE, DI_FPAngle.Desc },             {LItem.ESI_ANI, DI_ESIGraph.Desc },
       {LItem.GFORCE, DI_GForce.Desc },        {LItem.GFORCE_MM, DI_Gforce_MM.Desc },
 
@@ -209,6 +215,11 @@ namespace FS20_HudBar.Bar
     public string VoiceName { get; private set; } = "";
 
     /// <summary>
+    /// The used OutputDeviceName
+    /// </summary>
+    public string OutputDeviceName { get; private set; } = "";
+
+    /// <summary>
     /// Provide acces to the VoicePack
     /// </summary>
     public HudVoice VoicePack => m_voicePack;
@@ -226,7 +237,7 @@ namespace FS20_HudBar.Bar
     /// </summary>
     /// <param name="item">A Label item</param>
     /// <returns>True if it is shown</returns>
-    public bool ShowItem( LItem item ) => m_profile.ShowItem( item );
+    public bool ShowItem( LItem item ) => m_profile.IsShowItem( item );
 
     /// <summary>
     /// The Current FontSize to use
@@ -291,11 +302,12 @@ namespace FS20_HudBar.Bar
     /// <param name="signProto">A GUI prototype icon(Wingdings), carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="cProfile">The current Profile</param>
     /// <param name="voiceName">The current VoiceName</param>
+    /// <param name="outputDeviceName">The output DeviceName</param>
     /// <param name="userFonts">User Fonts as ConfigString</param>
     /// <param name="fRecorder">FlightRecorder Enabled</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
                       bool keyboardHook, bool inGameHook, WinHotkeyCat hotkeys,
-                      int autoSave, CProfile cProfile, string voiceName, string userFonts,
+                      int autoSave, CProfile cProfile, string voiceName, string outputDeviceName, string userFonts,
                       bool fRecorder )
     {
       LOG.Log( "cTor HudBar: Start" );
@@ -305,10 +317,15 @@ namespace FS20_HudBar.Bar
       KeyboardHook = keyboardHook;
       InGameHook = inGameHook;
       FltAutoSave = (FSimClientIF.FlightPlanMode)autoSave;
+      // Voice and Sounds
       VoiceEnabled = false; // disable, else we get early talks..
       VoiceName = voiceName;
-      FlightRecorder = fRecorder;
       _ = m_speech.SetVoice( VoiceName );
+      OutputDeviceName = outputDeviceName;
+      m_speech.SetOutputDevice( outputDeviceName );
+      m_ping.SelectOutputDevice( outputDeviceName );
+
+      FlightRecorder = fRecorder;
       ProtoLabelRef = lblProto;
       ProtoValueRef = valueProto;
       ProtoValue2Ref = value2Proto;
@@ -356,7 +373,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_FlightLog( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Free Text (we set the Initial Text from Settings here)
       m_dispItems.AddDisp( new DI_Text( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
-      this.Value( VItem.TXT ).Text = AppSettings.Instance.FreeText;
+      this.Value( VItem.TXT ).Text = AppSettingsV2.Instance.FreeText;
       // Environment
       m_dispItems.AddDisp( new DI_Time( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ZuluTime( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -451,7 +468,12 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Vs_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_VarioTE_mps_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_VarioTE_kts_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
-      m_dispItems.AddDisp( new DI_VarioGraph( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_VarioTEGraph( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_VarioNetto_mps_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_VarioNetto_kts_PM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_VarioNettoGraph( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_VarioMCS_mps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_VarioMCS_kt( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Aoa( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_FPAngle( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ESIGraph( m_valueItems, lblProto ) );
@@ -515,9 +537,9 @@ namespace FS20_HudBar.Bar
       // Apply Unit modifier (shown, not shown) to all Values
       LOG.Log( $"cTor HudBar: Post Processing" );
       foreach (var lx in m_valueItems) {
-        SetAltitudeMetric( AppSettings.Instance.Altitude_Metric );
-        SetDistanceMetric( AppSettings.Instance.Distance_Metric );
-        SetShowUnits( AppSettings.Instance.ShowUnits );
+        SetAltitudeMetric( AppSettingsV2.Instance.Altitude_Metric );
+        SetDistanceMetric( AppSettingsV2.Instance.Distance_Metric );
+        SetShowUnits( AppSettingsV2.Instance.ShowUnits );
       }
 
       // Align the Vertical alignment accross the bar
@@ -555,7 +577,7 @@ namespace FS20_HudBar.Bar
           if (dix != null) {
             maxLabelWidth = (dix.Controls[0].Width > maxLabelWidth) ? dix.Controls[0].Width : maxLabelWidth;
             // collect per column
-            if (Profile.BreakItem( lItem )) {
+            if (Profile.IsBreakItem( lItem )) {
               max1ValueWidthList.Enqueue( max1ValueWidth );
               max1ValueWidth = 0;
             }
@@ -573,7 +595,7 @@ namespace FS20_HudBar.Bar
           var dix = DispItem( lItem );
           if (dix != null) {
             // get the next column width
-            if (Profile.BreakItem( lItem )) {
+            if (Profile.IsBreakItem( lItem )) {
               max1ValueWidth = max1ValueWidthList.Dequeue( );
             }
             if (dix.Controls.Count == 2 && !(dix.Controls[1] is V_Steps) && !(dix.Controls[1] is V_Text)) {
@@ -623,7 +645,7 @@ namespace FS20_HudBar.Bar
       Calculator.PaceCalculator( );
 
       // ATC Airport - maintain APTs (we should always have a Destination here)
-      AirportMgr.Update( AtcFlightPlan.Departure, AtcFlightPlan.Destination ); 
+      AirportMgr.Update( AtcFlightPlan.Departure, AtcFlightPlan.Destination );
       // Maintain the Waypoint Tracker to support the GPS Flightplan 
       if (SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active) {
         // WP Enroute Tracker
@@ -759,6 +781,15 @@ namespace FS20_HudBar.Bar
     }
 
     /// <summary>
+    /// Set the current outputDeviceName communicated by the HUD
+    /// </summary>
+    /// <param name="outputDeviceName"></param>
+    public void SetOutputDeviceName( string outputDeviceName )
+    {
+      OutputDeviceName = outputDeviceName;
+    }
+
+    /// <summary>
     /// Set the Altitude Display to Metric
     /// </summary>
     /// <param name="setting">True for Metric Unit</param>
@@ -832,9 +863,9 @@ namespace FS20_HudBar.Bar
             // this takes breaks from not visible items too
             if (registeredBreak == GUI.BreakType.None) {
               // take any
-              registeredBreak = this.Profile.BreakItem( key ) ? GUI.BreakType.FlowBreak :
-                                this.Profile.DivItem1( key ) ? GUI.BreakType.DivBreak1 :
-                                this.Profile.DivItem2( key ) ? GUI.BreakType.DivBreak2 : GUI.BreakType.None;
+              registeredBreak = this.Profile.IsBreakItem( key ) ? GUI.BreakType.FlowBreak :
+                                this.Profile.IsDivItem1( key ) ? GUI.BreakType.DivBreak1 :
+                                this.Profile.IsDivItem2( key ) ? GUI.BreakType.DivBreak2 : GUI.BreakType.None;
             }
             else if (registeredBreak == GUI.BreakType.FlowBreak) {
               // take no further
@@ -842,7 +873,7 @@ namespace FS20_HudBar.Bar
             }
             else {
               // override DivBreaks only with FlowBreaks
-              registeredBreak = this.Profile.BreakItem( key ) ? GUI.BreakType.FlowBreak : registeredBreak;
+              registeredBreak = this.Profile.IsBreakItem( key ) ? GUI.BreakType.FlowBreak : registeredBreak;
             }
           }
 

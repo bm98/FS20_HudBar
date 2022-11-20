@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using DbgLib;
+using Windows.Devices.Enumeration;
 
 namespace PingLib
 {
@@ -44,6 +45,12 @@ namespace PingLib
     /// <returns>Returns a read-only collection of the sounds currently available from the library</returns>
     public static IReadOnlyCollection<SoundInfo> InstalledSounds => WaveProc.GetInstalledSounds( );
 
+    /// <summary>
+    /// Returns all installed output devices
+    /// </summary>
+    /// <returns>Returns a read-only collection of the output devices currently installed on the system.</returns>
+    public static IReadOnlyCollection<DeviceInformation> InstalledOutputDevices => WaveProc.GetInstalledOutputDevices( );
+
     #endregion
 
     // Background worker, Audio Output
@@ -64,6 +71,14 @@ namespace PingLib
       // handle synch later
     }
 
+    /// <summary>
+    /// Selects a specific Output device by name.
+    /// </summary>
+    /// <param name="displayName">The name of the device to select</param>
+    public void SelectOutputDevice( string displayName )
+    {
+      _player?.SelectOutputDevice( displayName );
+    }
 
     /// <summary>
     /// Asynchronously plays soundBites

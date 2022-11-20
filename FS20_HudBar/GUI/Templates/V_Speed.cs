@@ -10,7 +10,7 @@ using FS20_HudBar.GUI.Templates.Base;
 namespace FS20_HudBar.GUI.Templates
 {
   /// <summary>
-  /// Speed Formatter
+  /// Speed Formatter [kt] ( [km/h] )
   /// </summary>
   class V_Speed : V_Base
   {

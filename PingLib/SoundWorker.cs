@@ -45,6 +45,14 @@ namespace PingLib
       this.DoWork += SoundWorker_DoWork;
     }
 
+    /// <summary>
+    /// Selects a specific output device by name.
+    /// </summary>
+    /// <param name="displayName">The name of the output to select</param>
+    public void SelectOutputDevice( string displayName )
+    {
+      _player?.SelectOutputDevice( displayName );
+    }
 
     /// <summary>
     /// Start the Speaker processing

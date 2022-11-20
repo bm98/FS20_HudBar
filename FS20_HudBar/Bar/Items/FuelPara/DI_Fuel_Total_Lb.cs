@@ -64,7 +64,7 @@ namespace FS20_HudBar.Bar.Items
         // Fuel Tot & Reach
         _value1.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityTotal_lb;
         _value2.Value = Calculator.FuelReach_sec( );
-        _value2.ItemForeColor = Calculator.FuelReachAlert ? cAlert : ( Calculator.FuelReachWarn ? cWarn : cInfo );
+        _value2.ItemForeColor = Calculator.FuelReachAlert ? cTxAlert : ( Calculator.FuelReachWarn ? cTxWarn : cTxInfo);
       }
     }
 

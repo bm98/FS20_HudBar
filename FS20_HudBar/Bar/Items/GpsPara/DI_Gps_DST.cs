@@ -40,7 +40,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.GPS_DST;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_Dist( valueProto ) { ItemForeColor = cGps };
+      _value1 = new V_Dist( valueProto ) { ItemForeColor = cTxGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
@@ -60,19 +60,19 @@ namespace FS20_HudBar.Bar.Items
         // Distance to Destination
         if (SC.SimConnectClient.Instance.GpsModule.DEST_dist > 0) {
           _value1.Value = SC.SimConnectClient.Instance.GpsModule.DEST_dist;
-          _value1.ItemForeColor = cGps;
+          _value1.ItemForeColor = cTxGps;
         }
         else if (HudBar.AtcFlightPlan.HasFlightPlan) {
           _value1.Value = HudBar.AtcFlightPlan.RemainingDist_nm(
           SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
           SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
-          _value1.ItemForeColor = cGps;
+          _value1.ItemForeColor = cTxGps;
         }
         else {
           // calc straight distance if we don't have an ATC flightplan with waypoints
           var latLon = new LatLon( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon );
           _value1.Value = AirportMgr.ArrDistance_nm( latLon );
-          _value1.ItemForeColor = cInfo;
+          _value1.ItemForeColor = cTxInfo;
         }
       }
     }

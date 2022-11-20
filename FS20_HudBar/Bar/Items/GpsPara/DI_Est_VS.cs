@@ -39,7 +39,7 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.EST_VS;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_VSpeed( valueProto ) { ItemForeColor = cEst };
+      _value1 = new V_VSpeedPerMin( valueProto ) { ItemForeColor = cTxEst };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
@@ -59,11 +59,11 @@ namespace FS20_HudBar.Bar.Items
         if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
           float tgtAlt = SC.SimConnectClient.Instance.GpsModule.WYP_Alt;
           // Estimates use WYP ALT if >0 (there is no distinction if a WYP ALT is given - it is 0 if not)
-          ColorType estCol = cEst;
+          ColorType estCol = cTxEst;
           if ( tgtAlt == 0 ) {
             // use Set Alt if WYP ALT is zero (see comment above)
             tgtAlt = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
-            estCol = cSet;
+            estCol = cTxSet;
           }
           _value1.Value = Calculator.VSToTgt_AtAltitude( tgtAlt, SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
           _value1.ItemForeColor = estCol;

@@ -43,11 +43,11 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.GFORCE_Min;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += DI_Gforce_MM_ButtonClicked;
-      _value1 = new V_GForce( value2Proto ) { ItemForeColor = cInfo };
+      _value1 = new V_GForce( value2Proto ) { ItemForeColor = cTxInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.GFORCE_Max;
-      _value2 = new V_GForce( value2Proto ) { ItemForeColor = cLabel };
+      _value2 = new V_GForce( value2Proto ) { ItemForeColor = cTxDim };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );

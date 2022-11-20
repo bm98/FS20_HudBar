@@ -9,7 +9,7 @@ namespace FS20_HudBar.GUI
   /// <summary>
   /// An interface to support dynamic color handling
   /// </summary>
-  interface IColorType
+  public interface IColorType
   {
     /// <summary>
     /// Get; Set the items Foreground Color by the type of the Item

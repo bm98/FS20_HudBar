@@ -45,11 +45,11 @@ namespace FS20_HudBar.Bar.Items
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
 
       item = VItem.AP_ALTset;
-      _value1 = new V_Alt( value2Proto, m_alignWidth ) { ItemForeColor = cSet, ItemBackColor = cValBG };
+      _value1 = new V_Alt( value2Proto, m_alignWidth ) { ItemForeColor = cTxSet, ItemBackColor = cValBG };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       item = VItem.AP_ALThold;
-      _value2 = new V_Alt( value2Proto, m_alignWidth ) { ItemForeColor = cInfo, Visible = true }; // always shown
+      _value2 = new V_Alt( value2Proto, m_alignWidth ) { ItemForeColor = cTxInfo, Visible = true }; // always shown
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
       _label.ButtonClicked += _label_ButtonClicked;
@@ -114,7 +114,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         _label.Text = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_armed ? "ALTS" + c_space : "ALT" + c_space + c_space;
-        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active ? cAP : cLabel;
+        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active ? cTxAPActive : cTxLabel;
 
         _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
 
@@ -122,14 +122,14 @@ namespace FS20_HudBar.Bar.Items
         if (SC.SimConnectClient.Instance.AP_G1000Module.ALT_managed) {
           // Managed Mode
           _value2.Managed = true;
-          _value2.ItemForeColor = cInfo;
+          _value2.ItemForeColor = cTxInfo;
           _value2.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_selSlot_ft;
         }
         else {
           // the Alt Ref currently holding (can get NaN)
           _value2.Managed = false;
-          _value2.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active ? cAP
-            : SC.SimConnectClient.Instance.AP_G1000Module.ALThold_armed ? cInfo : cLabel;
+          _value2.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active ? cTxAPActive
+            : SC.SimConnectClient.Instance.AP_G1000Module.ALThold_armed ? cTxInfo : cTxDim;
           _value2.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_holding_ft;
         }
 

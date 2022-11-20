@@ -1,5 +1,5 @@
-FS20_HudBar V 0.55 - Build 55 BETA
-(c) M. Burri - 27-Oct-2022
+FS20_HudBar V 0.56 - Build 56 BETA
+(c) M. Burri - 20-Nov-2022
 
 Contains files:
 
@@ -70,6 +70,22 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.56-B56
+- Add Color Config for Labels and Values
+- Add Audio Output Device selector in Configuration Dialog
+- Add SimOnGround indication (RA Label turns active - green - when on ground)
+- Add RAv voice out - touchdown indication
+- Add Re-Order command in the Config context menu for each column
+- Add Netto Variometer items (available when supported by the acft)
+- Add MacCrady Speed and Setting (available when supported by the acft)
+- Update Use SU11 Glider TE variometer when supported
+- Update Spoiler voice out (up-> retracted; down-> out)
+- Update Convert HudBar Settings to new Settings Concept
+- Update Appearance Name for Dark is now Inverse
+- SU11 compatibility checks
+- Fix Facility Data Loader issue found in SU11
+- Update QuickGuides
 
 V 0.55-B55
 - Add VNAV Button (when using WASM module)

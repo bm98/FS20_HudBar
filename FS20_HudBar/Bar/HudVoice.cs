@@ -57,7 +57,7 @@ namespace FS20_HudBar.Bar
       v_spoilers = new T_Spoilers( speaker ); m_triggerList.Add( v_spoilers );
 
       // load from settings
-      string profile = AppSettings.Instance.VoiceCalloutProfile;
+      string profile = AppSettingsV2.Instance.VoiceCalloutProfile;
       string[] e = profile.Split( new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries );
       int idx = 0;
       foreach (var vc in m_triggerList) {
@@ -81,8 +81,8 @@ namespace FS20_HudBar.Bar
       foreach (var vc in Triggers) {
         profile += $"{(vc.Enabled ? 1 : 0)};";
       }
-      AppSettings.Instance.VoiceCalloutProfile = profile;
-      AppSettings.Instance.Save( );
+      AppSettingsV2.Instance.VoiceCalloutProfile = profile;
+      AppSettingsV2.Instance.Save( );
     }
 
     /// <summary>
