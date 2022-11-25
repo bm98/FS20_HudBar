@@ -61,7 +61,7 @@ namespace FS20_HudBar.Config
       // 
       this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
       this.btCancel.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCancel.Location = new System.Drawing.Point(12, 170);
+      this.btCancel.Location = new System.Drawing.Point(191, 170);
       this.btCancel.Name = "btCancel";
       this.btCancel.Size = new System.Drawing.Size(100, 29);
       this.btCancel.TabIndex = 3;
@@ -73,7 +73,7 @@ namespace FS20_HudBar.Config
       // 
       this.btAccept.DialogResult = System.Windows.Forms.DialogResult.OK;
       this.btAccept.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btAccept.Location = new System.Drawing.Point(191, 170);
+      this.btAccept.Location = new System.Drawing.Point(12, 170);
       this.btAccept.Name = "btAccept";
       this.btAccept.Size = new System.Drawing.Size(100, 29);
       this.btAccept.TabIndex = 2;

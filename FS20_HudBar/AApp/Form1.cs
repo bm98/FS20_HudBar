@@ -485,11 +485,18 @@ namespace FS20_HudBar
 
     #endregion
 
-    private readonly string c_facDBmsg = "The Facility Database could not be found!\n\nPlease visit the QuickGuide, head for 'DataLoader' and proceed accordingly";
+    private readonly string c_facDBmsg
+      = "The Facility Database could not be found!\n\nPlease visit the QuickGuide, head for 'DataLoader' and proceed accordingly"
+      + "\n\nDo you want to check next startup again - click YES\n"
+      + "\nClicking NO will no longer check for the Database to exist.";
     private void CheckFacilityDB( )
     {
       if (!File.Exists( Folders.GenAptDBFile )) {
-        _ = MessageBox.Show( c_facDBmsg, "Facility Database Missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+        if (AppSettingsV2.Instance.OmitDBCheck) { return; }
+        if (MessageBox.Show( c_facDBmsg, "Facility Database Missing", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.No) {
+          AppSettingsV2.Instance.OmitDBCheck = true;
+          AppSettingsV2.Instance.Save( );
+        }
       }
     }
 

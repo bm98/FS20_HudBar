@@ -1,5 +1,5 @@
 FS20_HudBar V 0.56 - Build 56 BETA
-(c) M. Burri - 20-Nov-2022
+(c) M. Burri - 25-Nov-2022
 
 Contains files:
 
@@ -79,6 +79,7 @@ V 0.56-B56
 - Add Re-Order command in the Config context menu for each column
 - Add Netto Variometer items (available when supported by the acft)
 - Add MacCrady Speed and Setting (available when supported by the acft)
+- Add 'Omit for the future' to the Database Check
 - Update Use SU11 Glider TE variometer when supported
 - Update Spoiler voice out (up-> retracted; down-> out)
 - Update Convert HudBar Settings to new Settings Concept

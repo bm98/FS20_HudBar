@@ -126,6 +126,12 @@ namespace FS20_HudBar
       set { this["V2InUse"] = value; }
     }
 
+    [DefaultSettingValue( "False" )]
+    public bool OmitDBCheck {
+      get { return (bool)this["OmitDBCheck"]; }
+      set { this["OmitDBCheck"] = value; }
+    }
+
     // Control bound settings
     [DefaultSettingValue( "10, 10" )]
     public Point FormLocation {
