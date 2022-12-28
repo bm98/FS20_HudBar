@@ -1,5 +1,5 @@
-FS20_FlightBag V 0.56 - Build 56 BETA
-(c) M. Burri - 25-Nov-2022
+FS20_FlightBag V 0.57 - Build 57 BETA
+(c) M. Burri - 29-Dec-2022
 
 Contains files:
 
@@ -59,6 +59,11 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.57-B57
+- Add Profile Calculator in Flightbag
+- Add Write Check and Message for MyDocuments folder
+- Update QuickGuides
 
 V 0.56-B56
 - Update SettingsLib - creates backups now

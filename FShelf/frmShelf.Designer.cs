@@ -29,6 +29,9 @@ namespace FShelf
     private void InitializeComponent( )
     {
       this.components = new System.ComponentModel.Container();
+      System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+      System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+      System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmShelf));
       this.tab = new System.Windows.Forms.TabControl();
       this.tabShelf = new System.Windows.Forms.TabPage();
@@ -45,7 +48,6 @@ namespace FShelf
       this.txEntry = new System.Windows.Forms.TextBox();
       this.lblARR = new System.Windows.Forms.Label();
       this.lblDEP = new System.Windows.Forms.Label();
-      this.aMap = new bm98_Map.UC_Map();
       this.tabMetar = new System.Windows.Forms.TabPage();
       this.lblMetArr = new System.Windows.Forms.Label();
       this.lblMetDep = new System.Windows.Forms.Label();
@@ -69,6 +71,30 @@ namespace FShelf
       this.rbKg = new System.Windows.Forms.RadioButton();
       this.pictureBox1 = new System.Windows.Forms.PictureBox();
       this.btPerfRefresh = new System.Windows.Forms.Button();
+      this.tabProfile = new System.Windows.Forms.TabPage();
+      this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+      this.dgvProfile = new System.Windows.Forms.DataGridView();
+      this.dgvRate = new System.Windows.Forms.DataGridView();
+      this.GS = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.Fpm = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.dgvAlt = new System.Windows.Forms.DataGridView();
+      this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.panel2 = new System.Windows.Forms.Panel();
+      this.label19 = new System.Windows.Forms.Label();
+      this.lblVS = new System.Windows.Forms.Label();
+      this.lblGS = new System.Windows.Forms.Label();
+      this.label18 = new System.Windows.Forms.Label();
+      this.panel3 = new System.Windows.Forms.Panel();
+      this.label20 = new System.Windows.Forms.Label();
+      this.lblAlt = new System.Windows.Forms.Label();
+      this.panel4 = new System.Windows.Forms.Panel();
+      this.lblFPA = new System.Windows.Forms.Label();
+      this.label24 = new System.Windows.Forms.Label();
+      this.lblTAS = new System.Windows.Forms.Label();
+      this.label23 = new System.Windows.Forms.Label();
+      this.lblIAS = new System.Windows.Forms.Label();
+      this.label21 = new System.Windows.Forms.Label();
       this.tabNotes = new System.Windows.Forms.TabPage();
       this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
       this.rtbNotes = new System.Windows.Forms.RichTextBox();
@@ -97,6 +123,10 @@ namespace FShelf
       this.txCfgDep = new System.Windows.Forms.TextBox();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.FBD = new System.Windows.Forms.FolderBrowserDialog();
+      this.Deg = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.Prct = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.DRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.aMap = new bm98_Map.UC_Map();
       this.tab.SuspendLayout();
       this.tabShelf.SuspendLayout();
       this.tabMap.SuspendLayout();
@@ -107,6 +137,14 @@ namespace FShelf
       this.tableLayoutPanel3.SuspendLayout();
       this.flowLayoutPanel1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+      this.tabProfile.SuspendLayout();
+      this.tableLayoutPanel4.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.dgvProfile)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.dgvRate)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.dgvAlt)).BeginInit();
+      this.panel2.SuspendLayout();
+      this.panel3.SuspendLayout();
+      this.panel4.SuspendLayout();
       this.tabNotes.SuspendLayout();
       this.tableLayoutPanel2.SuspendLayout();
       this.tabConfig.SuspendLayout();
@@ -118,6 +156,7 @@ namespace FShelf
       this.tab.Controls.Add(this.tabMap);
       this.tab.Controls.Add(this.tabMetar);
       this.tab.Controls.Add(this.tabPerf);
+      this.tab.Controls.Add(this.tabProfile);
       this.tab.Controls.Add(this.tabNotes);
       this.tab.Controls.Add(this.tabConfig);
       this.tab.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -302,28 +341,6 @@ namespace FShelf
       this.lblDEP.Text = "LSZH";
       this.lblDEP.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.lblDEP.Click += new System.EventHandler(this.lblDEP_Click);
-      // 
-      // aMap
-      // 
-      this.aMap.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(16)))));
-      this.aMap.CausesValidation = false;
-      this.aMap.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.aMap.ForeColor = System.Drawing.Color.LightYellow;
-      this.aMap.Location = new System.Drawing.Point(3, 54);
-      this.aMap.MapRange = bm98_Map.MapRange.Near;
-      this.aMap.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-      this.aMap.MinimumSize = new System.Drawing.Size(600, 640);
-      this.aMap.Name = "aMap";
-      this.aMap.ShowAirportRange = false;
-      this.aMap.ShowAptMarks = false;
-      this.aMap.ShowMapGrid = false;
-      this.aMap.ShowNavaids = false;
-      this.aMap.ShowTrackedAircraft = false;
-      this.aMap.ShowVFRMarks = false;
-      this.aMap.Size = new System.Drawing.Size(600, 640);
-      this.aMap.TabIndex = 1;
-      this.aMap.MapCenterChanged += new System.EventHandler<bm98_Map.MapEventArgs>(this.AMap_MapCenterChanged);
-      this.aMap.MapRangeChanged += new System.EventHandler<bm98_Map.MapEventArgs>(this.AMap_MapRangeChanged);
       // 
       // tabMetar
       // 
@@ -609,6 +626,345 @@ namespace FShelf
       this.btPerfRefresh.Text = "Refresh";
       this.btPerfRefresh.UseVisualStyleBackColor = true;
       this.btPerfRefresh.Click += new System.EventHandler(this.btPerfRefresh_Click);
+      // 
+      // tabProfile
+      // 
+      this.tabProfile.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(44)))), ((int)(((byte)(67)))));
+      this.tabProfile.Controls.Add(this.tableLayoutPanel4);
+      this.tabProfile.ForeColor = System.Drawing.Color.FloralWhite;
+      this.tabProfile.Location = new System.Drawing.Point(4, 34);
+      this.tabProfile.Name = "tabProfile";
+      this.tabProfile.Size = new System.Drawing.Size(611, 698);
+      this.tabProfile.TabIndex = 6;
+      this.tabProfile.Text = "Profile";
+      // 
+      // tableLayoutPanel4
+      // 
+      this.tableLayoutPanel4.ColumnCount = 4;
+      this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
+      this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+      this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+      this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+      this.tableLayoutPanel4.Controls.Add(this.dgvProfile, 0, 1);
+      this.tableLayoutPanel4.Controls.Add(this.dgvRate, 1, 1);
+      this.tableLayoutPanel4.Controls.Add(this.dgvAlt, 2, 1);
+      this.tableLayoutPanel4.Controls.Add(this.panel2, 1, 0);
+      this.tableLayoutPanel4.Controls.Add(this.panel3, 2, 0);
+      this.tableLayoutPanel4.Controls.Add(this.panel4, 0, 0);
+      this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.tableLayoutPanel4.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.tableLayoutPanel4.ForeColor = System.Drawing.Color.MidnightBlue;
+      this.tableLayoutPanel4.Location = new System.Drawing.Point(0, 0);
+      this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+      this.tableLayoutPanel4.RowCount = 2;
+      this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+      this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+      this.tableLayoutPanel4.Size = new System.Drawing.Size(611, 698);
+      this.tableLayoutPanel4.TabIndex = 0;
+      // 
+      // dgvProfile
+      // 
+      this.dgvProfile.AllowUserToAddRows = false;
+      this.dgvProfile.AllowUserToDeleteRows = false;
+      this.dgvProfile.AllowUserToResizeRows = false;
+      this.dgvProfile.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+      this.dgvProfile.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(54)))), ((int)(((byte)(77)))));
+      dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+      dataGridViewCellStyle1.BackColor = System.Drawing.Color.DimGray;
+      dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      dataGridViewCellStyle1.ForeColor = System.Drawing.Color.WhiteSmoke;
+      dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.DimGray;
+      dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
+      dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+      this.dgvProfile.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+      this.dgvProfile.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+      this.dgvProfile.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Deg,
+            this.Prct,
+            this.DRate});
+      this.dgvProfile.Dock = System.Windows.Forms.DockStyle.Top;
+      this.dgvProfile.EnableHeadersVisualStyles = false;
+      this.dgvProfile.Location = new System.Drawing.Point(3, 63);
+      this.dgvProfile.MultiSelect = false;
+      this.dgvProfile.Name = "dgvProfile";
+      this.dgvProfile.ReadOnly = true;
+      this.dgvProfile.RowHeadersVisible = false;
+      this.dgvProfile.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+      this.dgvProfile.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+      this.dgvProfile.ShowEditingIcon = false;
+      this.dgvProfile.Size = new System.Drawing.Size(214, 627);
+      this.dgvProfile.TabIndex = 0;
+      this.dgvProfile.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dgvProfile_RowsAdded);
+      this.dgvProfile.SelectionChanged += new System.EventHandler(this.dgvProfile_SelectionChanged);
+      // 
+      // dgvRate
+      // 
+      this.dgvRate.AllowUserToAddRows = false;
+      this.dgvRate.AllowUserToDeleteRows = false;
+      this.dgvRate.AllowUserToResizeColumns = false;
+      this.dgvRate.AllowUserToResizeRows = false;
+      this.dgvRate.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
+      this.dgvRate.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(54)))), ((int)(((byte)(77)))));
+      dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+      dataGridViewCellStyle2.BackColor = System.Drawing.Color.DimGray;
+      dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      dataGridViewCellStyle2.ForeColor = System.Drawing.Color.WhiteSmoke;
+      dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.DimGray;
+      dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
+      dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+      this.dgvRate.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+      this.dgvRate.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+      this.dgvRate.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.GS,
+            this.Fpm});
+      this.dgvRate.Dock = System.Windows.Forms.DockStyle.Top;
+      this.dgvRate.EnableHeadersVisualStyles = false;
+      this.dgvRate.Location = new System.Drawing.Point(223, 63);
+      this.dgvRate.MultiSelect = false;
+      this.dgvRate.Name = "dgvRate";
+      this.dgvRate.ReadOnly = true;
+      this.dgvRate.RowHeadersVisible = false;
+      this.dgvRate.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+      this.dgvRate.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+      this.dgvRate.Size = new System.Drawing.Size(144, 627);
+      this.dgvRate.TabIndex = 1;
+      this.dgvRate.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dgvRate_RowsAdded);
+      // 
+      // GS
+      // 
+      this.GS.HeaderText = "GS";
+      this.GS.Name = "GS";
+      this.GS.ReadOnly = true;
+      this.GS.Width = 57;
+      // 
+      // Fpm
+      // 
+      this.Fpm.HeaderText = "fpm";
+      this.Fpm.Name = "Fpm";
+      this.Fpm.ReadOnly = true;
+      this.Fpm.Width = 56;
+      // 
+      // dgvAlt
+      // 
+      this.dgvAlt.AllowUserToAddRows = false;
+      this.dgvAlt.AllowUserToDeleteRows = false;
+      this.dgvAlt.AllowUserToResizeColumns = false;
+      this.dgvAlt.AllowUserToResizeRows = false;
+      this.dgvAlt.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+      this.dgvAlt.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(54)))), ((int)(((byte)(77)))));
+      dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+      dataGridViewCellStyle3.BackColor = System.Drawing.Color.DimGray;
+      dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      dataGridViewCellStyle3.ForeColor = System.Drawing.Color.WhiteSmoke;
+      dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.DimGray;
+      dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
+      dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+      this.dgvAlt.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+      this.dgvAlt.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+      this.dgvAlt.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn3,
+            this.dataGridViewTextBoxColumn4});
+      this.dgvAlt.Dock = System.Windows.Forms.DockStyle.Top;
+      this.dgvAlt.EnableHeadersVisualStyles = false;
+      this.dgvAlt.Location = new System.Drawing.Point(373, 63);
+      this.dgvAlt.MultiSelect = false;
+      this.dgvAlt.Name = "dgvAlt";
+      this.dgvAlt.ReadOnly = true;
+      this.dgvAlt.RowHeadersVisible = false;
+      this.dgvAlt.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+      this.dgvAlt.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+      this.dgvAlt.Size = new System.Drawing.Size(194, 627);
+      this.dgvAlt.TabIndex = 3;
+      this.dgvAlt.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dgvAlt1_RowsAdded);
+      this.dgvAlt.SelectionChanged += new System.EventHandler(this.dgvAlt1_SelectionChanged);
+      // 
+      // dataGridViewTextBoxColumn3
+      // 
+      this.dataGridViewTextBoxColumn3.HeaderText = "GS";
+      this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+      this.dataGridViewTextBoxColumn3.ReadOnly = true;
+      this.dataGridViewTextBoxColumn3.Width = 30;
+      // 
+      // dataGridViewTextBoxColumn4
+      // 
+      this.dataGridViewTextBoxColumn4.HeaderText = "fpm";
+      this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+      this.dataGridViewTextBoxColumn4.ReadOnly = true;
+      this.dataGridViewTextBoxColumn4.Width = 30;
+      // 
+      // panel2
+      // 
+      this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(54)))), ((int)(((byte)(77)))));
+      this.panel2.Controls.Add(this.label19);
+      this.panel2.Controls.Add(this.lblVS);
+      this.panel2.Controls.Add(this.lblGS);
+      this.panel2.Controls.Add(this.label18);
+      this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.panel2.Location = new System.Drawing.Point(220, 0);
+      this.panel2.Margin = new System.Windows.Forms.Padding(0);
+      this.panel2.Name = "panel2";
+      this.panel2.Size = new System.Drawing.Size(150, 60);
+      this.panel2.TabIndex = 4;
+      // 
+      // label19
+      // 
+      this.label19.AutoSize = true;
+      this.label19.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label19.Location = new System.Drawing.Point(84, 7);
+      this.label19.Name = "label19";
+      this.label19.Size = new System.Drawing.Size(25, 15);
+      this.label19.TabIndex = 0;
+      this.label19.Text = "VS:";
+      this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lblVS
+      // 
+      this.lblVS.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblVS.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblVS.Location = new System.Drawing.Point(79, 30);
+      this.lblVS.Name = "lblVS";
+      this.lblVS.Size = new System.Drawing.Size(62, 21);
+      this.lblVS.TabIndex = 0;
+      this.lblVS.Text = "0,000";
+      this.lblVS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // lblGS
+      // 
+      this.lblGS.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblGS.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblGS.Location = new System.Drawing.Point(14, 30);
+      this.lblGS.Name = "lblGS";
+      this.lblGS.Size = new System.Drawing.Size(48, 21);
+      this.lblGS.TabIndex = 0;
+      this.lblGS.Text = "000";
+      this.lblGS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // label18
+      // 
+      this.label18.AutoSize = true;
+      this.label18.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label18.Location = new System.Drawing.Point(23, 7);
+      this.label18.Name = "label18";
+      this.label18.Size = new System.Drawing.Size(26, 15);
+      this.label18.TabIndex = 0;
+      this.label18.Text = "GS:";
+      this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // panel3
+      // 
+      this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(54)))), ((int)(((byte)(77)))));
+      this.panel3.Controls.Add(this.label20);
+      this.panel3.Controls.Add(this.lblAlt);
+      this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.panel3.Location = new System.Drawing.Point(370, 0);
+      this.panel3.Margin = new System.Windows.Forms.Padding(0);
+      this.panel3.Name = "panel3";
+      this.panel3.Size = new System.Drawing.Size(200, 60);
+      this.panel3.TabIndex = 5;
+      // 
+      // label20
+      // 
+      this.label20.AutoSize = true;
+      this.label20.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label20.Location = new System.Drawing.Point(32, 7);
+      this.label20.Name = "label20";
+      this.label20.Size = new System.Drawing.Size(55, 15);
+      this.label20.TabIndex = 0;
+      this.label20.Text = "Altitude:";
+      this.label20.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lblAlt
+      // 
+      this.lblAlt.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblAlt.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblAlt.Location = new System.Drawing.Point(22, 30);
+      this.lblAlt.Name = "lblAlt";
+      this.lblAlt.Size = new System.Drawing.Size(72, 21);
+      this.lblAlt.TabIndex = 0;
+      this.lblAlt.Text = "00,000";
+      this.lblAlt.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // panel4
+      // 
+      this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(54)))), ((int)(((byte)(77)))));
+      this.panel4.Controls.Add(this.lblFPA);
+      this.panel4.Controls.Add(this.label24);
+      this.panel4.Controls.Add(this.lblTAS);
+      this.panel4.Controls.Add(this.label23);
+      this.panel4.Controls.Add(this.lblIAS);
+      this.panel4.Controls.Add(this.label21);
+      this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.panel4.Location = new System.Drawing.Point(0, 0);
+      this.panel4.Margin = new System.Windows.Forms.Padding(0);
+      this.panel4.Name = "panel4";
+      this.panel4.Size = new System.Drawing.Size(220, 60);
+      this.panel4.TabIndex = 6;
+      // 
+      // lblFPA
+      // 
+      this.lblFPA.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblFPA.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblFPA.Location = new System.Drawing.Point(25, 30);
+      this.lblFPA.Name = "lblFPA";
+      this.lblFPA.Size = new System.Drawing.Size(42, 21);
+      this.lblFPA.TabIndex = 1;
+      this.lblFPA.Text = "0.0";
+      this.lblFPA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // label24
+      // 
+      this.label24.AutoSize = true;
+      this.label24.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label24.Location = new System.Drawing.Point(30, 7);
+      this.label24.Name = "label24";
+      this.label24.Size = new System.Drawing.Size(30, 15);
+      this.label24.TabIndex = 2;
+      this.label24.Text = "FPA:";
+      this.label24.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lblTAS
+      // 
+      this.lblTAS.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblTAS.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblTAS.Location = new System.Drawing.Point(169, 30);
+      this.lblTAS.Name = "lblTAS";
+      this.lblTAS.Size = new System.Drawing.Size(42, 21);
+      this.lblTAS.TabIndex = 0;
+      this.lblTAS.Text = "000";
+      this.lblTAS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // label23
+      // 
+      this.label23.AutoSize = true;
+      this.label23.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label23.Location = new System.Drawing.Point(175, 7);
+      this.label23.Name = "label23";
+      this.label23.Size = new System.Drawing.Size(31, 15);
+      this.label23.TabIndex = 0;
+      this.label23.Text = "TAS:";
+      this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lblIAS
+      // 
+      this.lblIAS.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblIAS.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblIAS.Location = new System.Drawing.Point(90, 30);
+      this.lblIAS.Name = "lblIAS";
+      this.lblIAS.Size = new System.Drawing.Size(42, 21);
+      this.lblIAS.TabIndex = 0;
+      this.lblIAS.Text = "000";
+      this.lblIAS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // label21
+      // 
+      this.label21.AutoSize = true;
+      this.label21.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label21.Location = new System.Drawing.Point(95, 7);
+      this.label21.Name = "label21";
+      this.label21.Size = new System.Drawing.Size(29, 15);
+      this.label21.TabIndex = 0;
+      this.label21.Text = "IAS:";
+      this.label21.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // tabNotes
       // 
@@ -923,6 +1279,49 @@ namespace FShelf
       // 
       this.FBD.Description = "Select Flight Bag Folder";
       // 
+      // Deg
+      // 
+      this.Deg.HeaderText = "Deg";
+      this.Deg.Name = "Deg";
+      this.Deg.ReadOnly = true;
+      this.Deg.Width = 50;
+      // 
+      // Prct
+      // 
+      this.Prct.HeaderText = "%";
+      this.Prct.Name = "Prct";
+      this.Prct.ReadOnly = true;
+      this.Prct.Width = 50;
+      // 
+      // DRate
+      // 
+      this.DRate.HeaderText = "ft";
+      this.DRate.Name = "DRate";
+      this.DRate.ReadOnly = true;
+      this.DRate.Width = 70;
+      // 
+      // aMap
+      // 
+      this.aMap.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(16)))));
+      this.aMap.CausesValidation = false;
+      this.aMap.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.aMap.ForeColor = System.Drawing.Color.LightYellow;
+      this.aMap.Location = new System.Drawing.Point(3, 54);
+      this.aMap.MapRange = bm98_Map.MapRange.Near;
+      this.aMap.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+      this.aMap.MinimumSize = new System.Drawing.Size(600, 640);
+      this.aMap.Name = "aMap";
+      this.aMap.ShowAirportRange = false;
+      this.aMap.ShowAptMarks = false;
+      this.aMap.ShowMapGrid = false;
+      this.aMap.ShowNavaids = false;
+      this.aMap.ShowTrackedAircraft = false;
+      this.aMap.ShowVFRMarks = false;
+      this.aMap.Size = new System.Drawing.Size(600, 640);
+      this.aMap.TabIndex = 1;
+      this.aMap.MapCenterChanged += new System.EventHandler<bm98_Map.MapEventArgs>(this.AMap_MapCenterChanged);
+      this.aMap.MapRangeChanged += new System.EventHandler<bm98_Map.MapEventArgs>(this.AMap_MapRangeChanged);
+      // 
       // frmShelf
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -956,6 +1355,17 @@ namespace FShelf
       this.flowLayoutPanel1.ResumeLayout(false);
       this.flowLayoutPanel1.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+      this.tabProfile.ResumeLayout(false);
+      this.tableLayoutPanel4.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.dgvProfile)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.dgvRate)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.dgvAlt)).EndInit();
+      this.panel2.ResumeLayout(false);
+      this.panel2.PerformLayout();
+      this.panel3.ResumeLayout(false);
+      this.panel3.PerformLayout();
+      this.panel4.ResumeLayout(false);
+      this.panel4.PerformLayout();
       this.tabNotes.ResumeLayout(false);
       this.tableLayoutPanel2.ResumeLayout(false);
       this.tabConfig.ResumeLayout(false);
@@ -1033,5 +1443,32 @@ namespace FShelf
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btPerfRefresh;
         private System.Windows.Forms.Label lblFacDBMissing;
-    }
+    private System.Windows.Forms.TabPage tabProfile;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+    private System.Windows.Forms.DataGridView dgvProfile;
+    private System.Windows.Forms.DataGridView dgvRate;
+    private System.Windows.Forms.DataGridViewTextBoxColumn GS;
+    private System.Windows.Forms.DataGridViewTextBoxColumn Fpm;
+    private System.Windows.Forms.DataGridView dgvAlt;
+    private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+    private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+    private System.Windows.Forms.Panel panel2;
+    private System.Windows.Forms.Label label19;
+    private System.Windows.Forms.Label lblVS;
+    private System.Windows.Forms.Label lblGS;
+    private System.Windows.Forms.Label label18;
+    private System.Windows.Forms.Panel panel3;
+    private System.Windows.Forms.Label label20;
+    private System.Windows.Forms.Label lblAlt;
+    private System.Windows.Forms.Panel panel4;
+    private System.Windows.Forms.Label lblFPA;
+    private System.Windows.Forms.Label label24;
+    private System.Windows.Forms.Label lblTAS;
+    private System.Windows.Forms.Label label23;
+    private System.Windows.Forms.Label lblIAS;
+    private System.Windows.Forms.Label label21;
+    private System.Windows.Forms.DataGridViewTextBoxColumn Deg;
+    private System.Windows.Forms.DataGridViewTextBoxColumn Prct;
+    private System.Windows.Forms.DataGridViewTextBoxColumn DRate;
+  }
 }

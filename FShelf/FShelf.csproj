@@ -92,6 +92,8 @@
       <DependentUpon>frmShelf.cs</DependentUpon>
     </Compile>
     <Compile Include="PerfTracker.cs" />
+    <Compile Include="Profiles\Profile.cs" />
+    <Compile Include="Profiles\ProfileCat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -115,6 +117,10 @@
     <ProjectReference Include="..\bm98_Album\bm98_Album.csproj">
       <Project>{b4c756a8-1d36-4565-9337-8678123a2d98}</Project>
       <Name>bm98_Album</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DbgLib\DbgLib.csproj">
+      <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
+      <Name>DbgLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\FSimMap\bm98_Map\bm98_Map.csproj">
       <Project>{a840b347-f147-45bd-b84b-b400f1b3deca}</Project>

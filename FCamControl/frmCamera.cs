@@ -250,6 +250,15 @@ namespace FCamControl
 
       lblSaveStar.Visible = false;
 
+      // standalone handling
+      if (Standalone) {
+        // File Access Check
+        if (DbgLib.Dbg.Instance.AccessCheck( Folders.UserFilePath ) != DbgLib.AccessCheckResult.Success) {
+          string msg = $"MyDocuments Folder Access Check Failed:\n{DbgLib.Dbg.Instance.AccessCheckResult}\n\n{DbgLib.Dbg.Instance.AccessCheckMessage}";
+          MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
+        }
+      }
+
       // Pacer interval 
       timer1.Interval = 200;
     }
@@ -749,6 +758,5 @@ namespace FCamControl
     }
 
     #endregion
-
   }
 }

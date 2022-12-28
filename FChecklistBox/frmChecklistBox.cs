@@ -75,6 +75,16 @@ namespace FChecklistBox
         Location = new Point( 20, 20 );
       }
       _lastLiveLocation = Location;
+
+      // standalone handling
+      if (Standalone) {
+        // File Access Check
+        if (DbgLib.Dbg.Instance.AccessCheck( Folders.UserFilePath ) != DbgLib.AccessCheckResult.Success) {
+          string msg = $"MyDocuments Folder Access Check Failed:\n{DbgLib.Dbg.Instance.AccessCheckResult}\n\n{DbgLib.Dbg.Instance.AccessCheckMessage}";
+          MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
+        }
+      }
+
     }
 
     // about to close the form

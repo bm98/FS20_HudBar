@@ -42,6 +42,12 @@ namespace bm98_Map.Data
     public float Ias_kt { get; set; } = float.NaN;
 
     /// <summary>
+    /// True airspeed in knots
+    ///  set to float.NaN to hide from display
+    /// </summary>
+    public float Tas_kt { get; set; } = float.NaN;
+
+    /// <summary>
     /// Ground speed in knots 
     ///  set to float.NaN to hide from display
     /// (used also for range calc, if switched off...)
@@ -63,6 +69,12 @@ namespace bm98_Map.Data
     ///  set to float.NaN to hide from display
     /// </summary>
     public float Vs_fpm { get; set; } = float.NaN;
+
+    /// <summary>
+    /// Flight Path Angle °
+    ///  set to float.NaN to hide from display
+    /// </summary>
+    public float Fpa_deg { get; set; } = float.NaN;
 
     /// <summary>
     /// Flag to indicate the Acft is on Ground

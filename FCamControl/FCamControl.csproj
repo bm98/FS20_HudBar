@@ -109,6 +109,10 @@
     <None Include="background.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DbgLib\DbgLib.csproj">
+      <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
+      <Name>DbgLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SettingsLib\SettingsLib\SettingsLib.csproj">
       <Project>{f17750f6-0652-42e8-a966-72936f558331}</Project>
       <Name>SettingsLib</Name>

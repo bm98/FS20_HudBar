@@ -41,24 +41,24 @@ namespace DbgLib
     }
 
     /// <summary>
-    /// cTor: Module name
+    /// cTor: Module Prefix
     /// </summary>
     public DbgLogger( Type type )
     {
       _type = type.Name;
 
-      _modName = $"({_type})";
+      _modName = $"{_type}";
     }
 
     /// <summary>
-    /// cTor: Module name
+    /// cTor: Assembly.Module Prefix
     /// </summary>
-    public DbgLogger(Assembly assembly, Type type )
+    public DbgLogger( Assembly assembly, Type type )
     {
       _assembly = assembly.FullName;
       _type = type.Name;
 
-      _modName = $"({assembly.GetName().Name}.{_type})";
+      _modName = $"{assembly.GetName( ).Name}.{_type}";
     }
 
     /// <summary>
@@ -67,7 +67,7 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void Log( string text )
     {
-      Dbg.Instance.Log( _modName, text );
+      Dbg.Instance.Log( $"({_modName})", text );
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void LogError( string text )
     {
-      Dbg.Instance.LogError( _modName, text );
+      Dbg.Instance.LogError( $"({_modName})", text );
     }
 
 
@@ -86,7 +86,38 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void LogStackTrace( string text )
     {
-      Dbg.Instance.LogStackTrace( _modName, text );
+      Dbg.Instance.LogStackTrace( $"({_modName})", text );
+    }
+
+    /// <summary>
+    /// Log a Text Item, writes immediately to the file
+    /// </summary>
+    /// <param name="context">A context</param>
+    /// <param name="text">Log Text</param>
+    public void Log( string context, string text )
+    {
+      Dbg.Instance.Log( $"({_modName}.{context})", text );
+    }
+
+    /// <summary>
+    /// Log a Text Item as Error
+    /// </summary>
+    /// <param name="context">A context</param>
+    /// <param name="text">Log Text</param>
+    public void LogError( string context, string text )
+    {
+      Dbg.Instance.LogError( $"({_modName}.{context})", text );
+    }
+
+
+    /// <summary>
+    /// Log a text and dump the stacktrace from the calling process
+    /// </summary>
+    /// <param name="context">A context</param>
+    /// <param name="text">Log Text</param>
+    public void LogStackTrace( string context, string text )
+    {
+      Dbg.Instance.LogStackTrace( $"({_modName}.{context})", text );
     }
 
   }

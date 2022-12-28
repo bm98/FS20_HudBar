@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Sql;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,9 @@ using CoordLib.Extensions;
 using SC = SimConnectClient;
 using bm98_Map;
 using FSimFacilityIF;
+using System.Security.Cryptography;
+using FShelf.Profiles;
+using System.Diagnostics;
 
 namespace FShelf
 {
@@ -45,7 +49,17 @@ namespace FShelf
     private Point _lastLiveLocation;
     private Size _lastLiveSize;
 
-    private PerfTracker _perfTracker = new PerfTracker();
+    private PerfTracker _perfTracker = new PerfTracker( );
+
+    // Profiles
+    private ProfileCat _profileCat = new ProfileCat( );
+    private BindingSource _profileBinding = new BindingSource( );
+    private BindingSource _vsRateBinding = new BindingSource( );
+    private BindingSource _altBinding = new BindingSource( );
+    private static readonly DataGridViewCellStyle _vCellStyle
+      = new DataGridViewCellStyle( ) { Alignment = DataGridViewContentAlignment.MiddleRight, BackColor = Color.Gainsboro, SelectionBackColor=Color.CornflowerBlue };
+    private static readonly DataGridViewCellStyle _vCellStyleMarked
+      = new DataGridViewCellStyle( _vCellStyle ) { BackColor = Color.MediumSpringGreen, SelectionBackColor = Color.CadetBlue };
 
     /// <summary>
     /// Set true to run in standalone mode
@@ -152,6 +166,119 @@ namespace FShelf
       cx.Items.Add( new RwyLenItem( "4 000 m (13 000 ft)", 4000f ) );
     }
 
+    // setup the profile tab's data grids
+    private void InitProfileData( )
+    {
+      DataGridView dgv;
+      // profile DataView
+      dgv = dgvProfile;
+      dgv.AutoGenerateColumns = true;
+      dgv.Columns.Clear( );
+      _profileBinding.DataSource = _profileCat.ProfileValueSet;
+      _profileBinding.DataMember = ProfileCat.ProfileTable;
+      dgv.DataSource = _profileBinding;
+      for (int i = 0; i < dgv.Columns.Count; i++) {
+        dgv.Columns[i].HeaderText = _profileCat.ProfileColumnCaption( ProfileCat.ProfileTable, i ); // DGV uses Col Name not Caption from the data set..
+        dgv.Columns[i].DefaultCellStyle = _vCellStyle;
+        dgv.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+        dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        dgv.AutoResizeColumn( i );
+      }
+      dgv.Columns[0].Visible = false;
+
+      // VS target DataView
+      dgv = dgvRate;
+      dgv.AutoGenerateColumns = true;
+      dgv.Columns.Clear( );
+      _vsRateBinding.DataSource = _profileCat.ProfileValueSet;
+      _vsRateBinding.DataMember = ProfileCat.TgtVsTable;
+      dgv.DataSource = _vsRateBinding;
+      for (int i = 0; i < dgv.Columns.Count; i++) {
+        dgv.Columns[i].HeaderText = _profileCat.ProfileColumnCaption( ProfileCat.TgtVsTable, i ); // DGV uses Col Name not Caption from the data set..
+        dgv.Columns[i].DefaultCellStyle = _vCellStyle;
+        dgv.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+        dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        dgv.AutoResizeColumn( i );
+      }
+      dgv.Columns[0].Visible = false;
+
+      // Dist for Altitude DataView
+      dgv = dgvAlt;
+      dgv.AutoGenerateColumns = true;
+      dgv.Columns.Clear( );
+      _altBinding.DataSource = _profileCat.ProfileValueSet;
+      _altBinding.DataMember = ProfileCat.Dist4AltTable;
+      dgv.DataSource = _altBinding;
+      for (int i = 0; i < dgv.Columns.Count; i++) {
+        dgv.Columns[i].HeaderText = _profileCat.ProfileColumnCaption( ProfileCat.Dist4AltTable, i ); // DGV uses Col Name not Caption from the data set..
+        dgv.Columns[i].DefaultCellStyle = _vCellStyle;
+        dgv.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+        dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        dgv.AutoResizeColumn( i );
+      }
+      dgv.Columns[0].Visible = false;
+    }
+
+
+    // marks the given GS entry in the TargetVS Table, clearAll=true will unmark the marked one (independent of GS)
+    private int _gsMarkIndex = -1;
+    private void MarkGS( float gs, bool clearAll = false )
+    {
+      int newIndex = _profileCat.GsRowIndex( gs );
+      if (clearAll) {
+        // clear old mark
+        if (_gsMarkIndex >= 0) dgvRate.Rows[_gsMarkIndex].Cells[1].Style = _vCellStyle;
+        _gsMarkIndex = -1;
+      }
+      else if (newIndex != _gsMarkIndex) {
+        // clear old mark
+        if (_gsMarkIndex >= 0) dgvRate.Rows[_gsMarkIndex].Cells[1].Style = _vCellStyle;
+        _gsMarkIndex = newIndex;
+        dgvRate.Rows[_gsMarkIndex].Cells[1].Style = _vCellStyleMarked;
+      }
+    }
+
+    // marks the given Alt entry in the Alt Table, clearAll=true will unmark the marked one (independent of Alt)
+    private int _altMarkIndex = -1;
+    private void MarkAlt( float alt, bool clearAll = false )
+    {
+      int newIndex = _profileCat.AltRowIndex( alt );
+      if (clearAll) {
+        // clear old mark
+        if (_altMarkIndex >= 0) dgvAlt.Rows[_altMarkIndex].Cells[1].Style = _vCellStyle;
+        _altMarkIndex = -1;
+      }
+      else if (newIndex != _altMarkIndex) {
+        // clear old mark
+        if (_altMarkIndex >= 0) dgvAlt.Rows[_altMarkIndex].Cells[1].Style = _vCellStyle;
+        _altMarkIndex = newIndex;
+        dgvAlt.Rows[_altMarkIndex].Cells[1].Style = _vCellStyleMarked;
+      }
+    }
+
+    // marks the given Profile Deg entry in the Profile Table, clearAll=true will unmark the marked one (independent of Deg)
+    private int _fpaMarkIndex = -1;
+    private void MarkFPA( float alt, bool clearAll = false )
+    {
+      int newIndex = _profileCat.FpaRowIndex( alt );
+      if (newIndex < 0) { clearAll = true; } // small deg- remove mark only
+
+      if (clearAll) {
+        // clear old mark
+        if (_fpaMarkIndex >= 0) dgvProfile.Rows[_fpaMarkIndex].Cells[1].Style = _vCellStyle;
+        _fpaMarkIndex = -1;
+      }
+      else if (newIndex != _fpaMarkIndex) {
+        // clear old mark
+        if (_fpaMarkIndex >= 0) dgvProfile.Rows[_fpaMarkIndex].Cells[1].Style = _vCellStyle;
+        _fpaMarkIndex = newIndex;
+        dgvProfile.Rows[_fpaMarkIndex].Cells[1].Style = _vCellStyleMarked;
+      }
+    }
+
+
+
+    // facility check & message
     private readonly string c_facDBmsg = "The Facility Database could not be found!\n\nPlease visit the QuickGuide, head for 'DataLoader' and proceed accordingly";
     private void CheckFacilityDB( )
     {
@@ -159,6 +286,7 @@ namespace FShelf
         _ = MessageBox.Show( c_facDBmsg, "Facility Database Missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
       }
     }
+
 
     #region Form
 
@@ -277,7 +405,16 @@ namespace FShelf
 
       _perfTracker.Reset( );
 
+      // profiles
+      InitProfileData( );
+
+      // standalone handling
       if (Standalone) {
+        // File Access Check
+        if (DbgLib.Dbg.Instance.AccessCheck( Folders.UserFilePath ) != DbgLib.AccessCheckResult.Success) {
+          string msg = $"MyDocuments Folder Access Check Failed:\n{DbgLib.Dbg.Instance.AccessCheckResult}\n\n{DbgLib.Dbg.Instance.AccessCheckMessage}";
+          MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
+        }
         CheckFacilityDB( );
       }
 
@@ -564,13 +701,17 @@ namespace FShelf
         _tAircraft.RadioAlt_ft = simData.Sim_OnGround ? float.NaN
                                   : (simData.AltAoG_ft <= 1500) ? simData.AltAoG_ft : float.NaN; // limit RA visible to 1500 ft if not on ground
         _tAircraft.Ias_kt = simData.IAS_kt;
-        _tAircraft.Vs_fpm = (int)(simData.VS_ftPmin / 20) * 20; // 20 fpm steps only
+        _tAircraft.Tas_kt = simData.TAS_kt;
         _tAircraft.Gs_kt = simData.GS;
+        _tAircraft.Vs_fpm = (int)(simData.VS_ftPmin / 20) * 20; // 20 fpm steps only
+        _tAircraft.Fpa_deg = simData.FlightPathAngle_deg;
         // GPS does not provide meaningful track values when not moving
         _tAircraft.Trk_deg = simData.Sim_OnGround ? float.NaN : simData.GTRK;
         _tAircraft.TrueTrk_deg = simData.Sim_OnGround ? float.NaN : simData.GTRK_true;
         // update the map
         aMap.UpdateAircraft( _tAircraft );
+        // Update Profile page
+        UpdateProfileData( );
       }
     }
 
@@ -711,6 +852,47 @@ namespace FShelf
     private void rbKLbs_CheckedChanged( object sender, EventArgs e )
     {
       SetPerfContent( );
+    }
+
+    #endregion
+
+    #region Profile Events
+
+    // update the profile data
+    private void UpdateProfileData( )
+    {
+      if (tab.SelectedTab != tabProfile) return; // Tab not shown, omit updates
+
+      lblGS.Text = $"{_tAircraft.Gs_kt:##0}";
+      lblVS.Text = $"{_tAircraft.Vs_fpm:#,##0}";
+      lblAlt.Text = $"{_tAircraft.Altitude_ft:##,##0}";
+      lblIAS.Text = $"{_tAircraft.Ias_kt:##0}";
+      lblTAS.Text = $"{_tAircraft.Tas_kt:##0}";
+      lblFPA.Text = $"{_tAircraft.Fpa_deg:#0.0}";
+      // mark the Row entries
+      MarkGS( _tAircraft.Gs_kt );
+      MarkAlt( _tAircraft.Altitude_ft );
+      MarkFPA( _tAircraft.Fpa_deg );
+    }
+
+    // profile changed
+    private void dgvProfile_SelectionChanged( object sender, EventArgs e )
+    {
+      // sanity
+      if (dgvProfile.SelectedRows.Count <= 0) return;
+
+      var selRow = dgvProfile.SelectedRows[0];
+      _profileCat.SetSelectedProfile( selRow );
+    }
+
+    // alt1 selection changed
+    private void dgvAlt1_SelectionChanged( object sender, EventArgs e )
+    {
+      // sanity
+      if (dgvAlt.SelectedRows.Count <= 0) return;
+
+      var selRow = dgvAlt.SelectedRows[0];
+      _profileCat.SetStartAltitude( dgvAlt.SelectedRows[0] );
     }
 
     #endregion
@@ -897,6 +1079,28 @@ namespace FShelf
     }
 
 
+
+    #endregion
+
+
+    #region DGV Workarounds
+
+    private void dgvProfile_RowsAdded( object sender, DataGridViewRowsAddedEventArgs e )
+    {
+      // workaround where the column get visible again when clearing and adding rows....
+      dgvProfile.Columns[0].Visible = false;
+    }
+
+    private void dgvRate_RowsAdded( object sender, DataGridViewRowsAddedEventArgs e )
+    {
+      // workaround where the column get visible again when clearing and adding rows....
+      dgvRate.Columns[0].Visible = false;
+    }
+    private void dgvAlt1_RowsAdded( object sender, DataGridViewRowsAddedEventArgs e )
+    {
+      // workaround where the column get visible again when clearing and adding rows....
+      dgvAlt.Columns[0].Visible = false;
+    }
 
     #endregion
 

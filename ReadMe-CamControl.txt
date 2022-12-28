@@ -1,5 +1,5 @@
-FS20_CamControl V 0.56 - Build 56 BETA
-(c) M. Burri - 25-Nov-2022
+FS20_CamControl V 0.57 - Build 57 BETA
+(c) M. Burri - 29-Dec-2022
 
 Contains files:
 
