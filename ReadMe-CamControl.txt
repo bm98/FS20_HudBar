@@ -1,5 +1,5 @@
-FS20_CamControl V 0.57 - Build 57 BETA
-(c) M. Burri - 29-Dec-2022
+FS20_CamControl V 0.58 - Build 58 BETA
+(c) M. Burri - 03-Jan-2023
 
 Contains files:
 
@@ -37,6 +37,9 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.58-B58
+- Fix Exception raised when closing the App (when the WASM module in not used)
 
 V 0.56-B56
 - Update SettingsLib - creates backups now
