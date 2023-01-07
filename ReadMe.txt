@@ -1,5 +1,5 @@
 FS20_HudBar V 0.58 - Build 58 BETA
-(c) M. Burri - 03-Jan-2023
+(c) M. Burri - 05-Jan-2023
 
 Contains files:
 
@@ -73,6 +73,7 @@ Changelog:
 
 V 0.58-B58
 - Fix EGT does not display the correct value
+- Fix VARIO for non Sim supported planes does not display correct values
 - Fix Exception raised when closing the App (when the WASM module in not used)
 
 V 0.57-B57
