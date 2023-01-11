@@ -19,7 +19,7 @@ namespace PingLib.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -63,36 +63,6 @@ namespace PingLib.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] Bell1_VBR50Q48kHz {
-            get {
-                object obj = ResourceManager.GetObject("Bell1_VBR50Q48kHz", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Nylon1_VBR50Q48kHz {
-            get {
-                object obj = ResourceManager.GetObject("Nylon1_VBR50Q48kHz", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Nylon2_VBR50Q48kHz {
-            get {
-                object obj = ResourceManager.GetObject("Nylon2_VBR50Q48kHz", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] Silence_VBR50Q48kHz {
             get {
                 object obj = ResourceManager.GetObject("Silence_VBR50Q48kHz", resourceCulture);
@@ -103,49 +73,9 @@ namespace PingLib.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] Synth1_VBR50Q48kHz {
-            get {
-                object obj = ResourceManager.GetObject("Synth1_VBR50Q48kHz", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Synth2_VBR50Q48kHz {
-            get {
-                object obj = ResourceManager.GetObject("Synth2_VBR50Q48kHz", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Synth3_VBR50Q48kHz {
-            get {
-                object obj = ResourceManager.GetObject("Synth3_VBR50Q48kHz", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] TSynth_VBR50Q48kHz {
             get {
                 object obj = ResourceManager.GetObject("TSynth_VBR50Q48kHz", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Wood1_VBR50Q48kHz {
-            get {
-                object obj = ResourceManager.GetObject("Wood1_VBR50Q48kHz", resourceCulture);
                 return ((byte[])(obj));
             }
         }

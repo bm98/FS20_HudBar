@@ -49,6 +49,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SoundBite.cs" />
+    <Compile Include="SoundBitePitched.cs" />
     <Compile Include="SoundInfo.cs" />
     <Compile Include="LoopWorker.cs">
       <SubType>Component</SubType>

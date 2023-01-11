@@ -8,6 +8,7 @@ using SC = SimConnectClient;
 using FS20_HudBar.GUI;
 using static FS20_HudBar.Conversions;
 using static FS20_HudBar.GUI.GUI_Colors;
+using PingLib;
 
 namespace FS20_HudBar.Bar
 {
@@ -28,11 +29,11 @@ namespace FS20_HudBar.Bar
     public static void PaceCalculator( )
     {
       double newTick = SC.SimConnectClient.Instance.HudBarModule.SimTime_zulu_Dsec;
-      if ( newTick < ( _LastTick - 1.0 ) ) {
+      if (newTick < (_LastTick - 1.0)) {
         // new Tick is in the past (change in SimTime?? or midnight ZULU)
         _LastTick = newTick; // try to recover next round
       }
-      else if ( newTick > _LastTick ) {
+      else if (newTick > _LastTick) {
         // only when time passed...
         _tick = newTick;
         _deltaT_s = _tick - _LastTick;
@@ -63,7 +64,7 @@ namespace FS20_HudBar.Bar
     {
       // full resolution numbers
       private double m_currentValue = 0;
-      private double m_prevValue = 0 ;
+      private double m_prevValue = 0;
 
       private ushort m_nSamples = 1;
       private ushort m_precision = 3;
@@ -88,10 +89,10 @@ namespace FS20_HudBar.Bar
       {
         m_prevValue = m_currentValue;
         m_samples.Enqueue( value / m_nSamples ); // store scaled, so we only use the Sum for returning the value
-        while ( m_samples.Count > m_nSamples ) {
+        while (m_samples.Count > m_nSamples) {
           m_samples.Dequeue( );
         }
-        m_currentValue = ( m_samples.Count <= 0 ) ? 0 : m_samples.Sum( );
+        m_currentValue = (m_samples.Count <= 0) ? 0 : m_samples.Sum( );
       }
 
       /// <summary>
@@ -105,7 +106,7 @@ namespace FS20_HudBar.Bar
       /// <summary>
       /// Returns the Direction from Prev to Current Value (1: going up; -1 going down; 0: stay)
       /// </summary>
-      public int Direction => ( Avg > AvgPrev ) ? 1 : ( Avg < AvgPrev ) ? -1 : 0;
+      public int Direction => (Avg > AvgPrev) ? 1 : (Avg < AvgPrev) ? -1 : 0;
     }
 
 
@@ -117,7 +118,7 @@ namespace FS20_HudBar.Bar
     {
       // full resolution numbers
       private double m_currentValue = 0;
-      private double m_prevValue = 0 ;
+      private double m_prevValue = 0;
 
       private ushort m_nSamples = 1; // lenght of accumulation
       private ushort m_precision = 3;
@@ -160,7 +161,7 @@ namespace FS20_HudBar.Bar
       /// <summary>
       /// Returns the Direction from Prev to Current Value (1: going up; -1 going down; 0: stay)
       /// </summary>
-      public int Direction => ( Avg > AvgPrev ) ? 1 : ( Avg < AvgPrev ) ? -1 : 0;
+      public int Direction => (Avg > AvgPrev) ? 1 : (Avg < AvgPrev) ? -1 : 0;
 
     }
 
@@ -173,12 +174,12 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static bool HasFuelImbalance {
       get {
-        if ( !SC.SimConnectClient.Instance.IsConnected ) return false; // cannot calculate anything
+        if (!SC.SimConnectClient.Instance.IsConnected) return false; // cannot calculate anything
 
-        var imbalanceGal =  Math.Abs( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal
-                                      - SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal);
-        var min = Math.Min(SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal , SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal);
-        if ( imbalanceGal > ( min * 0.15 ) ) {
+        var imbalanceGal = Math.Abs( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal
+                                      - SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal );
+        var min = Math.Min( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal, SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal );
+        if (imbalanceGal > (min * 0.15)) {
           //Imbalance > 15% Total Fuel
           return true;
         }
@@ -191,7 +192,7 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static bool FuelReachWarn {
       get {
-        if ( !SC.SimConnectClient.Instance.IsConnected ) return false; // cannot calculate anything
+        if (!SC.SimConnectClient.Instance.IsConnected) return false; // cannot calculate anything
 
         return FuelReach_sec( ) < 3600f; // warn <1h, alert <1/2h
       }
@@ -202,7 +203,7 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static bool FuelReachAlert {
       get {
-        if ( !SC.SimConnectClient.Instance.IsConnected ) return false; // cannot calculate anything
+        if (!SC.SimConnectClient.Instance.IsConnected) return false; // cannot calculate anything
 
         return FuelReach_sec( ) < 1800f; // warn <1h, alert <1/2h
       }
@@ -218,13 +219,13 @@ namespace FS20_HudBar.Bar
     /// <returns></returns>
     private static void FuelFlowTotalSampler( )
     {
-      if ( !SC.SimConnectClient.Instance.IsConnected ) return; // cannot calculate anything
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // cannot calculate anything
 
       var eModule = SC.SimConnectClient.Instance.HudBarModule;
       float ff = eModule.Engine1_FuelFlow_lbPh;
-      if ( eModule.NumEngines > 1 ) ff += eModule.Engine2_FuelFlow_lbPh;
-      if ( eModule.NumEngines > 2 ) ff += eModule.Engine3_FuelFlow_lbPh;
-      if ( eModule.NumEngines > 3 ) ff += eModule.Engine4_FuelFlow_lbPh;
+      if (eModule.NumEngines > 1) ff += eModule.Engine2_FuelFlow_lbPh;
+      if (eModule.NumEngines > 2) ff += eModule.Engine3_FuelFlow_lbPh;
+      if (eModule.NumEngines > 3) ff += eModule.Engine4_FuelFlow_lbPh;
 
       m_avgFuelFlowModule.Sample( ff );
     }
@@ -244,9 +245,9 @@ namespace FS20_HudBar.Bar
     /// <returns>The fuel reach in seconds</returns>
     public static float FuelReach_sec( )
     {
-      if ( AvgFuelFlowTotal_lbPh( ) <= 0 ) return float.NaN;
+      if (AvgFuelFlowTotal_lbPh( ) <= 0) return float.NaN;
 
-      return ( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityTotal_lb / m_avgFuelFlowModule.Avg ) * 3600f;
+      return (SC.SimConnectClient.Instance.HudBarModule.FuelQuantityTotal_lb / m_avgFuelFlowModule.Avg) * 3600f;
     }
 
     #endregion
@@ -259,7 +260,7 @@ namespace FS20_HudBar.Bar
     private static float m_vs = 0;
 
     private static float m_dampFactor = 9; // proportion of current and new value
-    private static float m_divider = m_dampFactor+1; // we don't recalculate this one each time
+    private static float m_divider = m_dampFactor + 1; // we don't recalculate this one each time
 
     /// <summary>
     /// Update the aircraft values
@@ -271,9 +272,9 @@ namespace FS20_HudBar.Bar
     public static void UpdateValues( float gs, float alt, float vs )
     {
       // for now all values are dampened with the same proportion
-      m_gs = ( m_gs * m_dampFactor + gs ) / m_divider;
-      m_alt = ( m_alt * m_dampFactor + alt ) / m_divider;
-      m_vs = ( m_vs * m_dampFactor + vs ) / m_divider;
+      m_gs = (m_gs * m_dampFactor + gs) / m_divider;
+      m_alt = (m_alt * m_dampFactor + alt) / m_divider;
+      m_vs = (m_vs * m_dampFactor + vs) / m_divider;
     }
 
     /// <summary>
@@ -294,12 +295,12 @@ namespace FS20_HudBar.Bar
     /// <returns>Required VS to get to target at altitude</returns>
     public static float VSToTgt_AtAltitude( float tgtAlt, float tgtDist )
     {
-      if ( tgtDist <= 0.0f ) return 0; // avoid Div0 and cannot calc backwards 
-      if ( m_gs <= 0.0f ) return 0;      // avoid Div0 and cannot calc with GS <=0
+      if (tgtDist <= 0.0f) return 0; // avoid Div0 and cannot calc backwards 
+      if (m_gs <= 0.0f) return 0;      // avoid Div0 and cannot calc with GS <=0
 
       float dFt = tgtAlt - m_alt;
       float minToTgt = tgtDist / NmPerMin( m_gs );
-      return (int)Math.Round( ( dFt / minToTgt ) / 100f ) * 100;
+      return (int)Math.Round( (dFt / minToTgt) / 100f ) * 100;
     }
 
     /// <summary>
@@ -309,12 +310,12 @@ namespace FS20_HudBar.Bar
     /// <returns>The altitude at target with current GS and VS from current Alt</returns>
     public static float AltitudeAtTgt( float tgtDist )
     {
-      if ( tgtDist <= 0.0f ) return m_alt; // cannot calc backwards aiming
-      if ( m_gs <= 1f ) return m_alt;      // should not calc with GS <=1
+      if (tgtDist <= 0.0f) return m_alt; // cannot calc backwards aiming
+      if (m_gs <= 1f) return m_alt;      // should not calc with GS <=1
 
       float minToTgt = tgtDist / NmPerMin( m_gs );
       float dAlt = m_vs * minToTgt;
-      return (int)Math.Round( ( m_alt + dAlt ) / 100f ) * 100; // fix at 100 steps
+      return (int)Math.Round( (m_alt + dAlt) / 100f ) * 100; // fix at 100 steps
     }
 
     #endregion
@@ -325,7 +326,7 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static bool IcingCondition {
       get {
-        if ( !SC.SimConnectClient.Instance.IsConnected ) return false; // cannot calculate anything
+        if (!SC.SimConnectClient.Instance.IsConnected) return false; // cannot calculate anything
 
         return SC.SimConnectClient.Instance.HudBarModule.OutsideTemperature_degC < 4;
       }
@@ -340,11 +341,11 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static string NAV1_ID {
       get {
-        if ( !SC.SimConnectClient.Instance.IsConnected ) return "  "; // cannot calculate anything
+        if (!SC.SimConnectClient.Instance.IsConnected) return "  "; // cannot calculate anything
 
-        string gsi = ( SC.SimConnectClient.Instance.NavModule.GS1_flag ? " ◊"        // GS received
+        string gsi = (SC.SimConnectClient.Instance.NavModule.GS1_flag ? " ◊"        // GS received
           : SC.SimConnectClient.Instance.NavModule.GS1_available ? " ‡"  // GS available
-          : " " );
+          : " ");
         string id = SC.SimConnectClient.Instance.NavModule.Nav1_Ident + gsi;
 
         return id;
@@ -355,11 +356,11 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static string NAV2_ID {
       get {
-        if ( !SC.SimConnectClient.Instance.IsConnected ) return "  "; // cannot calculate anything
+        if (!SC.SimConnectClient.Instance.IsConnected) return "  "; // cannot calculate anything
 
-        string gsi = ( SC.SimConnectClient.Instance.NavModule.GS2_flag ? " ◊"        // GS received
+        string gsi = (SC.SimConnectClient.Instance.NavModule.GS2_flag ? " ◊"        // GS received
           : SC.SimConnectClient.Instance.NavModule.GS2_available ? " ‡"  // GS available
-          : " " );
+          : " ");
         string id = SC.SimConnectClient.Instance.NavModule.Nav2_Ident + gsi;
 
         return id;
@@ -377,22 +378,22 @@ namespace FS20_HudBar.Bar
     /// <returns>The steps needed (pos=> increase, neg=> decrease  rate)</returns>
     public static int SimRateStepsToNormal( )
     {
-      if ( !SC.SimConnectClient.Instance.IsConnected ) return 0; // cannot calculate anything
+      if (!SC.SimConnectClient.Instance.IsConnected) return 0; // cannot calculate anything
 
       var r = SC.SimConnectClient.Instance.HudBarModule.SimRate_rate;
       int steps = 0;
       // (0.25, 0.5, 1, 2, 4, 8, ..) only a float may not represent the numbers exactly 
       // so we add some tolerance for the resolution here (shifting all to Integers then rounding would be a solution too... e.g. *8)
-      if ( r > 1.01 ) {
+      if (r > 1.01) {
         // should get us down to 1.00 
-        while ( r > 1.01 ) {
+        while (r > 1.01) {
           steps--;
           r /= 2.0f;
         }
       }
-      else if ( r < 0.99 ) {
+      else if (r < 0.99) {
         // should get us up to 1.00
-        while ( r < 0.99 ) {
+        while (r < 0.99) {
           steps++;
           r *= 2.0f;
         }
@@ -413,7 +414,7 @@ namespace FS20_HudBar.Bar
     /// <returns>The % Load</returns>
     public static float LoadPrct( float trq_ftlb, float erpm, float maxHP )
     {
-      return ( trq_ftlb * ( erpm / 5252.0f ) ) / maxHP;
+      return (trq_ftlb * (erpm / 5252.0f)) / maxHP;
     }
 
     /// <summary>
@@ -424,7 +425,7 @@ namespace FS20_HudBar.Bar
     /// <returns>The calculated MaxHP</returns>
     public static float MaxHPCalibration( float trq_ftlb, float erpm )
     {
-      return ( trq_ftlb * ( erpm / 5252.0f ) );
+      return (trq_ftlb * (erpm / 5252.0f));
     }
     #endregion
 
@@ -434,7 +435,7 @@ namespace FS20_HudBar.Bar
 
     public enum EVolume
     {
-      V_Silent=0,
+      V_Silent = 0,
       // audible ones
       V_Plus,
       V_PlusMinus,
@@ -448,97 +449,61 @@ namespace FS20_HudBar.Bar
     private const uint n_turnPos = 2;
     private const uint n_positive = 3;
     private const uint n_turnNeg = 4;
-
-    private static float _prevVal =0;
-    private static int _direction =0;
+    private const uint n_negative2 = 5; // 1 oct down from n_negative
 
     /// <summary>
-    /// Get the Variometer Tone from a value
+    /// Set the value dependent Note in the soundBite
     /// </summary>
-    /// <param name="value">The new value</param>
-    /// <param name="currentNote">The current Note</param>
-    /// <returns>A Tone [0..60]</returns>
-    private static uint ToneFromVS( float value, uint currentNote, bool positiveOnly )
+    /// <param name="volume">Enum for the Volume</param>
+    /// <param name="value">the vario rate im m/sec</param>
+    /// <param name="soundBite">The Sound to play</param>
+    /// <returns>Returns true if the note has changed</returns>
+    public static bool ModNote( EVolume volume, float value, SoundBitePitched soundBite )
     {
-      uint note = n_silence;
-
-      if ( value > _prevVal ) {
-        // higher than before
-        note = ( _direction == 1 ) ? n_positive  // was going up, still positive
-                                   : ( _direction == -1 ) ? n_turnPos // was going down, turning now
-                                   : ( currentNote == n_positive ) ? n_positive : n_turnPos; // was level, same as before or turn
-        _direction = 1;
-      }
-      else if ( value < _prevVal ) {
-        // lower than before
-        note = ( _direction == 1 ) ? n_turnNeg  // was going up, turning now
-                                   : ( _direction == -1 ) ? n_negative // was going down, still negative
-                                   : ( currentNote == n_negative ) ? n_negative : n_turnNeg; // was level, same as before or turn
-        _direction = -1;
+      bool changed = false;
+      if (volume != EVolume.V_Silent) {
+        // ping enabled
+        if (value >= 0.5) {
+          // starts at or above 0.5
+          if (soundBite.Tone != n_positive) {
+            // change if needed
+            soundBite.Tone = n_positive;
+            soundBite.SetPitchRange( 0.2f, 5, 1f, 1.8f );
+          }
+          soundBite.SetPitch( value );
+          changed = true; // as the pitch changes mostly every cycle, we just assume it changed...
+        }
+        else if ((value <= -0.5) && (volume == EVolume.V_PlusMinus)) {
+          // starts at or below -0.5 and if minus is pinged
+          if (soundBite.Tone != n_negative2) {
+            // change if needed
+            soundBite.Tone = n_negative2;
+            soundBite.SetPitchRange( -2f, -0.2f, 1f, 1.333f );
+          }
+          soundBite.SetPitch( value );
+          changed = true; // as the pitch changes mostly every cycle, we just assume it changed...
+        }
+        else {
+          // around 0 or below and Plus only -> silence
+          if (soundBite.Tone != n_silence) {
+            // change if needed
+            soundBite.Tone = n_silence;
+            changed = true;
+          }
+        }
       }
       else {
-        // level (float ??)
-        note = ( _direction == 1 ) ? n_positive  // was going up, still positive
-                                   : ( _direction == -1 ) ? n_negative // was going down, still negative
-                                   : currentNote; // was level, same as before
-        _direction = 0;
+        // ping disabled
+        if (soundBite.Tone != n_silence) {
+          // change if needed
+          soundBite.Tone = n_silence;
+          changed = true;
+        }
       }
-      _prevVal = value;
 
-      return ( positiveOnly && ( value < 0 ) ) ? n_silence : note; // return a sound only if the asked for it
-    }
-
-    // Set the value dependent Note in the soundBite
-    // Returns true if the note has changed
-    public static bool ModNote(EVolume volume, float value, PingLib.SoundBite soundBite )
-    {
-      uint note = 0; // default is silent
-      if ( volume != EVolume.V_Silent ) {
-        note = ToneFromVS( value, soundBite.Tone, volume == EVolume.V_Plus );
-      }
-      bool changed = soundBite.Tone!= note;
-      soundBite.Tone = note;
       return changed;
     }
 
-
-    /* OLD - SOUND pitch acording to rate
-    // Vario Ping
-
-    private const float c_straight = 0.05f; // no tone cutoff when straight
-    private const float c_limit = 6.0f;    // +- limit for Lowest and Highest Pitch
-
-    private const uint c_plusLo = 38;  // low Tone for the smallest Positive rate
-    private const uint c_minusHi = 25; // high Tone for the smallest Negative rate
-    private const uint c_steps = 20;   // ensure c_plusLo + c_steps <= 60 and c_minusHi-c_steps >=1 !!!
-
-    private const float c_scale = (float)c_steps/c_limit; // mult to get a roundable Int stepOffset 0..c_steps within the bounds
-
-    /// <summary>
-    /// Get the Variometer Tone from a VS [m/sec]
-    /// </summary>
-    /// <param name="vs"></param>
-    /// <returns>A Tone [0..60]</returns>
-    public static uint ToneFromVS( float vs )
-    {
-      // Ping Tones are between 1..60, leaving a remarkable gap we use 20 steps low ..25 and high 36..
-      // Between -c_straight and +c_straight there is no Sound
-      // limit the pitch of the tone at +-c_limit
-
-      // Above 0.2 the ping gets one Note higher per 0.2 increment
-      // Below -0.2 the ping gets one Note lower per 0.2 decrement
-
-      uint tone = 0; // start with Silence..
-      if ( vs > c_straight ) {
-        tone = ( ( vs > c_limit ) ? c_steps : (uint)Math.Round( vs * c_scale ) ) + c_plusLo;       // 10 Tones
-      }
-      else if ( vs < -c_straight ) {
-        tone = (uint)( c_minusHi + ( ( vs < -c_limit ) ? -c_steps : Math.Round( vs * c_scale ) ) ); // 10 Tones
-      }
-
-      return tone;
-    }
-    */
     #endregion
 
     #region IAS limits

@@ -16,6 +16,7 @@ namespace PingLib
     /// One second of Silence..
     /// </summary>
     Silence = 0,
+    /*
     /// <summary>
     /// A Nylon String pic  (Tone 0 -> Silence)
     /// </summary>
@@ -44,6 +45,7 @@ namespace PingLib
     /// Bell - about 3 sec per Tone (Tone 0 -> Silence)
     /// </summary>
     Bell_1,
+    */
     /// <summary>
     /// Triangle Wave with glide 0.3 sec segments
     ///  Notes: 
@@ -52,6 +54,7 @@ namespace PingLib
     ///  2: Low to High
     ///  3: High
     ///  4: High to Low
+    ///  5: 1 Oct down from Low
     /// </summary>
     TSynth,
   }
@@ -64,7 +67,7 @@ namespace PingLib
     /// <summary>
     /// MP3 File
     /// </summary>
-    mp3=0,
+    mp3 = 0,
     /// <summary>
     /// WAV File
     /// </summary>
@@ -133,9 +136,9 @@ namespace PingLib
       Name = name;
       Description = desc;
       Id = id;
-      ToneStep_sec = ( ToneStep >= 0.2 ) ? ToneStep : 0.2f; // must be at least 0.2 sec per Tone
-      ToneDuration_sec = ( ToneDuration >= 0.05f ) ? ToneDuration : 0.05f;  // must be at least 0.05 sec per tune
-      NumTones = ( numTones > 0 ) ? numTones : 1; // must be >1
+      ToneStep_sec = (ToneStep >= 0.2) ? ToneStep : 0.2f; // must be at least 0.2 sec per Tone
+      ToneDuration_sec = (ToneDuration >= 0.05f) ? ToneDuration : 0.05f;  // must be at least 0.05 sec per tune
+      NumTones = (numTones > 0) ? numTones : 1; // must be >1
     }
 
     /// <summary>

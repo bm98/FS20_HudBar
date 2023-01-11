@@ -59,7 +59,7 @@ namespace FS20_HudBar.Bar.Items
 
 
     private EVolume _volume= EVolume.V_Silent;
-    private PingLib.SoundBite _soundBite = new PingLib.SoundBite(HudBar.LoopSound);
+    private PingLib.SoundBitePitched _soundBite = new PingLib.SoundBitePitched( HudBar.LoopSound);
 
     private void DI_Vario_ButtonClicked( object sender, ClickedEventArgs e )
     {

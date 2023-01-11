@@ -54,11 +54,11 @@ namespace FS20_HudBar.Bar
     public static PingLib.Loops PingLoop => m_ping;
 
     // the sound to play
-    private static readonly PingLib.SoundBite _soundLoop = new PingLib.SoundBite( PingLib.Melody.TSynth, 0, -1f, 0, 0.2f ); // Use this Sound to ping
+    private static readonly PingLib.SoundBitePitched _soundLoop = new PingLib.SoundBitePitched( PingLib.Melody.TSynth, 0, -1f, 0, 0.2f ); // Use this Sound to ping
     /// <summary>
     /// The Ping Sound
     /// </summary>
-    public static PingLib.SoundBite LoopSound => _soundLoop;
+    public static PingLib.SoundBitePitched LoopSound => _soundLoop;
 
     /// <summary>
     /// The Speech Library

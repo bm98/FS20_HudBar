@@ -41,14 +41,14 @@ namespace PingLib
       // add known Sounds manually (ID is the Property Name)
       // Usually 61 Tones where 0=Silence, C6=1,.. 5 Octaves to Tone 60
       _installedSounds.Add( new SoundInfo( "Silence", "One Second of Silence", "Silence_VBR50Q48kHz", Melody.Silence, SoundType.wma, 1, 1f, 61 ) ); // 1 sec Silence per Tone
-      _installedSounds.Add( new SoundInfo( "NylonPic_1", "Nylon String Pic 1", "Nylon1_VBR50Q48kHz", Melody.Nylon_1, SoundType.wma, 1, 0.6f, 61 ) ); // Tone 0 = Silence
-      _installedSounds.Add( new SoundInfo( "NylonPic_2", "Nylon String Pic 2", "Nylon2_VBR50Q48kHz", Melody.Nylon_2, SoundType.wma, 1, 0.35f, 61 ) ); // Tone 0 = Silence
-      _installedSounds.Add( new SoundInfo( "Synth_1", "Syth Tone 1", "Synth1_VBR50Q48kHz", Melody.Synth_1, SoundType.wma, 1, 0.3f, 61 ) );            // Tone 0 = Silence
-      _installedSounds.Add( new SoundInfo( "Synth_2", "Syth Tone 2", "Synth2_VBR50Q48kHz", Melody.Synth_2, SoundType.wma, 1, 0.25f, 61 ) );           // Tone 0 = Silence
-      _installedSounds.Add( new SoundInfo( "Synth_3", "Syth Tone 3 Smooth In", "Synth3_VBR50Q48kHz", Melody.Synth_3, SoundType.wma, 1, 0.3f, 61 ) );  // Tone 0 = Silence
-      _installedSounds.Add( new SoundInfo( "Woodblocks_1", "Woodblock Sound 1", "Wood1_VBR50Q48kHz", Melody.Wood_1, SoundType.wma, 1, 0.4f, 61 ) );   // Tone 0 = Silence
-      _installedSounds.Add( new SoundInfo( "Bell_1", "Bell Sound 1", "Bell1_VBR50Q48kHz", Melody.Bell_1, SoundType.wma, 3, 2.95f, 61 ) );             // Tone 0 = Silence
-      _installedSounds.Add( new SoundInfo( "TSynth", "Triangle  Wave", "TSynth_VBR50Q48kHz", Melody.TSynth, SoundType.wma, 0.45f, 0.3f, 5 ) );         // Tone 0 = Silence
+      //_installedSounds.Add( new SoundInfo( "NylonPic_1", "Nylon String Pic 1", "Nylon1_VBR50Q48kHz", Melody.Nylon_1, SoundType.wma, 1, 0.6f, 61 ) ); // Tone 0 = Silence
+      //_installedSounds.Add( new SoundInfo( "NylonPic_2", "Nylon String Pic 2", "Nylon2_VBR50Q48kHz", Melody.Nylon_2, SoundType.wma, 1, 0.35f, 61 ) ); // Tone 0 = Silence
+      //_installedSounds.Add( new SoundInfo( "Synth_1", "Syth Tone 1", "Synth1_VBR50Q48kHz", Melody.Synth_1, SoundType.wma, 1, 0.3f, 61 ) );            // Tone 0 = Silence
+      //_installedSounds.Add( new SoundInfo( "Synth_2", "Syth Tone 2", "Synth2_VBR50Q48kHz", Melody.Synth_2, SoundType.wma, 1, 0.25f, 61 ) );           // Tone 0 = Silence
+      //_installedSounds.Add( new SoundInfo( "Synth_3", "Syth Tone 3 Smooth In", "Synth3_VBR50Q48kHz", Melody.Synth_3, SoundType.wma, 1, 0.3f, 61 ) );  // Tone 0 = Silence
+      //_installedSounds.Add( new SoundInfo( "Woodblocks_1", "Woodblock Sound 1", "Wood1_VBR50Q48kHz", Melody.Wood_1, SoundType.wma, 1, 0.4f, 61 ) );   // Tone 0 = Silence
+      //_installedSounds.Add( new SoundInfo( "Bell_1", "Bell Sound 1", "Bell1_VBR50Q48kHz", Melody.Bell_1, SoundType.wma, 3, 2.95f, 61 ) );             // Tone 0 = Silence
+      _installedSounds.Add( new SoundInfo( "TSynth", "Triangle  Wave", "TSynth_VBR50Q48kHz", Melody.TSynth, SoundType.wma, 0.45f, 0.3f, 6 ) );         // Tone 0 = Silence
     }
 
     /// <summary>
