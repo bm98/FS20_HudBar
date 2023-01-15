@@ -1,48 +1,33 @@
-﻿using System;
+﻿using DbgLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using DbgLib;
 using Windows.Devices.Enumeration;
 
 namespace PingLib
 {
   /// <summary>
   /// An Audio Player Object using the Win10 TTS API 
-  /// Wrapper to be used to output short tunes
+  /// Wrapper to be used to output synth waveforms
   /// 
   /// Cannot be inherited
   /// </summary>
-  public sealed class Sounds : IDisposable
+  public sealed class Synth : IDisposable
   {
     #region STATIC
 
     // A logger
     private static readonly IDbg LOG = Dbg.Instance.GetLogger(
       System.Reflection.Assembly.GetCallingAssembly( ),
-      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
 
     // Static cTor: Just report the Library to Dbg
-    static Sounds( )
+    static Synth( )
     {
       LOG.Log( $"Init Module" );
     }
-
-    /// <summary>
-    /// Deletes the temp sound files deployed by this module (Streamed files)
-    /// </summary>
-    public static void RemoveTempSounds( )
-    {
-      WaveProc.RemoveTempSounds( );
-    }
-
-    /// <summary>
-    ///  Returns all of the installed sounds.
-    /// </summary>
-    /// <returns>Returns a read-only collection of the sounds currently available from the library</returns>
-    public static IReadOnlyCollection<SoundInfo> InstalledSounds => WaveProc.GetInstalledSounds( );
 
     /// <summary>
     /// Returns all installed output devices
@@ -53,14 +38,14 @@ namespace PingLib
     #endregion
 
     // Background worker, Audio Output
-    private SoundWorker _player;
+    private SynthWorker _player;
 
     /// <summary>
     /// cTor: Init facility
     /// </summary>
-    public Sounds( )
+    public Synth( )
     {
-      _player = new SoundWorker( );
+      _player = new SynthWorker( );
       _player.InitPlayer( null );
       _player.ProgressChanged += _player_ProgressChanged;
     }
@@ -80,28 +65,10 @@ namespace PingLib
     }
 
     /// <summary>
-    /// Asynchronously plays soundBites
-    /// Audio output is the default output device
-    ///  This is not an awaitable method
+    /// Returns the used waveform
     /// </summary>
-    /// <param name="soundBite">The SoundBite to play (max 10sec supported)</param>
-    public void PlayAsync( SoundBite soundBite )
-    {
-      _player.AddSoundBite( soundBite );
-    }
+    public SynthWave WaveForm { get { return _player.WaveForm; } }
 
-    /// <summary>
-    /// Synchronously plays soundBites
-    /// Audio output is the default output device
-    /// NOT YET IMPLEMENTED behaves the same as PlayAsync
-    /// </summary>
-    /// <param name="soundBite">The SoundBite to play</param>
-
-    public void Play( SoundBite soundBite )
-    {
-      _player.AddSoundBite( soundBite );
-      // TODO 
-    }
 
     /// <summary>
     /// Get; Set; Mute / Unmute the player 
@@ -119,8 +86,8 @@ namespace PingLib
     /// <param name="disposing">Disposing flag</param>
     private void Dispose( bool disposing )
     {
-      if ( !disposedValue ) {
-        if ( disposing ) {
+      if (!disposedValue) {
+        if (disposing) {
           // dispose managed state (managed objects)
           _player.CancelAsync( );
           _player.Dispose( );
@@ -145,5 +112,5 @@ namespace PingLib
 
   }
 
-
 }
+

@@ -1,5 +1,5 @@
 FS20_HudBar V 0.59 - Build 59 BETA
-(c) M. Burri - 13-Jan-2023
+(c) M. Burri - 15-Jan-2023
 
 Contains files:
 
@@ -73,7 +73,8 @@ Changelog:
 
 V 0.59-B59
 - Update Improved TE VARIO calculations when not supported by acft model
-- Update VARIO sound (silent between -0.5..+0.5 m/sec, else higher increasing pitch above 0.5 .. 5.0ms, lower pitch -0.5..-2.0)
+- Update VARIO sound (silent between -0.7..+0.5 m/sec, else higher increasing pitch above 0.5 .. 5.0ms, lower pitch -0.7..-3.0)
+- Update of 3rd Party libraries via nuGet
 
 V 0.58-B58
 - Fix EGT does not display the correct value

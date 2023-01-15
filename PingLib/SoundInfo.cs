@@ -54,9 +54,28 @@ namespace PingLib
     ///  2: Low to High
     ///  3: High
     ///  4: High to Low
-    ///  5: 1 Oct down from Low
+    ///  5: Low 1 oct down
     /// </summary>
     TSynth,
+    /// <summary>
+    /// Triangle Wave 2 sec segments
+    ///  Notes: 
+    ///  0: Silence, 
+    ///  1: High .35s tone length
+    ///  2: Med  .47s tone length
+    ///  3: Low  .47s tone length
+    /// </summary>
+    TSynth2,
+    /// <summary>
+    /// Triangle Wave 2 sec segments
+    ///  Notes: 
+    ///  0: Silence, 
+    ///  1: High .45s tone length
+    ///  2: Med  .75s tone length
+    ///  3: Low  .75s tone length
+    ///  4: Lower  .75s tone length
+    /// </summary>
+    TSynth3,
   }
 
   /// <summary>

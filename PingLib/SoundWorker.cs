@@ -12,18 +12,18 @@ namespace PingLib
   /// Implements an Background thread which does the sound output
   /// so the calling entity is able to proceed with working
   ///  Tunes ( less than 10sec chunks assumed..) will be queued and serialized sound output is generated
-  ///  - InitSpeaker() before start adding SoundBites
+  ///  - InitPlayer() before start adding SoundBites
   /// </summary>
   internal class SoundWorker : BackgroundWorker, IDisposable
   {
     private const int c_timeout = 1000; // timout to check for cancellation
-    private const int s_timeout = 10_000; // timout of speech
+    private const int s_timeout = 1_000; // timout of ping
 
     private AutoResetEvent _workerWaitHandle;
     private AutoResetEvent _playerWaitHandle;
     private int _progressCount = 0;
 
-    // The queue to speak
+    // The queue to play
     private Queue<SoundBite> _soundBites = new Queue<SoundBite>();
 
     private WaveProc _player;
@@ -55,7 +55,7 @@ namespace PingLib
     }
 
     /// <summary>
-    /// Start the Speaker processing
+    /// Start the Player processing
     /// </summary>
     /// <param name="parameter">A parameter obj to use (NOT USED)</param>
     public void InitPlayer( object parameter )

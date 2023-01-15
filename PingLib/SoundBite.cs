@@ -54,6 +54,7 @@ namespace PingLib
     /// cTor: empty
     /// </summary>
     public SoundBite( ) { }
+
     /// <summary>
     /// cTor: create from a number of values
     /// </summary>

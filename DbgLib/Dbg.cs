@@ -21,7 +21,7 @@ namespace DbgLib
     /// <summary>
     /// Success...
     /// </summary>
-    Success=0,
+    Success = 0,
     /// <summary>
     /// The check directory does not exist
     /// </summary>
@@ -344,10 +344,26 @@ namespace DbgLib
     {
       if (!_canWrite) return;
 
-      using (var sw = new StreamWriter( c_logFileName, true )) {
-        sw.WriteLine( TagLine( text ) );
-        sw.Flush( );
-      }
+      var tries = 5;
+
+      do {
+        try {
+          using (var sw = new StreamWriter( c_logFileName, true )) {
+            sw.WriteLine( TagLine( text ) );
+            sw.Flush( );
+          }
+          break; // done
+        }
+        catch (IOException ex) {
+          Console.WriteLine( $"Debug Logger cannot log (will try again): \n" + ex.Message );
+          // possibly locked by a concurrent thread.., try again
+        }
+        catch (Exception ex) {
+          Console.WriteLine( $"Debug Logger fatal, cannot log: \n" + ex.Message );
+          break;  // other ones ??
+        }
+      } while (tries-- > 0);
+
     }
 
     /// <summary>

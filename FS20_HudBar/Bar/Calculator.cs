@@ -443,13 +443,12 @@ namespace FS20_HudBar.Bar
       V_LAST,
     }
 
-    // Const built for TSynth Sound
+    // Const built for TSynth2 Sound
     private const uint n_silence = 0;
-    private const uint n_negative = 1;
-    private const uint n_turnPos = 2;
-    private const uint n_positive = 3;
-    private const uint n_turnNeg = 4;
-    private const uint n_negative2 = 5; // 1 oct down from n_negative
+    private const uint n_positive = 1;
+    private const uint n_negative = 2;
+    private const uint n_negative2 = 3; // 1/2 oct down from n_negative
+    private const uint n_negative3 = 4; // 1 oct down from n_negative
 
     /// <summary>
     /// Set the value dependent Note in the soundBite
@@ -468,17 +467,17 @@ namespace FS20_HudBar.Bar
           if (soundBite.Tone != n_positive) {
             // change if needed
             soundBite.Tone = n_positive;
-            soundBite.SetPitchRange( 0.2f, 5, 1f, 1.8f );
+            soundBite.SetPitchRange( 0.5f, 5, 0.9f, 1.99f );
           }
           soundBite.SetPitch( value );
           changed = true; // as the pitch changes mostly every cycle, we just assume it changed...
         }
-        else if ((value <= -0.5) && (volume == EVolume.V_PlusMinus)) {
+        else if ((value <= -0.7) && (volume == EVolume.V_PlusMinus)) {
           // starts at or below -0.5 and if minus is pinged
-          if (soundBite.Tone != n_negative2) {
+          if (soundBite.Tone != n_negative3) {
             // change if needed
-            soundBite.Tone = n_negative2;
-            soundBite.SetPitchRange( -2f, -0.2f, 1f, 1.333f );
+            soundBite.Tone = n_negative3;
+            soundBite.SetPitchRange( -3f, -0.7f, 0.7f, 1f );
           }
           soundBite.SetPitch( value );
           changed = true; // as the pitch changes mostly every cycle, we just assume it changed...

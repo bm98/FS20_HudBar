@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\PingLib.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -59,11 +61,17 @@
     <Compile Include="SoundWorker.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Synth.cs" />
+    <Compile Include="SynthProc.cs" />
+    <Compile Include="SynthWave.cs" />
+    <Compile Include="SynthWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="WaveProc.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.22621.2</Version>
+      <Version>10.0.22621.755</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

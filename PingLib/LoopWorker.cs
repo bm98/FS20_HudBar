@@ -5,13 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation.Diagnostics;
 
 namespace PingLib
 {
   /// <summary>
   /// Implements an Background thread which does the sound output
   /// so the calling entity is able to proceed with working
-  ///  Tunes ( less than 1sec chunks assumed..) will be played as loop
+  ///  Tunes ( less than 10sec chunks assumed..) will be played as loop
   ///  - InitSpeaker() before start adding SoundBites
   ///  - Change the Tune while playing
   ///  - Cancel if Done
@@ -19,7 +20,7 @@ namespace PingLib
   /// </summary>
   internal class LoopWorker : BackgroundWorker, IDisposable
   {
-    private const int s_timeout = 1_000; // timout of play per tune, pings are short ones
+    private const int s_timeout = 2_000; // timout of play per tune
 
     private AutoResetEvent _playerWaitHandle;
     private int _progressCount = 0;
@@ -122,6 +123,7 @@ namespace PingLib
     private void SoundWorker_DoWork( object sender, DoWorkEventArgs e )
     {
       bool doWork = !this.CancellationPending;
+      SoundBite soundbite = new SoundBite();
 
       // Loop
       while ( true ) {
@@ -144,6 +146,7 @@ namespace PingLib
           // run into a play time out - either the tune was tool long or something else prevented
           // the Player to signal end of play
           // anyway try to recover and continue
+          Console.WriteLine( "SoundWorker Timeout" );
           _player.Reset( );
         }
 

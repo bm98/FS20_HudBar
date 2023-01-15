@@ -13,11 +13,11 @@ namespace PingLib
   {
     // control the pitch via the SpeedFact of the playback
     /// <summary>
-    /// Play SpeedFactor Range-Min
+    /// SpeedFactor Range-Min
     /// </summary>
     protected float _minSpeed = 1.0f;
     /// <summary>
-    /// Play SpeedFactor Range-Max
+    /// SpeedFactor Range-Max
     /// </summary>
     protected float _maxSpeed = 1.0f;
     // the used value to scale the SpeedFact with

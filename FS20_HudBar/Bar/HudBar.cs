@@ -53,8 +53,9 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static PingLib.Loops PingLoop => m_ping;
 
-    // the sound to play
-    private static readonly PingLib.SoundBitePitched _soundLoop = new PingLib.SoundBitePitched( PingLib.Melody.TSynth, 0, -1f, 0, 0.2f ); // Use this Sound to ping
+    // the sound to play - set as loop samples with .6 sec playtime (at speed=1)
+    // samples are high 0.45, lo 0.75 
+    private static readonly PingLib.SoundBitePitched _soundLoop = new PingLib.SoundBitePitched( PingLib.Melody.TSynth3, 0, 0.75f, 0, 0.2f, 1f ); // Use this Sound to ping
     /// <summary>
     /// The Ping Sound
     /// </summary>

@@ -33,10 +33,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CoordLib">
-      <HintPath>..\..\Redist\CoordLib.dll</HintPath>
+      <HintPath>..\..\..\..\Redist\CoordLib.dll</HintPath>
     </Reference>
-    <Reference Include="FSimFacilityIF">
-      <HintPath>..\..\Redist\FSimFacilityIF.dll</HintPath>
+    <Reference Include="FSimFacilityIF, Version=1.1.0.11, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Redist\FSimFacilityIF.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -170,12 +171,6 @@
     <None Include="Resources\dme_facility.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MapLib\MapLib.csproj">
-      <Project>{4f1641bb-ca1f-4aec-84b7-8dc71ba3dbcf}</Project>
-      <Name>MapLib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\map-icon.png" />
   </ItemGroup>
   <ItemGroup>
@@ -237,6 +232,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\alt_ladder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MapLib\MapLib.csproj">
+      <Project>{4f1641bb-ca1f-4aec-84b7-8dc71ba3dbcf}</Project>
+      <Name>MapLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
