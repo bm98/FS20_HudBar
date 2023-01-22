@@ -30,6 +30,7 @@ namespace FS20_HudBar.Bar
     private T_WarnFuel v_warnFuel;
     private T_IAS_Rotate v_rotate;
     private T_Spoilers v_spoilers;
+    private T_PositiveRate v_positiveRate;
 
     /// <summary>
     /// Provide the list of installed Voice Triggers
@@ -55,6 +56,7 @@ namespace FS20_HudBar.Bar
       v_warnFuel = new T_WarnFuel( speaker ); m_triggerList.Add( v_warnFuel );
       v_rotate = new T_IAS_Rotate( speaker ); m_triggerList.Add( v_rotate );
       v_spoilers = new T_Spoilers( speaker ); m_triggerList.Add( v_spoilers );
+      v_positiveRate = new T_PositiveRate( speaker ); m_triggerList.Add( v_positiveRate );
 
       // load from settings
       string profile = AppSettingsV2.Instance.VoiceCalloutProfile;

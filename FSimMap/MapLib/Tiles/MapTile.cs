@@ -24,6 +24,8 @@ namespace MapLib.Tiles
     private readonly TileXY c_tileNone = TileXY.Empty;
 
     private int _loadCount = 0;
+    // a tile version for ID
+    private int _version = 0;
 
     /// <summary>
     /// Event triggered on LoadComplete or LoadFailed
@@ -31,15 +33,13 @@ namespace MapLib.Tiles
     public event EventHandler<LoadCompleteEventArgs> LoadComplete;
 
     // Signal the user that data has arrived
-    private void OnLoadComplete( string tileKey, bool failed )
+    private void OnLoadComplete( string tileKey, string trackKey, bool failed )
     {
       //  Debug.WriteLine( $"{DateTime.Now.Ticks} MapTile.OnLoadComplete- Key: <{FullKey}> Failed: {failed}" );
-
-
       if (LoadComplete == null)
         Debug.WriteLine( $"MapTile.OnLoadComplete: NO EVENT RECEIVERS HAVE REGISTERED" );
 
-      LoadComplete?.Invoke( this, new LoadCompleteEventArgs( tileKey, failed, false ) ); // Tile cannot make the Matrix complete
+      LoadComplete?.Invoke( this, new LoadCompleteEventArgs( tileKey, trackKey, failed, false ) ); // Tile cannot make the Matrix complete
     }
 
     // Inputs while Loading
@@ -102,6 +102,11 @@ namespace MapLib.Tiles
     /// A full Key for this Tile
     /// </summary>
     public string FullKey => Tools.ToFullKey( MapImageID );
+
+    /// <summary>
+    /// A full Tracking Key for this Tile
+    /// </summary>
+    public string TrackKey => Tools.ToTrackKey( MapImageID, _version );
 
     /// <summary>
     /// Get: The Copyright string of the Map Provider
@@ -207,9 +212,12 @@ namespace MapLib.Tiles
     /// <summary>
     /// cTor:
     /// </summary>
-    public MapTile( )
+    public MapTile( ushort zoomLevel = 0, MapProvider provider = MapProvider.DummyProvider, int version = 0 )
     {
       TileXYUpdate = c_tileNone;
+      ZoomLevel = zoomLevel;
+      MapProvider = provider;
+      _version = version;
     }
 
     /// <summary>
@@ -226,7 +234,7 @@ namespace MapLib.Tiles
       if (LoadingStatus == ImageLoadingStatus.Loading) {
         // the Tile is currently loading from a prev call
         // wait until this one has finished before loading a new one
-        Debug.WriteLine( $"MapTile.LoadTile: Busy Tile {FullKey}" );
+        Debug.WriteLine( $"MapTile.LoadTile: Busy Tile {TrackKey}" );
         return false;// cannot load when loading
       }
 
@@ -242,10 +250,10 @@ namespace MapLib.Tiles
       MapImageID = new MapImageID( tileXY, zoomLevel, provider );
       TileXYUpdate = c_tileNone; // clear update
 
-//      Debug.WriteLine( $"MapTile.LoadTile: Loading {FullKey} ({oldTile})" );
+      //      Debug.WriteLine( $"MapTile.LoadTile: Loading {FullKey} ({oldTile})" );
 
       TileLoaderJob tileLoaderJob = new TileLoaderJob( tileXY, zoomLevel, _providerInstance, OnDone );
-      if (trackingList.TryAdd( FullKey, _loadCount++ )) {
+      if (trackingList.TryAdd( TrackKey, _loadCount++ )) {
         LoadingStatus = ImageLoadingStatus.Loading;
         Service.RequestScheduler.Instance.Add_TileLoaderJob( tileLoaderJob ); // will eventually get the Image
         return true;
@@ -253,11 +261,11 @@ namespace MapLib.Tiles
       else {
         LoadingStatus = ImageLoadingStatus.LoadFailed;
         // could not add tracking ??
-        if (trackingList.ContainsKey( FullKey )) {
-          Debug.WriteLine( $"MapTile.LoadTile: ERROR _trackingList.TryAdd FAILED for {FullKey} - Key exists" );
+        if (trackingList.ContainsKey( TrackKey )) {
+          Debug.WriteLine( $"MapTile.LoadTile: ERROR _trackingList.TryAdd FAILED for {TrackKey} - Key exists" );
         }
         else {
-          Debug.WriteLine( $"MapTile.LoadTile: ERROR _trackingList.TryAdd FAILED for {FullKey} - Locked ??" );
+          Debug.WriteLine( $"MapTile.LoadTile: ERROR _trackingList.TryAdd FAILED for {TrackKey} - Locked ??" );
         }
 
       }
@@ -330,7 +338,7 @@ namespace MapLib.Tiles
               MapImage = mapImage;
             }
             LoadingStatus = (mapImage.IsFailedImage) ? ImageLoadingStatus.LoadFailed : ImageLoadingStatus.LoadComplete;
-            OnLoadComplete( MapImage.MapImageID.FullKey, false );
+            OnLoadComplete( MapImage.MapImageID.FullKey, Tools.ToTrackKey( MapImage.MapImageID, _version ), false );
             // if we had concurrent loading and updating - see if there is an update needed now
             //   UpdateTile( );
             return;
@@ -340,9 +348,9 @@ namespace MapLib.Tiles
       }
 
       // failed case
-      Debug.WriteLine( $"{DateTime.Now.Ticks} MapTile.OnDone: Error - could not get the image: {FullKey}" );
+      Debug.WriteLine( $"{DateTime.Now.Ticks} MapTile.OnDone: Error - could not get the image: {TrackKey}" );
       LoadingStatus = ImageLoadingStatus.LoadFailed;
-      OnLoadComplete( MapImageID.FullKey, true );
+      OnLoadComplete( MapImageID.FullKey, Tools.ToTrackKey( MapImage.MapImageID, _version ), true );
     }
 
     /// <summary>

@@ -9,6 +9,7 @@ using FS20_HudBar.GUI;
 using static FS20_HudBar.Conversions;
 using static FS20_HudBar.GUI.GUI_Colors;
 using PingLib;
+using FS20_HudBar.GUI.Templates;
 
 namespace FS20_HudBar.Bar
 {
@@ -28,9 +29,13 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static void PaceCalculator( )
     {
+      // sanity
+      if (!SC.SimConnectClient.Instance.IsConnected) return;
+
+      // use Zulu seconds - we will not update while Sim is paused
       double newTick = SC.SimConnectClient.Instance.HudBarModule.SimTime_zulu_Dsec;
       if (newTick < (_LastTick - 1.0)) {
-        // new Tick is in the past (change in SimTime?? or midnight ZULU)
+        // new Tick is in the past (change in SimTime?? or Zulu Midnight change)
         _LastTick = newTick; // try to recover next round
       }
       else if (newTick > _LastTick) {
@@ -41,7 +46,7 @@ namespace FS20_HudBar.Bar
 
         // list all methods which need to constantly readout SimData here
         FuelFlowTotalSampler( );
-        // TE_RateSampler( );
+        PosRateUpdate( );
 
         // Update Estimate Calculation with Acf data
         UpdateValues(
@@ -505,9 +510,92 @@ namespace FS20_HudBar.Bar
 
     #endregion
 
-    #region IAS limits
+    #region PositiveRate
 
+    // the positive rate required to trigger the Readout
+    private static readonly float c_PRrate_fpm = 120.0f;
+    // dAlt (above takeoff alt)  required
+    private static readonly float c_MinAOG_ft = 100;
+    // criteria must be met min so many times
+    private static readonly int c_MinRepeat = 5;
+
+    // wait for GA detection
+    private static readonly double c_GaWait_sec = 3 * 60.0;
+    // min flaps depl. percent / 100
+    private static readonly float c_GaMinFlaps_prc100 = 0.2f;
+    // min Thrust lever percent / 100
+    private static readonly float c_GaMinThrust_prc100 = 0.9f;
+    // max Alt AOG 
+    private static readonly float c_GaMaxAOG_ft = 1000f;
+
+    // state vars
+    private static float _startAlt_ft = 0;
+    private static float _prevAlt_ft = 0;
+    private static double _triggerTime_sec = 0;
+    private static int _repeatCount = 0;
+    // outcome
+    private static bool _posRate = false;
+
+    /// <summary>
+    /// Positive Rate is defined as:
+    /// repeated true min 5 times (~1 sec)
+    /// 
+    ///  dAlt > limit && alt > prevAlt && vs > limit
+    /// </summary>
+    private static void PosRateUpdate( )
+    {
+      var ds = SC.SimConnectClient.Instance.HudBarModule;
+      if (ds.Sim_OnGround) {
+        // reset while on ground
+        _startAlt_ft = ds.AltMsl_ft;
+        _posRate = false;
+        _repeatCount = 0;
+      }
+      else if (_posRate == false) {
+        // in air and waiting for PosRate
+        bool posRate = true;
+        // above detection alt
+        posRate &= ds.AltMsl_ft > (_startAlt_ft + c_MinAOG_ft); // using RA would see terrain alt changes after takeoff
+        // increasing altitude
+        posRate &= ds.AltMsl_ft > _prevAlt_ft;
+        // above min VS 
+        posRate &= ds.VS_ftPmin > c_PRrate_fpm;
+        // evaluate this cycle
+        _repeatCount = posRate ? _repeatCount + 1 : 0; // reset if not met
+        // evaluate total
+        _posRate = (_repeatCount >= c_MinRepeat);
+        if (_posRate) {
+          _triggerTime_sec = ds.SimTime_sec;
+        }
+      }
+      else {
+        // in air and PosRate found before
+        // can we detect a GoAround situation ?? to retrigger the PosRate
+        // something like: gear down, flaps > 0, full thrust applied, > 5Min since last trigger
+        bool ga = true;
+        ga &= ds.FlapsDeployment_prct > c_GaMinFlaps_prc100;
+        ga &= ds.ThrottleLever_prct > c_GaMinThrust_prc100;
+        ga &= ds.AltAoG_ft < c_GaMaxAOG_ft;
+        ga &= ds.SimTime_sec > (_triggerTime_sec + c_GaWait_sec); // wait time elapsed
+        ga &= ds.GearPos == FSimClientIF.GearPosition.Down;
+
+        if (ga) {
+          // reset when detecting GA criteria
+          _startAlt_ft = ds.AltMsl_ft; // assume the current alt as lower limit, acft will usually go below for a while and then regain this alt
+          _posRate = false; // disable flag
+          _repeatCount = 0; // init cycle count
+        }
+      }
+      // for the next cycle
+      _prevAlt_ft = ds.AltMsl_ft;
+    }
+
+    /// <summary>
+    /// Get: Positive Rate 
+    /// </summary>
+    public static bool PositiveRate => _posRate;
 
     #endregion
+
   }
 }

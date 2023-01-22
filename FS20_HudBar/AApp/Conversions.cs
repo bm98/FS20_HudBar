@@ -104,6 +104,16 @@ namespace FS20_HudBar
     }
 
     /// <summary>
+    /// Returns Foot/Min from Meter/Sec
+    /// </summary>
+    /// <param name="fpm">A foot/minute value</param>
+    /// <returns>The foot/Min value</returns>
+    public static float Ftpm_From_Mps( float mps )
+    {
+      return (float)(mps * 60.0 * c_ftPm);
+    }
+
+    /// <summary>
     /// Returns m/s from kt
     /// </summary>
     /// <param name="kt">Knots value</param>

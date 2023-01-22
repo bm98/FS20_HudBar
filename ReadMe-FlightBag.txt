@@ -1,5 +1,5 @@
-FS20_FlightBag V 0.58 - Build 58 BETA
-(c) M. Burri - 03-Jan-2023
+FS20_FlightBag V 0.60 - Build 60 BETA
+(c) M. Burri - 31-Jan-2023
 
 Contains files:
 
@@ -59,6 +59,10 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.60-B60
+- Update FlightBag Map handling improved
+- Update DataLoader fix reading of airport names (file changed in SU11)
 
 V 0.58-B58
 - Fix Exception raised when closing the App (when the WASM module in not used)

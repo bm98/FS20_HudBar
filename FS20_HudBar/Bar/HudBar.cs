@@ -83,6 +83,8 @@ namespace FS20_HudBar.Bar
       {LItem.ETRIM, DI_ETrim.Desc },          {LItem.RTRIM, DI_RTrim.Desc },    {LItem.ATRIM, DI_ATrim.Desc },
       {LItem.A_ETRIM, DI_A_ETrim.Desc},
 
+      {LItem.WBALLAST_ANI,DI_WaterBallast.Desc},
+
       {LItem.OAT_C, DI_Oat_C.Desc },          {LItem.OAT_F, DI_Oat_F.Desc },
       {LItem.VIS, DI_Vis.Desc },
       {LItem.WIND_SD, DI_Wind_SD.Desc },      {LItem.WIND_XY, DI_Wind_XY.Desc },  {LItem.VWIND, DI_Wind_V.Desc },
@@ -437,6 +439,8 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_A_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_RTrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ATrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      // Water Ballast
+      m_dispItems.AddDisp( new DI_WaterBallast( m_valueItems, lblProto ) );
       // GPS
       m_dispItems.AddDisp( new DI_Gps_TRK( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gps_GS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );

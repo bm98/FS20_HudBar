@@ -1,5 +1,5 @@
-FS20_HudBar V 0.59 - Build 59 BETA
-(c) M. Burri - 15-Jan-2023
+FS20_HudBar V 0.60 - Build 60 BETA
+(c) M. Burri - 31-Jan-2023
 
 Contains files:
 
@@ -70,6 +70,13 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.60-B60
+- Add PositiveRate Callout (criteria see QuickGuide)
+- Add Water Ballast Gauges for Gliders (quantity and flow)
+- Update FlightBag Map handling improved
+- Update DataLoader fix reading of airport names (file changed in SU11)
+- Update QuickGuide
 
 V 0.59-B59
 - Update Improved TE VARIO calculations when not supported by acft model

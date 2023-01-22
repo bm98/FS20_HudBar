@@ -189,6 +189,8 @@ namespace FS20_HudBar.Bar.Items
     NETTO_ANI,    // Netto Vario Graph
     MCRAD_MPS,    // MacCready Speed and Setting [mps]
     MCRAD_KT,     // MacCready Speed and Setting [kt]
+
+    WBALLAST_ANI, // Glider Water Ballast Graphs
   }
 
 
@@ -231,6 +233,10 @@ namespace FS20_HudBar.Bar.Items
     A_ETRIM,      // Auto ETrim, activates ETrim Module, shows ETrim % (same as the standard one)
     RTRIM,        // Rudder Trim +-N%, active: set to zero
     ATRIM,        // Aileron Trim +-N%, active: set to zero
+
+    // WATER BALLAST
+    WBALLAST_ANI, // Glider Water Ballast Quantity Graph
+    WFLOW_ANI,    // Glider Water Ballast Flow Graph
 
     // ACFT
     GEAR,         // Gear Up/Down

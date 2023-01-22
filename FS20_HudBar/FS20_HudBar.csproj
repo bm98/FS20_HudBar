@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>59</ApplicationRevision>
-    <ApplicationVersion>0.59.0.59</ApplicationVersion>
+    <ApplicationRevision>60</ApplicationRevision>
+    <ApplicationVersion>0.60.0.60</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -211,6 +211,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AutopilotPara\DI_Ap_VNav.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_WaterBallast.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\InstrPara\DI_VarioMCS_mps.cs">
@@ -846,6 +849,7 @@
     <Compile Include="Triggers\T_Glideslope.cs" />
     <Compile Include="Triggers\T_IAS_Rotate.cs" />
     <Compile Include="Triggers\T_OAT.cs" />
+    <Compile Include="Triggers\T_PositiveRate.cs" />
     <Compile Include="Triggers\T_RAcallout.cs" />
     <Compile Include="Triggers\T_Spoilers.cs" />
     <Compile Include="Triggers\T_WarnFuel.cs" />

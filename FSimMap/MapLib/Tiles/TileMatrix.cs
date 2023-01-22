@@ -29,10 +29,15 @@ namespace MapLib.Tiles
     private TrackingCat _tileTrackingList = new TrackingCat( );
     // lock while updating many
     private object _tileLock = new object( );
+    // tracks the extension to apply a unique tile ID
+    private int _extendVersion = 0;
 
     // Extend Matrix helpers for serializing and post process asynch the Extend calls while the matrix is still loading
     private BackgroundWorker _extendBGW = new BackgroundWorker( ) { WorkerSupportsCancellation = true, WorkerReportsProgress = true };
     private ConcurrentQueue<TileMatrixSide> _extendQueue = new ConcurrentQueue<TileMatrixSide>( );
+
+    private List<MapTile> _obsoleteTiles = new List<MapTile>( );
+
 
     /// <summary>
     /// Event triggered on LoadComplete or LoadFailed
@@ -48,10 +53,10 @@ namespace MapLib.Tiles
     {
       //     Debug.WriteLine( $"{DateTime.Now.Ticks} TileMatrix.OnLoadComplete- Key: <{key}> LoadFailed: {!string.IsNullOrEmpty( key )} MatComplete: {string.IsNullOrEmpty( key )}" );
 
-      if (LoadComplete == null)
+      if (LoadComplete == null) {
         Debug.WriteLine( $"TileMatrix.OnLoadComplete: NO EVENT RECEIVERS HAVE REGISTERED" );
-
-      LoadComplete?.Invoke( this, new LoadCompleteEventArgs( key, !string.IsNullOrEmpty( key ), string.IsNullOrEmpty( key ) ) );
+      }
+      LoadComplete?.Invoke( this, new LoadCompleteEventArgs( key, "dummy", !string.IsNullOrEmpty( key ), string.IsNullOrEmpty( key ) ) );
     }
 
     private Rectangle _mapPixelBounds = new Rectangle( );
@@ -348,6 +353,8 @@ namespace MapLib.Tiles
     /// <returns>An Image</returns>
     public void DrawMatrixImage( Graphics g, bool drawTileBorder = false )
     {
+      // Debug.WriteLine( $"DrawMatrixImage: {this.CenterCoord}" );
+
       var refTile = this.GetTile( new Point( 0, 0 ) );
       if (refTile == null) return;
 
@@ -533,10 +540,16 @@ namespace MapLib.Tiles
     /// <param name="matrixSide">Extend towards side(s)</param>
     public void ExtendMatrix( TileMatrixSide matrixSide )
     {
+      ExtendMatrix_low( matrixSide ); // not busy loading - just add - leads to less flickering map
+
+      /* OLD Asynch code - does not work well ...
+      return;
       if (LoadingStatus == ImageLoadingStatus.LoadComplete) {
+        Debug.WriteLine( $"ExtendMatrix: direct {matrixSide}" );
         ExtendMatrix_low( matrixSide ); // not busy loading - just add - leads to less flickering map
       }
       else {
+        Debug.WriteLine( $"ExtendMatrix: queued {matrixSide}" );
         // while the matrix is loading we queue request and process them in the background 
         // one after the other - this may lead to delayed map updates and a flickering map
         // though this happens only when moving the mouse fast around
@@ -545,14 +558,19 @@ namespace MapLib.Tiles
           _extendBGW.RunWorkerAsync( );
         }
       }
+      */
     }
 
     // internal Extend - does the job
     private void ExtendMatrix_low( TileMatrixSide matrixSide )
     {
+      // Debug.WriteLine( $"ExtendMatrix_low: {matrixSide}" );
+
+      /* Used with BGW code - obsolete now
       if (LoadingStatus != ImageLoadingStatus.LoadComplete) {
-        Debug.WriteLine( $"TileMatrix.ExtentMatrix: ERROR MATRIX STATUS {LoadingStatus}" );
+        Debug.WriteLine( $"TileMatrix.ExtendMatrix: MATRIX STATUS {LoadingStatus}" );
       }
+      */
 
       // sanity..
       matrixSide = (matrixSide & TileMatrixSide.Left) > 0 ? matrixSide & ~TileMatrixSide.Right : matrixSide; // mask right if left is set
@@ -560,53 +578,67 @@ namespace MapLib.Tiles
       // TODO check for 1,1 Matrix
 
       lock (_tileLock) {
+        _extendVersion++; // new Extension Version
+
         if ((matrixSide & TileMatrixSide.Left) > 0) {
-          // rotate each row to the right and add new content on the left x=0 side
+          // shift each row to the right and add new content on the left x=0 side
           for (int y = 0; y < Height; y++) {
             var tmp = _mapTiles[Width - 1, y]; // save right element
             for (int x = (int)Width - 1; x > 0; x--) {
               _mapTiles[x, y] = _mapTiles[x - 1, y]; // shift right
             }
             //          tmp.MapImage.
-            _mapTiles[0, y] = tmp; // rot right to left
+            HandleObsoleteTiles( tmp );
+            // add a new Tile for this extension
+            _mapTiles[0, y] = new MapTile( ZoomLevel, MapProvider, _extendVersion );
+            _mapTiles[0, y].LoadComplete += TileMatrix_LoadComplete; // attach a tracker event
             _mapTiles[0, y].TileXYUpdate = Tools.TileXY_DecX( _mapTiles[1, y].TileXY, ZoomLevel );
           }
         }
 
         if ((matrixSide & TileMatrixSide.Right) > 0) {
-          // rotate each row to the left and add new content on the right x=Width-1 side
+          // shift each row to the left and add new content on the right x=Width-1 side
           for (int y = 0; y < Height; y++) {
             var tmp = _mapTiles[0, y];  // save left element
             for (int x = 0; x < Width - 1; x++) {
               _mapTiles[x, y] = _mapTiles[x + 1, y]; // shift left
             }
-            _mapTiles[Width - 1, y] = tmp; // rot left to right
+            HandleObsoleteTiles( tmp );
+            // add a new Tile for this extension
+            _mapTiles[Width - 1, y] = new MapTile( ZoomLevel, MapProvider, _extendVersion );
+            _mapTiles[Width - 1, y].LoadComplete += TileMatrix_LoadComplete; // attach a tracker event
             _mapTiles[Width - 1, y].TileXYUpdate = Tools.TileXY_IncX( _mapTiles[Width - 2, y].TileXY, ZoomLevel );
           }
         }
 
         // top (check if we had a side shift before and adjust accordingly)
         if ((matrixSide & TileMatrixSide.Top) > 0) {
-          // rotate each row to the bottom and add new content on the top y=0 side
+          // shift each row to the bottom and add new content on the top y=0 side
           for (int x = 0; x < Width; x++) {
             var tmp = _mapTiles[x, Height - 1]; // save bottom element
             for (int y = (int)Height - 1; y > 0; y--) {
               _mapTiles[x, y] = _mapTiles[x, y - 1]; // shift down
             }
-            _mapTiles[x, 0] = tmp; // rot bottom to top
+            HandleObsoleteTiles( tmp );
+            // add a new Tile for this extension
+            _mapTiles[x, 0] = new MapTile( ZoomLevel, MapProvider, _extendVersion );
+            _mapTiles[x, 0].LoadComplete += TileMatrix_LoadComplete; // attach a tracker event
             _mapTiles[x, 0].TileXYUpdate = _mapTiles[x, 1].NeedsUpdate ? Tools.TileXY_DecY( _mapTiles[x, 1].TileXYUpdate, ZoomLevel )
                                                                        : Tools.TileXY_DecY( _mapTiles[x, 1].TileXY, ZoomLevel );
           }
         }
 
         if ((matrixSide & TileMatrixSide.Bottom) > 0) {
-          // rotate each row to the top and add new content on the bottom y=Height-1 side
+          // shift each row to the top and add new content on the bottom y=Height-1 side
           for (int x = 0; x < Width; x++) {
             var tmp = _mapTiles[x, 0]; // save top element
             for (int y = 0; y < Height - 1; y++) {
               _mapTiles[x, y] = _mapTiles[x, y + 1]; // shift up
             }
-            _mapTiles[x, Height - 1] = tmp; // rot top to bottom
+            HandleObsoleteTiles( tmp );
+            // add a new Tile for this extension
+            _mapTiles[x, Height - 1] = new MapTile( ZoomLevel, MapProvider, _extendVersion );
+            _mapTiles[x, Height - 1].LoadComplete += TileMatrix_LoadComplete; // attach a tracker event
             _mapTiles[x, Height - 1].TileXYUpdate = _mapTiles[x, Height - 2].NeedsUpdate ? Tools.TileXY_IncY( _mapTiles[x, Height - 2].TileXYUpdate, ZoomLevel )
                                                                                          : Tools.TileXY_IncY( _mapTiles[x, Height - 2].TileXY, ZoomLevel );
           }
@@ -615,15 +647,33 @@ namespace MapLib.Tiles
         // create updates
         for (int x = 0; x < Width; x++) {
           for (int y = 0; y < Height; y++) {
-            if (_mapTiles[x, y].NeedsUpdate) {
-              if (_mapTiles[x, y].UpdateTile( _tileTrackingList )) {
-                LoadingStatus = ImageLoadingStatus.Loading;
-              }
+            if (_mapTiles[x, y].UpdateTile( _tileTrackingList )) {
+              // Debug.WriteLine( $"UPDATING TILE:[{x}|{y}] with {_mapTiles[x, y].TileXY}" );
+              LoadingStatus = ImageLoadingStatus.Loading;
             }
           }
         }
       }//lock
+    }
 
+    // clean non loading obsoletes, loading ones will be removed after Loaded
+    private void HandleObsoleteTiles( MapTile mapTile )
+    {
+      // sanity
+      if (mapTile == null) return;
+
+      if (mapTile.NeedsUpdate || mapTile.LoadingStatus == ImageLoadingStatus.Loading) {
+        // is in the process of updating but still obsolete by now..
+        _tileTrackingList.TryRemove( mapTile.TrackKey, out var _ ); // obsolete - remove from tracker
+        lock (_obsoleteTiles) {
+          _obsoleteTiles.Add( mapTile ); // add - to be removed after completion
+        }
+        return;
+      }
+      else {
+        mapTile.LoadComplete -= TileMatrix_LoadComplete;
+        mapTile.Dispose( );
+      }
     }
 
     #endregion
@@ -657,16 +707,17 @@ namespace MapLib.Tiles
     private void TileMatrix_LoadComplete( object sender, LoadCompleteEventArgs e )
     {
       if (e.LoadFailed) {
-        Debug.WriteLine( $"TileMatrix_LoadComplete: ERROR - LoadFailed for Tile {e.TileKey}" );
+        Debug.WriteLine( $"TileMatrix_LoadComplete: ERROR - LoadFailed for Tile {e.TrackKey}" );
         LoadingStatus = ImageLoadingStatus.LoadFailed;
         OnLoadComplete( e.TileKey ); // report about a failed Tile
       }
-      if (_tileTrackingList.TryRemove( e.TileKey, out int _ )) {
-        //        Debug.WriteLine( $"TileMatrix_LoadComplete - got Tile {e.TileKey}" );
+      if (_tileTrackingList.TryRemove( e.TrackKey, out int _ )) {
+        // Debug.WriteLine( $"TileMatrix_LoadComplete - got Tile {e.TileKey}" );
         ; // Debug Stop
       }
       else {
-        Debug.WriteLine( $"TileMatrix_LoadComplete: ERROR in tile tracking, Tile {e.TileKey} was not found (already removed?)" );
+        // Debug.WriteLine( $"TileMatrix_LoadComplete: Tile {e.TrackKey} was not found (already removed?)" );
+        ; // Debug Stop
       }
 
       // check if all done
@@ -674,6 +725,16 @@ namespace MapLib.Tiles
         //        Debug.WriteLine( $"TileMatrix_LoadComplete (last tile: {e.TileKey})" );
         LoadingStatus = ImageLoadingStatus.LoadComplete;
         OnLoadComplete( "" );
+      }
+
+      // handle obsoletes after the the loading cycle
+      lock (_obsoleteTiles) {
+        var obsolete = _obsoleteTiles.FirstOrDefault( x => x.TrackKey == e.TrackKey );
+        if (obsolete != null) {
+          _obsoleteTiles.Remove( obsolete );
+          obsolete.LoadComplete -= TileMatrix_LoadComplete;
+          obsolete.Dispose( );
+        }
       }
     }
 
@@ -689,6 +750,14 @@ namespace MapLib.Tiles
         }
         LoadingStatus = ImageLoadingStatus.Idle;
         _tileTrackingList.Clear( );
+      }
+
+      lock (_obsoleteTiles) {
+        var oTiles= _obsoleteTiles.ToList();
+        foreach (var ot in oTiles) {
+          HandleObsoleteTiles( ot );
+        }
+        _obsoleteTiles.Clear( );
       }
     }
 

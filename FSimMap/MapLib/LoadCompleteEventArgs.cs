@@ -16,6 +16,10 @@ namespace MapLib
     /// </summary>
     public string TileKey { get; set; }
     /// <summary>
+    /// A Full Tile Tracking Key (provider¦Znn¦Xnnnn¦Ynnnn|n..)
+    /// </summary>
+    public string TrackKey { get; set; }
+    /// <summary>
     /// True when the Matrix loading has completed
     /// </summary>
     public bool MatrixComplete { get; set; }
@@ -27,12 +31,14 @@ namespace MapLib
     /// <summary>
     /// Event Args for Matrix Load Complete events
     /// </summary>
-    /// <param name="tileKey">A tile Key</param>
+    /// <param name="tileKey">A tile Image Key</param>
+    /// <param name="trackKey">A tile tracking Key</param>
     /// <param name="loadFailed">True if loading failed</param>
     /// <param name="matComplete">True if Matrix loading has completed</param>
-    public LoadCompleteEventArgs( string tileKey, bool loadFailed, bool matComplete )
+    public LoadCompleteEventArgs( string tileKey, string trackKey, bool loadFailed, bool matComplete )
     {
       TileKey = tileKey;
+      TrackKey = trackKey;
       LoadFailed = loadFailed;
       MatrixComplete = matComplete;
     }

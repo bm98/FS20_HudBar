@@ -65,7 +65,8 @@ namespace MapLib
       return (int)(tileXY.X + 2 * tileXY.Y) % max;
     }
 
-    
+    // TILE KEYs 
+
     /// <summary>
     /// Returns the XY Tile Key for the arguments
     /// (Xx¦Yy)
@@ -127,6 +128,8 @@ namespace MapLib
       return ToZxyKey( mapImageID.TileXY, mapImageID.ZoomLevel );
     }
 
+    // IMAGE ID KEYs 
+
     /// <summary>
     /// Returns the fully qualified Image Key for the arguments
     /// (provider¦Zz¦Xx¦Yy)
@@ -167,8 +170,53 @@ namespace MapLib
       return ToFullKey( mapImageID.MapProvider, mapImageID.TileXY, mapImageID.ZoomLevel );
     }
 
-    //  "PROVIDER_NAME¦Zzz¦Xxxxxx¦Yyyyyy"
-    private static Regex _rxFullKey = new Regex( @"^(?<p>\w+?)¦Z(?<z>\d{1,2})¦X(?<x>\d{1,5})¦Y(?<y>\d{1,5})", RegexOptions.Compiled );
+    // TRACKING KEYs 
+
+    /// <summary>
+    /// Returns the fully qualified Image Tracking Key for the arguments
+    /// (provider¦Zz¦Xx¦Yy)
+    /// </summary>
+    /// <param name="mapProvider">A map provider</param>
+    /// <param name="x">Tile x coord</param>
+    /// <param name="y">Tile y coord</param>
+    /// <param name="zoom">Zoom level</param>
+    /// <param name="version">A Tracking Version number</param>
+    /// <returns>A Key string or an empty string on error</returns>
+    public static string ToTrackKey( MapProvider mapProvider, int x, int y, ushort zoom, int version )
+    {
+      var q = ToFullKey( mapProvider, x, y, zoom );
+      // MASTER CONVERSION
+      return string.IsNullOrEmpty( q ) ? "" : $"{q}¦{version}";
+    }
+
+    /// <summary>
+    /// Returns the fully qualified Image Tracking Key for the arguments
+    /// (provider¦Zz¦Xx¦Yy)
+    /// </summary>
+    /// <param name="mapProvider">A map provider</param>
+    /// <param name="tileXY">Tile XY coord</param>
+    /// <param name="zoom">Zoom level</param>
+    /// <param name="version">A Tracking Version number</param>
+    /// <returns>A Key string or an empty string on error</returns>
+    public static string ToTrackKey( MapProvider mapProvider, TileXY tileXY, ushort zoom, int version )
+    {
+      return ToTrackKey( mapProvider, tileXY.X, tileXY.Y, zoom, version );
+    }
+
+    /// <summary>
+    /// Returns the fully qualified Image Tracking Key for the arguments
+    /// (provider¦Zz¦Xx¦Yy)
+    /// </summary>
+    /// <param name="mapImageID">A MapImageID</param>
+    /// <param name="version">A Tracking Version number</param>
+    /// <returns>A Key string or an empty string on error</returns>
+    public static string ToTrackKey( MapImageID mapImageID, int version )
+    {
+      return ToTrackKey( mapImageID.MapProvider, mapImageID.TileXY, mapImageID.ZoomLevel, version );
+    }
+
+    //  "PROVIDER_NAME¦Zzz¦Xxxxxx¦Yyyyyy|n.."
+    private static Regex _rxFullKey = new Regex( @"^(?<p>\w+?)¦Z(?<z>\d{1,2})¦X(?<x>\d{1,5})¦Y(?<y>\d{1,5})(¦(?<n>\d+))?", RegexOptions.Compiled );
     /// <summary>
     /// Returns a Provider String from a FullKey
     /// </summary>
