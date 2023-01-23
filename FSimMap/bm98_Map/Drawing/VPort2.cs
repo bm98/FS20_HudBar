@@ -110,6 +110,16 @@ namespace bm98_Map.Drawing
     }
 
     /// <summary>
+    /// Fired when the Map will load tiles
+    /// </summary>
+    internal event EventHandler MapLoading;
+    private void OnMapLoading( )
+    {
+      MapLoading?.Invoke( this, new EventArgs( ) );
+    }
+
+
+    /// <summary>
     /// The Map 
     /// </summary>
     public TileMatrix Map => _tileMatrix;
@@ -395,6 +405,7 @@ namespace bm98_Map.Drawing
 
       // Extend if needed
       if (extending != TileMatrixSide.None) {
+        OnMapLoading( ); // some loading will happen
         Map.ExtendMatrix( extending );
         RenderStatic( );
       }

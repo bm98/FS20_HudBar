@@ -26,11 +26,12 @@ namespace MapLib.Tiles
     private int _loadCount = 0;
     // a tile version for ID
     private int _version = 0;
+    private EventHandler<LoadCompleteEventArgs> _handler = null;
 
     /// <summary>
     /// Event triggered on LoadComplete or LoadFailed
     /// </summary>
-    public event EventHandler<LoadCompleteEventArgs> LoadComplete;
+    private event EventHandler<LoadCompleteEventArgs> LoadComplete;
 
     // Signal the user that data has arrived
     private void OnLoadComplete( string tileKey, string trackKey, bool failed )
@@ -66,6 +67,10 @@ namespace MapLib.Tiles
     /// </summary>
     public ImageLoadingStatus LoadingStatus { get; private set; } = ImageLoadingStatus.Unknown;
 
+    /// <summary>
+    /// The MapTile Version
+    /// </summary>
+    public int Version => _version;
 
     // calc from live values so we don't need to track changes
 
@@ -212,47 +217,59 @@ namespace MapLib.Tiles
     /// <summary>
     /// cTor:
     /// </summary>
-    public MapTile( ushort zoomLevel = 0, MapProvider provider = MapProvider.DummyProvider, int version = 0 )
+    public MapTile( )
     {
       TileXYUpdate = c_tileNone;
+    }
+
+    /// <summary>
+    /// Set the Tile configuration the tile
+    /// </summary>
+    /// <param name="zoomLevel">The Zoomlevel</param>
+    /// <param name="provider">The Map Provider</param>
+    /// <param name="version">The Tile Version</param>
+    /// <param name="loadCompleteHandler">The LoadComplete Handler</param>
+    public void Configure( ushort zoomLevel, MapProvider provider, int version, EventHandler<LoadCompleteEventArgs> loadCompleteHandler )
+    {
+      if (provider == MapProvider.DummyProvider) {
+        Debug.WriteLine( $"MapTile.Configure: ERROR Invalid MapProvider" );
+        throw new ArgumentException( "Invalid MapProvider" ); // cannot
+      }
+
       ZoomLevel = zoomLevel;
       MapProvider = provider;
       _version = version;
+      _handler = loadCompleteHandler;
+      this.LoadComplete += loadCompleteHandler;
     }
 
     /// <summary>
     /// Load this Tile
     /// </summary>
     /// <param name="tileXY">The TileXY</param>
-    /// <param name="zoomLevel">A zoom level</param>
-    /// <param name="provider">A MapProvider</param>
     /// <param name="trackingList">The Tile tracking list</param>
     /// <returns>True if loading</returns>
-    public bool LoadTile( TileXY tileXY, ushort zoomLevel, MapProvider provider, TrackingCat trackingList )
+    public bool LoadTile( TileXY tileXY, TrackingCat trackingList )
     {
-      if (provider == MapProvider.DummyProvider) return false; // cannot
       if (LoadingStatus == ImageLoadingStatus.Loading) {
         // the Tile is currently loading from a prev call
         // wait until this one has finished before loading a new one
         Debug.WriteLine( $"MapTile.LoadTile: Busy Tile {TrackKey}" );
         return false;// cannot load when loading
       }
-
-      _providerInstance = Sources.Providers.MapProviderBase.GetProviderInstance( provider );
-      ZoomLevel = zoomLevel;
-      MapProvider = provider;
+      _providerInstance = Sources.Providers.MapProviderBase.GetProviderInstance( MapProvider );
 
       string oldTile = "Initial load";
       if (NeedsUpdate) {
         oldTile = "Update from " + FullKey;
       }
 
-      MapImageID = new MapImageID( tileXY, zoomLevel, provider );
+      MapImageID = new MapImageID( tileXY, ZoomLevel, MapProvider );
       TileXYUpdate = c_tileNone; // clear update
 
       //      Debug.WriteLine( $"MapTile.LoadTile: Loading {FullKey} ({oldTile})" );
 
-      TileLoaderJob tileLoaderJob = new TileLoaderJob( tileXY, zoomLevel, _providerInstance, OnDone );
+      TileLoaderJob tileLoaderJob = new TileLoaderJob( tileXY, ZoomLevel, _providerInstance, OnDone );
       if (trackingList.TryAdd( TrackKey, _loadCount++ )) {
         LoadingStatus = ImageLoadingStatus.Loading;
         Service.RequestScheduler.Instance.Add_TileLoaderJob( tileLoaderJob ); // will eventually get the Image
@@ -274,18 +291,15 @@ namespace MapLib.Tiles
 
     /// <summary>
     /// Load a Tile from a Coordinate anywhere on this Tile
+    ///  Tile has to be Configured before loading
     /// </summary>
     /// <param name="coordOnTile">The coord which the Tile should include</param>
-    /// <param name="zoomLevel">A zoom level</param>
-    /// <param name="provider">A MapProvider</param>
     /// <param name="trackingList">The Tile tracking list</param>
     /// <returns>True if loading</returns>
-    public bool LoadTile( LatLon coordOnTile, ushort zoomLevel, MapProvider provider, TrackingCat trackingList )
+    public bool LoadTile( LatLon coordOnTile, TrackingCat trackingList )
     {
-      if (provider == MapProvider.DummyProvider) return false; // cannot
-
-      var tileXY = TileXY.LatLonToTileXY( coordOnTile, zoomLevel );
-      return LoadTile( tileXY, zoomLevel, provider, trackingList );
+      var tileXY = TileXY.LatLonToTileXY( coordOnTile, ZoomLevel );
+      return LoadTile( tileXY, trackingList );
     }
 
     /// <summary>
@@ -295,7 +309,7 @@ namespace MapLib.Tiles
     public bool UpdateTile( TrackingCat trackingList )
     {
       if (NeedsUpdate) {
-        return LoadTile( TileXYUpdate, ZoomLevel, MapProvider, trackingList );
+        return LoadTile( TileXYUpdate, trackingList );
       }
       return false;
     }
@@ -361,7 +375,9 @@ namespace MapLib.Tiles
       ZoomLevel = 0;
       MapProvider = MapProvider.DummyProvider;
       MapImageID = new MapImageID( TileXY.Empty, 0, MapProvider.DummyProvider );
+      _version = 0;
       _providerInstance = null;
+      this.LoadComplete -= _handler;
       // Clear allocated resources
 
       // need to exclusively use the Image
@@ -456,11 +472,7 @@ namespace MapLib.Tiles
       if (!disposedValue) {
         if (disposing) {
           // TODO: dispose managed state (managed objects)
-
-          // need to exclusively use the Tile
-          lock (_imageLockObj) {
-            MapImage?.Dispose( );
-          }
+          ClearTileContent( );
         }
 
         // TODO: free unmanaged resources (unmanaged objects) and override finalizer

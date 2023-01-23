@@ -239,6 +239,12 @@
       <Name>MapLib</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\route_waypoint.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\airport_selected.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release copy $(TargetDir)*.* $(SolutionDir)..\Redist\

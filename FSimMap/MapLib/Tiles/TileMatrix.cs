@@ -32,6 +32,8 @@ namespace MapLib.Tiles
     // tracks the extension to apply a unique tile ID
     private int _extendVersion = 0;
 
+    private MapTileServer _tileServer = null;
+
     // Extend Matrix helpers for serializing and post process asynch the Extend calls while the matrix is still loading
     private BackgroundWorker _extendBGW = new BackgroundWorker( ) { WorkerSupportsCancellation = true, WorkerReportsProgress = true };
     private ConcurrentQueue<TileMatrixSide> _extendQueue = new ConcurrentQueue<TileMatrixSide>( );
@@ -316,11 +318,13 @@ namespace MapLib.Tiles
       Width = width;
       Height = height;
 
+      _tileServer = new MapTileServer( Width * Height * 4 );
+
       _mapTiles = new MapTile[width, height];// (MapTile[][])Array.CreateInstance( typeof( MapTile ), width, height );
       for (int x = 0; x < Width; x++) {
         for (int y = 0; y < Height; y++) {
-          _mapTiles[x, y] = new MapTile( ); // these are internal x/y s not TileXY !!
-          _mapTiles[x, y].LoadComplete += TileMatrix_LoadComplete; // attach a tracker event
+          //          _mapTiles[x, y] = new MapTile( ); // these are internal x/y s not TileXY !!
+          _mapTiles[x, y] = _tileServer.GetTile( ); // these are internal x/y s not TileXY !!
         }
       }
       LoadingStatus = ImageLoadingStatus.Idle; // ready to load something
@@ -492,9 +496,10 @@ namespace MapLib.Tiles
         for (int y = 0, ty = tlTileXY.Y; y < Height; y++, ty++) { // top to bottom
           var tileXY = new TileXY( tx, ty );
           tileXY.Wrap( zoomLevel ); // in case we are at the edge of the map
-                                    // start loading
-                                    //         Debug.WriteLine( $"LoadMatrix: Load triggered for: {Tools.ToFullKey( new MapImageID( tileXY, ZoomLevel, MapProvider ) )}" );
-          _mapTiles[x, y].LoadTile( tileXY, zoomLevel, MapProvider, _tileTrackingList );
+          // start loading
+          //         Debug.WriteLine( $"LoadMatrix: Load triggered for: {Tools.ToFullKey( new MapImageID( tileXY, ZoomLevel, MapProvider ) )}" );
+          _mapTiles[x, y].Configure( zoomLevel, MapProvider, 0, TileMatrix_LoadComplete );
+          _mapTiles[x, y].LoadTile( tileXY, _tileTrackingList );
 
         }
       }
@@ -590,8 +595,8 @@ namespace MapLib.Tiles
             //          tmp.MapImage.
             HandleObsoleteTiles( tmp );
             // add a new Tile for this extension
-            _mapTiles[0, y] = new MapTile( ZoomLevel, MapProvider, _extendVersion );
-            _mapTiles[0, y].LoadComplete += TileMatrix_LoadComplete; // attach a tracker event
+            _mapTiles[0, y] = _tileServer.GetTile( );
+            _mapTiles[0, y].Configure( ZoomLevel, MapProvider, _extendVersion, TileMatrix_LoadComplete );
             _mapTiles[0, y].TileXYUpdate = Tools.TileXY_DecX( _mapTiles[1, y].TileXY, ZoomLevel );
           }
         }
@@ -605,8 +610,8 @@ namespace MapLib.Tiles
             }
             HandleObsoleteTiles( tmp );
             // add a new Tile for this extension
-            _mapTiles[Width - 1, y] = new MapTile( ZoomLevel, MapProvider, _extendVersion );
-            _mapTiles[Width - 1, y].LoadComplete += TileMatrix_LoadComplete; // attach a tracker event
+            _mapTiles[Width - 1, y] = _tileServer.GetTile( );
+            _mapTiles[Width - 1, y].Configure( ZoomLevel, MapProvider, _extendVersion, TileMatrix_LoadComplete );
             _mapTiles[Width - 1, y].TileXYUpdate = Tools.TileXY_IncX( _mapTiles[Width - 2, y].TileXY, ZoomLevel );
           }
         }
@@ -621,8 +626,8 @@ namespace MapLib.Tiles
             }
             HandleObsoleteTiles( tmp );
             // add a new Tile for this extension
-            _mapTiles[x, 0] = new MapTile( ZoomLevel, MapProvider, _extendVersion );
-            _mapTiles[x, 0].LoadComplete += TileMatrix_LoadComplete; // attach a tracker event
+            _mapTiles[x, 0] = _tileServer.GetTile( );
+            _mapTiles[x, 0].Configure( ZoomLevel, MapProvider, _extendVersion, TileMatrix_LoadComplete );
             _mapTiles[x, 0].TileXYUpdate = _mapTiles[x, 1].NeedsUpdate ? Tools.TileXY_DecY( _mapTiles[x, 1].TileXYUpdate, ZoomLevel )
                                                                        : Tools.TileXY_DecY( _mapTiles[x, 1].TileXY, ZoomLevel );
           }
@@ -637,8 +642,8 @@ namespace MapLib.Tiles
             }
             HandleObsoleteTiles( tmp );
             // add a new Tile for this extension
-            _mapTiles[x, Height - 1] = new MapTile( ZoomLevel, MapProvider, _extendVersion );
-            _mapTiles[x, Height - 1].LoadComplete += TileMatrix_LoadComplete; // attach a tracker event
+            _mapTiles[x, Height - 1] = _tileServer.GetTile( );
+            _mapTiles[x, Height - 1].Configure( ZoomLevel, MapProvider, _extendVersion, TileMatrix_LoadComplete );
             _mapTiles[x, Height - 1].TileXYUpdate = _mapTiles[x, Height - 2].NeedsUpdate ? Tools.TileXY_IncY( _mapTiles[x, Height - 2].TileXYUpdate, ZoomLevel )
                                                                                          : Tools.TileXY_IncY( _mapTiles[x, Height - 2].TileXY, ZoomLevel );
           }
@@ -662,17 +667,18 @@ namespace MapLib.Tiles
       // sanity
       if (mapTile == null) return;
 
-      if (mapTile.NeedsUpdate || mapTile.LoadingStatus == ImageLoadingStatus.Loading) {
-        // is in the process of updating but still obsolete by now..
+      if ((mapTile.Version < _extendVersion) && (mapTile.LoadingStatus == ImageLoadingStatus.Loading)) {
+        // is from a previous extenstion and in the process of updating but still obsolete by now..
+        // needs to stay alive until loading has finished and the callback arrived
+        // it is no longer part of the tracked image tiles
         _tileTrackingList.TryRemove( mapTile.TrackKey, out var _ ); // obsolete - remove from tracker
         lock (_obsoleteTiles) {
           _obsoleteTiles.Add( mapTile ); // add - to be removed after completion
         }
-        return;
       }
       else {
-        mapTile.LoadComplete -= TileMatrix_LoadComplete;
-        mapTile.Dispose( );
+        // from this extension or not longer loading - it will be just disposed
+        _tileServer.ReturnTile( mapTile );
       }
     }
 
@@ -692,10 +698,12 @@ namespace MapLib.Tiles
         for (int x = 0; x < Width; x++) {
           for (int y = 0; y < Height; y++) {
             if (_mapTiles[x, y].LoadingStatus != ImageLoadingStatus.LoadComplete) {
-              Debug.WriteLine( $"TileMatrix.LoadFailedTiles: Reloading {_mapTiles[x, y].FullKey}" );
-              _mapTiles[x, y].TileXYUpdate = _mapTiles[x, y].TileXY; // re-schedule the key
-              if (_mapTiles[x, y].UpdateTile( _tileTrackingList )) {
-                LoadingStatus = ImageLoadingStatus.Loading;
+              if (_mapTiles[x, y].MapImage.ShouldRetry) {
+                Debug.WriteLine( $"TileMatrix.LoadFailedTiles: Reloading {_mapTiles[x, y].FullKey}" );
+                _mapTiles[x, y].TileXYUpdate = _mapTiles[x, y].TileXY; // re-schedule the key
+                if (_mapTiles[x, y].UpdateTile( _tileTrackingList )) {
+                  LoadingStatus = ImageLoadingStatus.Loading;
+                }
               }
             }
           }
@@ -732,8 +740,7 @@ namespace MapLib.Tiles
         var obsolete = _obsoleteTiles.FirstOrDefault( x => x.TrackKey == e.TrackKey );
         if (obsolete != null) {
           _obsoleteTiles.Remove( obsolete );
-          obsolete.LoadComplete -= TileMatrix_LoadComplete;
-          obsolete.Dispose( );
+          _tileServer.ReturnTile( obsolete );
         }
       }
     }
@@ -753,7 +760,7 @@ namespace MapLib.Tiles
       }
 
       lock (_obsoleteTiles) {
-        var oTiles= _obsoleteTiles.ToList();
+        var oTiles = _obsoleteTiles.ToList( );
         foreach (var ot in oTiles) {
           HandleObsoleteTiles( ot );
         }

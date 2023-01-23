@@ -667,10 +667,8 @@ namespace bm98_Map.Drawing
 
       // make all
       foreach (var na in airports) {
-        if (na.ICAO == _airportRef.ICAO)
-          continue; // not our selected airport, too many drawings already at this place
-
-        var altapt = new AlternateAptItem( Properties.Resources.airport ) {
+        bool isSelected = na.ICAO == _airportRef.ICAO;
+        var altapt = new AlternateAptItem( isSelected ? Properties.Resources.airport_selected : Properties.Resources.airport ) {
           Key = GProc.DispID_Anon( ),
           Active = true, // always true, we are using the ManagedHook
           Pen = PenRange3,

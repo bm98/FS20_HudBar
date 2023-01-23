@@ -1,5 +1,5 @@
 FS20_FlightBag V 0.60 - Build 60 BETA
-(c) M. Burri - 31-Jan-2023
+(c) M. Burri - 23-Jan-2023
 
 Contains files:
 

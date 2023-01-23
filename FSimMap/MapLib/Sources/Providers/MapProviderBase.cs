@@ -325,6 +325,7 @@ namespace MapLib.Sources.Providers
       if (string.IsNullOrWhiteSpace( url )) return null; // cannot
 
       MapImage mapImage = null;
+      bool retry = false;
 
       // Query the Server and convert the replied data (if possible)
       try {
@@ -351,7 +352,15 @@ namespace MapLib.Sources.Providers
       }
       catch (Exception ex) {
         if ((ex is WebException) && (ex as WebException).Status == WebExceptionStatus.Timeout) {
-          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: Response Timeout" );
+          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: WebExceptionStatus Timeout" );
+          retry = true; // can retry on timeout
+        }
+        else if ((ex is WebException) && (ex as WebException).Status == WebExceptionStatus.ProtocolError) {
+          var status = ((HttpWebResponse)(ex as WebException).Response).StatusCode;
+          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: HttpWebResponse Status: {status} ({(int)status})" );
+          if ((status == HttpStatusCode.GatewayTimeout) || (status == HttpStatusCode.RequestTimeout)) {
+            retry = true; // can retry on timeout
+          }
         }
         else {
           Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: Response Exception:\n{ex}" );
@@ -360,7 +369,7 @@ namespace MapLib.Sources.Providers
 
       // add a failed Image instead of nothing
       if (mapImage == null) {
-        mapImage = MapImage.FailedImage( mapImageID );
+        mapImage = MapImage.FailedImage( mapImageID, retry );
       }
 
       return mapImage;
@@ -385,116 +394,6 @@ namespace MapLib.Sources.Providers
     /// </summary>
     /// <param name="request">A WebRequest</param>
     protected virtual void InitializeWebRequest( WebRequest request ) { }
-
-
-
-    /// <summary>
-    /// Issues a Http Client request with the given URL
-    /// 
-    ///  -- Note: this is synchronous and waits for the Server to reply or timeout
-    ///  
-    /// </summary>
-    /// <param name="url">An URL</param>
-    /// <param name="mapImageID">The image ID to add to the image for later identification</param>
-    /// <returns>A MapImage or null</returns>
-    protected MapImage GetTileImageUsingHttp_old( string url, MapImageID mapImageID )
-    {
-      // sanity
-      if (string.IsNullOrWhiteSpace( url )) return null; // cannot
-
-      MapImage mapImage = null;
-
-      var request = WebRequest.Create( url );
-      request.Credentials = CredentialCache.DefaultCredentials;
-      if (Credentials != null) {
-        request.PreAuthenticate = true;
-        request.Credentials = Credentials;
-      }
-
-      if (!string.IsNullOrEmpty( _authorization )) {
-        request.Headers.Set( "Authorization", _authorization );
-      }
-
-      if (request is HttpWebRequest r) {
-        r.UserAgent = UserAgent;
-        r.ReadWriteTimeout = TimeoutMs * 6; //6*20s
-        r.Accept = requestAccept;
-        if (!string.IsNullOrEmpty( RefererUrl )) {
-          r.Referer = RefererUrl;
-        }
-        r.Timeout = TimeoutMs;
-      }
-      else {
-        // populate Request Fields
-        if (!string.IsNullOrEmpty( UserAgent )) {
-          request.Headers.Add( "User-Agent", UserAgent );
-        }
-
-        if (!string.IsNullOrEmpty( requestAccept )) {
-          request.Headers.Add( "Accept", requestAccept );
-        }
-
-        if (!string.IsNullOrEmpty( RefererUrl )) {
-          request.Headers.Add( "Referer", RefererUrl );
-        }
-      }
-
-      // Provider may modify the request as needed
-      InitializeWebRequest( request );
-
-      // Query the Server and convert the replied data (if possible)
-      try {
-        using (var response = request.GetResponse( )) {
-          // check the response for common status failures
-          if (CheckTileImageHttpResponse( response )) {
-            // so far OK - collect the data
-            using (var responseStream = response.GetResponseStream( )) {
-              // copy the data into a memory stream
-              var imageStream = Tools.CopyStream( responseStream, false );
-#if DEBUG
-              //              Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp.Response[{imageStream.Length}  bytes]: \n    URL='{url}'" );
-#endif
-              // so far OK...
-              if (imageStream.Length > 0) {
-                mapImage = MapImage.FromStream( imageStream, mapImageID );
-                /* no longer needed as the class provides the stream on demand
-                if (mapImage != null) {
-                  // could retrieve the Image
-                  mapImage.SetDataStream( imageStream );
-                }
-                else {
-                  // nope - discard the data
-                  imageStream.Dispose( );
-                }
-                */
-                imageStream.Dispose( );
-              }
-            }
-          }
-          else {
-            // something went wrong with the query
-            Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp.CheckTileImageHttpResponse[false]: \n    URL='{url}'" );
-          }
-          response.Close( );
-        }
-
-      }
-      catch (Exception ex) {
-        if ((ex is WebException) && (ex as WebException).Status == WebExceptionStatus.Timeout) {
-          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: Response Timeout" );
-        }
-        else {
-          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: Response Exception:\n{ex}" );
-        }
-      }
-
-      // add a failed Image instead of nothing
-      if (mapImage == null) {
-        mapImage = MapImage.FailedImage( mapImageID );
-      }
-
-      return mapImage;
-    }
 
     #endregion
 

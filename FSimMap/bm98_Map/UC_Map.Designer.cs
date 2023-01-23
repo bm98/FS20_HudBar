@@ -63,6 +63,7 @@
       this.btRunway = new System.Windows.Forms.Button();
       this.pbDrawing = new System.Windows.Forms.PictureBox();
       this.pbAltLadder = new System.Windows.Forms.PictureBox();
+      this.lblLoading = new System.Windows.Forms.Label();
       this.flpAcftData.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pbDrawing)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.pbAltLadder)).BeginInit();
@@ -609,12 +610,25 @@
       this.pbAltLadder.TabStop = false;
       this.pbAltLadder.Visible = false;
       // 
+      // lblLoading
+      // 
+      this.lblLoading.AutoSize = true;
+      this.lblLoading.BackColor = System.Drawing.Color.YellowGreen;
+      this.lblLoading.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblLoading.ForeColor = System.Drawing.Color.Black;
+      this.lblLoading.Location = new System.Drawing.Point(282, 3);
+      this.lblLoading.Name = "lblLoading";
+      this.lblLoading.Size = new System.Drawing.Size(105, 17);
+      this.lblLoading.TabIndex = 27;
+      this.lblLoading.Text = "Loading Map ...";
+      // 
       // UC_Map
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(16)))));
       this.CausesValidation = false;
+      this.Controls.Add(this.lblLoading);
       this.Controls.Add(this.flpNavaids);
       this.Controls.Add(this.flpTower);
       this.Controls.Add(this.flpRunways);
@@ -698,5 +712,6 @@
     private System.Windows.Forms.Button btRangeFarFar;
     private System.Windows.Forms.Label lblGS;
     private System.Windows.Forms.PictureBox pbAltLadder;
+    private System.Windows.Forms.Label lblLoading;
   }
 }

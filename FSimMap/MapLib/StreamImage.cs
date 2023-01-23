@@ -83,7 +83,10 @@ namespace MapLib
     /// Should not be cached ...
     /// </summary>
     public bool IsFailedImage { get; protected set; } = false;
-
+    /// <summary>
+    /// True if a retry should be done
+    /// </summary>
+    public bool ShouldRetry { get; protected set; } = false;
 
     /// <summary>
     /// cTor: is protected, 

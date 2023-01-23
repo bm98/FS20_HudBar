@@ -19,7 +19,7 @@ namespace bm98_Map.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -136,6 +136,16 @@ namespace bm98_Map.Properties {
         internal static System.Drawing.Bitmap airport_large {
             get {
                 object obj = ResourceManager.GetObject("airport_large", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap airport_selected {
+            get {
+                object obj = ResourceManager.GetObject("airport_selected", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -276,6 +286,16 @@ namespace bm98_Map.Properties {
         internal static System.Drawing.Bitmap rings {
             get {
                 object obj = ResourceManager.GetObject("rings", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap route_waypoint {
+            get {
+                object obj = ResourceManager.GetObject("route_waypoint", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

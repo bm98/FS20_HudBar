@@ -56,14 +56,12 @@ namespace bm98_Map.Drawing
           g.DrawImage( _imageRef, rect );
           g.TranslateTransform( rect.Width / 2, rect.Height / 2, MatrixOrder.Append );
           // Navaid Location = 0/0
-          g.TranslateTransform( -textRect.Width / 2, rect.Height/2, MatrixOrder.Append );// below
+          g.TranslateTransform( -textRect.Width / 2, rect.Height / 2, MatrixOrder.Append );// below
           g.DrawString( String, Font, TextBrush, textRect, StringFormat );
         }
       }
       g.EndContainer( save );
     }
-
-
   }
 }
 

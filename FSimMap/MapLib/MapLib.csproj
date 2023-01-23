@@ -89,6 +89,7 @@
     <Compile Include="Service\LoaderJobWrapper.cs" />
     <Compile Include="Sources\Providers\OpenSrc\OSM_OpenStreetMap.cs" />
     <Compile Include="Tiles\MapTile.cs" />
+    <Compile Include="Tiles\MapTileServer.cs" />
     <Compile Include="Tiles\TileMatrix.cs" />
     <Compile Include="Tiles\TrackingCat.cs" />
     <Compile Include="Tools.cs" />

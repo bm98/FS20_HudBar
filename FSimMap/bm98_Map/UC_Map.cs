@@ -236,6 +236,7 @@ namespace bm98_Map
       set {
         _airportDisplayMgr.ShowTrackedAircraft = value; btTogAcftData.BackColor = (value) ? _decoBColorON : _decoBColorOFF;
         pbAltLadder.Visible = value;
+        if (value) { pbAltLadder.BringToFront( ); }
         flpAcftData.Visible = value;
       }
     }
@@ -621,7 +622,9 @@ namespace bm98_Map
     {
       Debug.WriteLine( $"UC_Map.StartMapLoading- Center: {centerLatLon}" );
 
-      pbDrawing.Cursor = Cursors.WaitCursor;
+      lblLoading.Visible = true; 
+      lblLoading.BringToFront( );
+
       _viewport.LoadMap( centerLatLon, (ushort)_mapRange, MapManager.Instance.CurrentProvider );
       // need to (re)set the current Range
       _airportDisplayMgr.SetMapRange( _mapRange );
@@ -643,12 +646,27 @@ namespace bm98_Map
       }
     }
 
-    // reload complete, cleanup 
+    // event triggered when some Map loading starts 
+    private void Canvas_MapLoading( object sender, EventArgs e )
+    {
+      if (this.InvokeRequired) {
+        this.Invoke( (MethodInvoker)delegate {
+          lblLoading.Visible = true;
+          lblLoading.BringToFront( );
+        } );
+      }
+      else {
+        lblLoading.Visible = true;
+        lblLoading.BringToFront( );
+      }
+    }
+
+
+    // reload complete, cleanup (within thread)
     private void ReloadComplete( )
     {
       // seems to be fully complete or cannot load any longer
-      if (pbDrawing.Cursor == Cursors.WaitCursor)
-        pbDrawing.Cursor = Cursors.Default;
+      lblLoading.Visible = false;
     }
 
     // delegate procssesing into the GUI thread
@@ -697,6 +715,8 @@ namespace bm98_Map
     {
       InitializeComponent( );
 
+      lblLoading.Visible = false;
+
       // load indexed access to MapRange Buttons
       _mrButtons.Add( MapRange.FarFar, btRangeFarFar );
       _mrButtons.Add( MapRange.Far, btRangeFar );
@@ -731,6 +751,7 @@ namespace bm98_Map
       flpProvider.Top = btMapProvider.Bottom + 5;
       _viewport = new VPort2( pbDrawing );
       _viewport.LoadComplete += Canvas_LoadComplete;
+      _viewport.MapLoading += Canvas_MapLoading;
 
       // create dummies to have them defined
       _airportRef = Data.Airport.DummyAirport( new LatLon( 0, 0, 0 ) );
@@ -800,6 +821,7 @@ namespace bm98_Map
       flpTower.Visible = false;
       flpNavaids.Visible = false;
       flpRunways.Visible = !flpRunways.Visible; // toggle
+      if (flpRunways.Visible) { flpRunways.BringToFront( ); }
     }
 
     private void btTower_Click( object sender, EventArgs e )
@@ -807,6 +829,7 @@ namespace bm98_Map
       flpRunways.Visible = false;
       flpNavaids.Visible = false;
       flpTower.Visible = !flpTower.Visible; // toggle
+      if (flpTower.Visible) { flpTower.BringToFront( ); }
     }
 
     private void btNavaids_Click( object sender, EventArgs e )
@@ -814,11 +837,13 @@ namespace bm98_Map
       flpRunways.Visible = false;
       flpTower.Visible = false;
       flpNavaids.Visible = !flpNavaids.Visible; // toggle
+      if (flpNavaids.Visible) { flpNavaids.BringToFront( ); }
     }
 
     private void btMapProvider_Click( object sender, EventArgs e )
     {
       flpProvider.Visible = !flpProvider.Visible; // toggle
+      if (flpProvider.Visible) { flpProvider.BringToFront( ); }
     }
     private void btRangeFarFar_Click( object sender, EventArgs e )
     {

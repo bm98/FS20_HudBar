@@ -32,8 +32,9 @@ namespace MapLib
     /// Returns a replacement for failed images
     /// </summary>
     /// <param name="mapImageID">A MapImageID</param>
+    /// <param name="retry">Set to true if it's worth to retry the image loading</param>
     /// <returns>A MapImage</returns>
-    public static MapImage FailedImage( MapImageID mapImageID )
+    public static MapImage FailedImage( MapImageID mapImageID, bool retry )
     {
       MapImage mapImage = null;
       using (MemoryStream mstream = new MemoryStream( )) {
@@ -41,8 +42,10 @@ namespace MapLib
         mstream.Position = 0;
         mapImage = FromStream( mstream, mapImageID );
       }
-      if (mapImage != null)
+      if (mapImage != null) { 
         mapImage.IsFailedImage = true;
+        mapImage.ShouldRetry= retry;
+      }
 
       return mapImage;
     }

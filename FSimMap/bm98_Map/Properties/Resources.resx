@@ -142,6 +142,9 @@
   <data name="airport_large" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\airport-large.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="airport_selected" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\airport_selected.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="airport_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\airport-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -183,6 +186,9 @@
   </data>
   <data name="rings" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\rings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="route_waypoint" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\route_waypoint.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="runway_alt" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\runway_alt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
