@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>60</ApplicationRevision>
-    <ApplicationVersion>0.60.0.60</ApplicationVersion>
+    <ApplicationRevision>61</ApplicationRevision>
+    <ApplicationVersion>0.61.0.61</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -89,7 +89,7 @@
     </Reference>
     <Reference Include="FSimFacilityIF, Version=1.1.0.11, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\FSimMap\bm98_Map\bin\Debug\FSimFacilityIF.dll</HintPath>
+      <HintPath>..\..\..\Redist\FSimFacilityIF.dll</HintPath>
     </Reference>
     <Reference Include="FSimIF, Version=1.1.0.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -865,6 +865,7 @@
     <Compile Include="Config\WinHotkeyCat.cs" />
     <EmbeddedResource Include="AApp\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Config\frmApt.resx">
       <DependentUpon>frmApt.cs</DependentUpon>
@@ -874,6 +875,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Config\frmConfig.resx">
       <DependentUpon>frmConfig.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="AApp\frmGui.resx">
       <DependentUpon>frmGui.cs</DependentUpon>

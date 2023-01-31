@@ -16,10 +16,18 @@ using CoordLib.Extensions;
 
 using SC = SimConnectClient;
 using bm98_Map;
+using bm98_Map.Data;
 using FSimFacilityIF;
-using System.Security.Cryptography;
 using FShelf.Profiles;
-using System.Diagnostics;
+
+using FlightplanLib;
+using FlightplanLib.SimBrief;
+using FlightplanLib.MSFSPln;
+using FlightplanLib.MSFSFlt;
+
+using Point = System.Drawing.Point;
+using Route = bm98_Map.Data.Route;
+using FShelf.FPlans;
 
 namespace FShelf
 {
@@ -45,6 +53,18 @@ namespace FShelf
     // METAR Provider
     private MetarLib.Metar _metar;
 
+    // Plan Wrapper
+    private FpWrapper _flightPlan = new FpWrapper( ); // only one instance, don't null it !!
+
+    // SimBrief Provider
+    private SimBrief _simBrief;
+
+    // MSFS Pln Provider
+    private MSFSPln _msfsPln;
+    private MSFSFlt _msfsFlt;
+    private string _selectedPlanFile = "";
+    private bool _awaitingFLTfile = false; // true when FLT is requested
+
     // track the last known live location in order to save the proper one
     private Point _lastLiveLocation;
     private Size _lastLiveSize;
@@ -57,7 +77,7 @@ namespace FShelf
     private BindingSource _vsRateBinding = new BindingSource( );
     private BindingSource _altBinding = new BindingSource( );
     private static readonly DataGridViewCellStyle _vCellStyle
-      = new DataGridViewCellStyle( ) { Alignment = DataGridViewContentAlignment.MiddleRight, BackColor = Color.Gainsboro, SelectionBackColor=Color.CornflowerBlue };
+      = new DataGridViewCellStyle( ) { Alignment = DataGridViewContentAlignment.MiddleRight, BackColor = Color.Gainsboro, SelectionBackColor = Color.CornflowerBlue };
     private static readonly DataGridViewCellStyle _vCellStyleMarked
       = new DataGridViewCellStyle( _vCellStyle ) { BackColor = Color.MediumSpringGreen, SelectionBackColor = Color.CadetBlue };
 
@@ -134,6 +154,37 @@ namespace FShelf
       return false;
     }
 
+    // translate the SimBrief OFP to a Route obj for Map Use
+    private static Route GetRouteFromPlan( FlightPlan plan )
+    {
+      var route = new Route( );
+      if (!plan.IsValid) return route;
+
+      foreach (var fix in plan.Waypoints) {
+        route.AddRoutePoint( new RoutePoint( fix.Wyp_Ident7, fix.LatLonAlt_ft, fix.WaypointType, fix.InboundTrueTrk, fix.OutboundTrueTrk, fix.IsSIDorSTAR ) );
+      }
+      route.RecalcTrack( ); // as we have no Out Tracks
+      return route;
+    }
+
+    private static void DebSaveRouteString( string content, string ext )
+    {
+      var fName = $".\\LastPlanDownload.{ext}";
+#if DEBUG
+      fName = $".\\LastPlanDownload_{DateTime.Now:s}.{ext}".Replace( ":", "_" );
+#endif
+      // shall never fail...
+      try {
+        // save to current Dir while in debug
+        var fname = Path.Combine( Folders.UserFilePath, fName );
+        // Write UTF8 with BOM
+        using (var sw = new StreamWriter( fname, false, new UTF8Encoding( true ) )) {
+          sw.WriteLine( content );
+        }
+      }catch { }
+    }
+
+    // Helper for Runways
     private class RwyLenItem
     {
       public string Item { get; private set; }
@@ -287,6 +338,24 @@ namespace FShelf
       }
     }
 
+    /// <summary>
+    /// Timer Event
+    /// </summary>
+    private void timer1_Tick( object sender, EventArgs e )
+    {
+      // register DataUpdates if in shared mode and if not yet done 
+      if (!Standalone && SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
+        _observerID = SC.SimConnectClient.Instance.AircraftTrackingModule.AddObserver( _observerName, OnDataArrival );
+      }
+      // Call SimConnect if needed and Standalone
+      if (Standalone && --_simConnectTrigger <= 0) {
+        SimConnectPacer( );
+      }
+      if (tab.SelectedTab == tabPerf) {
+        SetPerfContent( );
+      }
+    }
+
 
     #region Form
 
@@ -316,9 +385,22 @@ namespace FShelf
 
       _metar = new MetarLib.Metar( );
       _metar.MetarDataEvent += _metar_MetarDataEvent;
+
+      _simBrief = new SimBrief( );
+      _simBrief.SimBriefDataEvent += _simBrief_SimBriefDataEvent;
+      _simBrief.SimBriefDownloadEvent += _simBrief_SimBriefDownloadEvent;
+
+      _msfsPln = new MSFSPln( );
+      _msfsPln.MSFSPlnDataEvent += _msfsPln_MSFSPlnDataEvent;
+      _msfsFlt = new MSFSFlt( );
+      _msfsFlt.MSFSFltDataEvent += _msfsFlt_MSFSFltDataEvent;
+
       // handle some Map Events
       aMap.MapCenterChanged += AMap_MapCenterChanged;
       aMap.MapRangeChanged += AMap_MapRangeChanged;
+
+      // attach FLT save event
+      SC.SimConnectClient.Instance.FltSave += Instance_FltSave;
 
       InitRunwayCombo( comboCfgRunwayLength );
 
@@ -329,7 +411,10 @@ namespace FShelf
         this.MinimizeBox = true;
         this.MaximizeBox = false;
         this.ControlBox = true;
-        // add datahook
+        // start FP Module disabled
+        SC.SimConnectClient.Instance.FlightPlanModule.Enabled = false;
+        SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode = FSimClientIF.FlightPlanMode.Disabled;
+        // add datahook to receive connection updates
         SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
       }
 
@@ -361,15 +446,21 @@ namespace FShelf
 
       _txForeColorDefault = txEntry.ForeColor;
 
+      // map settings
       aMap.ShowMapGrid = AppSettings.Instance.MapGrid;
       aMap.ShowAirportRange = AppSettings.Instance.AirportRings;
+      aMap.ShowRoute = AppSettings.Instance.FlightplanRoute;
       aMap.ShowNavaids = AppSettings.Instance.VorNdb;
-      cbxIFRwaypoints.Checked = AppSettings.Instance.IFRwaypoints;
-      cbxAcftTrack.Checked = AppSettings.Instance.AcftRange;
-      cbxAcftRange.Checked = AppSettings.Instance.AcftTrack;
       aMap.ShowVFRMarks = AppSettings.Instance.VFRmarks;
       aMap.ShowAptMarks = AppSettings.Instance.AptMarks;
       aMap.ShowTrackedAircraft = AppSettings.Instance.AcftMark;
+      // config settings
+      cbxCfgIFRwaypoints.Checked = AppSettings.Instance.IFRwaypoints;
+      cbxCfgAcftRange.Checked = AppSettings.Instance.AcftRange;
+      cbxCfgAcftWind.Checked = AppSettings.Instance.AcftWind;
+      cbxCfgAcftTrack.Checked = AppSettings.Instance.AcftTrack;
+
+      txCfgSbPilotID.Text = AppSettings.Instance.SbPilotID;
 
       try {// don't ever fail
         comboCfgRunwayLength.SelectedIndex = AppSettings.Instance.MinRwyLengthCombo;
@@ -469,21 +560,26 @@ namespace FShelf
         AppSettings.Instance.ShelfSize = _lastLiveSize;
       }
       // save last known config and Airport settings for the next start
-      AppSettings.Instance.PrettyMetar = cbxCfgPrettyMetar.Checked;
       AppSettings.Instance.WeightLbs = rbKLbs.Checked;
       AppSettings.Instance.NotePadText = rtbNotes.Text;
-      AppSettings.Instance.IFRwaypoints = cbxIFRwaypoints.Checked;
+      AppSettings.Instance.IFRwaypoints = cbxCfgIFRwaypoints.Checked;
       AppSettings.Instance.MinRwyLengthCombo = comboCfgRunwayLength.SelectedIndex;
       AppSettings.Instance.DepICAO = DEP_Airport;
       AppSettings.Instance.ArrICAO = ARR_Airport;
+      // map settings
       AppSettings.Instance.MapGrid = aMap.ShowMapGrid;
       AppSettings.Instance.AirportRings = aMap.ShowAirportRange;
+      AppSettings.Instance.FlightplanRoute = aMap.ShowRoute;
       AppSettings.Instance.VorNdb = aMap.ShowNavaids;
       AppSettings.Instance.VFRmarks = aMap.ShowVFRMarks;
       AppSettings.Instance.AptMarks = aMap.ShowAptMarks;
       AppSettings.Instance.AcftMark = aMap.ShowTrackedAircraft;
-      AppSettings.Instance.AcftRange = cbxAcftRange.Checked;
-      AppSettings.Instance.AcftTrack = cbxAcftTrack.Checked;
+      // config settings
+      AppSettings.Instance.PrettyMetar = cbxCfgPrettyMetar.Checked;
+      AppSettings.Instance.AcftRange = cbxCfgAcftRange.Checked;
+      AppSettings.Instance.AcftWind = cbxCfgAcftWind.Checked;
+      AppSettings.Instance.AcftTrack = cbxCfgAcftTrack.Checked;
+      AppSettings.Instance.SbPilotID = txCfgSbPilotID.Text;
       //--
       AppSettings.Instance.Save( );
 
@@ -502,32 +598,15 @@ namespace FShelf
 
     #endregion
 
-    /// <summary>
-    /// Timer Event
-    /// </summary>
-    private void timer1_Tick( object sender, EventArgs e )
-    {
-      // register DataUpdates if in shared mode and if not yet done 
-      if (!Standalone && SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
-        _observerID = SC.SimConnectClient.Instance.AircraftTrackingModule.AddObserver( _observerName, OnDataArrival );
-      }
-      // Call SimConnect if needed and Standalone
-      if (Standalone && --_simConnectTrigger <= 0) {
-        SimConnectPacer( );
-      }
-      if (tab.SelectedTab == tabPerf) {
-        SetPerfContent( );
-      }
-    }
-
     #region Tab Events
 
     private void tab_SelectedIndexChanged( object sender, EventArgs e )
     {
       // update when the tab switches to MAP (possible changes from Config)
       if (tab.SelectedTab == tabMap) {
-        _tAircraft.ShowAircraftRange = cbxAcftRange.Checked;
-        _tAircraft.ShowAircraftTrack = cbxAcftTrack.Checked;
+        _tAircraft.ShowAircraftRange = cbxCfgAcftRange.Checked;
+        _tAircraft.ShowAircraftWind = cbxCfgAcftWind.Checked;
+        _tAircraft.ShowAircraftTrack = cbxCfgAcftTrack.Checked;
         var rwLen = comboCfgRunwayLength.SelectedItem as RwyLenItem;
         // also update Navaids and Alt Airports (we were disconnected for an unknown time)
 
@@ -565,7 +644,7 @@ namespace FShelf
       }
 
       // APT IFR Waypoints if set in Config
-      if (_airport != null && cbxIFRwaypoints.Checked) {
+      if (_airport != null && cbxCfgIFRwaypoints.Checked) {
         nList.AddRange( _airport.Navaids.Where( x => x.IsWaypoint ) );
       }
 
@@ -596,6 +675,7 @@ namespace FShelf
     }
 
     // fires when the Map Center has changed from the Map interaction or airport change
+    // provde the static map decorations for the new center coordinate
     private void AMap_MapCenterChanged( object sender, MapEventArgs e )
     {
       //Console.WriteLine( $"{e.CenterCoordinate}" );
@@ -606,6 +686,9 @@ namespace FShelf
       aMap.SetNavaidList( NavaidList( e.CenterCoordinate ) );
       var rwLen = comboCfgRunwayLength.SelectedItem as RwyLenItem;
       aMap.SetAltAirportList( AltAirportList( e.CenterCoordinate, rwLen.Length_m ) );
+
+      // (re)set the route from the plan in use
+      aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
     }
 
     // fires when the Map Range has changed
@@ -695,7 +778,8 @@ namespace FShelf
       // update pace slowed down to an acceptable CPU load - (native is 200ms)
       if ((_updates++ % 3) == 0) { // every third.. 600ms pace - slow enough ?? performance penalty...
         _tAircraft.OnGround = simData.Sim_OnGround;
-        _tAircraft.TrueHeading = simData.HDG_true_deg;
+        _tAircraft.TrueHeading_deg = simData.HDG_true_deg;
+        _tAircraft.Heading_degm = simData.HDG_mag_degm;
         _tAircraft.Position = new LatLon( simData.Lat, simData.Lon );
         _tAircraft.Altitude_ft = simData.AltMsl_ft;
         _tAircraft.RadioAlt_ft = simData.Sim_OnGround ? float.NaN
@@ -706,8 +790,12 @@ namespace FShelf
         _tAircraft.Vs_fpm = (int)(simData.VS_ftPmin / 20) * 20; // 20 fpm steps only
         _tAircraft.Fpa_deg = simData.FlightPathAngle_deg;
         // GPS does not provide meaningful track values when not moving
-        _tAircraft.Trk_deg = simData.Sim_OnGround ? float.NaN : simData.GTRK;
+        _tAircraft.Trk_degm = simData.Sim_OnGround ? float.NaN : simData.GTRK;
         _tAircraft.TrueTrk_deg = simData.Sim_OnGround ? float.NaN : simData.GTRK_true;
+
+        _tAircraft.WindSpeed_kt = simData.WindSpeed_kt;
+        _tAircraft.WindDirection_deg = simData.WindDirection_deg;
+
         // update the map
         aMap.UpdateAircraft( _tAircraft );
         // Update Profile page
@@ -771,7 +859,178 @@ namespace FShelf
     private void btMetAcft_Click( object sender, EventArgs e )
     {
       rtbMetar.Text += $"Request - {_tAircraft.Position}:\n";
-      _metar.PostMETAR_Request( _tAircraft.Position, _tAircraft.TrueHeading );
+      _metar.PostMETAR_Request( _tAircraft.Position, _tAircraft.TrueHeading_deg );
+    }
+
+    #endregion
+
+    #region SimBrief Events
+
+    // triggered on SimBrief data arrival
+    private void _simBrief_SimBriefDataEvent( object sender, SimBriefDataEventArgs e )
+    {
+      DebSaveRouteString( e.SimBriefData, "json" );
+
+      lblCfgSbPlanData.Text = "OFP data received";
+      var js = e.SimBriefData;
+      _flightPlan.LoadSbPlan( js );
+      if (_flightPlan.IsSbPlan) {
+        // populate CFG fields
+        lblCfgSbPlanData.Text = $"OFP: {_flightPlan.FlightPlan.Origin.Icao_Ident} to {_flightPlan.FlightPlan.Destination.Icao_Ident}";
+        lblCfgMsPlanData.Text = "..."; // clear the MS one
+
+        // preselect airports
+        txCfgDep.Text = _flightPlan.FlightPlan.Origin.Icao_Ident.ICAO;
+        SetAirport( txCfgDep.Text );
+        if (_airport == null) {
+          txCfgDep.ForeColor = Color.Red;
+          this.DEP_Airport = "n.a.";
+          lblCfgDep.Text = this.DEP_Airport;
+        }
+        else {
+          txCfgDep.ForeColor = Color.GreenYellow;
+          this.DEP_Airport = txCfgDep.Text;
+          lblCfgDep.Text = _airport.Name;
+        }
+
+        txCfgArr.Text = _flightPlan.FlightPlan.Destination.Icao_Ident.ICAO;
+        SetAirport( txCfgArr.Text );
+        if (_airport == null) {
+          txCfgArr.ForeColor = Color.Red;
+          this.ARR_Airport = "n.a.";
+          lblCfgArr.Text = this.ARR_Airport;
+        }
+        else {
+          txCfgArr.ForeColor = Color.GreenYellow;
+          this.ARR_Airport = txCfgArr.Text;
+          lblCfgArr.Text = _airport.Name;
+        }
+
+        // Set Map Route
+        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        // Load Shelf Docs
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
+        if (!string.IsNullOrWhiteSpace( err )) lblCfgSbPlanData.Text = err;
+
+      }
+    }
+
+    // triggered when a DL is completed
+    private void _simBrief_SimBriefDownloadEvent( object sender, EventArgs e )
+    {
+      ; // just a ping
+    }
+
+    #endregion
+
+    #region MSFS Pln Events
+
+    private void _msfsPln_MSFSPlnDataEvent( object sender, MSFSPlnDataEventArgs e )
+    {
+      DebSaveRouteString( e.MSFSPlnData, "PLN" );
+
+      lblCfgSbPlanData.Text = "PLN data received";
+      var xs = e.MSFSPlnData;
+      _flightPlan.LoadMsFsPLN( xs );
+      if (_flightPlan.IsMsFsPLN) {
+        // save selected file in settings 
+        if (!string.IsNullOrEmpty( _selectedPlanFile )) {
+          AppSettings.Instance.LastMsfsPlan = _selectedPlanFile;
+        }
+
+        // populate CFG fields
+        lblCfgMsPlanData.Text = $"PLN: {_flightPlan.FlightPlan.Origin.Icao_Ident} to {_flightPlan.FlightPlan.Destination.Icao_Ident}";
+        lblCfgSbPlanData.Text = "..."; // clear the SB one
+
+        // preselect airports
+        txCfgDep.Text = _flightPlan.FlightPlan.Origin.Icao_Ident.ICAO;
+        SetAirport( txCfgDep.Text );
+        if (_airport == null) {
+          txCfgDep.ForeColor = Color.Red;
+          this.DEP_Airport = "n.a.";
+          lblCfgDep.Text = this.DEP_Airport;
+        }
+        else {
+          txCfgDep.ForeColor = Color.GreenYellow;
+          this.DEP_Airport = txCfgDep.Text;
+          lblCfgDep.Text = _airport.Name;
+        }
+
+        txCfgArr.Text = _flightPlan.FlightPlan.Destination.Icao_Ident.ICAO;
+        SetAirport( txCfgArr.Text );
+        if (_airport == null) {
+          txCfgArr.ForeColor = Color.Red;
+          this.ARR_Airport = "n.a.";
+          lblCfgArr.Text = this.ARR_Airport;
+        }
+        else {
+          txCfgArr.ForeColor = Color.GreenYellow;
+          this.ARR_Airport = txCfgArr.Text;
+          lblCfgArr.Text = _airport.Name;
+        }
+
+        // Set Map Route
+        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        // Load Shelf Docs
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
+        if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
+      }
+    }
+
+    #endregion
+
+    #region NSFS Flt Events
+
+    private void _msfsFlt_MSFSFltDataEvent( object sender, MSFSFltDataEventArgs e )
+    {
+      DebSaveRouteString( e.MSFSFltData, "FLT" );
+
+      lblCfgSbPlanData.Text = "FLT data received";
+      var ins = e.MSFSFltData;
+      _flightPlan.LoadMsFsFLT( ins );
+      if (_flightPlan.IsMsFsPLN) {
+        // save selected file in settings 
+        if (!string.IsNullOrEmpty( _selectedPlanFile )) {
+          AppSettings.Instance.LastMsfsPlan = _selectedPlanFile;
+        }
+
+        // populate CFG fields
+        lblCfgMsPlanData.Text = $"PLN: {_flightPlan.FlightPlan.Origin.Icao_Ident} to {_flightPlan.FlightPlan.Destination.Icao_Ident}";
+        lblCfgSbPlanData.Text = "..."; // clear the SB one
+
+        // preselect airports
+        txCfgDep.Text = _flightPlan.FlightPlan.Origin.Icao_Ident.ICAO;
+        SetAirport( txCfgDep.Text );
+        if (_airport == null) {
+          txCfgDep.ForeColor = Color.Red;
+          this.DEP_Airport = "n.a.";
+          lblCfgDep.Text = this.DEP_Airport;
+        }
+        else {
+          txCfgDep.ForeColor = Color.GreenYellow;
+          this.DEP_Airport = txCfgDep.Text;
+          lblCfgDep.Text = _airport.Name;
+        }
+
+        txCfgArr.Text = _flightPlan.FlightPlan.Destination.Icao_Ident.ICAO;
+        SetAirport( txCfgArr.Text );
+        if (_airport == null) {
+          txCfgArr.ForeColor = Color.Red;
+          this.ARR_Airport = "n.a.";
+          lblCfgArr.Text = this.ARR_Airport;
+        }
+        else {
+          txCfgArr.ForeColor = Color.GreenYellow;
+          this.ARR_Airport = txCfgArr.Text;
+          lblCfgArr.Text = _airport.Name;
+        }
+
+        // Set Map Route
+        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        // Load Shelf Docs
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
+        if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
+      }
     }
 
     #endregion
@@ -948,6 +1207,93 @@ namespace FShelf
       }
     }
 
+    // Pilot ID KeyPress
+    private void txCfgSbPilotID_KeyPress( object sender, KeyPressEventArgs e )
+    {
+      txCfgSbPilotID.ForeColor = _txForeColorDefault; // clear the one not available
+      if (e.KeyChar == (char)Keys.Return) {
+        e.Handled = true;
+        if (SimBrief.IsSimBriefUserID( txCfgSbPilotID.Text )) {
+          txCfgSbPilotID.ForeColor = Color.GreenYellow;
+        }
+        else {
+          txCfgSbPilotID.ForeColor = Color.Red;
+        }
+      }
+    }
+
+    // SB Load Plan pressed
+    private void btCfgSbLoadPlan_Click( object sender, EventArgs e )
+    {
+      lblCfgSbPlanData.Text = "...";
+      if (SimBrief.IsSimBriefUserID( txCfgSbPilotID.Text )) {
+        lblCfgSbPlanData.Text = "loading...";
+        // call for a JSON OFP
+        _simBrief.PostDocument_Request( txCfgSbPilotID.Text, SimBriefDataFormat.JSON );
+        // will return in the CallBack
+      }
+      else {
+        lblCfgSbPlanData.Text = "invalid Pilot ID format";
+      }
+    }
+
+    // MSFS Select and load a plan
+    private void btCfgMsSelectPlan_Click( object sender, EventArgs e )
+    {
+      OFD.Title = "Select and Load a Flightplan";
+      // usually it is the last selected one
+      var path = AppSettings.Instance.LastMsfsPlan;
+      path = string.IsNullOrWhiteSpace( path ) ? "DUMMY" : path; // cannot handle empty strings..
+      if (Directory.Exists( Path.GetDirectoryName( path ) )) {
+        // path exists - use it
+        OFD.FileName = Path.GetFileName( path );
+        OFD.InitialDirectory = Path.GetDirectoryName( path );
+      }
+      else {
+        // set a default path if the last one does not longer exists
+        OFD.FileName = "CustomFlight.pln";
+        OFD.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
+      }
+
+      if (OFD.ShowDialog( this ) == DialogResult.OK) {
+        //selected
+        lblCfgMsPlanData.Text = "loading...";
+        _selectedPlanFile = OFD.FileName; // temp store the plan file name
+        if (_selectedPlanFile.ToLowerInvariant( ).EndsWith( ".pln" )) {
+          _msfsPln.PostDocument_Request( _selectedPlanFile );
+        }
+        else if (_selectedPlanFile.ToLowerInvariant( ).EndsWith( ".flt" )) {
+          _msfsFlt.PostDocument_Request( _selectedPlanFile );
+        }
+        // will report in the Event
+      }
+    }
+
+    // Request MSFS FLT Download pressed
+    private void btCfgRequestFLT_Click( object sender, EventArgs e )
+    {
+      if (SC.SimConnectClient.Instance.IsConnected) {
+        lblCfgMsPlanData.Text = "loading...";
+        _awaitingFLTfile = true; // allow to get one
+        SC.SimConnectClient.Instance.FlightPlanModule.RequestFlightSave( );
+        // should report via Instance_FltSave Event
+      }
+      else {
+        lblCfgMsPlanData.Text = "not connected";
+      }
+    }
+
+    // MSFS Load Plan pressed
+    private void btCfgMsLoadPlan_Click( object sender, EventArgs e )
+    {
+      lblCfgMsPlanData.Text = "loading...";
+      // call for a XML OFP
+      _selectedPlanFile = ""; // clear the selected one
+      _msfsPln.PostDocument_Request( MSFSPln.CustomFlightPlan_filename );
+      // will return in the CallBack
+    }
+
+
     // Folder Button pressed
     private void btCfgSelFolder_Click( object sender, EventArgs e )
     {
@@ -968,6 +1314,7 @@ namespace FShelf
       }
     }
 
+
     #endregion
 
     #region SimConnectClient chores
@@ -976,6 +1323,18 @@ namespace FShelf
     private bool m_awaitingEvent = true; // cleared in the Sim Event Handler
     private int m_scGracePeriod = -1;    // grace period count down
     private int _simConnectTrigger = 0; //  count down to call the SimConnect Pacer
+
+    // triggered when a FLT file arrives and it was requested by the user
+    // else there are auto saves etc. which are of no interest here
+    private void Instance_FltSave( object sender, SC.State.FltSaveEventArgs e )
+    {
+      if (_awaitingFLTfile) {
+        _awaitingFLTfile = false;
+        if (e.Filename.ToLowerInvariant( ).EndsWith( ".flt" )) {
+          _msfsFlt.PostDocument_Request( e.Filename );
+        }
+      }
+    }
 
     /// <summary>
     /// fired from Sim for new Data
@@ -1081,7 +1440,6 @@ namespace FShelf
 
 
     #endregion
-
 
     #region DGV Workarounds
 

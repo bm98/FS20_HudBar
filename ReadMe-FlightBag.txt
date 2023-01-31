@@ -1,5 +1,5 @@
-FS20_FlightBag V 0.60 - Build 60 BETA
-(c) M. Burri - 23-Jan-2023
+FS20_FlightBag V 0.61 - Build 61 BETA
+(c) M. Burri - 31-Jan-2023
 
 Contains files:
 
@@ -12,9 +12,11 @@ FShelf.dll                  Shelf WinForms library
 bm98_Album.dll              A UserControl for displaying images
 bm98_Map.dll                Mapping display library
 MapLib.dll                  Mapping library
+FlightplanLib.dll           Flightplan library
 MetarLib.dll                A METAR access library
 CoordLib.dll                A coord. handling library
 SettingsLib.dll             Application settings persistence library
+SimBriefLib.dll             SimBrief service library
 FSimClientIF.dll            Generic FSim Client interface definition
 FSimIF.dll                  Generic FSim interface definition
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
@@ -25,6 +27,8 @@ BM98CH_WasmClient.dll       WASM Module client to get LVars
 3rd Party:
 BingMapsRESTToolkit.dll     Microsoft provided library for accessing Bing Map data
 LiteDB.dll                  3rd party data management library
+HtmlRenderer.dll            3rd party HTML formatting library
+HtmlRenderer.WinForms.dll   3rd party HTML formatting library
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
@@ -59,6 +63,19 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.61-B61
+- Add SimBrief support (loading docs into Shelf, show Flightplan on map)
+- Add MSFS PLN support (loading table doc into Shelf, show Flightplan on map)
+- Add MSFS FLT support (loading table doc into Shelf, show Flightplan on map)
+- Add Wind Arrow for tracked aircraft
+- Add Track in aircraft data in Map
+- Add Allow True and Mag toggle when clicking Heading or Track in Map
+- Add Toggle Av/SI units when clicking data labels in Map (alt, speed, vs )
+- Add XF range to map (Zoom level 7)
+- Update Support GIF images in Shelf
+- Fix AppSettings of Aircraft Range and Track was mismatched
+- Update QuickGuide
 
 V 0.60-B60
 - Update FlightBag Map handling improved

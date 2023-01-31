@@ -41,6 +41,7 @@
       this.btRangeFar = new System.Windows.Forms.Button();
       this.flpAcftData = new System.Windows.Forms.FlowLayoutPanel();
       this.lblTHdg = new System.Windows.Forms.Label();
+      this.lblMTrk = new System.Windows.Forms.Label();
       this.lblAlt = new System.Windows.Forms.Label();
       this.lblIAS = new System.Windows.Forms.Label();
       this.lblGS = new System.Windows.Forms.Label();
@@ -64,6 +65,8 @@
       this.pbDrawing = new System.Windows.Forms.PictureBox();
       this.pbAltLadder = new System.Windows.Forms.PictureBox();
       this.lblLoading = new System.Windows.Forms.Label();
+      this.btTogShowRoute = new System.Windows.Forms.Button();
+      this.btRangeXFar = new System.Windows.Forms.Button();
       this.flpAcftData.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pbDrawing)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.pbAltLadder)).BeginInit();
@@ -140,7 +143,7 @@
       this.btRangeMid.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btRangeMid.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btRangeMid.ForeColor = System.Drawing.Color.SaddleBrown;
-      this.btRangeMid.Location = new System.Drawing.Point(563, 137);
+      this.btRangeMid.Location = new System.Drawing.Point(561, 177);
       this.btRangeMid.Name = "btRangeMid";
       this.btRangeMid.Size = new System.Drawing.Size(34, 34);
       this.btRangeMid.TabIndex = 7;
@@ -156,7 +159,7 @@
       this.btRangeNear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btRangeNear.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btRangeNear.ForeColor = System.Drawing.Color.SaddleBrown;
-      this.btRangeNear.Location = new System.Drawing.Point(563, 177);
+      this.btRangeNear.Location = new System.Drawing.Point(561, 217);
       this.btRangeNear.Name = "btRangeNear";
       this.btRangeNear.Size = new System.Drawing.Size(34, 34);
       this.btRangeNear.TabIndex = 7;
@@ -172,7 +175,7 @@
       this.btRangeClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btRangeClose.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btRangeClose.ForeColor = System.Drawing.Color.SaddleBrown;
-      this.btRangeClose.Location = new System.Drawing.Point(563, 217);
+      this.btRangeClose.Location = new System.Drawing.Point(561, 257);
       this.btRangeClose.Name = "btRangeClose";
       this.btRangeClose.Size = new System.Drawing.Size(34, 34);
       this.btRangeClose.TabIndex = 7;
@@ -239,7 +242,7 @@
       this.btRangeFar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btRangeFar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btRangeFar.ForeColor = System.Drawing.Color.SaddleBrown;
-      this.btRangeFar.Location = new System.Drawing.Point(563, 97);
+      this.btRangeFar.Location = new System.Drawing.Point(561, 137);
       this.btRangeFar.Name = "btRangeFar";
       this.btRangeFar.Size = new System.Drawing.Size(34, 34);
       this.btRangeFar.TabIndex = 10;
@@ -253,6 +256,7 @@
       this.flpAcftData.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(12)))), ((int)(((byte)(32)))));
       this.flpAcftData.CausesValidation = false;
       this.flpAcftData.Controls.Add(this.lblTHdg);
+      this.flpAcftData.Controls.Add(this.lblMTrk);
       this.flpAcftData.Controls.Add(this.lblAlt);
       this.flpAcftData.Controls.Add(this.lblIAS);
       this.flpAcftData.Controls.Add(this.lblGS);
@@ -260,9 +264,9 @@
       this.flpAcftData.Controls.Add(this.lblRA);
       this.flpAcftData.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
       this.flpAcftData.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.flpAcftData.Location = new System.Drawing.Point(406, 402);
+      this.flpAcftData.Location = new System.Drawing.Point(266, 388);
       this.flpAcftData.Name = "flpAcftData";
-      this.flpAcftData.Size = new System.Drawing.Size(128, 173);
+      this.flpAcftData.Size = new System.Drawing.Size(128, 201);
       this.flpAcftData.TabIndex = 13;
       this.flpAcftData.WrapContents = false;
       // 
@@ -270,6 +274,7 @@
       // 
       this.lblTHdg.AutoSize = true;
       this.lblTHdg.CausesValidation = false;
+      this.lblTHdg.Cursor = System.Windows.Forms.Cursors.Hand;
       this.lblTHdg.ForeColor = System.Drawing.Color.SkyBlue;
       this.lblTHdg.Location = new System.Drawing.Point(5, 5);
       this.lblTHdg.Margin = new System.Windows.Forms.Padding(5);
@@ -277,61 +282,84 @@
       this.lblTHdg.Size = new System.Drawing.Size(64, 18);
       this.lblTHdg.TabIndex = 3;
       this.lblTHdg.Text = "lblTHdg";
+      this.lblTHdg.Click += new System.EventHandler(this.lblTHdg_Click);
+      // 
+      // lblMTrk
+      // 
+      this.lblMTrk.AutoSize = true;
+      this.lblMTrk.CausesValidation = false;
+      this.lblMTrk.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.lblMTrk.ForeColor = System.Drawing.Color.SkyBlue;
+      this.lblMTrk.Location = new System.Drawing.Point(5, 33);
+      this.lblMTrk.Margin = new System.Windows.Forms.Padding(5);
+      this.lblMTrk.Name = "lblMTrk";
+      this.lblMTrk.Size = new System.Drawing.Size(64, 18);
+      this.lblMTrk.TabIndex = 3;
+      this.lblMTrk.Text = "lblMTrk";
+      this.lblMTrk.Click += new System.EventHandler(this.lblMTrk_Click);
       // 
       // lblAlt
       // 
       this.lblAlt.AutoSize = true;
       this.lblAlt.CausesValidation = false;
+      this.lblAlt.Cursor = System.Windows.Forms.Cursors.Hand;
       this.lblAlt.ForeColor = System.Drawing.Color.SkyBlue;
-      this.lblAlt.Location = new System.Drawing.Point(5, 33);
+      this.lblAlt.Location = new System.Drawing.Point(5, 61);
       this.lblAlt.Margin = new System.Windows.Forms.Padding(5);
       this.lblAlt.Name = "lblAlt";
       this.lblAlt.Size = new System.Drawing.Size(56, 18);
       this.lblAlt.TabIndex = 0;
       this.lblAlt.Text = "lblAlt";
+      this.lblAlt.Click += new System.EventHandler(this.lblAlt_Click);
       // 
       // lblIAS
       // 
       this.lblIAS.AutoSize = true;
       this.lblIAS.CausesValidation = false;
+      this.lblIAS.Cursor = System.Windows.Forms.Cursors.Hand;
       this.lblIAS.ForeColor = System.Drawing.Color.SkyBlue;
-      this.lblIAS.Location = new System.Drawing.Point(5, 61);
+      this.lblIAS.Location = new System.Drawing.Point(5, 89);
       this.lblIAS.Margin = new System.Windows.Forms.Padding(5);
       this.lblIAS.Name = "lblIAS";
       this.lblIAS.Size = new System.Drawing.Size(56, 18);
       this.lblIAS.TabIndex = 1;
       this.lblIAS.Text = "lblIAS";
+      this.lblIAS.Click += new System.EventHandler(this.lblIAS_Click);
       // 
       // lblGS
       // 
       this.lblGS.AutoSize = true;
       this.lblGS.CausesValidation = false;
+      this.lblGS.Cursor = System.Windows.Forms.Cursors.Hand;
       this.lblGS.ForeColor = System.Drawing.Color.SkyBlue;
-      this.lblGS.Location = new System.Drawing.Point(5, 89);
+      this.lblGS.Location = new System.Drawing.Point(5, 117);
       this.lblGS.Margin = new System.Windows.Forms.Padding(5);
       this.lblGS.Name = "lblGS";
       this.lblGS.Size = new System.Drawing.Size(48, 18);
       this.lblGS.TabIndex = 2;
       this.lblGS.Text = "lblGS";
+      this.lblGS.Click += new System.EventHandler(this.lblGS_Click);
       // 
       // lblVS
       // 
       this.lblVS.AutoSize = true;
       this.lblVS.CausesValidation = false;
+      this.lblVS.Cursor = System.Windows.Forms.Cursors.Hand;
       this.lblVS.ForeColor = System.Drawing.Color.SkyBlue;
-      this.lblVS.Location = new System.Drawing.Point(5, 117);
+      this.lblVS.Location = new System.Drawing.Point(5, 145);
       this.lblVS.Margin = new System.Windows.Forms.Padding(5);
       this.lblVS.Name = "lblVS";
       this.lblVS.Size = new System.Drawing.Size(48, 18);
       this.lblVS.TabIndex = 2;
       this.lblVS.Text = "lblVS";
+      this.lblVS.Click += new System.EventHandler(this.lblVS_Click);
       // 
       // lblRA
       // 
       this.lblRA.AutoSize = true;
       this.lblRA.CausesValidation = false;
       this.lblRA.ForeColor = System.Drawing.Color.Peru;
-      this.lblRA.Location = new System.Drawing.Point(5, 145);
+      this.lblRA.Location = new System.Drawing.Point(5, 173);
       this.lblRA.Margin = new System.Windows.Forms.Padding(5);
       this.lblRA.Name = "lblRA";
       this.lblRA.Size = new System.Drawing.Size(48, 18);
@@ -379,7 +407,7 @@
       this.btRangeFarFar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btRangeFarFar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btRangeFarFar.ForeColor = System.Drawing.Color.SaddleBrown;
-      this.btRangeFarFar.Location = new System.Drawing.Point(563, 57);
+      this.btRangeFarFar.Location = new System.Drawing.Point(561, 97);
       this.btRangeFarFar.Name = "btRangeFarFar";
       this.btRangeFarFar.Size = new System.Drawing.Size(34, 34);
       this.btRangeFarFar.TabIndex = 25;
@@ -396,7 +424,7 @@
       this.btTogApt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btTogApt.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btTogApt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
-      this.btTogApt.Location = new System.Drawing.Point(213, 3);
+      this.btTogApt.Location = new System.Drawing.Point(255, 3);
       this.btTogApt.Name = "btTogApt";
       this.btTogApt.Size = new System.Drawing.Size(36, 36);
       this.btTogApt.TabIndex = 24;
@@ -414,7 +442,7 @@
       this.btTogVFR.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btTogVFR.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btTogVFR.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
-      this.btTogVFR.Location = new System.Drawing.Point(171, 3);
+      this.btTogVFR.Location = new System.Drawing.Point(213, 3);
       this.btTogVFR.Name = "btTogVFR";
       this.btTogVFR.Size = new System.Drawing.Size(36, 36);
       this.btTogVFR.TabIndex = 23;
@@ -431,7 +459,7 @@
       this.btTogNavaids.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btTogNavaids.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btTogNavaids.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
-      this.btTogNavaids.Location = new System.Drawing.Point(129, 3);
+      this.btTogNavaids.Location = new System.Drawing.Point(171, 3);
       this.btTogNavaids.Name = "btTogNavaids";
       this.btTogNavaids.Size = new System.Drawing.Size(36, 36);
       this.btTogNavaids.TabIndex = 22;
@@ -515,7 +543,7 @@
       this.btCenterAircraft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btCenterAircraft.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btCenterAircraft.ForeColor = System.Drawing.Color.Indigo;
-      this.btCenterAircraft.Location = new System.Drawing.Point(563, 304);
+      this.btCenterAircraft.Location = new System.Drawing.Point(561, 344);
       this.btCenterAircraft.Name = "btCenterAircraft";
       this.btCenterAircraft.Size = new System.Drawing.Size(34, 34);
       this.btCenterAircraft.TabIndex = 16;
@@ -548,7 +576,7 @@
       this.btCenterApt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btCenterApt.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btCenterApt.ForeColor = System.Drawing.Color.Indigo;
-      this.btCenterApt.Location = new System.Drawing.Point(563, 266);
+      this.btCenterApt.Location = new System.Drawing.Point(561, 306);
       this.btCenterApt.Name = "btCenterApt";
       this.btCenterApt.Size = new System.Drawing.Size(34, 34);
       this.btCenterApt.TabIndex = 11;
@@ -616,11 +644,44 @@
       this.lblLoading.BackColor = System.Drawing.Color.YellowGreen;
       this.lblLoading.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.lblLoading.ForeColor = System.Drawing.Color.Black;
-      this.lblLoading.Location = new System.Drawing.Point(282, 3);
+      this.lblLoading.Location = new System.Drawing.Point(308, 3);
       this.lblLoading.Name = "lblLoading";
       this.lblLoading.Size = new System.Drawing.Size(105, 17);
       this.lblLoading.TabIndex = 27;
       this.lblLoading.Text = "Loading Map ...";
+      // 
+      // btTogShowRoute
+      // 
+      this.btTogShowRoute.BackColor = System.Drawing.Color.DarkGray;
+      this.btTogShowRoute.BackgroundImage = global::bm98_Map.Properties.Resources.route_waypoint;
+      this.btTogShowRoute.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+      this.btTogShowRoute.CausesValidation = false;
+      this.btTogShowRoute.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btTogShowRoute.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btTogShowRoute.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
+      this.btTogShowRoute.Location = new System.Drawing.Point(129, 3);
+      this.btTogShowRoute.Name = "btTogShowRoute";
+      this.btTogShowRoute.Size = new System.Drawing.Size(36, 36);
+      this.btTogShowRoute.TabIndex = 28;
+      this.btTogShowRoute.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      this.btTogShowRoute.UseVisualStyleBackColor = false;
+      this.btTogShowRoute.Click += new System.EventHandler(this.btTogShowRoute_Click);
+      // 
+      // btRangeXFar
+      // 
+      this.btRangeXFar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btRangeXFar.BackColor = System.Drawing.Color.DarkSlateGray;
+      this.btRangeXFar.CausesValidation = false;
+      this.btRangeXFar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btRangeXFar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btRangeXFar.ForeColor = System.Drawing.Color.SaddleBrown;
+      this.btRangeXFar.Location = new System.Drawing.Point(561, 57);
+      this.btRangeXFar.Name = "btRangeXFar";
+      this.btRangeXFar.Size = new System.Drawing.Size(34, 34);
+      this.btRangeXFar.TabIndex = 29;
+      this.btRangeXFar.Text = "XF";
+      this.btRangeXFar.UseVisualStyleBackColor = false;
+      this.btRangeXFar.Click += new System.EventHandler(this.btRangeXFar_Click);
       // 
       // UC_Map
       // 
@@ -628,6 +689,8 @@
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(16)))));
       this.CausesValidation = false;
+      this.Controls.Add(this.btRangeXFar);
+      this.Controls.Add(this.btTogShowRoute);
       this.Controls.Add(this.lblLoading);
       this.Controls.Add(this.flpNavaids);
       this.Controls.Add(this.flpTower);
@@ -713,5 +776,8 @@
     private System.Windows.Forms.Label lblGS;
     private System.Windows.Forms.PictureBox pbAltLadder;
     private System.Windows.Forms.Label lblLoading;
+    private System.Windows.Forms.Button btTogShowRoute;
+    private System.Windows.Forms.Button btRangeXFar;
+    private System.Windows.Forms.Label lblMTrk;
   }
 }

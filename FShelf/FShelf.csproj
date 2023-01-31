@@ -85,6 +85,9 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="Conversions.cs" />
     <Compile Include="Folders.cs" />
+    <Compile Include="FPlans\FlightPlanTable.cs" />
+    <Compile Include="FPlans\FpWrapper.cs" />
+    <Compile Include="FPlans\FPTableGen.cs" />
     <Compile Include="frmShelf.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,6 +104,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RTFformatter.cs" />
+    <Compile Include="FPlans\SbDocLoader.cs" />
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +126,10 @@
       <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
       <Name>DbgLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FlightplanLib\FlightplanLib.csproj">
+      <Project>{4766e323-833c-42b5-88ed-dafb25e934ef}</Project>
+      <Name>FlightplanLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FSimMap\bm98_Map\bm98_Map.csproj">
       <Project>{a840b347-f147-45bd-b84b-b400f1b3deca}</Project>
       <Name>bm98_Map</Name>
@@ -141,6 +149,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\airport_facility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="HtmlRenderer.Core">
+      <Version>1.5.0.6</Version>
+    </PackageReference>
+    <PackageReference Include="HtmlRenderer.WinForms">
+      <Version>1.5.0.6</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

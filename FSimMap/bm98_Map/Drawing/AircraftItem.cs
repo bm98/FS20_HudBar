@@ -30,7 +30,6 @@ namespace bm98_Map.Drawing
     /// </summary>
     public bool OnGround = false;
 
-
     /// <summary>
     /// cTor: create sprite, submit the image (will not be managed or disposed here)
     /// </summary>

@@ -51,14 +51,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Conversions.cs" />
     <Compile Include="Data\Airport.cs" />
     <Compile Include="Data\AverageCls.cs" />
     <Compile Include="Data\ITrackedAircraft.cs" />
+    <Compile Include="Data\Route.cs" />
     <Compile Include="Data\Track.cs" />
     <Compile Include="Data\TrackedAircraft.cs" />
     <Compile Include="Data\TrackedAircraftCls.cs" />
     <Compile Include="Drawing\AcftRangeItem.cs" />
     <Compile Include="Drawing\AcftTrackItem.cs" />
+    <Compile Include="Drawing\AcftWindItem.cs" />
     <Compile Include="Drawing\DisplayListMgr.cs" />
     <Compile Include="Drawing\AirportRangeItem.cs" />
     <Compile Include="Drawing\AlternateAptItem.cs" />
@@ -71,6 +74,7 @@
     <Compile Include="Drawing\MapGridItem.cs" />
     <Compile Include="Drawing\MapImage.cs" />
     <Compile Include="Drawing\NavaidItem.cs" />
+    <Compile Include="Drawing\RoutePointItem.cs" />
     <Compile Include="Drawing\RunwayItem.cs" />
     <Compile Include="Drawing\AircraftItem.cs" />
     <Compile Include="Drawing\ScaleItem.cs" />
@@ -234,6 +238,10 @@
     <None Include="Resources\alt_ladder.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\FlightplanLib\FlightplanLib.csproj">
+      <Project>{4766e323-833c-42b5-88ed-dafb25e934ef}</Project>
+      <Name>FlightplanLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MapLib\MapLib.csproj">
       <Project>{4f1641bb-ca1f-4aec-84b7-8dc71ba3dbcf}</Project>
       <Name>MapLib</Name>

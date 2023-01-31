@@ -39,6 +39,7 @@ namespace TEST_Map
       this.lblEvent = new System.Windows.Forms.Label();
       this.btTogGrid = new System.Windows.Forms.Button();
       this.uC_Map1 = new bm98_Map.UC_Map();
+      this.btSetRoute = new System.Windows.Forms.Button();
       this.tlp.SuspendLayout();
       this.panel1.SuspendLayout();
       this.SuspendLayout();
@@ -99,6 +100,7 @@ namespace TEST_Map
       // 
       // panel1
       // 
+      this.panel1.Controls.Add(this.btSetRoute);
       this.panel1.Controls.Add(this.txAirport);
       this.panel1.Controls.Add(this.btNavaid);
       this.panel1.Controls.Add(this.lblEvent);
@@ -169,6 +171,16 @@ namespace TEST_Map
       this.uC_Map1.Size = new System.Drawing.Size(600, 640);
       this.uC_Map1.TabIndex = 1;
       // 
+      // btSetRoute
+      // 
+      this.btSetRoute.Location = new System.Drawing.Point(6, 517);
+      this.btSetRoute.Name = "btSetRoute";
+      this.btSetRoute.Size = new System.Drawing.Size(78, 28);
+      this.btSetRoute.TabIndex = 11;
+      this.btSetRoute.Text = "Set Route";
+      this.btSetRoute.UseVisualStyleBackColor = true;
+      this.btSetRoute.Click += new System.EventHandler(this.btSetRoute_Click);
+      // 
       // Form1
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -196,6 +208,7 @@ namespace TEST_Map
     private System.Windows.Forms.Label lblEvent;
     private System.Windows.Forms.Button btNavaid;
     private System.Windows.Forms.TextBox txAirport;
+    private System.Windows.Forms.Button btSetRoute;
   }
 }
 

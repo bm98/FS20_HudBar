@@ -74,6 +74,19 @@ namespace FShelf
     }
 
 
+    [DefaultSettingValue( "" )]
+    public string SbPilotID {
+      get { return (string)this["SbPilotID"]; }
+      set { this["SbPilotID"] = value; }
+    }
+
+    [DefaultSettingValue( "" )]
+    public string LastMsfsPlan {
+      get { return (string)this["LastMsfsPlan"]; }
+      set { this["LastMsfsPlan"] = value; }
+    }
+
+
     [DefaultSettingValue( "True" )]
     public bool WeightLbs {
       get { return (bool)this["WeightLbs"]; }
@@ -86,7 +99,6 @@ namespace FShelf
       get { return (string)this["NotePadText"]; }
       set { this["NotePadText"] = value; }
     }
-
 
     [DefaultSettingValue( "" )]
     public string DepICAO {
@@ -109,6 +121,12 @@ namespace FShelf
     public bool AirportRings {
       get { return (bool)this["AirportRings"]; }
       set { this["AirportRings"] = value; }
+    }
+
+    [DefaultSettingValue( "False" )]
+    public bool FlightplanRoute {
+      get { return (bool)this["FlightplanRoute"]; }
+      set { this["FlightplanRoute"] = value; }
     }
 
     [DefaultSettingValue( "False" )]
@@ -139,6 +157,12 @@ namespace FShelf
     public bool AcftRange {
       get { return (bool)this["AcftRange"]; }
       set { this["AcftRange"] = value; }
+    }
+
+    [DefaultSettingValue( "False" )]
+    public bool AcftWind {
+      get { return (bool)this["AcftWind"]; }
+      set { this["AcftWind"] = value; }
     }
 
     [DefaultSettingValue( "False" )]

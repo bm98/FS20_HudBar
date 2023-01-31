@@ -56,6 +56,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bm98_Map", "FSimMap\bm98_Ma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SettingsLib", "SettingsLib\SettingsLib\SettingsLib.csproj", "{F17750F6-0652-42E8-A966-72936F558331}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightplanLib", "FlightplanLib\FlightplanLib.csproj", "{4766E323-833C-42B5-88ED-DAFB25E934EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -200,6 +202,14 @@ Global
 		{F17750F6-0652-42E8-A966-72936F558331}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F17750F6-0652-42E8-A966-72936F558331}.Release|x64.ActiveCfg = Release|Any CPU
 		{F17750F6-0652-42E8-A966-72936F558331}.Release|x64.Build.0 = Release|Any CPU
+		{4766E323-833C-42B5-88ED-DAFB25E934EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4766E323-833C-42B5-88ED-DAFB25E934EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4766E323-833C-42B5-88ED-DAFB25E934EF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4766E323-833C-42B5-88ED-DAFB25E934EF}.Debug|x64.Build.0 = Debug|Any CPU
+		{4766E323-833C-42B5-88ED-DAFB25E934EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4766E323-833C-42B5-88ED-DAFB25E934EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4766E323-833C-42B5-88ED-DAFB25E934EF}.Release|x64.ActiveCfg = Release|Any CPU
+		{4766E323-833C-42B5-88ED-DAFB25E934EF}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

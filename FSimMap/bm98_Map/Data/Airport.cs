@@ -21,7 +21,7 @@ namespace bm98_Map.Data
     /// <summary>
     /// Get: The Airport Elevation in Feet
     /// </summary>
-    public float Elevation_ft => Tools.MeterToFeet( Elevation_m );
+    public float Elevation_ft => Conversions.Ft_From_M( Elevation_m );
 
     /// <summary>
     /// Create a dummy Airport if none is available

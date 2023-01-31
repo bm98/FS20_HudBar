@@ -38,13 +38,6 @@ namespace bm98_Map
       return mstream;
     }
 
-    /// <summary>
-    /// Convert from meter to feet
-    /// </summary>
-    /// <param name="meter">Meter value</param>
-    /// <returns>Feet</returns>
-    public static float MeterToFeet( float meter ) => meter * 3.28084f;
-
 
   }
 }

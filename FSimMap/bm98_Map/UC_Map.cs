@@ -24,6 +24,7 @@ namespace bm98_Map
   public enum MapRange
   {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+    XFar = 7,  //7 == MapZoom..
     FarFar = 9,  //9 == MapZoom..
     Far = 10,//10
     Mid = 12,//12
@@ -77,6 +78,16 @@ namespace bm98_Map
 
     private readonly Color _decoBColorOFF;
     private readonly Color _decoBColorON = Color.LimeGreen;
+
+    // unit handlers
+    private bool _hdgIsTrue = true;
+    private bool _trkIsTrue = false;
+    // unit toggle is in use
+    private bool _unitIsImp = true;
+    // individual ones follow the unit toggle in this implementation
+    private bool _altIsFeet = true;
+    private bool _speedIsKt = true;
+    private bool _vsIsFpm = true;
 
     #region User Control API
 
@@ -136,23 +147,42 @@ namespace bm98_Map
     /// <param name="trackedAircraft">The tracked aircraft properties</param>
     public void UpdateAircraft( ITrackedAircraft trackedAircraft )
     {
-      // _aircraft tracker - add this new point
+      // update our internal _aircraftTracker from the delivered one
       _aircraftTrack.Update( trackedAircraft );
 
       // Aircraft Labels, hide if the value is float.NaN (ex Heading)
+      // data label are 4 chars, number fields 6 chars to align vert. !!
       lblTHdg.Visible = true;
-      lblTHdg.Text = $"THDG: {_aircraftTrack.TrueHeading,6:000}°";
+      if (_hdgIsTrue) { lblTHdg.Text = $"THDG: {_aircraftTrack.TrueHeading_deg,6:000}°"; }
+      else { lblTHdg.Text = $"HDG : {_aircraftTrack.Heading_degm,6:000}°M"; }
+
+      lblMTrk.Visible = _aircraftTrack.ShowMTRK;
+      if (_trkIsTrue) { lblMTrk.Text = $"TTRK: {_aircraftTrack.TrueTrk_deg,6:000}°"; }
+      else { lblMTrk.Text = $"TRK : {_aircraftTrack.Trk_degm,6:000}°M"; }
 
       lblAlt.Visible = _aircraftTrack.ShowAlt;
-      lblAlt.Text = $"AMSL: {_aircraftTrack.Altitude_ft,6:##,##0} ft";
+      if (_altIsFeet) { lblAlt.Text = $"AMSL: {_aircraftTrack.Altitude_ft,6:##,##0} ft"; }
+      else { lblAlt.Text = $"AMSL: {Conversions.M_From_Ft( _aircraftTrack.Altitude_ft ),6:##,##0} m"; }
+
       lblRA.Visible = _aircraftTrack.ShowRA;
-      lblRA.Text = $"RA  : {_aircraftTrack.RadioAlt_ft,6:##,##0} ft";
+      if (_altIsFeet) { lblRA.Text = $"RA  : {_aircraftTrack.RadioAlt_ft,6:##,##0} ft"; }
+      else { lblRA.Text = $"RA  : {Conversions.M_From_Ft( _aircraftTrack.RadioAlt_ft ),6:##,##0} m"; }
+
       lblIAS.Visible = _aircraftTrack.ShowIas;
-      lblIAS.Text = $"IAS : {_aircraftTrack.Ias_kt,6:#,##0} kt";
+      if (_speedIsKt) { lblIAS.Text = $"IAS : {_aircraftTrack.Ias_kt,6:#,##0} kt"; }
+      else { lblIAS.Text = $"IAS : {Conversions.Kmh_From_Kt( _aircraftTrack.Ias_kt ),6:#,##0} km/h"; }
+
       lblGS.Visible = _aircraftTrack.ShowGs;
-      lblGS.Text = $"GS  : {_aircraftTrack.Gs_kt,6:#,##0} kt";
+      if (_speedIsKt) { lblGS.Text = $"GS  : {_aircraftTrack.Gs_kt,6:#,##0} kt"; }
+      else { lblGS.Text = $"GS  : {Conversions.Kmh_From_Kt( _aircraftTrack.Gs_kt ),6:#,##0} km/h"; }
+
       lblVS.Visible = _aircraftTrack.ShowVs;
-      lblVS.Text = $"V/S : {_aircraftTrack.Vs_fpm,6:+#,##0;-#,##0;---} fpm";
+      if (_vsIsFpm) { lblVS.Text = $"V/S : {_aircraftTrack.Vs_fpm,6:+#,##0;-#,##0;---} fpm"; }
+      else { lblVS.Text = $"V/S : {Conversions.Mps_From_Ftpm( _aircraftTrack.Vs_fpm ),6:+#0.0;-#0.0;---} m/s"; }
+
+      // set windspeed string for the Sprite if not default
+      if (_speedIsKt) { } // default
+      else { _aircraftTrack.WindSpeedS = $"{Conversions.Mps_From_Kt( _aircraftTrack.WindSpeed_kt ):#0.0}m/s"; }
 
       // Aircraft Drawing update goes via the AirportDisplayManager object
       _airportDisplayMgr.UpdateAircraft( _aircraftTrack );
@@ -188,6 +218,16 @@ namespace bm98_Map
       _renderStaticNeeded = true;
     }
 
+    /// <summary>
+    /// To set the Route plotted on the Map
+    /// </summary>
+    /// <param name="route">A route Obj</param>
+    public void SetRoute( Route route )
+    {
+      _airportDisplayMgr.SetRoute( route );
+      // Trigger Update the View
+      _renderStaticNeeded = true;
+    }
 
     /// <summary>
     /// Zoom Into the Image
@@ -239,6 +279,16 @@ namespace bm98_Map
         if (value) { pbAltLadder.BringToFront( ); }
         flpAcftData.Visible = value;
       }
+    }
+
+    /// <summary>
+    /// True to show the map grid, false otherwise
+    /// </summary>
+    [Category( "Map" )]
+    [Description( "Get;Set: showing the route" )]
+    public bool ShowRoute {
+      get => _airportDisplayMgr.ShowRoute;
+      set { _airportDisplayMgr.ShowRoute = value; btTogShowRoute.BackColor = (value) ? _decoBColorON : _decoBColorOFF; }
     }
 
     /// <summary>
@@ -622,7 +672,7 @@ namespace bm98_Map
     {
       Debug.WriteLine( $"UC_Map.StartMapLoading- Center: {centerLatLon}" );
 
-      lblLoading.Visible = true; 
+      lblLoading.Visible = true;
       lblLoading.BringToFront( );
 
       _viewport.LoadMap( centerLatLon, (ushort)_mapRange, MapManager.Instance.CurrentProvider );
@@ -718,6 +768,7 @@ namespace bm98_Map
       lblLoading.Visible = false;
 
       // load indexed access to MapRange Buttons
+      _mrButtons.Add( MapRange.XFar, btRangeXFar );
       _mrButtons.Add( MapRange.FarFar, btRangeFarFar );
       _mrButtons.Add( MapRange.Far, btRangeFar );
       _mrButtons.Add( MapRange.Mid, btRangeMid );
@@ -760,6 +811,11 @@ namespace bm98_Map
       _mapCreator = new MapCreator( );
       _mapCreator.Committed += _mapCreator_Commited;
 
+      // synch units in Map Data display
+      _altIsFeet = _unitIsImp;
+      _speedIsKt = _unitIsImp;
+      _vsIsFpm = _unitIsImp;
+
       // set deco off defaults
       ShowTrackedAircraft = false;
       ShowMapGrid = false;
@@ -773,11 +829,12 @@ namespace bm98_Map
       _toolTip.SetToolTip( btCenterApt, "MAP: Load the original Airport map" );
       _toolTip.SetToolTip( btCenterAircraft, "MAP: Load the map with the aircraft as center location" );
 
-      _toolTip.SetToolTip( btRangeFarFar, "RANGE: Load a far, far range map around the current center" );
-      _toolTip.SetToolTip( btRangeFar, "RANGE: Load a far range map around the current center" );
-      _toolTip.SetToolTip( btRangeMid, "RANGE: Load a medium range map around the current center" );
-      _toolTip.SetToolTip( btRangeNear, "RANGE: Load a near range map around the current center" );
-      _toolTip.SetToolTip( btRangeClose, "RANGE: Load a close range map around the current center" );
+      _toolTip.SetToolTip( btRangeXFar, "RANGE: Load a eXtra Far range map around the current center" );
+      _toolTip.SetToolTip( btRangeFarFar, "RANGE: Load a Far, Far range map around the current center" );
+      _toolTip.SetToolTip( btRangeFar, "RANGE: Load a Far range map around the current center" );
+      _toolTip.SetToolTip( btRangeMid, "RANGE: Load a Medium range map around the current center" );
+      _toolTip.SetToolTip( btRangeNear, "RANGE: Load a Near range map around the current center" );
+      _toolTip.SetToolTip( btRangeClose, "RANGE: Load a Close range map around the current center" );
 
       _toolTip.SetToolTip( btZoomIn, "ZOOM: Zoom into the map" );
       _toolTip.SetToolTip( btZoomOut, "ZOOM: Zoom out of the map" );
@@ -845,6 +902,11 @@ namespace bm98_Map
       flpProvider.Visible = !flpProvider.Visible; // toggle
       if (flpProvider.Visible) { flpProvider.BringToFront( ); }
     }
+
+    private void btRangeXFar_Click( object sender, EventArgs e )
+    {
+      MapRange = MapRange.XFar;
+    }
     private void btRangeFarFar_Click( object sender, EventArgs e )
     {
       MapRange = MapRange.FarFar;
@@ -903,6 +965,11 @@ namespace bm98_Map
       ShowTrackedAircraft = !ShowTrackedAircraft;
     }
 
+    private void btTogShowRoute_Click( object sender, EventArgs e )
+    {
+      ShowRoute = !ShowRoute;
+    }
+
     private void btTogGrid_Click( object sender, EventArgs e )
     {
       ShowMapGrid = !ShowMapGrid;
@@ -928,7 +995,53 @@ namespace bm98_Map
       ShowAptMarks = !ShowAptMarks;
     }
 
+    private void lblTHdg_Click( object sender, EventArgs e )
+    {
+      _hdgIsTrue = !_hdgIsTrue; // toggle
+    }
+
+    private void lblMTrk_Click( object sender, EventArgs e )
+    {
+      _trkIsTrue = !_trkIsTrue; // toggle
+    }
+
+    // toggles Imperial / SI alltogether
+    private void lblAlt_Click( object sender, EventArgs e )
+    {
+      _unitIsImp = !_unitIsImp; // toggle
+      _altIsFeet = _unitIsImp;
+      _speedIsKt = _unitIsImp;
+      _vsIsFpm = _unitIsImp;
+    }
+
+    // toggles Imperial / SI alltogether
+    private void lblIAS_Click( object sender, EventArgs e )
+    {
+      _unitIsImp = !_unitIsImp; // toggle
+      _altIsFeet = _unitIsImp;
+      _speedIsKt = _unitIsImp;
+      _vsIsFpm = _unitIsImp;
+    }
+
+    // toggles Imperial / SI alltogether
+    private void lblGS_Click( object sender, EventArgs e )
+    {
+      _unitIsImp = !_unitIsImp; // toggle
+      _altIsFeet = _unitIsImp;
+      _speedIsKt = _unitIsImp;
+      _vsIsFpm = _unitIsImp;
+    }
+
+    // toggles Imperial / SI alltogether
+    private void lblVS_Click( object sender, EventArgs e )
+    {
+      _unitIsImp = !_unitIsImp; // toggle
+      _altIsFeet = _unitIsImp;
+      _speedIsKt = _unitIsImp;
+      _vsIsFpm = _unitIsImp;
+    }
     #endregion
+
 
   }
 }

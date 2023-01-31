@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using bm98_Map.Data;
 using CoordLib;
 using FSimFacilityIF;
@@ -34,12 +35,16 @@ namespace bm98_Map.Drawing
     private bool _showAptRange = false;
     // wether or not showing the Navaids
     private bool _showNavaids = false;
+    // wether or not showing the Route
+    private bool _showRoute = false;
     // wether or not showing the VFR Markings
     private bool _showVfrMarks = false;
     // wether or not showing the Airport (alternates) Marks
     private bool _showAptMarks = false;
     // selected runwayIdent 
     private string _selRunway = "";
+
+    private MapRange _mapRange = MapRange.Mid;
 
     /// <summary>
     /// cTor: Creates the AirportDIsplayManager (does not manage or dispose submitted items)
@@ -88,6 +93,10 @@ namespace bm98_Map.Drawing
       AIRCRAFT,
       AIRCRAFT_RANGE,
       AIRCRAFT_TRACK,
+      AIRCRAFT_WIND,
+      // route
+      ROUTE,
+
     }
 
     /// <summary>
@@ -149,6 +158,7 @@ namespace bm98_Map.Drawing
       var aptmarks = new ManagedHookItem( ) {
         Key = (int)DItems.APTMARKS,
         Active = _showAptMarks,
+        String = "Airport Marks", // only deco for debug
       };
       _viewportRef.GProc.Drawings.AddItem( aptmarks );
 
@@ -156,24 +166,36 @@ namespace bm98_Map.Drawing
       var navaids = new ManagedHookItem( ) {
         Key = (int)DItems.NAVAIDS,
         Active = _showNavaids,
+        String = "Navaids", // only deco for debug
       };
       _viewportRef.GProc.Drawings.AddItem( navaids );
 
       // Waypoint Hook (need to be managed individually)
       var waypoints = new HookItem( ) {
         Key = (int)DItems.WAYPOINTS,
+        String = "Waypoints", // only deco for debug
       };
       _viewportRef.GProc.Drawings.AddItem( waypoints );
 
       // VFR Marks Hook (will get one per phys. runway)
       var vfrmarks = new HookItem( ) {
         Key = (int)DItems.VFRMARKS,
+        String = "VFR Marks", // only deco for debug
       };
       _viewportRef.GProc.Drawings.AddItem( vfrmarks );
+
+      // Route Hook (ManagedDrawings but not using managed items)
+      var route = new ManagedHookItem( ) {
+        Key = (int)DItems.ROUTE,
+        Active = _showRoute,
+        String = "Route", // only deco for debug
+      };
+      _viewportRef.GProc.Drawings.AddItem( route );
 
       // Runways, always drawn (will get one per phys. runway)
       var runways = new HookItem( ) {
         Key = (int)DItems.RUNWAYS,
+        String = "Runways", // only deco for debug
       };
       _viewportRef.GProc.Drawings.AddItem( runways );
       // populate the hook right now - it is static per airport
@@ -202,7 +224,7 @@ namespace bm98_Map.Drawing
           Font = FtLarger,
           TextBrush = BrushRwNumber,
           // drawn acft
-          Pen = Pens.Black, // outline of the shape
+          Pen = PenAcftOutline, // outline of the shape
         };
         _viewportRef.GProcSprite.Drawings.AddItem( aircraft );
 
@@ -217,6 +239,18 @@ namespace bm98_Map.Drawing
           CoordPoint = _airportRef.Coordinate,
         };
         aircraft.SubItemList.AddItem( aircraftRange );
+
+        // Aircraft wind arrow (sub item of Aircraft)
+        var aircraftWind = new AcftWindItem( ) {
+          Key = (int)DItems.AIRCRAFT_WIND,
+          Active = false, // init false, will be shown on update if asked for
+          Pen = PenAcftWind,
+          FillBrush = BrushAcftWind,
+          Font= FtSmallest,
+          TextBrush = BrushAcftWind,
+          CoordPoint = _airportRef.Coordinate,
+        };
+        aircraft.SubItemList.AddItem( aircraftWind );
       }
     }
 
@@ -274,7 +308,7 @@ namespace bm98_Map.Drawing
     #region API Show Decorations
 
     /// <summary>
-    /// True to show the map grid, false otherwise
+    /// True to show the tracked aircraft, false otherwise
     /// </summary>
     public bool ShowTrackedAircraft {
       get => _showTrackedAcft;
@@ -288,11 +322,31 @@ namespace bm98_Map.Drawing
         if (di == null) return;  // not (yet) defined
         di.Active = false; // will be updated when the Aircraft is update, else it's shown for a blink even if not selected
 
+        di = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFT_WIND );
+        if (di == null) return;  // not (yet) defined
+        di.Active = false; // will be updated when the Aircraft is update, else it's shown for a blink even if not selected
+
         di = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFT_TRACK );
         if (di == null) return;  // not (yet) defined
         di.Active = false; // will be updated when the Aircraft is update, else it's shown for a blink even if not selected
 
         _viewportRef.RenderSprite( );
+        _viewportRef.Redraw( );
+      }
+    }
+
+    /// <summary>
+    /// True to show the route, false otherwise
+    /// </summary>
+    public bool ShowRoute {
+      get => _showRoute;
+      set {
+        _showRoute = value;
+        var di = _viewportRef.GProc.Drawings.DispItem( (int)DItems.ROUTE );
+        if (di == null) return;  // not (yet) defined
+        di.Active = _showRoute;
+
+        _viewportRef.RenderStatic( );
         _viewportRef.Redraw( );
       }
     }
@@ -339,12 +393,13 @@ namespace bm98_Map.Drawing
         // all Navaid items
         var navHook = _viewportRef.GProc.Drawings.DispItem( (int)DItems.NAVAIDS );
         if (navHook == null) return; // not (yet) defined
-        navHook.Active = _showNavaids;
+        navHook.Active = (_mapRange == MapRange.XFar) ? false : _showNavaids; // avoid clutter at XFar
         // show wyp for the selected runway only
         var wypList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.WAYPOINTS )?.SubItemList;
         foreach (var navItem in wypList.Values) {
-          var di = navItem as Drawing.NavaidItem;
-          di.Active = (di.RunwayIdent == _selRunway) && _showNavaids;
+          var di = navItem as NavaidItem;
+          di.Active = (_mapRange == MapRange.XFar) ? false
+            : ((di.RunwayIdent == _selRunway) && _showNavaids); // avoid clutter at XFar
         }
 
         _viewportRef.RenderStatic( );
@@ -364,7 +419,7 @@ namespace bm98_Map.Drawing
         if (vfrList == null) return; // not (yet) defined
         foreach (var vfrItem in vfrList.Values) {
           var di = vfrItem as Drawing.RwyVFRMarksItem;
-          di.Active = _showVfrMarks;
+          di.Active = (_mapRange == MapRange.XFar) ? false: _showVfrMarks; // avoid clutter at XFar
         }
         _viewportRef.RenderStatic( );
         _viewportRef.Redraw( );
@@ -381,7 +436,7 @@ namespace bm98_Map.Drawing
         // all VFR marks items
         var di = _viewportRef.GProc.Drawings.DispItem( (int)DItems.APTMARKS );
         if (di == null) return; // not (yet) defined
-        di.Active = _showAptMarks;
+        di.Active = (_mapRange == MapRange.XFar) ? false : _showAptMarks; // avoid clutter at XFar
 
         _viewportRef.RenderStatic( );
         _viewportRef.Redraw( );
@@ -402,7 +457,8 @@ namespace bm98_Map.Drawing
     public void SetRunwayVFRDispItems( IEnumerable<IRunway> runways )
     {
       // all VFR marks items
-      var vfrList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.VFRMARKS ).SubItemList;
+      var vfrList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.VFRMARKS )?.SubItemList;
+      if (vfrList == null) return; // CANNOT (yet)
       vfrList.Clear( );
 
       List<string> runwaysDone = new List<string>( ); // track the ones we have processed
@@ -453,18 +509,39 @@ namespace bm98_Map.Drawing
     /// <param name="mapRange">The MapRange</param>
     public void SetMapRange( MapRange mapRange )
     {
+      _mapRange = mapRange;
+
       // right now we set the font size for the Runway Labels here
       DisplayItem di;
       // all Runway items
-      var rwyList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.RUNWAYS ).SubItemList;
+      var rwyList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.RUNWAYS )?.SubItemList;
       if (rwyList == null) return; // not (yet) defined
       foreach (var rwyItem in rwyList.Values) {
         di = rwyItem as Drawing.RunwayItem;
-        di.Font = (mapRange == MapRange.FarFar) || (mapRange == MapRange.Far) ? null // cannot draw Text at this resolution
+        di.Font = (mapRange == MapRange.XFar)
+                || (mapRange == MapRange.FarFar)
+                || (mapRange == MapRange.Far) ? null // cannot draw Text at this resolution
           : (mapRange == MapRange.Mid) ? FtSmaller
           : (mapRange == MapRange.Near) ? FtMid
           : FtMid;
       }
+
+      // disable clutter on XFar
+      var itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.NAVAIDS );
+      if (itemList == null) return;
+      itemList.Active = (_mapRange == MapRange.XFar) ? false : _showNavaids;
+
+      itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.WAYPOINTS );
+      if (itemList == null) return;
+      itemList.Active = (_mapRange == MapRange.XFar) ? false : _showNavaids;
+
+      itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.APTMARKS );
+      if (itemList == null) return;
+      itemList.Active = (_mapRange == MapRange.XFar) ? false : _showAptMarks;
+
+      itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.VFRMARKS );
+      if (itemList == null) return;
+      itemList.Active = (_mapRange == MapRange.XFar) ? false : _showVfrMarks;
 
       // Scale Item
       float pixelPerNm = 1;
@@ -504,8 +581,9 @@ namespace bm98_Map.Drawing
       var acftItem = (diAcft as AircraftItem);
       acftItem.Active = _showTrackedAcft;
       acftItem.CoordPoint = aircraft.Position;
-      acftItem.Heading = aircraft.TrueHeading;
+      acftItem.Heading = aircraft.TrueHeading_deg;
       acftItem.OnGround = aircraft.OnGround;
+
       // set range
       var di = diAcft.SubItemList.DispItem( (int)DItems.AIRCRAFT_RANGE );
       if (di == null) return; // CANNOT (yet)
@@ -514,6 +592,17 @@ namespace bm98_Map.Drawing
       acftRange.Active = _showTrackedAcft && aircraft.ShowAircraftRange;
       acftRange.AircraftTrackRef = aircraft;
       acftRange.CoordPoint = aircraft.Position; // default property is also set (may not be used)
+
+      // set wind
+      di = diAcft.SubItemList.DispItem( (int)DItems.AIRCRAFT_WIND );
+      if (di == null) return; // CANNOT (yet)
+      var acftWind = (di as AcftWindItem);
+      // update display of range from aircraft record
+      acftWind.Active = _showTrackedAcft && aircraft.ShowAircraftWind;
+      acftWind.WindDir_deg = aircraft.WindDirection_deg;
+      acftWind.String = aircraft.WindSpeedS;
+      acftWind.CoordPoint = aircraft.Position; // default property is also set (may not be used)
+
       // set track
       di = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFT_TRACK );
       if (di == null) return; // CANNOT (yet)
@@ -623,7 +712,9 @@ namespace bm98_Map.Drawing
     private void LayoutWypLabels( )
     {
       // all Navaid items
-      var wypList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.WAYPOINTS ).SubItemList;
+      var wypList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.WAYPOINTS )?.SubItemList;
+      if (wypList == null) return; // CANNOT (yet)
+
       /* NOT IN USE
             // label layout engine for Waypoints
             var lEngine = new LabelEngine( _viewportRef.NativeMapPixelSize );
@@ -662,7 +753,8 @@ namespace bm98_Map.Drawing
     public void SetAltAirportList( List<FSimFacilityIF.IAirportDesc> airports )
     {
       // all Alt Apt items
-      var aptList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.APTMARKS ).SubItemList;
+      var aptList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.APTMARKS )?.SubItemList;
+      if (aptList == null) return; // CANNOT (yet)
       aptList.Clear( );
 
       // make all
@@ -681,6 +773,44 @@ namespace bm98_Map.Drawing
         };
         altapt.StringFormat.LineAlignment = StringAlignment.Near;
         aptList.AddItem( altapt );
+      }
+    }
+
+    #endregion
+
+    #region API Route
+
+    /// <summary>
+    /// To set the Route plotted on the Map
+    /// </summary>
+    /// <param name="route">A route Obj</param>
+    public void SetRoute( Route route )
+    {
+      // sanity
+      if (route == null) return; // fatal programm error..
+      if (route.RoutePointCat.Count < 3) return; // not enough points in route
+
+      // all Route items
+      var routeList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.ROUTE )?.SubItemList;
+      if (routeList == null) return; // CANNOT (yet)
+      routeList.Clear( );
+
+      // make all
+      foreach (var rp in route.RoutePointCat) {
+        var rtPoint = new RoutePointItem( Properties.Resources.route_waypoint ) {
+          Key = GProc.DispID_Anon( ),
+          Active = true, // always true, we are using the ManagedHook
+          Pen = (rp.OutboundSidOrStar) ? PenRouteSid3 : PenRoute3,
+          CoordPoint = rp.LatLon,
+          String = $"{rp.ID}",
+          Font = FtMid,
+          TextBrush = BrushNavAidApt,
+          OutboundTrack_deg = rp.OutboundTrueTrack,
+          OutboundLatLon = rp.OutboundLatLon,
+          WypLabelRectangle = new Rectangle( ),
+        };
+        rtPoint.StringFormat.LineAlignment = StringAlignment.Near;
+        routeList.AddItem( rtPoint );
       }
     }
 

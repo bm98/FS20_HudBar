@@ -48,6 +48,7 @@ namespace FShelf
       this.txEntry = new System.Windows.Forms.TextBox();
       this.lblARR = new System.Windows.Forms.Label();
       this.lblDEP = new System.Windows.Forms.Label();
+      this.aMap = new bm98_Map.UC_Map();
       this.tabMetar = new System.Windows.Forms.TabPage();
       this.lblMetArr = new System.Windows.Forms.Label();
       this.lblMetDep = new System.Windows.Forms.Label();
@@ -74,6 +75,9 @@ namespace FShelf
       this.tabProfile = new System.Windows.Forms.TabPage();
       this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
       this.dgvProfile = new System.Windows.Forms.DataGridView();
+      this.Deg = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.Prct = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.DRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
       this.dgvRate = new System.Windows.Forms.DataGridView();
       this.GS = new System.Windows.Forms.DataGridViewTextBoxColumn();
       this.Fpm = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -100,14 +104,25 @@ namespace FShelf
       this.rtbNotes = new System.Windows.Forms.RichTextBox();
       this.btNotesClear = new System.Windows.Forms.Button();
       this.tabConfig = new System.Windows.Forms.TabPage();
-      this.cbxAcftTrack = new System.Windows.Forms.CheckBox();
-      this.cbxAcftRange = new System.Windows.Forms.CheckBox();
+      this.cbxCfgAcftWind = new System.Windows.Forms.CheckBox();
+      this.btCfgRequestFLT = new System.Windows.Forms.Button();
+      this.btCfgMsSelectPlan = new System.Windows.Forms.Button();
+      this.lblCfgMsPlanData = new System.Windows.Forms.Label();
+      this.btCfgMsLoadPlan = new System.Windows.Forms.Button();
+      this.label29 = new System.Windows.Forms.Label();
+      this.lblCfgSbPlanData = new System.Windows.Forms.Label();
+      this.btCfgSbLoadPlan = new System.Windows.Forms.Button();
+      this.label25 = new System.Windows.Forms.Label();
+      this.txCfgSbPilotID = new System.Windows.Forms.TextBox();
+      this.label22 = new System.Windows.Forms.Label();
+      this.cbxCfgAcftTrack = new System.Windows.Forms.CheckBox();
+      this.cbxCfgAcftRange = new System.Windows.Forms.CheckBox();
       this.label16 = new System.Windows.Forms.Label();
       this.comboCfgRunwayLength = new System.Windows.Forms.ComboBox();
       this.label15 = new System.Windows.Forms.Label();
       this.label11 = new System.Windows.Forms.Label();
       this.label10 = new System.Windows.Forms.Label();
-      this.cbxIFRwaypoints = new System.Windows.Forms.CheckBox();
+      this.cbxCfgIFRwaypoints = new System.Windows.Forms.CheckBox();
       this.cbxCfgPrettyMetar = new System.Windows.Forms.CheckBox();
       this.btCfgSelFolder = new System.Windows.Forms.Button();
       this.txCfgShelfFolder = new System.Windows.Forms.TextBox();
@@ -123,10 +138,7 @@ namespace FShelf
       this.txCfgDep = new System.Windows.Forms.TextBox();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.FBD = new System.Windows.Forms.FolderBrowserDialog();
-      this.Deg = new System.Windows.Forms.DataGridViewTextBoxColumn();
-      this.Prct = new System.Windows.Forms.DataGridViewTextBoxColumn();
-      this.DRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-      this.aMap = new bm98_Map.UC_Map();
+      this.OFD = new System.Windows.Forms.OpenFileDialog();
       this.tab.SuspendLayout();
       this.tabShelf.SuspendLayout();
       this.tabMap.SuspendLayout();
@@ -341,6 +353,29 @@ namespace FShelf
       this.lblDEP.Text = "LSZH";
       this.lblDEP.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       this.lblDEP.Click += new System.EventHandler(this.lblDEP_Click);
+      // 
+      // aMap
+      // 
+      this.aMap.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(16)))));
+      this.aMap.CausesValidation = false;
+      this.aMap.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.aMap.ForeColor = System.Drawing.Color.LightYellow;
+      this.aMap.Location = new System.Drawing.Point(3, 54);
+      this.aMap.MapRange = bm98_Map.MapRange.Near;
+      this.aMap.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+      this.aMap.MinimumSize = new System.Drawing.Size(600, 640);
+      this.aMap.Name = "aMap";
+      this.aMap.ShowAirportRange = false;
+      this.aMap.ShowAptMarks = false;
+      this.aMap.ShowMapGrid = false;
+      this.aMap.ShowNavaids = false;
+      this.aMap.ShowRoute = false;
+      this.aMap.ShowTrackedAircraft = false;
+      this.aMap.ShowVFRMarks = false;
+      this.aMap.Size = new System.Drawing.Size(600, 640);
+      this.aMap.TabIndex = 1;
+      this.aMap.MapCenterChanged += new System.EventHandler<bm98_Map.MapEventArgs>(this.AMap_MapCenterChanged);
+      this.aMap.MapRangeChanged += new System.EventHandler<bm98_Map.MapEventArgs>(this.AMap_MapRangeChanged);
       // 
       // tabMetar
       // 
@@ -697,6 +732,27 @@ namespace FShelf
       this.dgvProfile.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dgvProfile_RowsAdded);
       this.dgvProfile.SelectionChanged += new System.EventHandler(this.dgvProfile_SelectionChanged);
       // 
+      // Deg
+      // 
+      this.Deg.HeaderText = "Deg";
+      this.Deg.Name = "Deg";
+      this.Deg.ReadOnly = true;
+      this.Deg.Width = 50;
+      // 
+      // Prct
+      // 
+      this.Prct.HeaderText = "%";
+      this.Prct.Name = "Prct";
+      this.Prct.ReadOnly = true;
+      this.Prct.Width = 50;
+      // 
+      // DRate
+      // 
+      this.DRate.HeaderText = "ft";
+      this.DRate.Name = "DRate";
+      this.DRate.ReadOnly = true;
+      this.DRate.Width = 70;
+      // 
       // dgvRate
       // 
       this.dgvRate.AllowUserToAddRows = false;
@@ -1022,14 +1078,25 @@ namespace FShelf
       // tabConfig
       // 
       this.tabConfig.BackColor = System.Drawing.Color.Gainsboro;
-      this.tabConfig.Controls.Add(this.cbxAcftTrack);
-      this.tabConfig.Controls.Add(this.cbxAcftRange);
+      this.tabConfig.Controls.Add(this.cbxCfgAcftWind);
+      this.tabConfig.Controls.Add(this.btCfgRequestFLT);
+      this.tabConfig.Controls.Add(this.btCfgMsSelectPlan);
+      this.tabConfig.Controls.Add(this.lblCfgMsPlanData);
+      this.tabConfig.Controls.Add(this.btCfgMsLoadPlan);
+      this.tabConfig.Controls.Add(this.label29);
+      this.tabConfig.Controls.Add(this.lblCfgSbPlanData);
+      this.tabConfig.Controls.Add(this.btCfgSbLoadPlan);
+      this.tabConfig.Controls.Add(this.label25);
+      this.tabConfig.Controls.Add(this.txCfgSbPilotID);
+      this.tabConfig.Controls.Add(this.label22);
+      this.tabConfig.Controls.Add(this.cbxCfgAcftTrack);
+      this.tabConfig.Controls.Add(this.cbxCfgAcftRange);
       this.tabConfig.Controls.Add(this.label16);
       this.tabConfig.Controls.Add(this.comboCfgRunwayLength);
       this.tabConfig.Controls.Add(this.label15);
       this.tabConfig.Controls.Add(this.label11);
       this.tabConfig.Controls.Add(this.label10);
-      this.tabConfig.Controls.Add(this.cbxIFRwaypoints);
+      this.tabConfig.Controls.Add(this.cbxCfgIFRwaypoints);
       this.tabConfig.Controls.Add(this.cbxCfgPrettyMetar);
       this.tabConfig.Controls.Add(this.btCfgSelFolder);
       this.tabConfig.Controls.Add(this.txCfgShelfFolder);
@@ -1050,33 +1117,154 @@ namespace FShelf
       this.tabConfig.TabIndex = 2;
       this.tabConfig.Text = "Config.";
       // 
-      // cbxAcftTrack
+      // cbxCfgAcftWind
       // 
-      this.cbxAcftTrack.AutoSize = true;
-      this.cbxAcftTrack.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.cbxAcftTrack.Location = new System.Drawing.Point(23, 370);
-      this.cbxAcftTrack.Name = "cbxAcftTrack";
-      this.cbxAcftTrack.Size = new System.Drawing.Size(217, 25);
-      this.cbxAcftTrack.TabIndex = 19;
-      this.cbxAcftTrack.Text = "Show Aircraft tracking dots";
-      this.cbxAcftTrack.UseVisualStyleBackColor = true;
+      this.cbxCfgAcftWind.AutoSize = true;
+      this.cbxCfgAcftWind.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.cbxCfgAcftWind.Location = new System.Drawing.Point(249, 287);
+      this.cbxCfgAcftWind.Name = "cbxCfgAcftWind";
+      this.cbxCfgAcftWind.Size = new System.Drawing.Size(154, 25);
+      this.cbxCfgAcftWind.TabIndex = 32;
+      this.cbxCfgAcftWind.Text = "Show Wind arrow";
+      this.cbxCfgAcftWind.UseVisualStyleBackColor = true;
       // 
-      // cbxAcftRange
+      // btCfgRequestFLT
       // 
-      this.cbxAcftRange.AutoSize = true;
-      this.cbxAcftRange.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.cbxAcftRange.Location = new System.Drawing.Point(23, 339);
-      this.cbxAcftRange.Name = "cbxAcftRange";
-      this.cbxAcftRange.Size = new System.Drawing.Size(199, 25);
-      this.cbxAcftRange.TabIndex = 18;
-      this.cbxAcftRange.Text = "Show Aircraft range arcs";
-      this.cbxAcftRange.UseVisualStyleBackColor = true;
+      this.btCfgRequestFLT.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btCfgRequestFLT.Location = new System.Drawing.Point(125, 450);
+      this.btCfgRequestFLT.Name = "btCfgRequestFLT";
+      this.btCfgRequestFLT.Size = new System.Drawing.Size(96, 46);
+      this.btCfgRequestFLT.TabIndex = 31;
+      this.btCfgRequestFLT.Text = "Request Plan Download";
+      this.btCfgRequestFLT.UseVisualStyleBackColor = true;
+      this.btCfgRequestFLT.Click += new System.EventHandler(this.btCfgRequestFLT_Click);
+      // 
+      // btCfgMsSelectPlan
+      // 
+      this.btCfgMsSelectPlan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btCfgMsSelectPlan.Location = new System.Drawing.Point(23, 450);
+      this.btCfgMsSelectPlan.Name = "btCfgMsSelectPlan";
+      this.btCfgMsSelectPlan.Size = new System.Drawing.Size(96, 46);
+      this.btCfgMsSelectPlan.TabIndex = 30;
+      this.btCfgMsSelectPlan.Text = "Select && Load Plan...";
+      this.btCfgMsSelectPlan.UseVisualStyleBackColor = true;
+      this.btCfgMsSelectPlan.Click += new System.EventHandler(this.btCfgMsSelectPlan_Click);
+      // 
+      // lblCfgMsPlanData
+      // 
+      this.lblCfgMsPlanData.AutoSize = true;
+      this.lblCfgMsPlanData.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblCfgMsPlanData.Location = new System.Drawing.Point(329, 464);
+      this.lblCfgMsPlanData.Name = "lblCfgMsPlanData";
+      this.lblCfgMsPlanData.Size = new System.Drawing.Size(17, 17);
+      this.lblCfgMsPlanData.TabIndex = 29;
+      this.lblCfgMsPlanData.Text = "...";
+      // 
+      // btCfgMsLoadPlan
+      // 
+      this.btCfgMsLoadPlan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btCfgMsLoadPlan.Location = new System.Drawing.Point(227, 450);
+      this.btCfgMsLoadPlan.Name = "btCfgMsLoadPlan";
+      this.btCfgMsLoadPlan.Size = new System.Drawing.Size(96, 46);
+      this.btCfgMsLoadPlan.TabIndex = 27;
+      this.btCfgMsLoadPlan.Text = "Load Default Plan";
+      this.btCfgMsLoadPlan.UseVisualStyleBackColor = true;
+      this.btCfgMsLoadPlan.Click += new System.EventHandler(this.btCfgMsLoadPlan_Click);
+      // 
+      // label29
+      // 
+      this.label29.AutoSize = true;
+      this.label29.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label29.ForeColor = System.Drawing.Color.MidnightBlue;
+      this.label29.Location = new System.Drawing.Point(8, 426);
+      this.label29.Name = "label29";
+      this.label29.Size = new System.Drawing.Size(137, 21);
+      this.label29.TabIndex = 26;
+      this.label29.Text = "MSFS Flightplan:";
+      // 
+      // lblCfgSbPlanData
+      // 
+      this.lblCfgSbPlanData.AutoSize = true;
+      this.lblCfgSbPlanData.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblCfgSbPlanData.Location = new System.Drawing.Point(329, 384);
+      this.lblCfgSbPlanData.Name = "lblCfgSbPlanData";
+      this.lblCfgSbPlanData.Size = new System.Drawing.Size(17, 17);
+      this.lblCfgSbPlanData.TabIndex = 25;
+      this.lblCfgSbPlanData.Text = "...";
+      // 
+      // btCfgSbLoadPlan
+      // 
+      this.btCfgSbLoadPlan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btCfgSbLoadPlan.Location = new System.Drawing.Point(227, 369);
+      this.btCfgSbLoadPlan.Name = "btCfgSbLoadPlan";
+      this.btCfgSbLoadPlan.Size = new System.Drawing.Size(96, 46);
+      this.btCfgSbLoadPlan.TabIndex = 23;
+      this.btCfgSbLoadPlan.Text = "Load Default Plan";
+      this.btCfgSbLoadPlan.UseVisualStyleBackColor = true;
+      this.btCfgSbLoadPlan.Click += new System.EventHandler(this.btCfgSbLoadPlan_Click);
+      // 
+      // label25
+      // 
+      this.label25.AutoSize = true;
+      this.label25.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label25.Location = new System.Drawing.Point(19, 380);
+      this.label25.Name = "label25";
+      this.label25.Size = new System.Drawing.Size(63, 21);
+      this.label25.TabIndex = 22;
+      this.label25.Text = "Pilot ID:";
+      // 
+      // txCfgSbPilotID
+      // 
+      this.txCfgSbPilotID.BackColor = System.Drawing.Color.SteelBlue;
+      this.txCfgSbPilotID.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+      this.txCfgSbPilotID.ForeColor = System.Drawing.Color.FloralWhite;
+      this.txCfgSbPilotID.Location = new System.Drawing.Point(89, 374);
+      this.txCfgSbPilotID.MaxLength = 6;
+      this.txCfgSbPilotID.Name = "txCfgSbPilotID";
+      this.txCfgSbPilotID.Size = new System.Drawing.Size(113, 33);
+      this.txCfgSbPilotID.TabIndex = 21;
+      this.txCfgSbPilotID.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+      this.txCfgSbPilotID.WordWrap = false;
+      this.txCfgSbPilotID.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txCfgSbPilotID_KeyPress);
+      // 
+      // label22
+      // 
+      this.label22.AutoSize = true;
+      this.label22.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label22.ForeColor = System.Drawing.Color.MidnightBlue;
+      this.label22.Location = new System.Drawing.Point(8, 348);
+      this.label22.Name = "label22";
+      this.label22.Size = new System.Drawing.Size(80, 21);
+      this.label22.TabIndex = 20;
+      this.label22.Text = "SimBrief:";
+      // 
+      // cbxCfgAcftTrack
+      // 
+      this.cbxCfgAcftTrack.AutoSize = true;
+      this.cbxCfgAcftTrack.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.cbxCfgAcftTrack.Location = new System.Drawing.Point(23, 318);
+      this.cbxCfgAcftTrack.Name = "cbxCfgAcftTrack";
+      this.cbxCfgAcftTrack.Size = new System.Drawing.Size(217, 25);
+      this.cbxCfgAcftTrack.TabIndex = 19;
+      this.cbxCfgAcftTrack.Text = "Show Aircraft tracking dots";
+      this.cbxCfgAcftTrack.UseVisualStyleBackColor = true;
+      // 
+      // cbxCfgAcftRange
+      // 
+      this.cbxCfgAcftRange.AutoSize = true;
+      this.cbxCfgAcftRange.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.cbxCfgAcftRange.Location = new System.Drawing.Point(23, 287);
+      this.cbxCfgAcftRange.Name = "cbxCfgAcftRange";
+      this.cbxCfgAcftRange.Size = new System.Drawing.Size(199, 25);
+      this.cbxCfgAcftRange.TabIndex = 18;
+      this.cbxCfgAcftRange.Text = "Show Aircraft range arcs";
+      this.cbxCfgAcftRange.UseVisualStyleBackColor = true;
       // 
       // label16
       // 
       this.label16.AutoSize = true;
       this.label16.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label16.Location = new System.Drawing.Point(19, 276);
+      this.label16.Location = new System.Drawing.Point(19, 224);
       this.label16.Name = "label16";
       this.label16.Size = new System.Drawing.Size(258, 21);
       this.label16.TabIndex = 17;
@@ -1085,7 +1273,7 @@ namespace FShelf
       // comboCfgRunwayLength
       // 
       this.comboCfgRunwayLength.FormattingEnabled = true;
-      this.comboCfgRunwayLength.Location = new System.Drawing.Point(23, 300);
+      this.comboCfgRunwayLength.Location = new System.Drawing.Point(23, 248);
       this.comboCfgRunwayLength.Name = "comboCfgRunwayLength";
       this.comboCfgRunwayLength.Size = new System.Drawing.Size(390, 33);
       this.comboCfgRunwayLength.TabIndex = 16;
@@ -1093,49 +1281,52 @@ namespace FShelf
       // label15
       // 
       this.label15.AutoSize = true;
-      this.label15.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label15.Location = new System.Drawing.Point(8, 542);
+      this.label15.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label15.ForeColor = System.Drawing.Color.MidnightBlue;
+      this.label15.Location = new System.Drawing.Point(8, 570);
       this.label15.Name = "label15";
-      this.label15.Size = new System.Drawing.Size(48, 21);
+      this.label15.Size = new System.Drawing.Size(54, 21);
       this.label15.TabIndex = 15;
       this.label15.Text = "Shelf:";
       // 
       // label11
       // 
       this.label11.AutoSize = true;
-      this.label11.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label11.Location = new System.Drawing.Point(8, 456);
+      this.label11.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label11.ForeColor = System.Drawing.Color.MidnightBlue;
+      this.label11.Location = new System.Drawing.Point(8, 507);
       this.label11.Name = "label11";
-      this.label11.Size = new System.Drawing.Size(62, 21);
+      this.label11.Size = new System.Drawing.Size(67, 21);
       this.label11.TabIndex = 15;
       this.label11.Text = "METAR:";
       // 
       // label10
       // 
       this.label10.AutoSize = true;
-      this.label10.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label10.Location = new System.Drawing.Point(8, 224);
+      this.label10.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label10.ForeColor = System.Drawing.Color.MidnightBlue;
+      this.label10.Location = new System.Drawing.Point(8, 172);
       this.label10.Name = "label10";
-      this.label10.Size = new System.Drawing.Size(131, 21);
+      this.label10.Size = new System.Drawing.Size(144, 21);
       this.label10.TabIndex = 12;
       this.label10.Text = "Map Decorations:";
       // 
-      // cbxIFRwaypoints
+      // cbxCfgIFRwaypoints
       // 
-      this.cbxIFRwaypoints.AutoSize = true;
-      this.cbxIFRwaypoints.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.cbxIFRwaypoints.Location = new System.Drawing.Point(23, 248);
-      this.cbxIFRwaypoints.Name = "cbxIFRwaypoints";
-      this.cbxIFRwaypoints.Size = new System.Drawing.Size(207, 25);
-      this.cbxIFRwaypoints.TabIndex = 11;
-      this.cbxIFRwaypoints.Text = "Show Airport IFR Navaids";
-      this.cbxIFRwaypoints.UseVisualStyleBackColor = true;
+      this.cbxCfgIFRwaypoints.AutoSize = true;
+      this.cbxCfgIFRwaypoints.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.cbxCfgIFRwaypoints.Location = new System.Drawing.Point(23, 196);
+      this.cbxCfgIFRwaypoints.Name = "cbxCfgIFRwaypoints";
+      this.cbxCfgIFRwaypoints.Size = new System.Drawing.Size(207, 25);
+      this.cbxCfgIFRwaypoints.TabIndex = 11;
+      this.cbxCfgIFRwaypoints.Text = "Show Airport IFR Navaids";
+      this.cbxCfgIFRwaypoints.UseVisualStyleBackColor = true;
       // 
       // cbxCfgPrettyMetar
       // 
       this.cbxCfgPrettyMetar.AutoSize = true;
       this.cbxCfgPrettyMetar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.cbxCfgPrettyMetar.Location = new System.Drawing.Point(23, 486);
+      this.cbxCfgPrettyMetar.Location = new System.Drawing.Point(23, 537);
       this.cbxCfgPrettyMetar.Name = "cbxCfgPrettyMetar";
       this.cbxCfgPrettyMetar.Size = new System.Drawing.Size(186, 25);
       this.cbxCfgPrettyMetar.TabIndex = 9;
@@ -1145,7 +1336,7 @@ namespace FShelf
       // btCfgSelFolder
       // 
       this.btCfgSelFolder.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCfgSelFolder.Location = new System.Drawing.Point(534, 590);
+      this.btCfgSelFolder.Location = new System.Drawing.Point(534, 617);
       this.btCfgSelFolder.Name = "btCfgSelFolder";
       this.btCfgSelFolder.Size = new System.Drawing.Size(40, 26);
       this.btCfgSelFolder.TabIndex = 2;
@@ -1156,7 +1347,7 @@ namespace FShelf
       // txCfgShelfFolder
       // 
       this.txCfgShelfFolder.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txCfgShelfFolder.Location = new System.Drawing.Point(7, 589);
+      this.txCfgShelfFolder.Location = new System.Drawing.Point(7, 617);
       this.txCfgShelfFolder.Name = "txCfgShelfFolder";
       this.txCfgShelfFolder.ReadOnly = true;
       this.txCfgShelfFolder.Size = new System.Drawing.Size(521, 27);
@@ -1165,10 +1356,11 @@ namespace FShelf
       // label8
       // 
       this.label8.AutoSize = true;
-      this.label8.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label8.Location = new System.Drawing.Point(8, 18);
+      this.label8.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label8.ForeColor = System.Drawing.Color.MidnightBlue;
+      this.label8.Location = new System.Drawing.Point(8, 6);
       this.label8.Name = "label8";
-      this.label8.Size = new System.Drawing.Size(258, 21);
+      this.label8.Size = new System.Drawing.Size(282, 21);
       this.label8.TabIndex = 7;
       this.label8.Text = "Map Departure and Arrival Airports:";
       // 
@@ -1176,7 +1368,7 @@ namespace FShelf
       // 
       this.label7.AutoSize = true;
       this.label7.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label7.Location = new System.Drawing.Point(13, 569);
+      this.label7.Location = new System.Drawing.Point(13, 597);
       this.label7.Name = "label7";
       this.label7.Size = new System.Drawing.Size(159, 21);
       this.label7.TabIndex = 7;
@@ -1186,7 +1378,7 @@ namespace FShelf
       // 
       this.label9.AutoSize = true;
       this.label9.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label9.Location = new System.Drawing.Point(14, 176);
+      this.label9.Location = new System.Drawing.Point(14, 145);
       this.label9.Name = "label9";
       this.label9.Size = new System.Drawing.Size(323, 17);
       this.label9.TabIndex = 7;
@@ -1196,7 +1388,7 @@ namespace FShelf
       // 
       this.lblCfgArr.AutoSize = true;
       this.lblCfgArr.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblCfgArr.Location = new System.Drawing.Point(208, 136);
+      this.lblCfgArr.Location = new System.Drawing.Point(208, 116);
       this.lblCfgArr.Name = "lblCfgArr";
       this.lblCfgArr.Size = new System.Drawing.Size(28, 17);
       this.lblCfgArr.TabIndex = 7;
@@ -1206,7 +1398,7 @@ namespace FShelf
       // 
       this.lblCfgDep.AutoSize = true;
       this.lblCfgDep.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblCfgDep.Location = new System.Drawing.Point(208, 89);
+      this.lblCfgDep.Location = new System.Drawing.Point(208, 69);
       this.lblCfgDep.Name = "lblCfgDep";
       this.lblCfgDep.Size = new System.Drawing.Size(28, 17);
       this.lblCfgDep.TabIndex = 7;
@@ -1216,7 +1408,7 @@ namespace FShelf
       // 
       this.label4.AutoSize = true;
       this.label4.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label4.Location = new System.Drawing.Point(86, 50);
+      this.label4.Location = new System.Drawing.Point(86, 30);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(98, 17);
       this.label4.TabIndex = 7;
@@ -1226,7 +1418,7 @@ namespace FShelf
       // 
       this.label5.AutoSize = true;
       this.label5.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label5.Location = new System.Drawing.Point(19, 134);
+      this.label5.Location = new System.Drawing.Point(19, 114);
       this.label5.Name = "label5";
       this.label5.Size = new System.Drawing.Size(40, 20);
       this.label5.TabIndex = 8;
@@ -1236,7 +1428,7 @@ namespace FShelf
       // 
       this.label6.AutoSize = true;
       this.label6.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label6.Location = new System.Drawing.Point(19, 87);
+      this.label6.Location = new System.Drawing.Point(19, 67);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(37, 20);
       this.label6.TabIndex = 6;
@@ -1247,7 +1439,7 @@ namespace FShelf
       this.txCfgArr.BackColor = System.Drawing.Color.SteelBlue;
       this.txCfgArr.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
       this.txCfgArr.ForeColor = System.Drawing.Color.FloralWhite;
-      this.txCfgArr.Location = new System.Drawing.Point(89, 127);
+      this.txCfgArr.Location = new System.Drawing.Point(89, 107);
       this.txCfgArr.MaxLength = 5;
       this.txCfgArr.Name = "txCfgArr";
       this.txCfgArr.Size = new System.Drawing.Size(113, 33);
@@ -1261,7 +1453,7 @@ namespace FShelf
       this.txCfgDep.BackColor = System.Drawing.Color.SteelBlue;
       this.txCfgDep.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
       this.txCfgDep.ForeColor = System.Drawing.Color.FloralWhite;
-      this.txCfgDep.Location = new System.Drawing.Point(89, 80);
+      this.txCfgDep.Location = new System.Drawing.Point(89, 60);
       this.txCfgDep.MaxLength = 5;
       this.txCfgDep.Name = "txCfgDep";
       this.txCfgDep.Size = new System.Drawing.Size(113, 33);
@@ -1279,48 +1471,12 @@ namespace FShelf
       // 
       this.FBD.Description = "Select Flight Bag Folder";
       // 
-      // Deg
+      // OFD
       // 
-      this.Deg.HeaderText = "Deg";
-      this.Deg.Name = "Deg";
-      this.Deg.ReadOnly = true;
-      this.Deg.Width = 50;
-      // 
-      // Prct
-      // 
-      this.Prct.HeaderText = "%";
-      this.Prct.Name = "Prct";
-      this.Prct.ReadOnly = true;
-      this.Prct.Width = 50;
-      // 
-      // DRate
-      // 
-      this.DRate.HeaderText = "ft";
-      this.DRate.Name = "DRate";
-      this.DRate.ReadOnly = true;
-      this.DRate.Width = 70;
-      // 
-      // aMap
-      // 
-      this.aMap.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(16)))));
-      this.aMap.CausesValidation = false;
-      this.aMap.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.aMap.ForeColor = System.Drawing.Color.LightYellow;
-      this.aMap.Location = new System.Drawing.Point(3, 54);
-      this.aMap.MapRange = bm98_Map.MapRange.Near;
-      this.aMap.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-      this.aMap.MinimumSize = new System.Drawing.Size(600, 640);
-      this.aMap.Name = "aMap";
-      this.aMap.ShowAirportRange = false;
-      this.aMap.ShowAptMarks = false;
-      this.aMap.ShowMapGrid = false;
-      this.aMap.ShowNavaids = false;
-      this.aMap.ShowTrackedAircraft = false;
-      this.aMap.ShowVFRMarks = false;
-      this.aMap.Size = new System.Drawing.Size(600, 640);
-      this.aMap.TabIndex = 1;
-      this.aMap.MapCenterChanged += new System.EventHandler<bm98_Map.MapEventArgs>(this.AMap_MapCenterChanged);
-      this.aMap.MapRangeChanged += new System.EventHandler<bm98_Map.MapEventArgs>(this.AMap_MapRangeChanged);
+      this.OFD.DefaultExt = "pln";
+      this.OFD.FileName = "CustomFlight.pln";
+      this.OFD.Filter = "MSFS Flightplans|*.pln;*.flt|All files|*.*";
+      this.OFD.SupportMultiDottedExtensions = true;
       // 
       // frmShelf
       // 
@@ -1421,14 +1577,14 @@ namespace FShelf
     private System.Windows.Forms.Label lblMetArr;
     private System.Windows.Forms.Label lblMetDep;
     private System.Windows.Forms.Label label10;
-    private System.Windows.Forms.CheckBox cbxIFRwaypoints;
+    private System.Windows.Forms.CheckBox cbxCfgIFRwaypoints;
     private bm98_Map.UC_Map aMap;
     private System.Windows.Forms.Label label15;
     private System.Windows.Forms.Label label11;
     private System.Windows.Forms.Label label16;
     private System.Windows.Forms.ComboBox comboCfgRunwayLength;
-    private System.Windows.Forms.CheckBox cbxAcftTrack;
-    private System.Windows.Forms.CheckBox cbxAcftRange;
+    private System.Windows.Forms.CheckBox cbxCfgAcftTrack;
+    private System.Windows.Forms.CheckBox cbxCfgAcftRange;
         private System.Windows.Forms.TabPage tabPerf;
         private System.Windows.Forms.TabPage tabNotes;
         private System.Windows.Forms.RichTextBox rtbNotes;
@@ -1470,5 +1626,17 @@ namespace FShelf
     private System.Windows.Forms.DataGridViewTextBoxColumn Deg;
     private System.Windows.Forms.DataGridViewTextBoxColumn Prct;
     private System.Windows.Forms.DataGridViewTextBoxColumn DRate;
+    private System.Windows.Forms.Label label25;
+    private System.Windows.Forms.TextBox txCfgSbPilotID;
+    private System.Windows.Forms.Label label22;
+    private System.Windows.Forms.Button btCfgSbLoadPlan;
+    private System.Windows.Forms.Label lblCfgSbPlanData;
+    private System.Windows.Forms.Label lblCfgMsPlanData;
+    private System.Windows.Forms.Button btCfgMsLoadPlan;
+    private System.Windows.Forms.Label label29;
+    private System.Windows.Forms.Button btCfgMsSelectPlan;
+    private System.Windows.Forms.OpenFileDialog OFD;
+    private System.Windows.Forms.Button btCfgRequestFLT;
+    private System.Windows.Forms.CheckBox cbxCfgAcftWind;
   }
 }

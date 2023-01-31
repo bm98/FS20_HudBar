@@ -62,7 +62,7 @@ namespace bm98_Map.Drawing
         var mp = MapToPixel( AircraftTrackRef.Position );
         if (g.VisibleClipBounds.Contains( mp )) {
           // calulcates a point 1 nm in direction of the true heading to calibrate the arc boxes
-          var out1nm = MapToPixel( CoordPoint.DestinationPoint( 1, AircraftTrackRef.TrueHeading, ConvConsts.EarthRadiusNm ) );
+          var out1nm = MapToPixel( CoordPoint.DestinationPoint( 1, AircraftTrackRef.TrueHeading_deg, ConvConsts.EarthRadiusNm ) );
           int dist = (int)mp.Distance( out1nm ); // 1 nm vector length in pixels
           if (dist > 5) {
             // 1 nm line should have some pixels to avoid smallest arcs
@@ -76,7 +76,7 @@ namespace bm98_Map.Drawing
             var save2 = g.Transform;
             {
               // Heading Arcs
-              g.RotateTransform( AircraftTrackRef.TrueHeading, MatrixOrder.Append );
+              g.RotateTransform( AircraftTrackRef.TrueHeading_deg, MatrixOrder.Append );
               g.TranslateTransform( shift.Width, shift.Height, MatrixOrder.Append );
               // arc goes in X dir for 0 deg - we rotated to have N up - so draw is -90° to have it on Y up
               g.DrawArc( Pen, rect20, -15 - 90, 30 );

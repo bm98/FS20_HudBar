@@ -20,7 +20,11 @@ namespace bm98_Map.Data
     /// <summary>
     /// True Heading in degree
     /// </summary>
-    float TrueHeading { get; }
+    float TrueHeading_deg { get; }
+    /// <summary>
+    /// Mag Heading in degree
+    /// </summary>
+    float Heading_degm { get; }
     /// <summary>
     /// Altitude in feet above mean sea level
     ///  set to float.NaN to hide from display
@@ -46,7 +50,7 @@ namespace bm98_Map.Data
     /// <summary>
     /// Ground Track in mag deg
     /// </summary>
-    float Trk_deg { get; }
+    float Trk_degm { get; }
     /// <summary>
     /// Ground Track in true deg
     /// (used also for range calc, if switched off...)
@@ -59,6 +63,15 @@ namespace bm98_Map.Data
     /// </summary>
     float Vs_fpm { get; }
     /// <summary>
+    /// Wind Speed in kt
+    /// </summary>
+    float WindSpeed_kt { get; }
+    /// <summary>
+    /// Wind Direction in deg (true, chart direction)
+    /// </summary>
+    float WindDirection_deg { get; }
+
+    /// <summary>
     /// Flag to indicate the Acft is on Ground
     /// </summary>
     bool OnGround { get; }
@@ -67,6 +80,10 @@ namespace bm98_Map.Data
     /// Flag to show or hide the range indicator of the icon
     /// </summary>
     bool ShowAircraftRange { get; }
+    /// <summary>
+    /// Flag to show or hide the wind indicator of the icon
+    /// </summary>
+    bool ShowAircraftWind { get; }
     /// <summary>
     /// Flag to show or hide the stored track
     /// </summary>

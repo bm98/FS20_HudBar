@@ -1,5 +1,5 @@
-FS20_HudBar V 0.60 - Build 60 BETA
-(c) M. Burri - 23-Jan-2023
+FS20_HudBar V 0.61 - Build 61 BETA
+(c) M. Burri - 31-Jan-2023
 
 Contains files:
 
@@ -21,8 +21,9 @@ FShelf.dll                  Shelf WinForms library
 FSimClientIF.dll            Generic FSim Client interface definition
 FSimFacilityDataLib.dll     MS facility database access library
 FSimFacilityIF.dll          MS facility database interface definition
-FSimIF.dll                  Generic FSim interface definition (updated)
+FSimIF.dll                  Generic FSim interface definition
 MapLib.dll                  Mapping library
+FlightplanLib.dll           Flightplan library
 MetarLib.dll                METAR access library
 PingLib.dll                 An audio lib using Win10 Audio facilities
 SettingsLib.dll             Application settings persistence library
@@ -70,6 +71,20 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.61-B61
+FlightBag Update
+- Add SimBrief support (loading docs into Shelf, show Flightplan on map)
+- Add MSFS PLN support (loading table doc into Shelf, show Flightplan on map)
+- Add MSFS FLT support (loading table doc into Shelf, show Flightplan on map)
+- Add Wind Arrow for tracked aircraft
+- Add Track in aircraft data in Map
+- Add Allow True and Mag toggle when clicking Heading or Track in Map
+- Add Toggle Av/SI units when clicking data labels in Map (alt, speed, vs )
+- Add XF range to map (Zoom level 7)
+- Update Support GIF images in Shelf
+- Fix AppSettings of Aircraft Range and Track was mismatched
+- Update QuickGuide
 
 V 0.60-B60
 - Add PositiveRate Callout (criteria see QuickGuide)

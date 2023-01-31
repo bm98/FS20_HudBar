@@ -54,7 +54,7 @@ namespace bm98_Map.Drawing
         // Set world transform of graphics object to translate.
         var mp = MapToPixel( CoordPoint );
         if (g.VisibleClipBounds.Contains( mp )) {
-          var out1nm = MapToPixel( CoordPoint.DestinationPoint( 1,AircraftTrackRef.TrueHeading, ConvConsts.EarthRadiusNm ) );
+          var out1nm = MapToPixel( CoordPoint.DestinationPoint( 1,AircraftTrackRef.TrueHeading_deg, ConvConsts.EarthRadiusNm ) );
           int dist = (int)mp.Distance( out1nm );
 
           Rectangle rect5 = new Rectangle( mp.Subtract( new Point( dist * 5 / 2, dist * 5 / 2 ) ), new Size( dist * 5, dist * 5 ) ); // 2.5 nm
@@ -63,7 +63,7 @@ namespace bm98_Map.Drawing
 
           var shift = new Size( mp.X, mp.Y );
           g.TranslateTransform( -shift.Width, -shift.Height );
-          g.RotateTransform( AircraftTrackRef.TrueHeading, MatrixOrder.Append );
+          g.RotateTransform( AircraftTrackRef.TrueHeading_deg, MatrixOrder.Append );
           g.TranslateTransform( shift.Width, shift.Height, MatrixOrder.Append );
           g.DrawArc( Pen, rect20, -15 - 90, 30 );
           g.DrawArc( Pen, rect10, -15 - 90, 30 );

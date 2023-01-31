@@ -29,6 +29,8 @@ namespace bm98_Map.Drawing
     public readonly static Color ColRangeTrue = Color.Blue;
     public readonly static Color ColTRange = Color.Lime; // Target Range color
     public readonly static Color ColScale = Color.Orchid;//Color.Magenta; //
+    public readonly static Color ColRoute = Color.Magenta;
+    public readonly static Color ColRouteSid = Color.BlueViolet;
 
     public readonly static Color ColRwBorder = Color.FromArgb( 0, 166, 81 );    // green
     public readonly static Color ColRwPavement = Color.FromArgb( 45, 44, 44 );  // dark grey
@@ -42,13 +44,20 @@ namespace bm98_Map.Drawing
     public readonly static Color ColAptRange = Color.RoyalBlue;
     public readonly static Color ColVfrMain = Color.RoyalBlue; // in and left hand color
     public readonly static Color ColVfrAlt = Color.Black; // out and right hand color
-    public readonly static Color ColVfrHeading = Color.DarkBlue; 
+    public readonly static Color ColVfrHeading = Color.DarkBlue;
 
+    public readonly static Color ColAcftOutline = Color.Black;
+    public readonly static Color ColAcftWind = Color.MediumBlue;
 
 
     public readonly static Pen PenInfo = new Pen( ColInfo );
     public readonly static Pen PenInfo2 = new Pen( ColInfo, 2f );
     public readonly static Pen PenInfo4 = new Pen( ColInfo, 4f );
+
+    public readonly static Pen PenRoute3 = new Pen( ColRoute, 3f );
+    public readonly static Pen PenRoute5 = new Pen( ColRoute, 5f );
+    public readonly static Pen PenRouteSid3 = new Pen( ColRouteSid, 3f );
+    public readonly static Pen PenRouteSid5 = new Pen( ColRouteSid, 5f );
 
     public readonly static Pen PenRange3 = new Pen( ColRange, 3f );
     public readonly static Pen PenRange5 = new Pen( ColRangeTrue, 5f );
@@ -62,6 +71,8 @@ namespace bm98_Map.Drawing
     public readonly static Pen PenVfrMain = new Pen( ColVfrMain, 3f );
     public readonly static Pen PenVfrAlt = new Pen( ColVfrAlt, 3f );
 
+    public readonly static Pen PenAcftOutline = new Pen( ColAcftOutline, 1f );
+    public readonly static Pen PenAcftWind = new Pen( ColAcftWind, 1f );
 
 
     public readonly static Brush BrushInfo = new SolidBrush( ColInfo );
@@ -84,9 +95,10 @@ namespace bm98_Map.Drawing
 
     public readonly static Brush BrushVFRHeading = new SolidBrush( ColVfrHeading );
 
+    public readonly static Brush BrushAcftWind = new SolidBrush( ColAcftWind);
 
     // fonts for numbers
-//    private readonly static string TextFont = "Bahnschrift"; // has equaly spaced digits
+    //    private readonly static string TextFont = "Bahnschrift"; // has equaly spaced digits
     private readonly static string TextFont = "Consolas";
 
     public readonly static Font FtLarger = new Font( TextFont, 24f, FontStyle.Bold );

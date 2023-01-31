@@ -17,8 +17,11 @@ namespace bm98_Album
   /// </summary>
   public partial class UC_Album : UserControl
   {
+    // mark the temp file with this (start of filename)
+    private const string c_tmpMark = "$§$";
+
     // Viewport Controller
-    private ViewportZ _VPC = new ViewportZ();
+    private ViewportZ _VPC = new ViewportZ( );
     // The loaded image to show
     private Image _pic = null;
 
@@ -28,15 +31,15 @@ namespace bm98_Album
 
     private string _shelfFolder = "";       // currently used folder for Image files
     private string _shelfFilename = "";     // currently shown image filename
-    private List<string> _shelfList = new List<string>(); // current list of avialable Images in the Shelf
+    private List<string> _shelfList = new List<string>( ); // current list of avialable Images in the Shelf
 
-    private readonly Color c_BackBwDark = Color.FromArgb(46,69,97);
-    private readonly Color c_BackBwMid = Color.FromArgb(48,48,48);
+    private readonly Color c_BackBwDark = Color.FromArgb( 46, 69, 97 );
+    private readonly Color c_BackBwMid = Color.FromArgb( 48, 48, 48 );
     //    private readonly Color c_BackBwBright = Color.FromArgb(64,64,64);
-    private readonly Color c_BackBwBright = Color.FromArgb(64,81,102);
+    private readonly Color c_BackBwBright = Color.FromArgb( 64, 81, 102 );
     // Image Frame
-    private Rectangle _frame = new Rectangle();
-    private readonly Pen _framePen = new Pen(Brushes.LightSteelBlue, 5);
+    private Rectangle _frame = new Rectangle( );
+    private readonly Pen _framePen = new Pen( Brushes.LightSteelBlue, 5 );
     // fallback brush
     private Brush _backBrush;
 
@@ -70,11 +73,18 @@ namespace bm98_Album
     {
       // this shall never fail - could be an invalid image..
       try {
-        if ( _pic != null ) {
+        if (_pic != null) {
           _pic.Dispose( );
           _pic = null;
         }
-        _pic = Image.FromFile( filename );
+        // remove temps here, else a file might be locked while viewing it
+        CleanShelf();
+
+        // make a copy to be able to replace it while shown
+        var tmpName = Path.GetFileName( filename );
+        tmpName = Path.Combine( Path.GetDirectoryName( filename ), c_tmpMark + tmpName );
+        File.Copy( filename, tmpName, true );
+        _pic = Image.FromFile( tmpName );
         var gu = GraphicsUnit.Pixel;
         _VPC.SetImageSize( _pic.GetBounds( ref gu ).Size );
         _shelfFilename = filename;
@@ -92,13 +102,26 @@ namespace bm98_Album
     /// <param name="foldername">A Directorypath</param>
     public void SetShelfFolder( string foldername )
     {
-      if ( !Directory.Exists( foldername ) ) throw new ArgumentException( "Foldername does not exist." );
+      if (!Directory.Exists( foldername )) throw new ArgumentException( "Foldername does not exist." );
 
       _shelfFolder = foldername;
 
       // changed the folder while the shelf is visible..
-      if ( ShelfVisible ) {
+      if (ShelfVisible) {
         LoadShelf( _shelfFolder ); // reload
+      }
+    }
+
+    /// <summary>
+    /// clean from tempfiles 
+    /// </summary>
+    public void CleanShelf( )
+    {
+      // get the tmp file list
+      var files = Directory.EnumerateFiles( _shelfFolder, $"{c_tmpMark}*.*", SearchOption.TopDirectoryOnly );
+      foreach (var file in files) {
+        // shall never fail
+        try { File.Delete( file ); } catch { }
       }
     }
 
@@ -145,15 +168,15 @@ namespace bm98_Album
     // Right Button will Reset the Zoom
     private void UC_Album_MouseDown( object sender, MouseEventArgs e )
     {
-      if ( _pic == null ) return;
+      if (_pic == null) return;
 
-      if ( e.Button == MouseButtons.Left ) {
+      if (e.Button == MouseButtons.Left) {
         _mouseDown = true;
         _mouseMoved = false;
         this.Cursor = Cursors.NoMove2D;
         _VPC.DragStart( e.Location );
       }
-      else if ( e.Button == MouseButtons.Right ) {
+      else if (e.Button == MouseButtons.Right) {
         _VPC.ZoomReset( );
         this.Invalidate( this.ClientRectangle );
       }
@@ -162,10 +185,10 @@ namespace bm98_Album
     // Capture Mouse Move and Drag the image
     private void UC_Album_MouseMove( object sender, MouseEventArgs e )
     {
-      if ( _pic == null ) return;
+      if (_pic == null) return;
 
-      if ( _mouseDown && ( e.Button == MouseButtons.Left ) ) {
-        if ( !_mouseMoved ) {
+      if (_mouseDown && (e.Button == MouseButtons.Left)) {
+        if (!_mouseMoved) {
           _mouseMoved = true;
         }
         _VPC.Drag( e.Location );
@@ -176,11 +199,11 @@ namespace bm98_Album
     // Capture Mouse Up and stop draging
     private void UC_Album_MouseUp( object sender, MouseEventArgs e )
     {
-      if ( _pic == null ) return;
+      if (_pic == null) return;
 
-      if ( _mouseDown ) {
+      if (_mouseDown) {
         this.Cursor = Cursors.Default;
-        if ( !_mouseMoved ) {
+        if (!_mouseMoved) {
           // not yet moved, handle Non Move Left Click
           //  if ( LeftSide( this.ClientRectangle, e.Location ) ) _VPC.ZoomOut( );
           //  else _VPC.ZoomIn( );
@@ -198,9 +221,9 @@ namespace bm98_Album
     // Capture Mouse Wheel for Zoom
     private void UC_Album_MouseWheel( object sender, MouseEventArgs e )
     {
-      if ( _pic == null ) return;
+      if (_pic == null) return;
 
-      if ( e.Delta < 0 ) {
+      if (e.Delta < 0) {
         _VPC.ZoomOut( );
       }
       else {
@@ -241,7 +264,7 @@ namespace bm98_Album
       var save = e.Graphics.Save( ); // preserve the default G-Context
 
       e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-      if ( _pic != null ) {
+      if (_pic != null) {
         e.Graphics.DrawImage( _pic, this.ClientRectangle, _VPC.SrcRect, GraphicsUnit.Pixel );
       }
       else {
@@ -272,7 +295,7 @@ namespace bm98_Album
     // Capture Shelf Icon
     private void picShelf_Click( object sender, EventArgs e )
     {
-      if ( flp.Visible ) {
+      if (flp.Visible) {
         flp.Visible = false; // Hide if prev. shown
       }
       else {
@@ -292,7 +315,7 @@ namespace bm98_Album
       flp.Controls.Clear( );
 
       // catch vanished directory errors
-      if ( !Directory.Exists( foldername ) ) {
+      if (!Directory.Exists( foldername )) {
         flp.Controls.Add(
           new Label( ) {
             Text = $"Folder \n{foldername} not found or not set!!",
@@ -305,26 +328,30 @@ namespace bm98_Album
         );
         return; // sanity bail out
       }
-      // get the display file list (JPG and PNG are supported)
-      var files = Directory.EnumerateFiles( foldername, "*.??g", SearchOption.TopDirectoryOnly );
-      foreach ( var file in files ) {
+      // get the display file list (JPG and PNG anf GIF are supported)
+      var files = Directory.EnumerateFiles( foldername, "*.*", SearchOption.TopDirectoryOnly );
+      foreach (var file in files) {
         // cannot use a pattern to completely resolve the supported files
-        if ( file.ToLowerInvariant( ).EndsWith( ".jpg" )
-          || file.ToLowerInvariant( ).EndsWith( ".png" ) ) {
-          _shelfList.Add( file );
+        if (file.ToLowerInvariant( ).EndsWith( ".jpg" )
+          || file.ToLowerInvariant( ).EndsWith( ".png" )
+          || file.ToLowerInvariant( ).EndsWith( ".gif" )) {
+          // exclude our temp files
+          if (!Path.GetFileName( file ).StartsWith( c_tmpMark )) {
+            _shelfList.Add( file );
+          }
         }
       }
       // process file list
       bool pingpong = true; // zebra toggle
-      foreach ( var file in _shelfList ) {
-        var l = new Label() {
+      foreach (var file in _shelfList) {
+        var l = new Label( ) {
           Text = Path.GetFileNameWithoutExtension( file ),
           Tag = Path.GetFullPath( file ),
           BackColor = pingpong ? c_BackBwBright : c_BackBwDark, // Zebra coloring
           AutoSize = true,
           UseCompatibleTextRendering = true, // some chars don't show up for some fonts
           AutoEllipsis = true,
-          Padding = new Padding(5),
+          Padding = new Padding( 5 ),
           Cursor = Cursors.Hand,
           Dock = DockStyle.Top,
           TextAlign = ContentAlignment.MiddleLeft,
@@ -340,7 +367,7 @@ namespace bm98_Album
     // .Tag contains the fully qualified path
     private void L_Click( object sender, EventArgs e )
     {
-      if ( sender is Label ) {
+      if (sender is Label) {
         var fname = (string)(sender as Label).Tag;
         SetImage( fname );
         flp.Visible = false; // hide shelf
@@ -352,7 +379,7 @@ namespace bm98_Album
 
     private static bool LeftSide( Rectangle target, PointF point )
     {
-      return ( point.X < ( target.X + target.Width / 2 ) );
+      return (point.X < (target.X + target.Width / 2));
     }
 
   }

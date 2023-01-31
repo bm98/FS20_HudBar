@@ -21,6 +21,10 @@ namespace bm98_Map.Data
     /// <summary>
     /// True to Show
     /// </summary>
+    public bool ShowMTRK => !float.IsNaN( Trk_degm );
+    /// <summary>
+    /// True to Show
+    /// </summary>
     public bool ShowAlt => !float.IsNaN( Altitude_ft );
     /// <summary>
     /// True to Show
@@ -44,6 +48,11 @@ namespace bm98_Map.Data
     /// Usually the Airport elevation
     /// </summary>
     public float TargetAltitude_ft { get; set; } = 0;
+
+    /// <summary>
+    /// Windspeed string (Unit setting dependent)
+    /// </summary>
+    public string WindSpeedS { get; set; } = "";
 
     /// <summary>
     /// True to Show Target Range instead of distance arcs
@@ -93,17 +102,23 @@ namespace bm98_Map.Data
     {
       Position = new LatLon( aircraft.Position.Lat, aircraft.Position.Lon,
                            float.IsNaN( aircraft.Altitude_ft ) ? double.NaN : aircraft.Altitude_ft );// maintain with all 3 data items
+      Heading_degm = aircraft.Heading_degm;
+      TrueHeading_deg = aircraft.TrueHeading_deg;
+      Trk_degm = aircraft.Trk_degm;
+      TrueTrk_deg = aircraft.TrueTrk_deg;
       Altitude_ft = aircraft.Altitude_ft;
       RadioAlt_ft = aircraft.RadioAlt_ft;
-      TrueHeading = (float)Geo.Wrap360( aircraft.TrueHeading );
       Ias_kt = aircraft.Ias_kt;
       Gs_kt = aircraft.Gs_kt;
-      Trk_deg = aircraft.Trk_deg;
-      TrueTrk_deg = aircraft.TrueTrk_deg;
       Vs_fpm = aircraft.Vs_fpm;
       OnGround = aircraft.OnGround;
 
+      WindDirection_deg = (aircraft.WindSpeed_kt < 1) ? float.NaN : aircraft.WindDirection_deg; // avoid speeds <1
+      WindSpeed_kt = aircraft.WindSpeed_kt;
+      WindSpeedS = $"{aircraft.WindSpeed_kt:##0}kt"; // default
+
       ShowAircraftRange = aircraft.ShowAircraftRange;
+      ShowAircraftWind = aircraft.ShowAircraftWind;
       ShowAircraftTrack = aircraft.ShowAircraftTrack;
       ClearAircraftTrack = aircraft.ClearAircraftTrack;
 

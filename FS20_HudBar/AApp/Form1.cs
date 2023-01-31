@@ -689,7 +689,7 @@ namespace FS20_HudBar
       // attach a Callback for the SimClient
       SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
       SC.SimConnectClient.Instance.FlightPlanModule.Enabled = false; // start disabled, will be re-checked in InitGUI
-                                                                     // Layout may need to update when the Aircraft changes (due to Engine Count)
+      // Layout may need to update when the Aircraft changes (due to Engine Count)
       SC.SimConnectClient.Instance.AircraftChange += Instance_AircraftChange;
 
       // Pacer to connect and other repetitive chores

@@ -318,7 +318,12 @@ namespace bm98_Map.Drawing
     /// <returns>A Drawing Canvas Point</returns>
     public Point MapToCanvasPixel( LatLon coordPoint )
     {
-      return _tileMatrix.MapToMatrixPixel( coordPoint ); // matrix and ccanvas are the same dimension
+      if ( !coordPoint.IsEmpty) {
+        return _tileMatrix.MapToMatrixPixel( coordPoint ); // matrix and ccanvas are the same dimension
+      }
+      else {
+        return new Point( -999, -999 );
+      }
     }
 
     /// <summary>
@@ -654,11 +659,11 @@ namespace bm98_Map.Drawing
         }
       }
       e.Graphics.EndContainer( save );
-#if DEBUG
+//#if DEBUG
       // red center cross
       e.Graphics.DrawLine( Pens.Red, _view.Width / 2 - 10, _view.Height / 2, _view.Width / 2 + 10, _view.Height / 2 );
       e.Graphics.DrawLine( Pens.Red, _view.Width / 2, _view.Height / 2 - 10, _view.Width / 2, _view.Height / 2 + 10 );
-#endif
+//#endif
     }
 
     // fires when the output View size has changed

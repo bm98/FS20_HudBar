@@ -37,6 +37,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Redist\CoordLib.dll</HintPath>
     </Reference>
+    <Reference Include="FlightplanLib">
+      <HintPath>..\..\FlightplanLib\bin\Debug\FlightplanLib.dll</HintPath>
+    </Reference>
     <Reference Include="FSimFacilityDataLib">
       <HintPath>..\..\Redist\FSimFacilityDataLib.dll</HintPath>
     </Reference>

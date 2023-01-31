@@ -51,7 +51,6 @@ namespace bm98_Map.Drawing
 
       // just draw the image full scale to the surface
       MapTilesRef.DrawMatrixImage( g, TileBorders );
-      //g.DrawImageUnscaled( MapTilesRef.GetMatrixImage( TileBorders ), 0, 0 );
     }
 
   }

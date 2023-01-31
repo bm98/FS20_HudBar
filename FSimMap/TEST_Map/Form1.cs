@@ -18,6 +18,7 @@ using FSimFacilityIF;
 using System.IO;
 
 using MapLib;
+using FlightplanLib;
 
 namespace TEST_Map
 {
@@ -60,13 +61,13 @@ namespace TEST_Map
     private void UC_Map1_MapRangeChanged( object sender, MapEventArgs e )
     {
       lblEvent.Text = $"R:{DateTime.Now.ToShortTimeString( )}";
-     // Console.WriteLine( $"GGG  UC_Map1_MapRangeChanged:  {e.CenterCoordinate} - {e.MapRange}" );
+      // Console.WriteLine( $"GGG  UC_Map1_MapRangeChanged:  {e.CenterCoordinate} - {e.MapRange}" );
     }
 
     private void UC_Map1_MapCenterChanged( object sender, MapEventArgs e )
     {
       lblEvent.Text = $"C:{DateTime.Now.ToShortTimeString( )}";
-     // Console.WriteLine( $"GGG  UC_Map1_MapCenterChanged: {e.CenterCoordinate} - {e.MapRange}" );
+      // Console.WriteLine( $"GGG  UC_Map1_MapCenterChanged: {e.CenterCoordinate} - {e.MapRange}" );
 
     }
 
@@ -93,7 +94,7 @@ namespace TEST_Map
         //airport = _db.DbReader.GetAirport( "LSZU" ); // single runway
         //airport = _db.DbReader.GetAirport( "KOSH" );
 
-        airport = _db.DbReader.GetAirport( txAirport.Text.ToUpperInvariant() );
+        airport = _db.DbReader.GetAirport( txAirport.Text.ToUpperInvariant( ) );
       }
       if (airport != null) {
         uC_Map1.MapCreator.SetAirport( airport );
@@ -138,8 +139,11 @@ namespace TEST_Map
       Gs_kt = 220,
       Trk_deg = 46,
       TrueTrk_deg = 42,
+      WindDirection_deg = -12,
+      WindSpeed_kt = 0,
       ShowAircraft = true,
       ShowAircraftRange = true,
+      ShowAircraftWind = true,
       ShowAircraftTrack = true,
     };
 
@@ -161,7 +165,10 @@ namespace TEST_Map
       trackedAircraft.Trk_deg += 5;
       trackedAircraft.TrueTrk_deg += 5;
       trackedAircraft.Vs_fpm += 100;
+      trackedAircraft.WindDirection_deg += 12;
+      trackedAircraft.WindSpeed_kt += 5;
       trackedAircraft.ShowAircraftRange = true;
+      trackedAircraft.ShowAircraftWind = true;
       trackedAircraft.ShowAircraftTrack = true;
     }
 
@@ -198,7 +205,7 @@ namespace TEST_Map
           return aList; // no db available
 
         // get the the Quads around
-        var qs = Quad.Around49EX(uC_Map1.MapCenter().AsQuadMax().AtZoom( (int)MapRange.FarFar ) ); // FF level
+        var qs = Quad.Around49EX( uC_Map1.MapCenter( ).AsQuadMax( ).AtZoom( (int)MapRange.FarFar ) ); // FF level
         aList = _db.DbReader.AirportDescs_ByQuadList( qs ).ToList( );
       }
       return aList;
@@ -209,5 +216,30 @@ namespace TEST_Map
       uC_Map1.SetNavaidList( NList( airport.Coordinate ) );
       uC_Map1.SetAltAirportList( AList( airport.Coordinate ) );
     }
+
+    private void btSetRoute_Click( object sender, EventArgs e )
+    {
+      Route route = new Route( );
+      route.AddRoutePoint( new RoutePoint( "LMML", new LatLon( 35.857542, 14.477439, 297 ), TypeOfWaypoint.Airport, 0, 0, false ) ); // origin
+      route.AddRoutePoint( new RoutePoint( "D130B", new LatLon( 35.833300, 14.507458, 5600 ), TypeOfWaypoint.Waypoint, 134, 0, true ) );
+      route.AddRoutePoint( new RoutePoint( "D161D", new LatLon( 35.786228, 14.503772, 10300 ), TypeOfWaypoint.Waypoint, 183, 0, true ) );
+      route.AddRoutePoint( new RoutePoint( "TOC", new LatLon( 35.698334, 15.172231, 25000 ), TypeOfWaypoint.Waypoint, 99, 0, false ) );
+      route.AddRoutePoint( new RoutePoint( "GODAK", new LatLon( 35.637778, 15.616389, 25000 ), TypeOfWaypoint.Waypoint, 99, 0, false ) );
+      route.AddRoutePoint( new RoutePoint( "RUDOG", new LatLon( 35.433333, 17.291944, 25000 ), TypeOfWaypoint.Waypoint, 98, 0, false ) );
+      route.AddRoutePoint( new RoutePoint( "INBIN", new LatLon( 35.268611, 18.500000, 25000 ), TypeOfWaypoint.Waypoint, 99, 0, false ) );
+      route.AddRoutePoint( new RoutePoint( "VANIX", new LatLon( 34.827500, 21.390833, 25000 ), TypeOfWaypoint.Waypoint, 99, 0, false ) );
+      route.AddRoutePoint( new RoutePoint( "ARLOS", new LatLon( 34.625278, 23.000000, 25000 ), TypeOfWaypoint.Waypoint, 98, 0, false ) );
+      route.AddRoutePoint( new RoutePoint( "OTREX", new LatLon( 35.154444, 24.938889, 25000 ), TypeOfWaypoint.Waypoint, 71, 0, false ) );
+      route.AddRoutePoint( new RoutePoint( "D223J", new LatLon( 35.227633, 25.035419, 25000 ), TypeOfWaypoint.Waypoint, 47, 0, false ) );
+      route.AddRoutePoint( new RoutePoint( "TOD", new LatLon( 35.250273, 25.065335, 25000 ), TypeOfWaypoint.User, 47, 0, false ) );
+      route.AddRoutePoint( new RoutePoint( "IRA", new LatLon( 35.340744, 25.185144, 20300 ), TypeOfWaypoint.VOR, 47, 0, false ) );
+      route.AddRoutePoint( new RoutePoint( "D040Q", new LatLon( 35.546111, 25.425000, 10500 ), TypeOfWaypoint.Waypoint, 43, 0, true ) );
+      route.AddRoutePoint( new RoutePoint( "GONSO", new LatLon( 35.449722, 25.390833, 7000 ), TypeOfWaypoint.Waypoint, 196, 0, true ) );
+      route.AddRoutePoint( new RoutePoint( "LGIR", new LatLon( 35.339722, 25.180278, 115 ), TypeOfWaypoint.Airport, 237, 0, false ) );
+
+      uC_Map1.SetRoute( route );
+    }
+
+
   }
 }
