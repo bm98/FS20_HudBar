@@ -106,9 +106,9 @@ namespace MS
     // Set the File Encoding to ANSI 
     private void SetEncodingANSI( )
     {
-      _encoding = CodePagesEncodingProvider.Instance.GetEncoding( 1252 );
+     // DISABLED IN FlightBag Implementation
+     //  _encoding = CodePagesEncodingProvider.Instance.GetEncoding( 1252 );
     }
-
 
     /// <summary>
     /// Returns true if the file is valid
