@@ -15,9 +15,14 @@ namespace FlightplanLib.MSFSPln.PLNDEC
   public class X_AppVersion
   {
     // Elements
+    /// <summary>
+    /// The AppVersionMajor element
+    /// </summary>
     [XmlElement( ElementName = "AppVersionMajor" )]
     public int AppVersionMajor { get; set; }
-    // Elements
+    /// <summary>
+    /// The AppVersionBuild element
+    /// </summary>
     [XmlElement( ElementName = "AppVersionBuild" )]
     public int AppVersionBuild { get; set; }
 

@@ -66,8 +66,8 @@ namespace FlightplanLib.SimBrief.Provider
       httpClient.Timeout = new TimeSpan( 0, 0, 10 );
     }
 
-    // 6 digit number string
-    private static Regex _sbUid = new Regex( @"^([0-9]{6})$", RegexOptions.Compiled );
+    // 6 digit number string allow 4..7 as there is no spec about it (read also '5 or 6'...)
+    private static Regex _sbUid = new Regex( @"^([0-9]{2,7})$", RegexOptions.Compiled );
 
     // true for a valid userID
     public static bool IsSimBriefUserID( string userID ) => _sbUid.Match( userID ).Success;
@@ -77,6 +77,7 @@ namespace FlightplanLib.SimBrief.Provider
     /// Async Retrieve a SimBrief XML record
     /// </summary>
     /// <param name="userIDorName">The SimBrief Pilot ID or Name</param>
+    /// <param name="dataFormat">SB data format to retrieve</param>
     /// <returns>An XML SimBriefDocument</returns>
     public static async Task<string> GetDocument( string userIDorName, SimBriefDataFormat dataFormat )
     {

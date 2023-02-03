@@ -11,6 +11,9 @@ using System.Windows.Forms;
 
 namespace bm98_hbControls
 {
+  /// <summary>
+  /// User Control: Artificial Horizont (part of ESI)  
+  /// </summary>
   public partial class UC_AHor : UserControl
   {
     private readonly Size _minSize = new Size( 20, 10);
@@ -117,7 +120,9 @@ namespace bm98_hbControls
       }
     }
 
-
+    /// <summary>
+    /// cTor:
+    /// </summary>
     public UC_AHor( )
     {
       InitializeComponent( );

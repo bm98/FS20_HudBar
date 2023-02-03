@@ -171,6 +171,9 @@ namespace bm98_hbControls
       }
     }
 
+    /// <summary>
+    /// cTor:
+    /// </summary>
     public UC_BiScale( )
     {
       InitializeComponent( );

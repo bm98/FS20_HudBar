@@ -185,6 +185,9 @@ namespace bm98_hbControls
       }
     }
 
+    /// <summary>
+    /// cTor:
+    /// </summary>
     public UC_FPA( )
     {
       InitializeComponent( );

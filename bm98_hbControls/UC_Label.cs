@@ -137,6 +137,9 @@ namespace bm98_hbControls
     // Improved text rendering as per:
     // https://stackoverflow.com/questions/2609520/how-to-make-text-labels-smooth
     private TextRenderingHint _hint = TextRenderingHint.SystemDefault;
+    /// <summary>
+    /// Get;Set: Text rendering property
+    /// </summary>
     public TextRenderingHint TextRenderingHint {
       get { return this._hint; }
       set { this._hint = value; }

@@ -13,6 +13,9 @@ namespace FlightplanLib.SimBrief.SBDEC
   [DataContract]
   public class Json_Navlog
   {
+    /// <summary>
+    /// The fix field (array of )
+    /// </summary>
     [DataMember( Name = "fix", IsRequired = true )]
     public List<Json_Fix> Waypoints { get; set; } = new List<Json_Fix>( );
 

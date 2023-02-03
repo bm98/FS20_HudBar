@@ -15,16 +15,30 @@ namespace FlightplanLib.MSFSPln.PLNDEC
   public class X_Icao
   {
     // Elements
+    /// <summary>
+    /// The  field
+    /// </summary>
     [XmlElement( ElementName = "ICAOIdent" )]
     public string ICAO_Ident { get; set; } = "";
 
+    /// <summary>
+    /// The  field
+    /// </summary>
     [XmlElement( ElementName = "ICAORegion", IsNullable = false )]
     public string Region { get; set; } = "";
 
+    /// <summary>
+    /// The  field
+    /// </summary>
     [XmlElement( ElementName = "ICAOAirport", IsNullable = false )]
     public string AirportCode { get; set; } = "";
 
     // non XML
+
+    /// <summary>
+    /// Return the ICAO as String representation of this object
+    /// </summary>
+    /// <returns></returns>
     public override string ToString( ) => ICAO_Ident;
 
     /// <summary>

@@ -196,7 +196,8 @@ namespace FShelf.FPlans
     /// <summary>
     /// Add one row of data
     /// </summary>
-    /// <param name="rowData"></param>
+    /// <param name="rowData">The rowData obj</param>
+    /// <param name="remainingDist_nm">The calculated remaining dist value</param>
     public void AddRow( RowData rowData, double remainingDist_nm )
     {
       _rows += rowData.Row_html( ++_rowCount , remainingDist_nm);

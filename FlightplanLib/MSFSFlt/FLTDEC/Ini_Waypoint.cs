@@ -46,8 +46,17 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// The Latitude, Longitude, Altitude ft of the Waypoint (NaN if not given or decoded)
     /// </summary>
     public LatLon LatLon { get; internal set; } = LatLon.Empty;
+    /// <summary>
+    /// The Latitude of the Waypoint (NaN if not given or decoded)
+    /// </summary>
     public double Lat => LatLon.Lat;
+    /// <summary>
+    /// The Longitude of the Waypoint (NaN if not given or decoded)
+    /// </summary>
     public double Lon => LatLon.Lon;
+    /// <summary>
+    /// The Altitude ft of the Waypoint (NaN if not given or decoded)
+    /// </summary>
     public float Altitude_ft => (float)LatLon.Altitude;
 
     /// <summary>

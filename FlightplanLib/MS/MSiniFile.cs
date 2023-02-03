@@ -215,6 +215,7 @@ namespace MS
     ///  Note: default encoding is iso-8859-1 (MSFS FLT encoding) 
     /// </summary>
     /// <param name="fileName">Fully qualified path and name</param>
+    /// <param name="encoding">Optional encoding of the file</param>
     public void Load( string fileName, IniEncoding encoding = IniEncoding.iso_8859_1 )
     {
       _valid = false;

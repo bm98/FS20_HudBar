@@ -43,7 +43,7 @@ namespace FShelf.Profiles
     /// The target vertical rate for a given groundspeed
     /// positive values are returned
     /// </summary>
-    /// <param name="gs">The groundspeed [kt]</param>
+    /// <param name="gs_kt">The groundspeed [kt]</param>
     /// <returns>The vertical speed target to maintain this profile</returns>
     public float VRateTarget_fpm( float gs_kt )
     {

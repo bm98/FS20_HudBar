@@ -17,9 +17,9 @@ namespace FlightplanLib.MSFSPln
   public class MSFSPln
   {
     /// <summary>
-    /// Returns the generic FlighPlan from a SimBrief OFP
+    /// Returns the generic FlighPlan from a MSFS PLN file
     /// </summary>
-    /// <param name="plan">A SimBrief plan</param>
+    /// <param name="msfsPlan">An MSFS PLN plan</param>
     /// <returns>A generic FlightPlan obj</returns>
     public static FlightPlan AsFlightPlan( PLN msfsPlan )
     {

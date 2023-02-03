@@ -43,6 +43,7 @@ namespace FCamControl
     /// </summary>
     /// <param name="slotFolderNo">The Slot Folder Number of this slot</param>
     /// <param name="slotNo">The Slot Number of this slot</param>
+    /// <param name="button">Button Ref to capture the click event</param>
     /// <param name="switchCam">Camera Switch Method</param>
     public Slot( uint slotFolderNo, uint slotNo, Button button, Action<CameraSetting,uint> switchCam )
     {

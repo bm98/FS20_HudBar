@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\MetarLib.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CoordLib, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">

@@ -13,6 +13,9 @@ namespace FlightplanLib.SimBrief.SBDEC
   [DataContract]
   public class Json_Text
   {
+    /// <summary>
+    /// The plan_html field
+    /// </summary>
     [DataMember( Name = "plan_html", IsRequired = false )]
     public string Plan { get; set; } = ""; // as HTML
 

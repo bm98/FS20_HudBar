@@ -184,7 +184,6 @@ namespace FlightplanLib
     /// <summary>
     /// True is this Wyp belongs to a SID OR to a STAR
     /// </summary>
-    /// <summary>
     public bool IsSIDorSTAR => IsSID || IsSTAR;
 
     /// <summary>

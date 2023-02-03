@@ -24,6 +24,7 @@ namespace bm98_hbControls
     /// <summary>
     /// cTor: init with the sample size
     /// </summary>
+    /// <param name="initValue">staring value</param>
     /// <param name="numSamples">Length of the number chain to average (default=5)</param>
     /// <param name="precision">Outgoing number of Digits (default=3)</param>
     public Damper( float initValue, ushort numSamples = 5, ushort precision = 3 )

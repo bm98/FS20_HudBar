@@ -34,6 +34,10 @@ namespace FlightplanLib
     /// </summary>
     public string AirportRef { get; internal set; } = "";
 
+    /// <summary>
+    /// ICAO value to be reported as String property of the object
+    /// </summary>
+    /// <returns>A string</returns>
     public override string ToString( ) => ICAO;
 
   }

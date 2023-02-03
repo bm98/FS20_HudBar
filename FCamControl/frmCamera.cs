@@ -13,6 +13,9 @@ using SC = SimConnectClient;
 
 namespace FCamControl
 {
+  /// <summary>
+  /// Camera Control Form
+  /// </summary>
   public partial class frmCamera : Form
   {
     private Dictionary<CameraSetting, ModeButton> _btMode = new Dictionary<CameraSetting, ModeButton>( );
@@ -74,6 +77,10 @@ namespace FCamControl
     #region AppSettingUpdate
 
     // Needed only once to update the AppSettings concept
+    /// <summary>
+    /// AppSettings Update from .Net to SettingsLib
+    /// </summary>
+    /// <param name="camSettings">The old camsettings</param>
     public void UpdateSettings( string[] camSettings )
     {
       int idx = 0;

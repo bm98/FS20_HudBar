@@ -31,6 +31,9 @@ using FShelf.FPlans;
 
 namespace FShelf
 {
+  /// <summary>
+  /// FlightBag (Shelf) Form
+  /// </summary>
   public partial class frmShelf : Form
   {
     // airport which was requested by the user
@@ -114,6 +117,10 @@ namespace FShelf
     #region AppSettingUpdate
 
     // Needed only once to update the AppSettings concept
+    /// <summary>
+    /// Settings update from .Net to SettingsLib
+    /// </summary>
+    /// <param name="shelfSettings">The old shelf settings</param>
     public void UpdateSettings( string shelfSettings )
     {
       if (shelfSettings.Length > 0) if (AppSettings.Instance.ShelfFolder == "") AppSettings.Instance.ShelfFolder = shelfSettings;
@@ -1233,7 +1240,7 @@ namespace FShelf
         // will return in the CallBack
       }
       else {
-        lblCfgSbPlanData.Text = "invalid Pilot ID format";
+        lblCfgSbPlanData.Text = "invalid Pilot ID format (->2..7 digit)";
       }
     }
 

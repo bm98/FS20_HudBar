@@ -28,7 +28,7 @@ namespace FlightplanLib.SimBrief
     /// <summary>
     /// Returns the generic FlighPlan from a SimBrief OFP
     /// </summary>
-    /// <param name="plan">A SimBrief plan</param>
+    /// <param name="sbPlan">A SimBrief plan</param>
     /// <returns>A generic FlightPlan obj</returns>
     public static FlightPlan AsFlightPlan( OFP sbPlan )
     {

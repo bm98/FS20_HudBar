@@ -59,7 +59,7 @@ namespace FShelf.FPlans
     /// <summary>
     /// Load all supported document into the target folder
     /// </summary>
-    /// <param name="ofp">A valid FlihtPlan</param>
+    /// <param name="plan">A valid FlihtPlan</param>
     /// <param name="targetFolder">A valid destination directory</param>
     public bool LoadDocuments( FlightPlan plan, string targetFolder )
     {

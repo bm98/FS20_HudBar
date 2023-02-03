@@ -11,6 +11,9 @@ using System.Windows.Forms;
 
 namespace FChecklistBox
 {
+  /// <summary>
+  /// Checklist Box Form
+  /// </summary>
   public partial class frmChecklistBox : Form
   {
     // track the last known live location in order to save the proper one

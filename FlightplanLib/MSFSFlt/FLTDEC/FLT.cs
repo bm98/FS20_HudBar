@@ -19,7 +19,9 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
 
     // ... NONE
 
-    // Sect [Main]
+    /// <summary>
+    /// Sect [Main] 
+    /// </summary>
     [IniFileSection( "Main" )]
     public Ini_Main Main { get; internal set; } = new Ini_Main( );
 
@@ -27,19 +29,27 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
 
     // Secct [Sim.0] - not used
 
-    // Sect [Departure]
+    /// <summary>
+    /// Sect [Departure] 
+    /// </summary>
     [IniFileSection( "Departure" )]
     public Ini_DepArr Departure { get; internal set; } = new Ini_DepArr( );
 
-    // Sect [Arrival]
+    /// <summary>
+    /// Sect [Arrival]
+    /// </summary>
     [IniFileSection( "Arrival" )]
     public Ini_DepArr Arrival { get; internal set; } = new Ini_DepArr( );
 
-    // Sect [ATC_Aircraft.0] active Flight gets changes while in flight and saved
+    /// <summary>
+    /// Sect [ATC_Aircraft.0] active Flight gets changes while in flight and saved
+    /// </summary>
     [IniFileSection( "ATC_Aircraft.0" )]
     public Ini_ATC_Aircraft ATC_Aircraft { get; internal set; } = null;
 
-    // Sect [ATC_ActiveFlightPlan.0] seems to be an initial or current FP, never contains ATC intermediate waypoints
+    /// <summary>
+    /// Sect [ATC_ActiveFlightPlan.0] seems to be an initial or current FP, never contains ATC intermediate waypoints
+    /// </summary>
     [IniFileSection( "ATC_ActiveFlightPlan.0" )]
     public Ini_ATC_ActiveFlightPlan ATC_Flightplan { get; internal set; } = null;
 

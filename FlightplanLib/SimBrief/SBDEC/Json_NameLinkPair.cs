@@ -13,9 +13,15 @@ namespace FlightplanLib.SimBrief.SBDEC
   [DataContract]
   public class Json_NameLinkPair
   {
+    /// <summary>
+    /// The name field
+    /// </summary>
     [DataMember( Name = "name", IsRequired = false )]
-    public string Name { get; set; } = ""; 
+    public string Name { get; set; } = "";
 
+    /// <summary>
+    /// The link field
+    /// </summary>
     [DataMember( Name = "link", IsRequired = false )]
     public string Link { get; set; } = ""; // a document file name for getting file downloads
 

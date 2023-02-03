@@ -18,13 +18,21 @@ namespace FlightplanLib.MSFSPln.PLNDEC
   public class PLN
   {
     // Attributes
+    /// <summary>
+    /// The Type attribute
+    /// </summary>
     [XmlAttribute( AttributeName = "Type" )]
     public string DType { get; set; } = ""; // AceXML
-
+    /// <summary>
+    /// The Version attribute
+    /// </summary>
     [XmlAttribute( AttributeName = "version" )]
     public string DVersion { get; set; } // "1,0" have not seen others
 
     // Elements
+    /// <summary>
+    /// The Descr Element (always 'AceXML Document')
+    /// </summary>
     [XmlElement( ElementName = "Descr" )]
     public string Descr { get; set; } = ""; // "AceXML Document"
 

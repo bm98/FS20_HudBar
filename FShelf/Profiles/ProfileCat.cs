@@ -42,6 +42,7 @@ namespace FShelf.Profiles
     /// </summary>
     /// <param name="row">A DGV row</param>
     /// <param name="colName">A column name</param>
+    /// <param name="type">The expected type of the value</param>
     /// <returns>The value as object or null</returns>
     public static object DgvCellValue( DataGridViewRow row, string colName, Type type )
     {
@@ -273,7 +274,7 @@ namespace FShelf.Profiles
     /// <summary>
     /// Set the selected profile from a decimal
     /// </summary>
-    /// <param name="deg">A degree</param>
+    /// <param name="dgvRow">A row to set from</param>
     public void SetSelectedProfile( DataGridViewRow dgvRow )
     {
       object cValue = DgvCellValue( dgvRow, TProfile_DegValue, typeof( float ) );
@@ -298,7 +299,7 @@ namespace FShelf.Profiles
     /// <summary>
     /// Set the starting Alt for the table display
     /// </summary>
-    /// <param name="altitude">An Altitude</param>
+    /// <param name="dgvRow">The row to derive from</param>
     public void SetStartAltitude( DataGridViewRow dgvRow )
     {
       object cValue = DgvCellValue( dgvRow, TAlt_AltValue, typeof( int ) );
@@ -326,7 +327,7 @@ namespace FShelf.Profiles
     /// <summary>
     /// Returns the GS Row Index where the value is larger than the given GS
     /// </summary>
-    /// <param name="gs">A GroundSpeed</param>
+    /// <param name="alt">An altitude</param>
     /// <returns>A Row Index</returns>
     public int AltRowIndex( float alt )
     {
@@ -341,7 +342,7 @@ namespace FShelf.Profiles
     /// <summary>
     /// Returns the Fpa Row Index where the value is larger than the given Fpa
     /// </summary>
-    /// <param name="gs">A FlightPath angle (sign will be ignored)</param>
+    /// <param name="fpa">A FlightPath angle (sign will be ignored)</param>
     /// <returns>A Row Index or -1 if smaller than 0.4</returns>
     public int FpaRowIndex( float fpa )
     {
@@ -359,7 +360,8 @@ namespace FShelf.Profiles
     /// <summary>
     /// Returns the Caption for this column name
     /// </summary>
-    /// <param name="colName"></param>
+    /// <param name="tableName">The table name</param>
+    /// <param name="colName">The column name</param>
     /// <returns></returns>
     public string ProfileColumnCaption( string tableName, string colName )
     {
@@ -372,7 +374,8 @@ namespace FShelf.Profiles
     /// <summary>
     /// Returns the Caption for this column index
     /// </summary>
-    /// <param name="colName"></param>
+    /// <param name="tableName">The table name</param>
+    /// <param name="colIndex">A column index</param>
     /// <returns></returns>
     public string ProfileColumnCaption( string tableName, int colIndex )
     {

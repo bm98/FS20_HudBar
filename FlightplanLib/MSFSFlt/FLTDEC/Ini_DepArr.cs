@@ -12,12 +12,19 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
   /// </summary>
   public class Ini_DepArr
   {
+    /// <summary>
+    /// ICAO field
+    /// </summary>
     [IniFileKey( "ICAO" )]
     public string ICAO { get; internal set; } = "";
-
+    /// <summary>
+    /// RunwayNumber field
+    /// </summary>
     [IniFileKey( "RunwayNumber" )]
     public string RunwayNumber { get; internal set; } = "";
-
+    /// <summary>
+    /// RunwayDesignator field
+    /// </summary>
     [IniFileKey( "RunwayDesignator" )]
     public string RunwayDesignator { get; internal set; } = ""; // NONE, LEFT, RIGHT, CENTER, ??
 

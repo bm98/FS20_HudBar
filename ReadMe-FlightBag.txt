@@ -64,6 +64,10 @@ github@mail.burri-web.org
 
 Changelog:
 
+V 0.62-B62
+- Fix Allow 4..7 digit SimBrief Pilot ID (no clear doc what it is found...)
+- Internal Complete code comments for public items
+
 V 0.61-B61
 - Add SimBrief support (loading docs into Shelf, show Flightplan on map)
 - Add MSFS PLN support (loading table doc into Shelf, show Flightplan on map)

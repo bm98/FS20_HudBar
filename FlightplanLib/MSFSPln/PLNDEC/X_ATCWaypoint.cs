@@ -25,36 +25,69 @@ namespace FlightplanLib.MSFSPln.PLNDEC
 
 
     // Elements
+    /// <summary>
+    /// The ATCWaypointType element
+    /// </summary>
     [XmlElement( ElementName = "ATCWaypointType" )]
     public string WypType_S { get; set; } = ""; // Airport, User, Intersection, VOR, NDB, ATC, Runway ?? others ??
 
+    /// <summary>
+    /// The WorldPosition element
+    /// </summary>
     [XmlElement( ElementName = "WorldPosition" )]
     public string CoordLLA { get; set; } = ""; // N29° 15' 18.00",E91° 45' 54.00",+023630.00
 
+    /// <summary>
+    /// The ICAO element
+    /// </summary>
     [XmlElement( ElementName = "ICAO" )]
     public X_Icao IcaoRec { get; set; } = new X_Icao( ); // Waypoint ICAO (code and opt. Region and Apt if related)
 
+    /// <summary>
+    /// The DepartureFP element
+    /// </summary>
     [XmlElement( ElementName = "DepartureFP", IsNullable = false )]
     public string SID_Ident { get; set; } = ""; // SID Name
 
+    /// <summary>
+    /// The RunwayNumberFP element
+    /// </summary>
     [XmlElement( ElementName = "RunwayNumberFP", IsNullable = false )]
     public string RunwayNumber_S { get; set; } = ""; // leave it as string - don't know what could be in here...
 
+    /// <summary>
+    /// The RunwayDesignatorFP element
+    /// </summary>
     [XmlElement( ElementName = "RunwayDesignatorFP", IsNullable = false )]
     public string RunwayDesignation { get; set; } = ""; // RIGHT, LEFT, CENTER, ?? others ??
 
+    /// <summary>
+    /// The ATCAirway element
+    /// </summary>
     [XmlElement( ElementName = "ATCAirway", IsNullable = false )]
     public string Airway_Ident { get; set; } = "";
 
+    /// <summary>
+    /// The ArrivalFP element
+    /// </summary>
     [XmlElement( ElementName = "ArrivalFP", IsNullable = false )]
     public string STAR_Ident { get; set; } = ""; // STAR name
 
+    /// <summary>
+    /// The ApproachTypeFP element
+    /// </summary>
     [XmlElement( ElementName = "ApproachTypeFP", IsNullable = false )]
     public string ApproachType { get; set; } = ""; // RNAV, ILS, LOCALIZER, ?? others ??
 
+    /// <summary>
+    /// The SpeedMaxFP element
+    /// </summary>
     [XmlElement( ElementName = "SpeedMaxFP", IsNullable = false )]
     public string MaxSpeed_S { get; set; } = ""; // -1 or a kt speed number
 
+    /// <summary>
+    /// The SuffixFP element
+    /// </summary>
     [XmlElement( ElementName = "SuffixFP", IsNullable = false )]
     public string Approach_Suffix { get; set; } = ""; // empty or X,Y,Z etc. from approach ILS 22 Y
 
@@ -108,8 +141,17 @@ namespace FlightplanLib.MSFSPln.PLNDEC
     /// The LatLonAlt coordinate of the Wyp (Alt in ft)
     /// </summary>
     public LatLon LatLon => Formatter.ToLatLon( CoordLLA );
+    /// <summary>
+    /// The Latitude of the Wyp
+    /// </summary>
     public double Lat => LatLon.Lat;
+    /// <summary>
+    /// The Longitude of the Wyp
+    /// </summary>
     public double Lon => LatLon.Lon;
+    /// <summary>
+    /// The Altitude ft of the Wyp
+    /// </summary>
     public float Altitude_ft => (float)LatLon.Altitude;
 
     /// <summary>
