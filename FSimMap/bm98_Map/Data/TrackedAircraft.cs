@@ -47,7 +47,7 @@ namespace bm98_Map.Data
     /// A Target Altitude for Distance Calc, 
     /// Usually the Airport elevation
     /// </summary>
-    public float TargetAltitude_ft { get; set; } = 0;
+    public double TargetAltitude_ft { get; set; } = 0;
 
     /// <summary>
     /// Windspeed string (Unit setting dependent)
@@ -75,7 +75,7 @@ namespace bm98_Map.Data
     /// </summary>
     /// <param name="targetAlt_ft">Target Altitude in ft</param>
     /// <returns>Distance in nautical miles - -1 if not reachable or cannot calculate</returns>
-    public float DistanceToTargetAlt( float targetAlt_ft )
+    public double DistanceToTargetAlt( double targetAlt_ft )
     {
       if (!(ShowAlt || ShowGs || ShowVs)) return -1f;
 
@@ -91,7 +91,7 @@ namespace bm98_Map.Data
     /// Target is taken from the Property TargetAltitude_ft
     /// </summary>
     /// <returns>Distance in nautical miles - -1 if not reachable or cannot calculate</returns>
-    public float DistanceToTargetAlt( ) => DistanceToTargetAlt( TargetAltitude_ft );
+    public double DistanceToTargetAlt( ) => DistanceToTargetAlt( TargetAltitude_ft );
 
 
     /// <summary>

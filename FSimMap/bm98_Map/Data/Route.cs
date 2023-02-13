@@ -35,6 +35,7 @@ namespace bm98_Map.Data
 
         pt.SetObLatLon( pt1.LatLon );
         pt.SetObSid( pt1.IsSidOrStar ); // if the path goes to a SID/STAR Wyp it is an OB
+        pt.SetObApt( pt1.PointType == RoutePointType.Apt );
       }
       // fix the last one (omitted above)
       if (_route.Count > 1) {
@@ -42,6 +43,7 @@ namespace bm98_Map.Data
         pt.SetObTrack( 0 );
         pt.SetObLatLon( LatLon.Empty );// last has no further OB Point
         pt.SetObSid( false );
+        pt.SetObApt( true );
       }
     }
 
@@ -137,6 +139,10 @@ namespace bm98_Map.Data
     /// True if the Outbound route is part of the SID/STAR
     /// </summary>
     public bool OutboundSidOrStar { get; private set; }
+    /// <summary>
+    /// True if the Outbound route goes to an Airport/Runway
+    /// </summary>
+    public bool OutboundApt { get; private set; }
 
     /// <summary>
     /// Set a new Inbound Track from this item
@@ -145,22 +151,28 @@ namespace bm98_Map.Data
     public void SetIbTrack( int ibt ) => InboundTrueTrack = ibt;
 
     /// <summary>
-    /// Set a new Outbound Track from this item
+    /// Set a new Outbound Track for this item
     /// </summary>
     /// <param name="obt">Outbound True Track [deg]</param>
     public void SetObTrack( int obt ) => OutboundTrueTrack = obt;
 
     /// <summary>
-    /// Set a new Outbound Point from this item
+    /// Set a new Outbound Point for this item
     /// </summary>
     /// <param name="obt">Outbound LatLon</param>
     public void SetObLatLon( LatLon obt ) => OutboundLatLon = obt;
 
     /// <summary>
-    /// Set a new Outbound SidOrStar from this item
+    /// Set a new Outbound SidOrStar for this item
     /// </summary>
     /// <param name="obs">Outbound SidOrStar</param>
     public void SetObSid( bool obs ) => OutboundSidOrStar = obs;
+
+    /// <summary>
+    /// Set a new Outbound Airport/Runway for this item
+    /// </summary>
+    /// <param name="oba">Outbound Airport or Runway</param>
+    public void SetObApt( bool oba ) => OutboundApt = oba;
 
     /// <summary>
     /// cTor: create a route point from args
@@ -174,6 +186,7 @@ namespace bm98_Map.Data
       this.OutboundTrueTrack = outbTrack;
       this.IsSidOrStar = sid;
       this.OutboundSidOrStar = false;
+      this.OutboundApt = false;
       switch (type) {
         case TypeOfWaypoint.Waypoint: this.PointType = RoutePointType.Wyp; break;
         case TypeOfWaypoint.VOR: this.PointType = RoutePointType.Vor; break;

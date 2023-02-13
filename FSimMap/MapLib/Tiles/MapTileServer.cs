@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace MapLib.Tiles
 
     // tracking list of all tiles created
     private List<MapTile> _tiles;
+
     // server queue
     private ConcurrentQueue<MapTile> _tileQueue;
 
@@ -44,12 +46,14 @@ namespace MapLib.Tiles
       else {
         // must create a new one
         var tile = new MapTile( );
-        _tiles.Add( tile );
+        lock (_tiles) {
+          _tiles.Add( tile );
+        }
         if (_tiles.Count > _numTiles) {
 #if DEBUG
-          // too many consumed - track the behavior on Slow Providers (Stamen...)
-          Console.WriteLine( $"Tiles in circulation: {_tiles.Count}" );
-          throw new ApplicationException( "No more tiles to serve" );
+          // many consumed - track the behavior on Slow Providers (Stamen...)
+          Console.WriteLine( $"Tiles in circulation: {_tiles.Count} (mark is {_numTiles})" );
+          // throw new ApplicationException( "No more tiles to serve" );
 #endif
         }
         return tile;
@@ -64,7 +68,17 @@ namespace MapLib.Tiles
     {
       if (_tiles.Contains( mapTile )) {
         mapTile.ClearTileContent( );
-        _tileQueue.Enqueue( mapTile ); // back into stock
+        if (_tiles.Count > _numTiles) {
+          // maintain a max number of tiles in the stock
+          lock (_tiles) {
+            _tiles.Remove( mapTile );
+          }
+          mapTile.Dispose( );
+        }
+        else {
+          // back into stock if the limit is not reached
+          _tileQueue.Enqueue( mapTile );
+        }
       }
       else {
         // we did not serve this returned tile... (Programm Error)
@@ -83,6 +97,7 @@ namespace MapLib.Tiles
           // TODO: dispose managed state (managed objects)
           foreach (var tile in _tiles) { tile.Dispose( ); }
           _tiles.Clear( );
+          _tileQueue = null;
         }
 
         // TODO: free unmanaged resources (unmanaged objects) and override finalizer

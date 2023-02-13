@@ -18,7 +18,7 @@ namespace bm98_Map.Drawing
     /// <summary>
     /// Add a DisplayItem to the DisplayList
     /// </summary>
-    /// <param name="item"></param>
+    /// <param name="item">A Display Item</param>
     public void AddItem( DisplayItem item )
     {
       this.TryAdd( item.Key, item );

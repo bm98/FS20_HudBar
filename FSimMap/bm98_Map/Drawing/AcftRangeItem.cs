@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static dNetBm98.XPoint;
 using CoordLib;
 
 namespace bm98_Map.Drawing
@@ -112,10 +113,10 @@ namespace bm98_Map.Drawing
           int dist = (int)mp.Distance( out1nm ); // 1 nm vector length in pixels
           if (dist > 15) {
             // 1 nm line should have some pixels to avoid smallest arcs
-            var d2 = AircraftTrackRef.DistanceToTargetAlt( ) * 2f; // 2x Distance for the Arc Rectangle
+            float d2 = (float)AircraftTrackRef.DistanceToTargetAlt( ) * 2f; // 2x Distance for the Arc Rectangle
             RectangleF rectT = new RectangleF( mp.Subtract( new PointF( dist * d2 / 2, dist * d2 / 2 ) ), new SizeF( dist * d2, dist * d2 ) ); // 2.5 nm
             if (d2 < 1) {
-              rectT = new RectangleF( mp.Subtract( new PointF( dist * d2 / 2, dist * d2 / 2 ) ), new SizeF( 2, 2 ) ); 
+              rectT = new RectangleF( mp.Subtract( new PointF( dist * d2 / 2, dist * d2 / 2 ) ), new SizeF( 2, 2 ) );
             }
 
             var shift = new SizeF( mp.X, mp.Y );

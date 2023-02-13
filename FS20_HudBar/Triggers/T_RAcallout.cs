@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 using SC = SimConnectClient;
 
+using static dNetBm98.Units;
+
 using FS20_HudBar.Triggers.Base;
 using FSimClientIF.Modules;
 
@@ -135,17 +137,17 @@ namespace FS20_HudBar.Triggers
       // logic see above calls for meters at 120, 90, 60, 30,   15, 12, 9,   6, 3 (input and detector is still feet)
 
       // VS >500
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 120 ), 10.0f ), Callback = Say, Text = "120" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 90 ), 10.0f ), Callback = Say, Text = "90" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 60 ), 10.0f ), Callback = Say, Text = "60" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 30 ), 10.0f ), Callback = Say, Text = "30" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset +(float)Ft_From_M( 120 ), 10.0f ), Callback = Say, Text = "120" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 90 ), 10.0f ), Callback = Say, Text = "90" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 60 ), 10.0f ), Callback = Say, Text = "60" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 30 ), 10.0f ), Callback = Say, Text = "30" } );
       // VS ~500
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 15 ), 4.0f ), Callback = Say, Text = "15" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 12 ), 4.0f ), Callback = Say, Text = "12" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 9 ), 4.0f ), Callback = Say, Text = "9" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 15 ), 4.0f ), Callback = Say, Text = "15" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 12 ), 4.0f ), Callback = Say, Text = "12" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 9 ), 4.0f ), Callback = Say, Text = "9" } );
       // VS << 500
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 6 ) + 3f, 3.0f ), Callback = Say, Text = "6" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + Conversions.Ft_From_M( 3 ) + 3f, 2.0f ), Callback = Say, Text = "3" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 6 ) + 3f, 3.0f ), Callback = Say, Text = "6" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 3 ) + 3f, 2.0f ), Callback = Say, Text = "3" } );
     }
 
 

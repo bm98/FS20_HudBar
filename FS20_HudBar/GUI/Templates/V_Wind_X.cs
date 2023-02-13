@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using static dNetBm98.Units;
+
 using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.GUI.Templates
@@ -47,7 +49,7 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
-          float uValue = _distance_metric ? Conversions.Mps_From_Kt( (float)value ) : (float)value;
+          float uValue = _distance_metric ? (float)Mps_From_Kt( (float)value ) : (float)value;
           if (uValue < 0 ) {
             this.Text = UnitString( $"{-uValue,3:##0}{c_fromRight}" );
           }

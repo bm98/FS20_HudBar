@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using DbgLib;
+using static dNetBm98.Units;
 
 using FSimClientIF.Flightplan;
 using SC = SimConnectClient;
@@ -706,13 +707,13 @@ namespace FS20_HudBar.Bar
              + $"Vr  Min Rotation:  {ds.DesingSpeedMinRotation_kt:##0} kt\n"
              + $"Vs1 Stall Speed:   {ds.DesingSpeedVS1_kt:##0} kt\n"
              + $"Vs0 Stall Speed:   {ds.DesingSpeedVS0_kt:##0} kt\n\n"
-             + $"Fuel Weight:       {ds.FuelQuantityTotal_lb:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.FuelQuantityTotal_lb ):###,##0} kg)\n"
-             + $"Payload Weight:    {ds.AcftPLS_weight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.AcftPLS_weight_lbs ):###,##0} kg)\n"
-             + $"TOTAL Weight:      {ds.TotalAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.TotalAcftWeight_lbs ):###,##0} kg)\n"
-             + $"Zero Fuel Weight:  {ds.TotalAcftWeight_lbs - ds.FuelQuantityTotal_lb:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.TotalAcftWeight_lbs - ds.FuelQuantityTotal_lb ):###,##0} kg)\n"
+             + $"Fuel Weight:       {ds.FuelQuantityTotal_lb:###,##0} lbs ({Kg_From_Lbs( ds.FuelQuantityTotal_lb ):###,##0} kg)\n"
+             + $"Payload Weight:    {ds.AcftPLS_weight_lbs:###,##0} lbs ({Kg_From_Lbs( ds.AcftPLS_weight_lbs ):###,##0} kg)\n"
+             + $"TOTAL Weight:      {ds.TotalAcftWeight_lbs:###,##0} lbs ({Kg_From_Lbs( ds.TotalAcftWeight_lbs ):###,##0} kg)\n"
+             + $"Zero Fuel Weight:  {ds.TotalAcftWeight_lbs - ds.FuelQuantityTotal_lb:###,##0} lbs ({Kg_From_Lbs( ds.TotalAcftWeight_lbs - ds.FuelQuantityTotal_lb ):###,##0} kg)\n"
              + $"CG lon / lat:      {ds.AcftCGlong_perc * 100f:#0.0} % / {ds.AcftCGlat_perc * 100f:#0.0} %\n"
-             + $"Empty Weight:      {ds.EmptyAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.EmptyAcftWeight_lbs ):###,##0} kg)\n"
-             + $"Max. Weight:       {ds.MaxAcftWeight_lbs:###,##0} lbs ({Conversions.Kg_From_Lbs( ds.MaxAcftWeight_lbs ):###,##0} kg)\n"
+             + $"Empty Weight:      {ds.EmptyAcftWeight_lbs:###,##0} lbs ({Kg_From_Lbs( ds.EmptyAcftWeight_lbs ):###,##0} kg)\n"
+             + $"Max. Weight:       {ds.MaxAcftWeight_lbs:###,##0} lbs ({Kg_From_Lbs( ds.MaxAcftWeight_lbs ):###,##0} kg)\n"
              ;
         }
         var di = this.DispItem( LItem.IAS );

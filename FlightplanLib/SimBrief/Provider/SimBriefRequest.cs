@@ -63,7 +63,7 @@ namespace FlightplanLib.SimBrief.Provider
     /// </summary>
     static SimBriefRequest( )
     {
-      httpClient.Timeout = new TimeSpan( 0, 0, 10 );
+      httpClient.Timeout = new TimeSpan( 0, 0, 20 );
     }
 
     // 6 digit number string allow 4..7 as there is no spec about it (read also '5 or 6'...)

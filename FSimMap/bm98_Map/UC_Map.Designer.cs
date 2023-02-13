@@ -28,8 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-      this.flpRunways = new System.Windows.Forms.FlowLayoutPanel();
-      this.flpTower = new System.Windows.Forms.FlowLayoutPanel();
       this.lblCopyright = new System.Windows.Forms.Label();
       this.lblAirport = new System.Windows.Forms.Label();
       this.btRangeMid = new System.Windows.Forms.Button();
@@ -48,7 +46,6 @@
       this.lblVS = new System.Windows.Forms.Label();
       this.lblRA = new System.Windows.Forms.Label();
       this.flpProvider = new System.Windows.Forms.FlowLayoutPanel();
-      this.flpNavaids = new System.Windows.Forms.FlowLayoutPanel();
       this.btRangeFarFar = new System.Windows.Forms.Button();
       this.btTogApt = new System.Windows.Forms.Button();
       this.btTogVFR = new System.Windows.Forms.Button();
@@ -71,42 +68,6 @@
       ((System.ComponentModel.ISupportInitialize)(this.pbDrawing)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.pbAltLadder)).BeginInit();
       this.SuspendLayout();
-      // 
-      // flpRunways
-      // 
-      this.flpRunways.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.flpRunways.AutoScroll = true;
-      this.flpRunways.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.flpRunways.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(48)))), ((int)(((byte)(25)))));
-      this.flpRunways.CausesValidation = false;
-      this.flpRunways.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-      this.flpRunways.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.flpRunways.Location = new System.Drawing.Point(9, 225);
-      this.flpRunways.MaximumSize = new System.Drawing.Size(534, 500);
-      this.flpRunways.MinimumSize = new System.Drawing.Size(500, 50);
-      this.flpRunways.Name = "flpRunways";
-      this.flpRunways.Size = new System.Drawing.Size(534, 50);
-      this.flpRunways.TabIndex = 3;
-      this.flpRunways.WrapContents = false;
-      this.flpRunways.Click += new System.EventHandler(this.flpRunways_Click);
-      // 
-      // flpTower
-      // 
-      this.flpTower.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.flpTower.AutoScroll = true;
-      this.flpTower.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.flpTower.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(48)))), ((int)(((byte)(25)))));
-      this.flpTower.CausesValidation = false;
-      this.flpTower.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-      this.flpTower.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.flpTower.Location = new System.Drawing.Point(9, 281);
-      this.flpTower.MaximumSize = new System.Drawing.Size(534, 500);
-      this.flpTower.MinimumSize = new System.Drawing.Size(500, 50);
-      this.flpTower.Name = "flpTower";
-      this.flpTower.Size = new System.Drawing.Size(534, 50);
-      this.flpTower.TabIndex = 4;
-      this.flpTower.WrapContents = false;
-      this.flpTower.Click += new System.EventHandler(this.flpTower_Click);
       // 
       // lblCopyright
       // 
@@ -380,24 +341,6 @@
       this.flpProvider.Size = new System.Drawing.Size(162, 92);
       this.flpProvider.TabIndex = 15;
       this.flpProvider.WrapContents = false;
-      // 
-      // flpNavaids
-      // 
-      this.flpNavaids.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.flpNavaids.AutoScroll = true;
-      this.flpNavaids.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.flpNavaids.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(48)))), ((int)(((byte)(25)))));
-      this.flpNavaids.CausesValidation = false;
-      this.flpNavaids.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-      this.flpNavaids.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.flpNavaids.Location = new System.Drawing.Point(9, 337);
-      this.flpNavaids.MaximumSize = new System.Drawing.Size(534, 500);
-      this.flpNavaids.MinimumSize = new System.Drawing.Size(500, 50);
-      this.flpNavaids.Name = "flpNavaids";
-      this.flpNavaids.Size = new System.Drawing.Size(534, 50);
-      this.flpNavaids.TabIndex = 17;
-      this.flpNavaids.WrapContents = false;
-      this.flpNavaids.Click += new System.EventHandler(this.flpNavaids_Click);
       // 
       // btRangeFarFar
       // 
@@ -692,9 +635,6 @@
       this.Controls.Add(this.btRangeXFar);
       this.Controls.Add(this.btTogShowRoute);
       this.Controls.Add(this.lblLoading);
-      this.Controls.Add(this.flpNavaids);
-      this.Controls.Add(this.flpTower);
-      this.Controls.Add(this.flpRunways);
       this.Controls.Add(this.btRangeFarFar);
       this.Controls.Add(this.btTogApt);
       this.Controls.Add(this.btTogVFR);
@@ -743,8 +683,6 @@
     private System.Windows.Forms.PictureBox pbDrawing;
     private System.Windows.Forms.Button btRunway;
     private System.Windows.Forms.Button btTower;
-    private System.Windows.Forms.FlowLayoutPanel flpRunways;
-    private System.Windows.Forms.FlowLayoutPanel flpTower;
     private System.Windows.Forms.Label lblCopyright;
     private System.Windows.Forms.Label lblAirport;
     private System.Windows.Forms.Button btRangeMid;
@@ -764,7 +702,6 @@
     private System.Windows.Forms.FlowLayoutPanel flpProvider;
     private System.Windows.Forms.Button btCenterAircraft;
     private System.Windows.Forms.Label lblTHdg;
-    private System.Windows.Forms.FlowLayoutPanel flpNavaids;
     private System.Windows.Forms.Button btNavaids;
     private System.Windows.Forms.Button btTogAcftData;
     private System.Windows.Forms.Button btTogGrid;

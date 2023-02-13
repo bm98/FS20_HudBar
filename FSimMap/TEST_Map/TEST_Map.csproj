@@ -40,11 +40,13 @@
     <Reference Include="FlightplanLib">
       <HintPath>..\..\FlightplanLib\bin\Debug\FlightplanLib.dll</HintPath>
     </Reference>
-    <Reference Include="FSimFacilityDataLib">
-      <HintPath>..\..\Redist\FSimFacilityDataLib.dll</HintPath>
+    <Reference Include="FSimFacilityDataLib, Version=0.10.0.11, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Redist\FSimFacilityDataLib.dll</HintPath>
     </Reference>
-    <Reference Include="FSimFacilityIF">
-      <HintPath>..\..\Redist\FSimFacilityIF.dll</HintPath>
+    <Reference Include="FSimFacilityIF, Version=1.1.0.11, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Redist\FSimFacilityIF.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

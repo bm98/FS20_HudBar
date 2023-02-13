@@ -43,6 +43,8 @@ namespace bm98_Map.Drawing
     private bool _showAptMarks = false;
     // selected runwayIdent 
     private string _selRunway = "";
+    // selected runwayApproachIdent 
+    private string _selRunwayApproach = "";
 
     private MapRange _mapRange = MapRange.Mid;
 
@@ -170,7 +172,8 @@ namespace bm98_Map.Drawing
       };
       _viewportRef.GProc.Drawings.AddItem( navaids );
 
-      // Waypoint Hook (need to be managed individually)
+      // Waypoint Hook (Wyps need to be managed individually)
+      // The Hook is used to show/hide all Wyps (e.g. due to Range selection)
       var waypoints = new HookItem( ) {
         Key = (int)DItems.WAYPOINTS,
         String = "Waypoints", // only deco for debug
@@ -178,7 +181,7 @@ namespace bm98_Map.Drawing
       _viewportRef.GProc.Drawings.AddItem( waypoints );
 
       // VFR Marks Hook (will get one per phys. runway)
-      var vfrmarks = new HookItem( ) {
+      var vfrmarks = new ManagedHookItem( ) {
         Key = (int)DItems.VFRMARKS,
         String = "VFR Marks", // only deco for debug
       };
@@ -246,7 +249,7 @@ namespace bm98_Map.Drawing
           Active = false, // init false, will be shown on update if asked for
           Pen = PenAcftWind,
           FillBrush = BrushAcftWind,
-          Font= FtSmallest,
+          Font = FtSmallest,
           TextBrush = BrushAcftWind,
           CoordPoint = _airportRef.Coordinate,
         };
@@ -303,7 +306,6 @@ namespace bm98_Map.Drawing
     }
 
     #endregion
-
 
     #region API Show Decorations
 
@@ -394,13 +396,13 @@ namespace bm98_Map.Drawing
         var navHook = _viewportRef.GProc.Drawings.DispItem( (int)DItems.NAVAIDS );
         if (navHook == null) return; // not (yet) defined
         navHook.Active = (_mapRange == MapRange.XFar) ? false : _showNavaids; // avoid clutter at XFar
+
         // show wyp for the selected runway only
-        var wypList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.WAYPOINTS )?.SubItemList;
-        foreach (var navItem in wypList.Values) {
-          var di = navItem as NavaidItem;
-          di.Active = (_mapRange == MapRange.XFar) ? false
-            : ((di.RunwayIdent == _selRunway) && _showNavaids); // avoid clutter at XFar
-        }
+        var wypHook = _viewportRef.GProc.Drawings.DispItem( (int)DItems.WAYPOINTS );
+        if (wypHook == null) return; // not (yet) defined
+        wypHook.Active = (_mapRange == MapRange.XFar) ? false : _showNavaids; // avoid clutter at XFar
+        // per Wyp now
+        LayoutWypLabels( );
 
         _viewportRef.RenderStatic( );
         _viewportRef.Redraw( );
@@ -418,8 +420,9 @@ namespace bm98_Map.Drawing
         var vfrList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.VFRMARKS )?.SubItemList;
         if (vfrList == null) return; // not (yet) defined
         foreach (var vfrItem in vfrList.Values) {
-          var di = vfrItem as Drawing.RwyVFRMarksItem;
-          di.Active = (_mapRange == MapRange.XFar) ? false: _showVfrMarks; // avoid clutter at XFar
+          var di = vfrItem as RwyVFRMarksItem;
+          di.Active = true; // always true
+          di.ShowFullDecoration = _showVfrMarks; // to draw the full painting
         }
         _viewportRef.RenderStatic( );
         _viewportRef.Redraw( );
@@ -453,13 +456,14 @@ namespace bm98_Map.Drawing
     /// and will have the Left Turn pattern in the prominent color
     /// If only one runway is provided the 'End' will have no drawings
     /// </summary>
-    /// <param name="runways">A pair of runways which represent the same physical runway</param>
+    /// <param name="runways">A pair of runways which represent the same physical runway, null to clear all</param>
     public void SetRunwayVFRDispItems( IEnumerable<IRunway> runways )
     {
       // all VFR marks items
       var vfrList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.VFRMARKS )?.SubItemList;
       if (vfrList == null) return; // CANNOT (yet)
       vfrList.Clear( );
+      if (runways == null) { return; } // unselected
 
       List<string> runwaysDone = new List<string>( ); // track the ones we have processed
       // create the needed Runway Text lines
@@ -470,7 +474,8 @@ namespace bm98_Map.Drawing
           var otherEnd = runways.First( x => x.Ident == rwy.OtherIdent );
           var rwBox = new RwyVFRMarksItem( ) {
             Key = GProc.DispID_Anon( ),
-            Active = _showVfrMarks,
+            Active = true, // always, manged by the Hook for XFAR, else it's not even in the DisplayList
+            ShowFullDecoration = _showVfrMarks, // to draw the full painting when VFR is selected
             StartID = rwy.Ident,
             Start = new LatLon( rwy.StartLat, rwy.StartLon ),
             StartHeading_degm = rwy.Bearing_degm,
@@ -529,19 +534,19 @@ namespace bm98_Map.Drawing
       // disable clutter on XFar
       var itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.NAVAIDS );
       if (itemList == null) return;
-      itemList.Active = (_mapRange == MapRange.XFar) ? false : _showNavaids;
+      itemList.Active = (_mapRange != MapRange.XFar) && _showNavaids;
 
       itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.WAYPOINTS );
       if (itemList == null) return;
-      itemList.Active = (_mapRange == MapRange.XFar) ? false : _showNavaids;
+      itemList.Active = (_mapRange != MapRange.XFar) && _showNavaids;
 
       itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.APTMARKS );
       if (itemList == null) return;
-      itemList.Active = (_mapRange == MapRange.XFar) ? false : _showAptMarks;
+      itemList.Active = (_mapRange != MapRange.XFar) && _showAptMarks;
 
       itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.VFRMARKS );
       if (itemList == null) return;
-      itemList.Active = (_mapRange == MapRange.XFar) ? false : _showVfrMarks;
+      itemList.Active = (_mapRange != MapRange.XFar); // the hook is only used to show no RW marks at XFar
 
       // Scale Item
       float pixelPerNm = 1;
@@ -577,7 +582,7 @@ namespace bm98_Map.Drawing
       // set aircraft icon on the sprite level
       var diAcft = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFT );
       if (diAcft == null) return; // CANNOT (yet)
-      // set icon
+                                  // set icon
       var acftItem = (diAcft as AircraftItem);
       acftItem.Active = _showTrackedAcft;
       acftItem.CoordPoint = aircraft.Position;
@@ -669,35 +674,42 @@ namespace bm98_Map.Drawing
       wypList.Clear( );
 
       // create all from the list
+      navaids.Sort( delegate ( INavaid _1, INavaid _2 ) { return _1.SortNumber.CompareTo( _2.SortNumber ); } ); // sort to maintain display leg order
       foreach (var na in navaids) {
         if (na.NavaidType == NavaidType.Unknown)
           continue; // ignore 
 
         var nImage = NavaidImage( na.NavaidType );
-        // for waypoints we show the FAF different
-        if (na.IsWaypoint && na.Fix == "FAF") {
+        // for waypoints we show the IAF and FAF different
+        if (na.IsWaypoint && (na.Fix != null) && na.Fix.StartsWith( "IAF" )) {
+          nImage = Properties.Resources.wyp_apt;
+        }
+        else if (na.IsWaypoint && (na.Fix != null) && na.Fix.StartsWith( "FAF" )) {
           nImage = Properties.Resources.wyp_faf;
         }
         var navaid = new NavaidItem( nImage ) {
           Key = GProc.DispID_Anon( ),
           Active = !na.IsWaypoint, // wyps are off, others on (ManagedHook takes care)
-          Pen = PenRange3,
+          Pen = na.IsApproach ? PenRouteApr : PenRange3,
           CoordPoint = na.Coordinate,
-          String = na.IsWaypoint && na.AltitudeLo_ft < 10 ? $"{na.ICAO}"           // ICAO
-                    : na.IsWaypoint ? $"{na.ICAO}\n{na.AltitudeLo_ft:##,##0}" // ICAO / nnnn   ft
-                    : na.IsVOR ? $"{na.ICAO}\n{na.Frequ_Hz / 1_000_000f:##0.00}" // ICAO / mmm.nn
-                    : na.IsNDB ? $"{na.ICAO}\n{na.Frequ_Hz / 1_000f:###0.0}"     // ICAO / kkkk.n
+          OutboundLatLon = na.IsApproach ? na.OutboundCoordinate : LatLon.Empty, // set the next point TODO Set from argument
+          ShowOutboundTrack = false, // enable through Apr selection
+          String = na.IsWaypoint && na.AltitudeLo_ft < 10 ? $"{na.ICAO}"          // ICAO
+                    : na.IsWaypoint ? $"{na.ICAO}\n{na.AltitudeLo_ft:##,##0}"     // ICAO / nnnn   ft
+                    : na.IsVOR ? $"{na.ICAO}\n{na.Frequ_Hz / 1_000_000f:##0.00}"  // ICAO / mmm.nn
+                    : na.IsNDB ? $"{na.ICAO}\n{na.Frequ_Hz / 1_000f:###0.0}"      // ICAO / kkkk.n
                     : "",
           Font = na.IsWaypoint ? FtMid : FtLarge,
           TextBrush = na.IsWaypoint ? BrushNavAidWyp
                       : BrushNavAid,
           IsNdbType = na.IsNDB,
           IsWypType = na.IsWaypoint,
-          RunwayIdent = na.IsWaypoint ? na.Runway_Ident.Replace( "RW", "" ) : "",// Fixup: runways still mixed named -
+          RunwayIdent = na.IsApproach ? na.Runway_Ident.Replace( "RW", "" ) : "",// Fixup: runways still mixed named -
+          RunwayApproachIdent = na.IsApproach ? na.ApproachName : "",
           WypLabelRectangle = new Rectangle( ), // used later by the labelling engine
         };
         navaid.StringFormat.LineAlignment = na.IsNDB ? StringAlignment.Far : StringAlignment.Near;
-        if (na.IsWaypoint) {
+        if (na.IsWaypoint || na.IsApproach) {
           wypList.AddItem( navaid );
         }
         else {
@@ -726,10 +738,12 @@ namespace bm98_Map.Drawing
             }
             lEngine.Layout( );
       */
-      // use layout
+      // waypoints
       foreach (var navItem in wypList.Values) {
-        var di = navItem as Drawing.NavaidItem;
-        di.Active = _showNavaids && (di.RunwayIdent == _selRunway);
+        var di = navItem as NavaidItem;
+        var aprShow = string.IsNullOrEmpty( _selRunwayApproach ) ? false : di.RunwayApproachIdent == _selRunwayApproach; // show none if not selected
+        di.Active = /*_showNavaids &&*/ (di.RunwayIdent == _selRunway) && aprShow; // show Wyps independent of the Navaids Button
+        di.ShowOutboundTrack = (string.IsNullOrEmpty( _selRunwayApproach ) == false); // track only if an Apr is selected
         if (di.RunwayIdent == _selRunway) {
           //          di.WypLabelRectangle = lEngine.LabelPos( di.String );  NOT IN USE
         }
@@ -737,12 +751,22 @@ namespace bm98_Map.Drawing
     }
 
     /// <summary>
-    /// Set the Waypoint for the selected Runway
+    /// Set the Waypoints for the selected Runway
     /// </summary>
     /// <param name="ident">Runway Ident 'nnd'</param>
     public void SetSelectedNavIdRunway( string ident )
     {
       _selRunway = ident;
+      LayoutWypLabels( );
+    }
+
+    /// <summary>
+    /// Set the Waypoints for the selected Runway and Approach
+    /// </summary>
+    /// <param name="aproachName">Approach name (RNAV, ILS ..)</param>
+    public void SetSelectedNavIdRunwayApproach( string aproachName )
+    {
+      _selRunwayApproach = aproachName;
       LayoutWypLabels( );
     }
 
@@ -800,7 +824,8 @@ namespace bm98_Map.Drawing
         var rtPoint = new RoutePointItem( Properties.Resources.route_waypoint ) {
           Key = GProc.DispID_Anon( ),
           Active = true, // always true, we are using the ManagedHook
-          Pen = (rp.OutboundSidOrStar) ? PenRouteSid3 : PenRoute3,
+          Pen = rp.OutboundApt ? PenRouteApt
+                               : (rp.OutboundSidOrStar ? PenRouteSid : PenRoute), // select line pen, Apt has prio over Sid
           CoordPoint = rp.LatLon,
           String = $"{rp.ID}",
           Font = FtMid,

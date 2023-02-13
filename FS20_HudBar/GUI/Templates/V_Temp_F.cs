@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using static dNetBm98.Units;
+
 using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.GUI
@@ -38,7 +40,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{Conversions.DegF_From_DegC( (float)value ),5:###0} " ); // signed only 4 digits, add a blank for alignment
+          this.Text = UnitString( $"{DegF_From_DegC( (float)value ),5:###0} " ); // signed only 4 digits, add a blank for alignment
         }
       }
     }

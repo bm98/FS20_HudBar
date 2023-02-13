@@ -70,7 +70,13 @@ https://github.com/bm98/FS20_HudBar/tree/main/doc/MSFS_HudBar-QuickGuide.pdf
 
 ### General note for builders
 The Project files expect referenced Libraries which have no NuGet package reference in a Solution directory  "Redist"  
-To integrate with MSFS2020 SimConnect the solution must be built as x64 binary!   
+To integrate with MSFS2020 SimConnect the solution Exe must be built as x64 binary!   
 
 So far the sources for some of the used Libraries are not on GitHub (yet)
+
+The one on Github are as follows:
+
+* Coordlib is here: https://github.com/bm98/CoordLib
+* SettingsLib is here: https://github.com/bm98/SettingsLib
+* dNETBm98 is here: https://github.com/bm98/dNETbm98
   

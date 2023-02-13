@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using static dNetBm98.Units;
+
 using SC = SimConnectClient;
 using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
@@ -113,7 +115,7 @@ namespace FS20_HudBar.Bar.Items
           _value2.ItemForeColor = cTxInfo;
         }
 
-        _value3.Value = (AirportMgr.IsArrAvailable && (!AirportMgr.ArrLocation.IsEmpty)) ? Conversions.Ft_From_M( AirportMgr.ArrLocation.Altitude ) : float.NaN;
+        _value3.Value = (AirportMgr.IsArrAvailable && (!AirportMgr.ArrLocation.IsEmpty)) ? (float)Ft_From_M( AirportMgr.ArrLocation.Altitude ) : float.NaN;
 
         // METAR ToolTip Text and Button Color
         if (_metar.HasNewData) {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
@@ -30,7 +31,8 @@ namespace bm98_Map.Drawing
     public readonly static Color ColTRange = Color.Lime; // Target Range color
     public readonly static Color ColScale = Color.Orchid;//Color.Magenta; //
     public readonly static Color ColRoute = Color.Magenta;
-    public readonly static Color ColRouteSid = Color.BlueViolet;
+    public readonly static Color ColRouteSid = Color.BlueViolet; // and SID & STAR
+    public readonly static Color ColRouteApr = Color.DeepPink;
 
     public readonly static Color ColRwBorder = Color.FromArgb( 0, 166, 81 );    // green
     public readonly static Color ColRwPavement = Color.FromArgb( 45, 44, 44 );  // dark grey
@@ -54,10 +56,11 @@ namespace bm98_Map.Drawing
     public readonly static Pen PenInfo2 = new Pen( ColInfo, 2f );
     public readonly static Pen PenInfo4 = new Pen( ColInfo, 4f );
 
-    public readonly static Pen PenRoute3 = new Pen( ColRoute, 3f );
-    public readonly static Pen PenRoute5 = new Pen( ColRoute, 5f );
-    public readonly static Pen PenRouteSid3 = new Pen( ColRouteSid, 3f );
-    public readonly static Pen PenRouteSid5 = new Pen( ColRouteSid, 5f );
+    public readonly static Pen PenRoute = new Pen( ColRoute, 3f );
+    public readonly static Pen PenRouteSid = new Pen( ColRouteSid, 3f );
+    public readonly static Pen PenRouteApt = new Pen( ColRoute, 1f ) { DashStyle = DashStyle.DashDotDot }; // to rwy/apt
+
+    public readonly static Pen PenRouteApr = new Pen( ColRouteApr, 3f );
 
     public readonly static Pen PenRange3 = new Pen( ColRange, 3f );
     public readonly static Pen PenRange5 = new Pen( ColRangeTrue, 5f );
@@ -95,7 +98,7 @@ namespace bm98_Map.Drawing
 
     public readonly static Brush BrushVFRHeading = new SolidBrush( ColVfrHeading );
 
-    public readonly static Brush BrushAcftWind = new SolidBrush( ColAcftWind);
+    public readonly static Brush BrushAcftWind = new SolidBrush( ColAcftWind );
 
     // fonts for numbers
     //    private readonly static string TextFont = "Bahnschrift"; // has equaly spaced digits

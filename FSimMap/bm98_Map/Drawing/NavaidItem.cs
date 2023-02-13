@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
+using static dNetBm98.XSize;
 using CoordLib;
 
 namespace bm98_Map.Drawing
@@ -25,11 +27,25 @@ namespace bm98_Map.Drawing
     /// <summary>
     /// The RunwayIdent  'nnd' (if any)
     /// </summary>
-    public string RunwayIdent = "";
+    public string RunwayIdent { get; set; } = "";
+    /// <summary>
+    /// The Approach  'RNAV' (if any)
+    /// </summary>
+    public string RunwayApproachIdent { get; set; } = "";
+
+    /// <summary>
+    /// Coord of the Outbound path for waypoints
+    /// </summary>
+    public LatLon OutboundLatLon { get; set; } = LatLon.Empty;
+    /// <summary>
+    /// True if the outbound track should be drawn
+    /// </summary>
+    public bool ShowOutboundTrack { get; set; } = false;
+
     /// <summary>
     /// Waypoint Label Rectangle
     /// </summary>
-    public Rectangle WypLabelRectangle;
+    public Rectangle WypLabelRectangle { get; set; }
 
     /// <summary>
     /// cTor: create sprite, submit the image (will not be managed or disposed here)
@@ -50,18 +66,28 @@ namespace bm98_Map.Drawing
 
       var save = g.BeginContainer( );
       {
+        g.SmoothingMode = SmoothingMode.AntiAlias;
+
         // Set world transform of graphics object to translate.
         var mp = MapToPixel( CoordPoint );
-        if (g.VisibleClipBounds.Contains( mp )) {
-          var rect = new Rectangle( mp, _imageRef.Size );
+        var omp = MapToPixel( OutboundLatLon );
+
+        if (g.VisibleClipBounds.Contains( mp ) || g.VisibleClipBounds.Contains( omp )) {
+          var boxRect = new Rectangle( mp, _imageRef.Size );
+          var spriteRect = new Rectangle( mp, _imageRef.Size.Multiply( 0.7f ) ); // make the sprites a bit smaller
           var textRect = new Rectangle( mp, new Size( 108, 64 ) );
 
-          g.TranslateTransform( -rect.Width / 2, -rect.Height / 2 );
-          g.DrawImage( _imageRef, rect );
-          g.TranslateTransform( rect.Width / 2, rect.Height / 2, MatrixOrder.Append );
+          // draw to if possible and requested
+          if (!OutboundLatLon.IsEmpty && ShowOutboundTrack) {
+            g.DrawLine( Pen, mp, omp );
+          }
+
+          g.TranslateTransform( -spriteRect.Width / 2, -spriteRect.Height / 2 );
+          g.DrawImage( _imageRef, spriteRect );
+          g.TranslateTransform( spriteRect.Width / 2, spriteRect.Height / 2, MatrixOrder.Append );
           // Navaid Location = 0/0
           if (IsNdbType) {
-            g.TranslateTransform( -textRect.Width / 2, -rect.Height * 1.3f, MatrixOrder.Append );// above
+            g.TranslateTransform( -textRect.Width / 2, -boxRect.Height * 1.3f, MatrixOrder.Append );// above
           }
           else if (IsWypType) {
             /* NOT IN USE
@@ -69,10 +95,10 @@ namespace bm98_Map.Drawing
             textRect.X = WypLabelRectangle.X;
             textRect.Y = WypLabelRectangle.Y;
             */
-            g.TranslateTransform( -textRect.Width, -rect.Height * 1.3f, MatrixOrder.Append );// left above
+            g.TranslateTransform( -textRect.Width, -boxRect.Height * 1.3f, MatrixOrder.Append );// left above
           }
           else {
-            g.TranslateTransform( -textRect.Width / 2, rect.Height / 2, MatrixOrder.Append );// below
+            g.TranslateTransform( -textRect.Width / 2, boxRect.Height / 2, MatrixOrder.Append );// below
           }
           g.DrawString( String, Font, TextBrush, textRect, StringFormat );
         }

@@ -131,13 +131,13 @@ namespace TEST_Map
 
     private TrackedAircraftCls trackedAircraft = new TrackedAircraftCls( ) {
       Position = new LatLon( 0, 0 ),
-      TrueHeading = 45,
+     TrueHeading_deg = 45,
       Altitude_ft = 0000,
       RadioAlt_ft = 2000,
       Ias_kt = 200,
       Vs_fpm = -500,
       Gs_kt = 220,
-      Trk_deg = 46,
+      Trk_degm = 46,
       TrueTrk_deg = 42,
       WindDirection_deg = -12,
       WindSpeed_kt = 0,
@@ -157,12 +157,12 @@ namespace TEST_Map
       trackedAircraft.Position = _trackPt;
       uC_Map1.UpdateAircraft( trackedAircraft );
       // next click
-      trackedAircraft.TrueHeading += 5;
+      trackedAircraft.TrueHeading_deg += 5;
       trackedAircraft.Altitude_ft += 300;
       trackedAircraft.RadioAlt_ft -= 100;
       trackedAircraft.Ias_kt += 36;
       trackedAircraft.Gs_kt += 36;
-      trackedAircraft.Trk_deg += 5;
+      trackedAircraft.Trk_degm += 5;
       trackedAircraft.TrueTrk_deg += 5;
       trackedAircraft.Vs_fpm += 100;
       trackedAircraft.WindDirection_deg += 12;

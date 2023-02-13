@@ -8,9 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using static dNetBm98.Units;
+using static dNetBm98.XColor;
 using CoordLib;
 using bm98_Map.Drawing;
 using bm98_Map.Data;
+using bm98_Map.UI;
 using MapLib;
 using FSimFacilityIF;
 using System.Diagnostics;
@@ -43,6 +46,9 @@ namespace bm98_Map
   /// </summary>
   public partial class UC_Map : UserControl
   {
+    // FormEvent Handler
+    private dNetBm98.WinFormInvoker _eDispatch;
+
     // The Viewport for this Map
     private VPort2 _viewport;
     // our TT instance
@@ -88,6 +94,13 @@ namespace bm98_Map
     private bool _altIsFeet = true;
     private bool _speedIsKt = true;
     private bool _vsIsFpm = true;
+
+    // Panels
+    private StripPanel _pnlRunways;
+    private StripPanel _pnlApproaches;
+    private StripPanel _pnlNavaids;
+    private StripPanel _pnlTower;
+
 
     #region User Control API
 
@@ -162,27 +175,27 @@ namespace bm98_Map
 
       lblAlt.Visible = _aircraftTrack.ShowAlt;
       if (_altIsFeet) { lblAlt.Text = $"AMSL: {_aircraftTrack.Altitude_ft,6:##,##0} ft"; }
-      else { lblAlt.Text = $"AMSL: {Conversions.M_From_Ft( _aircraftTrack.Altitude_ft ),6:##,##0} m"; }
+      else { lblAlt.Text = $"AMSL: {M_From_Ft( _aircraftTrack.Altitude_ft ),6:##,##0} m"; }
 
       lblRA.Visible = _aircraftTrack.ShowRA;
       if (_altIsFeet) { lblRA.Text = $"RA  : {_aircraftTrack.RadioAlt_ft,6:##,##0} ft"; }
-      else { lblRA.Text = $"RA  : {Conversions.M_From_Ft( _aircraftTrack.RadioAlt_ft ),6:##,##0} m"; }
+      else { lblRA.Text = $"RA  : {M_From_Ft( _aircraftTrack.RadioAlt_ft ),6:##,##0} m"; }
 
       lblIAS.Visible = _aircraftTrack.ShowIas;
       if (_speedIsKt) { lblIAS.Text = $"IAS : {_aircraftTrack.Ias_kt,6:#,##0} kt"; }
-      else { lblIAS.Text = $"IAS : {Conversions.Kmh_From_Kt( _aircraftTrack.Ias_kt ),6:#,##0} km/h"; }
+      else { lblIAS.Text = $"IAS : {Kmh_From_Kt( _aircraftTrack.Ias_kt ),6:#,##0} km/h"; }
 
       lblGS.Visible = _aircraftTrack.ShowGs;
       if (_speedIsKt) { lblGS.Text = $"GS  : {_aircraftTrack.Gs_kt,6:#,##0} kt"; }
-      else { lblGS.Text = $"GS  : {Conversions.Kmh_From_Kt( _aircraftTrack.Gs_kt ),6:#,##0} km/h"; }
+      else { lblGS.Text = $"GS  : {Kmh_From_Kt( _aircraftTrack.Gs_kt ),6:#,##0} km/h"; }
 
       lblVS.Visible = _aircraftTrack.ShowVs;
       if (_vsIsFpm) { lblVS.Text = $"V/S : {_aircraftTrack.Vs_fpm,6:+#,##0;-#,##0;---} fpm"; }
-      else { lblVS.Text = $"V/S : {Conversions.Mps_From_Ftpm( _aircraftTrack.Vs_fpm ),6:+#0.0;-#0.0;---} m/s"; }
+      else { lblVS.Text = $"V/S : {Mps_From_Ftpm( _aircraftTrack.Vs_fpm ),6:+#0.0;-#0.0;---} m/s"; }
 
       // set windspeed string for the Sprite if not default
       if (_speedIsKt) { } // default
-      else { _aircraftTrack.WindSpeedS = $"{Conversions.Mps_From_Kt( _aircraftTrack.WindSpeed_kt ):#0.0}m/s"; }
+      else { _aircraftTrack.WindSpeedS = $"{Mps_From_Kt( _aircraftTrack.WindSpeed_kt ):#0.0}m/s"; }
 
       // Aircraft Drawing update goes via the AirportDisplayManager object
       _airportDisplayMgr.UpdateAircraft( _aircraftTrack );
@@ -364,136 +377,122 @@ namespace bm98_Map
     // Load Frequencies Panel
     private void PopulateFrequencies( Airport airport )
     {
-      var vis = flpTower.Visible;
-      flpTower.SuspendLayout( );
-      flpTower.AutoSize = false;
-
-      // clear all controls from the FLP
-      while (flpTower.Controls.Count > 0) {
-        var cx = flpTower.Controls[0];
-        flpTower.Controls.Remove( cx );
-        cx.Dispose( );
-      }
-
-      Label label = new Label( ) {
-        AutoSize = true,
-        Text = "Airport - Frequencies",
-      };
-      flpTower.Controls.Add( label );
+      _pnlTower.InitUpdate( );
+      _pnlTower.ClearItems( );
 
       if (airport.HasCommsRelation) {
-        var f1 = flpTower.ForeColor;
-        var f2 = flpTower.ForeColor.Dimmed( 15 );
-        int num = 0;
         foreach (var frq in airport.Comms) {
-          label = new Label( ) {
-            AutoSize = true,
-            Text = frq.CommString( ),
-            ForeColor = (num++ % 2 == 0) ? f1 : f2,
-            AutoEllipsis = true,
-          };
-          flpTower.Controls.Add( label );
+          _pnlTower.AddItem( frq.CommString( ).PadRight( 63 ), null, false );
         }
       }
-
-      flpTower.AutoSize = true;
-      flpTower.ResumeLayout( );
-      flpTower.Top = this.ClientRectangle.Bottom - flpTower.Height - lblCopyright.Height - 3;
-      flpTower.Visible = vis;
+      _pnlTower.CommitUpdate( this.ClientRectangle.Bottom - lblCopyright.Height );
     }
 
     // hide this
-    private void flpTower_Click( object sender, EventArgs e )
+    private void _pnlTower_EmptyClicked( object sender, EventArgs e )
     {
-      flpTower.Visible = false;
+      _pnlTower.Visible = false;
     }
 
     #endregion
 
     #region Runway Panel
 
-    // Load Runways Panel
+    // fill the approach panel from a runway
+    private void PopulateRunwayApproaches( IRunway runway )
+    {
+      _pnlApproaches.InitUpdate( );
+      _pnlApproaches.ClearItems( );
+
+      if (runway != null) {
+        // Airport Runways
+        _pnlApproaches.Title = $"Runway {runway.Ident} - Approaches";
+        var rwyWyps = _airportRef.Navaids.Where( x => x.IsApproach && x.Runway_Ident == $"RW{runway.Ident}" );
+        // all runway-Approaches (ILS, RNAV etc)
+        var rwyApproaches = rwyWyps.Select( y => y.ApproachName ).Distinct( ).OrderBy( x => x );
+        foreach (var appName in rwyApproaches) {
+          var fix = _airportRef.Navaids.Where(
+          x => x.IsApproach
+          && x.Runway_Ident == $"RW{runway.Ident}"
+          && x.ApproachName == appName ).FirstOrDefault( );
+          string ngTag = ((fix.Fix != null) && fix.Fix.EndsWith( "NG" )) ? "'" : " ";
+          _pnlApproaches.AddItem( $"{appName,-7} {$"({fix.ICAO})",-8} RWY {runway.Ident}  {ngTag}".PadRight( 30 ), appName, true );
+        }
+      }
+      _pnlApproaches.CommitUpdate( _pnlRunways.Top );
+    }
+
+    // Fill the runways panel from an airport
     private void PopulateRunways( Data.Airport airport )
     {
-      var vis = flpRunways.Visible;
-      flpRunways.SuspendLayout( );
-      flpRunways.AutoSize = false;
+      var padLen = 65;
+      _pnlRunways.InitUpdate( );
+      _pnlRunways.ClearItems( );
 
-      // clear all controls from the FLP
-      while (flpRunways.Controls.Count > 0) {
-        var cx = flpRunways.Controls[0];
-        flpRunways.Controls.Remove( cx );
-        cx.Click -= RunwayLabel_Click;
-        cx.Dispose( );
-      }
-
-      // Airport Runways
-      Label label = new Label( ) {
-        AutoSize = true,
-        Text = "Airport - Runways",
-        Tag = 1,// set to trigger VFR off
-        Cursor = Cursors.Hand,
-      };
-      label.Click += RunwayLabel_Click;
       // all runways
-      flpRunways.Controls.Add( label );
       if (airport.HasRunwaysRelation) {
-        var f1 = flpRunways.ForeColor;
-        var f2 = flpRunways.ForeColor.Dimmed( 20 );
-        int num = 0;
         foreach (var rwy in airport.Runways) {
-          label = new Label( ) {
-            AutoSize = true,
-            Text = rwy.RunwayString( ),
-            ForeColor = (num++ % 2 == 0) ? f1 : f2,
-            Tag = rwy, // REF of the Runway
-            Cursor = Cursors.Hand,
-            AutoEllipsis = true,
-          };
-          flpRunways.Controls.Add( label );
-          label.Click += RunwayLabel_Click;
+          _pnlRunways.AddItem( rwy.RunwayString( ).PadRight( padLen ), rwy, true ); // make is selectable
         }
       }
 
-      // Airport Navaids
-      label = new Label( ) {
-        AutoSize = true,
-        Text = "Airport - Navaids",
-      };
-      flpRunways.Controls.Add( label );
+      // Airport Navaids - if there are any
+      var aptNavaids = new List<INavaid>( );
       if (airport.HasNavaidsRelation) {
-        var f1 = flpRunways.ForeColor;
-        var f2 = flpRunways.ForeColor.Dimmed( 20 );
-        int num = 0;
-        foreach (var nav in airport.Navaids) {
-          var s = nav.VorNdbNameString( );
-          if (!string.IsNullOrWhiteSpace( s )) {
-            label = new Label( ) {
-              AutoSize = true,
-              Text = s,
-              ForeColor = (num++ % 2 == 0) ? f1 : f2,
-              AutoEllipsis = true,
-            };
-            flpRunways.Controls.Add( label );
+        aptNavaids = airport.Navaids.Where( x => x.IsVOR || x.IsNDB ).ToList( );
+      }
+      // if there are any apt navaids, list them
+      if (aptNavaids.Count( ) > 0) {
+        _pnlRunways.AddSubTitle( "Airport - Navaids" );
+        var itemList = new List<string>( ); // manage doubles
+        foreach (var nav in aptNavaids) {
+          var item = nav.VorNdbNameString( );
+          if (!itemList.Contains( item )) {
+            _pnlRunways.AddItem( item.PadRight( padLen ), null, false );
+            itemList.Add( item );
           }
         }
       }
-
-      flpRunways.AutoSize = true;
-      flpRunways.ResumeLayout( );
-      flpRunways.Top = this.ClientRectangle.Bottom - flpRunways.Height - lblCopyright.Height - 3;
-      flpRunways.Visible = vis;
+      _pnlRunways.CommitUpdate( this.ClientRectangle.Bottom - lblCopyright.Height );
+      // init approach panel empty and unselected, will populate on runway strip click
+      // needs runway panel to be layed out for the placement
+      PopulateRunwayApproaches( null );
     }
 
-    // a Runway Label was clicked
+    // a strip in the approach panel was clicked
+    private void ApproachLabel_Click( object sender, EventArgs e )
+    {
+      // sanity
+      if (!(sender is Label)) return;
+
+      var label = sender as Label;
+      if (!(label.Tag is string)) {
+        // clear selected approach
+        _airportDisplayMgr.SetSelectedNavIdRunwayApproach( "" ); // show all
+      }
+      else {
+        var approachName = label.Tag as string;
+        _airportDisplayMgr.SetSelectedNavIdRunwayApproach( approachName );
+      }
+      // render and redraw
+      _airportDisplayMgr.RenderStatic( );
+      _airportDisplayMgr.Redraw( );
+    }
+
+    // a strip in the runway panel was clicked
     private void RunwayLabel_Click( object sender, EventArgs e )
     {
       // sanity
       if (!(sender is Label)) return;
+      _pnlApproaches.Visible = false;
       var label = sender as Label;
       if (!(label.Tag is IRunway)) {
-        ShowVFRMarks = false;
-        _airportDisplayMgr.SetSelectedNavIdRunway( "" ); // clear sel runway
+        // clear selected runway
+        //ShowVFRMarks = false;
+        _airportDisplayMgr.SetRunwayVFRDispItems( null ); // unselected
+        PopulateRunwayApproaches( null ); // unselected
+        _airportDisplayMgr.SetSelectedNavIdRunway( "" );
+        _airportDisplayMgr.SetSelectedNavIdRunwayApproach( "" );
       }
       else {
         // get this pair
@@ -501,16 +500,25 @@ namespace bm98_Map
         _airportDisplayMgr.SetRunwayVFRDispItems( pair );
         // IFR Waypoint
         _airportDisplayMgr.SetSelectedNavIdRunway( pair.First( ).Ident );
+        _airportDisplayMgr.SetSelectedNavIdRunwayApproach( "" );
+        // populate approaches
+        PopulateRunwayApproaches( pair.First( ) );
       }
+      _pnlApproaches.Visible = true;
       // render and redraw
       _airportDisplayMgr.RenderStatic( );
       _airportDisplayMgr.Redraw( );
     }
 
     // hide this
-    private void flpRunways_Click( object sender, EventArgs e )
+    private void _pnlRunways_EmptyClicked( object sender, EventArgs e )
     {
-      flpRunways.Visible = false;
+      _pnlApproaches.Visible = false;
+      _pnlRunways.Visible = false;
+    }
+    private void _pnlApproaches_EmptyClicked( object sender, EventArgs e )
+    {
+      // not used
     }
 
     #endregion
@@ -520,49 +528,22 @@ namespace bm98_Map
     // load Navaids Panel
     private void PopulateNavaids( List<FSimFacilityIF.INavaid> navaids )
     {
-      var vis = flpNavaids.Visible;
-      flpNavaids.SuspendLayout( );
-      flpNavaids.AutoSize = false;
+      _pnlNavaids.InitUpdate( );
+      _pnlNavaids.ClearItems( );
 
-      // clear all controls from the FLP
-      while (flpNavaids.Controls.Count > 0) {
-        var cx = flpNavaids.Controls[0];
-        flpNavaids.Controls.Remove( cx );
-        cx.Dispose( );
-      }
-
-      Label label = new Label( ) {
-        AutoSize = true,
-        Text = "Area - Navaids",
-      };
-      flpNavaids.Controls.Add( label );
-
-      var f1 = flpNavaids.ForeColor;
-      var f2 = flpNavaids.ForeColor.Dimmed( 20 );
-      int num = 0;
       navaids.Sort( );
       foreach (var nav in navaids) {
         if (nav.IsWaypoint)
           continue; // skip waypoints
-
-        label = new Label( ) {
-          AutoSize = true,
-          Text = nav.VorNdbNameString( ),
-          ForeColor = (num++ % 2 == 0) ? f1 : f2,
-        };
-        flpNavaids.Controls.Add( label );
+        _pnlNavaids.AddItem( nav.VorNdbNameString( ).PadRight( 63 ), null, false );
       }
-
-      flpNavaids.AutoSize = true;
-      flpNavaids.ResumeLayout( );
-      flpNavaids.Top = this.ClientRectangle.Bottom - flpNavaids.Height - lblCopyright.Height - 3;
-      flpNavaids.Visible = vis;
+      _pnlNavaids.CommitUpdate( this.ClientRectangle.Bottom - lblCopyright.Height );
     }
 
     // hide this
-    private void flpNavaids_Click( object sender, EventArgs e )
+    private void _pnlNavaids_EmptyClicked( object sender, EventArgs e )
     {
-      flpNavaids.Visible = false;
+      _pnlNavaids.Visible = false;
     }
 
     #endregion
@@ -594,6 +575,8 @@ namespace bm98_Map
         flpProvider.Controls.Add( label );
       }
       flpProvider.Cursor = Cursors.Hand;
+      flpProvider.BringToFront( );
+
     }
 
     // handle provider was clicked
@@ -686,19 +669,27 @@ namespace bm98_Map
       //      Debug.WriteLine( $"UC_Map.Canvas_LoadComplete- MatComplete: {e.MatrixComplete}  LoadFailed: {e.LoadFailed}" );
       if (e.MatrixComplete) {
         // complete - but may have failed tiles
-        ReloadComplete_Delegate( );
+        _eDispatch.HandleEvent( ReloadComplete );
+        //ReloadComplete_Delegate( );
         // redraw 
-        UpdateView_Delegate( );
+        _eDispatch.HandleEvent( UpdateView );
+        //UpdateView_Delegate( );
       }
       else if (e.LoadFailed) {
         // matrix load failed - just update the GUI
-        UpdateView_Delegate( );
+        _eDispatch.HandleEvent( UpdateView );
+        //UpdateView_Delegate( );
       }
     }
 
     // event triggered when some Map loading starts 
     private void Canvas_MapLoading( object sender, EventArgs e )
     {
+      _eDispatch.HandleEvent( delegate {
+        lblLoading.Visible = true;
+        lblLoading.BringToFront( );
+      } );
+      /*
       if (this.InvokeRequired) {
         this.Invoke( (MethodInvoker)delegate {
           lblLoading.Visible = true;
@@ -709,8 +700,8 @@ namespace bm98_Map
         lblLoading.Visible = true;
         lblLoading.BringToFront( );
       }
+      */
     }
-
 
     // reload complete, cleanup (within thread)
     private void ReloadComplete( )
@@ -719,13 +710,22 @@ namespace bm98_Map
       lblLoading.Visible = false;
     }
 
+    private void UpdateView( )
+    {
+      // need to set the current Range as it may have changed due to Provider change
+      _airportDisplayMgr.SetMapRange( _mapRange );
+      UpdateMapCenter( _viewport.ViewCenterLatLon ); // update if it changed only when the Map was extended
+      lblCopyright.Text = _viewport.Map.ProviderCopyright;
+      // repaint the UC
+      _airportDisplayMgr.Redraw( );
+    }
+
+    /*
     // delegate procssesing into the GUI thread
     private void ReloadComplete_Delegate( )
     {
       if (this.InvokeRequired) {
-        this.Invoke( (MethodInvoker)delegate {
-          ReloadComplete( );
-        } );
+        this.Invoke( (MethodInvoker)delegate { ReloadComplete( ); } );
       }
       else {
         ReloadComplete( );
@@ -736,16 +736,10 @@ namespace bm98_Map
     private void UpdateView_Delegate( )
     {
       if (this.InvokeRequired) {
-        this.Invoke( (MethodInvoker)delegate {
-          // need to set the current Range as it may have changed due to Provider change
-          _airportDisplayMgr.SetMapRange( _mapRange );
-          UpdateMapCenter( _viewport.ViewCenterLatLon ); // update if it changed only when the Map was extended
-          lblCopyright.Text = _viewport.Map.ProviderCopyright;
-          // repaint the UC
-          _airportDisplayMgr.Redraw( );
-        } );
+        this.Invoke( (MethodInvoker)delegate { UpdateView( ); } );
       }
     }
+    */
 
     #endregion
 
@@ -767,6 +761,9 @@ namespace bm98_Map
 
       lblLoading.Visible = false;
 
+      // a handler
+      _eDispatch = new dNetBm98.WinFormInvoker( this );
+
       // load indexed access to MapRange Buttons
       _mrButtons.Add( MapRange.XFar, btRangeXFar );
       _mrButtons.Add( MapRange.FarFar, btRangeFarFar );
@@ -781,17 +778,23 @@ namespace bm98_Map
       _decoBColorOFF = btTogAcftData.BackColor; // default
 
       // setup flowpanels for info lists
-      flpRunways.Visible = false;
-      flpRunways.Location = new Point( 5, 50 ); // only X matters
-      flpRunways.AutoSize = true;
+      _pnlRunways = new StripPanel( new Size( 550, 500 ), "Airport - Runways" ) { Location = new Point( 5, 50 ) }; // only X matters
+      _pnlRunways.ItemClicked += RunwayLabel_Click;
+      _pnlRunways.EmptyClicked += _pnlRunways_EmptyClicked;
+      this.Controls.Add( _pnlRunways );
 
-      flpTower.Visible = false;
-      flpTower.Location = new Point( 5, 50 ); // only X matters
-      flpTower.AutoSize = true;
+      _pnlApproaches = new StripPanel( new Size( 290, 150 ), "Runway - Approaches" ) { Location = new Point( 5, 50 ) }; // only X matters
+      _pnlApproaches.ItemClicked += ApproachLabel_Click;
+      _pnlApproaches.EmptyClicked += _pnlApproaches_EmptyClicked;
+      this.Controls.Add( _pnlApproaches );
 
-      flpNavaids.Visible = false;
-      flpNavaids.Location = new Point( 5, 50 ); // only X matters
-      flpNavaids.AutoSize = true;
+      _pnlTower = new StripPanel( new Size( 550, 500 ), "Airport - Frequencies" ) { Location = new Point( 5, 50 ) }; // only X matters
+      _pnlTower.EmptyClicked += _pnlTower_EmptyClicked;
+      this.Controls.Add( _pnlTower );
+
+      _pnlNavaids = new StripPanel( new Size( 550, 500 ), "Area - Navaids" ) { Location = new Point( 5, 50 ) };// only X matters
+      _pnlNavaids.EmptyClicked += _pnlNavaids_EmptyClicked;
+      this.Controls.Add( _pnlNavaids );
 
       flpAcftData.Visible = false;
       flpAcftData.Location = new Point( 5, lblAirport.Bottom + 5 );
@@ -875,26 +878,26 @@ namespace bm98_Map
 
     private void btRunway_Click( object sender, EventArgs e )
     {
-      flpTower.Visible = false;
-      flpNavaids.Visible = false;
-      flpRunways.Visible = !flpRunways.Visible; // toggle
-      if (flpRunways.Visible) { flpRunways.BringToFront( ); }
+      _pnlTower.Visible = false;
+      _pnlNavaids.Visible = false;
+      _pnlRunways.Visible = !_pnlRunways.Visible; // toggle
+      _pnlApproaches.Visible = _pnlRunways.Visible;
     }
 
     private void btTower_Click( object sender, EventArgs e )
     {
-      flpRunways.Visible = false;
-      flpNavaids.Visible = false;
-      flpTower.Visible = !flpTower.Visible; // toggle
-      if (flpTower.Visible) { flpTower.BringToFront( ); }
+      _pnlRunways.Visible = false;
+      _pnlApproaches.Visible = false;
+      _pnlNavaids.Visible = false;
+      _pnlTower.Visible = !_pnlTower.Visible; // toggle
     }
 
     private void btNavaids_Click( object sender, EventArgs e )
     {
-      flpRunways.Visible = false;
-      flpTower.Visible = false;
-      flpNavaids.Visible = !flpNavaids.Visible; // toggle
-      if (flpNavaids.Visible) { flpNavaids.BringToFront( ); }
+      _pnlRunways.Visible = false;
+      _pnlApproaches.Visible = false;
+      _pnlTower.Visible = false;
+      _pnlNavaids.Visible = !_pnlNavaids.Visible; // toggle
     }
 
     private void btMapProvider_Click( object sender, EventArgs e )

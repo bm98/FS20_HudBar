@@ -20,20 +20,15 @@ namespace bm98_Map.Drawing
     /// <summary>
     /// Track of the Outbound path
     /// </summary>
-    public int OutboundTrack_deg = 0;
+    public int OutboundTrack_deg { get; set; } = 0;
     /// <summary>
     /// Coord of the Outbound path
     /// </summary>
-    public LatLon OutboundLatLon = new LatLon( 0, 0 );
+    public LatLon OutboundLatLon { get; set; } = new LatLon( 0, 0 );
     /// <summary>
     /// Waypoint Label Rectangle
     /// </summary>
-    public Rectangle WypLabelRectangle;
-
-    /// <summary>
-    /// Pen to draw lines of SID and STAR parts
-    /// </summary>
-    public Pen PenSidStar = Pens.Magenta;
+    public Rectangle WypLabelRectangle { get; set; }
 
     /// <summary>
     /// cTor: create sprite, submit the image (will not be managed or disposed here)

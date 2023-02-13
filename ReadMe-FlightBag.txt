@@ -1,5 +1,5 @@
-FS20_FlightBag V 0.62 - Build 62 BETA
-(c) M. Burri - 03-Feb-2023
+FS20_FlightBag V 0.63 - Build 63 BETA
+(c) M. Burri - 17-Feb-2023
 
 Contains files:
 
@@ -17,6 +17,7 @@ MetarLib.dll                A METAR access library
 CoordLib.dll                A coord. handling library
 SettingsLib.dll             Application settings persistence library
 SimBriefLib.dll             SimBrief service library
+dNetBm98                    Tools for .Net and WinForms
 FSimClientIF.dll            Generic FSim Client interface definition
 FSimIF.dll                  Generic FSim interface definition
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
@@ -63,6 +64,16 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.63-B63
+- RERUN FacilityDataLoader !!!
+
+- Add Approach panel and selection to Map (Runway Table)
+- Update OpenTopoMap URL and timeout for map retrieval set to 60sec
+- Fix Exception when SimBrief Image/Doc Source is disabled (from Website)
+- FacilityDataLoader: major rework for Approaches and Navigraph merges
+- Refactoring, consolidation for commonly used stuff (dNetBm98 library now)
+- Update QuickGuide
 
 V 0.62-B62
 - Fix Allow 4..7 digit SimBrief Pilot ID (no clear doc what it is found...)

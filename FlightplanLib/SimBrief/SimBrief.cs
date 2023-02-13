@@ -74,7 +74,7 @@ namespace FlightplanLib.SimBrief
         Icao_Ident = plan.Origin.Icao_Ident,
         InboundTrueTrk = 0,
         OutboundTrueTrk = -1, // to be calculated
-        Distance_nm= 0,
+        Distance_nm = 0,
         SID_Ident = "",
         STAR_Ident = "",
         Stage = "",
@@ -108,12 +108,16 @@ namespace FlightplanLib.SimBrief
       // create Plan Doc HTML
       plan.HTMLdocument = sbPlan.Text.Plan;
       // create Download Images
-      foreach (var fix in sbPlan.Image_Files.Files) {
-        plan.ImageLinks.Add( new FileLink( ) { Name = fix.Name, RemoteUrl = sbPlan.Image_Files.Directory, LinkUrl = fix.Link } );
+      if (sbPlan.Image_Files.Files != null) {
+        foreach (var fix in sbPlan.Image_Files.Files) {
+          plan.ImageLinks.Add( new FileLink( ) { Name = fix.Name, RemoteUrl = sbPlan.Image_Files.Directory, LinkUrl = fix.Link } );
+        }
       }
       // create Download Documents
-      foreach (var fix in sbPlan.Plan_Files.Files) {
-        plan.DocLinks.Add( new FileLink( ) { Name = fix.Name, RemoteUrl = sbPlan.Plan_Files.Directory, LinkUrl = fix.Link } );
+      if (sbPlan.Plan_Files.Files != null) {
+        foreach (var fix in sbPlan.Plan_Files.Files) {
+          plan.DocLinks.Add( new FileLink( ) { Name = fix.Name, RemoteUrl = sbPlan.Plan_Files.Directory, LinkUrl = fix.Link } );
+        }
       }
       // calculate missing items
       plan.RecalcWaypoints( );
@@ -134,9 +138,9 @@ namespace FlightplanLib.SimBrief
     public event SimBriefDataEventHandler SimBriefDataEvent;
 
     // Signal the user that and what data has arrived
-    private void OnSimBriefDataEvent( string data, SimBriefDataFormat dataFormat )
+    private void OnSimBriefDataEvent( bool success, string data, SimBriefDataFormat dataFormat )
     {
-      SimBriefDataEvent?.Invoke( this, new SimBriefDataEventArgs( data, dataFormat ) );
+      SimBriefDataEvent?.Invoke( this, new SimBriefDataEventArgs( success, data, dataFormat ) );
     }
 
     /// <summary>
@@ -199,23 +203,21 @@ namespace FlightplanLib.SimBrief
     private async Task GetData( string userIDorName, SimBriefDataFormat dataFormat )
     {
       string response = await SimBriefRequest.GetDocument( userIDorName, dataFormat );
-      if (!string.IsNullOrWhiteSpace( response )) {
-        // signal response
-        OnSimBriefDataEvent( response, dataFormat );
-      }
-    }
-
-    // download document files
-    private async Task GetFile( string remoteFile, string localDocName, string destPath )
-    {
-      bool response = await SimBriefRequest.DownloadFile( remoteFile, localDocName, destPath );
-      if (response) {
-        // signal response
-        OnSimBriefDownloadEvent( );
-      }
-    }
-
-    #endregion
-
+      // signal response
+      OnSimBriefDataEvent( !string.IsNullOrWhiteSpace( response ), response, dataFormat );
   }
+
+  // download document files
+  private async Task GetFile( string remoteFile, string localDocName, string destPath )
+  {
+    bool response = await SimBriefRequest.DownloadFile( remoteFile, localDocName, destPath );
+    if (response) {
+      // signal response
+      OnSimBriefDownloadEvent( );
+    }
+  }
+
+  #endregion
+
+}
 }

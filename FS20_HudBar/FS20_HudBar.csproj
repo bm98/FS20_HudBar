@@ -79,6 +79,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\CoordLib.dll</HintPath>
     </Reference>
+    <Reference Include="dNetBm98">
+      <HintPath>..\..\..\..\Redist\dNetBm98.dll</HintPath>
+    </Reference>
     <Reference Include="FSimClientIF, Version=0.34.0.40, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\FSimClientIF.dll</HintPath>

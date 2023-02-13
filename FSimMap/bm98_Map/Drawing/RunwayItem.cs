@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static dNetBm98.XPoint;
 using CoordLib;
 
 namespace bm98_Map.Drawing

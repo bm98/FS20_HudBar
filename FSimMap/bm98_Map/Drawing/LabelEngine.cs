@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static dNetBm98.XSize;
+
 namespace bm98_Map.Drawing
 {
   /// <summary>

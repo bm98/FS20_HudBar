@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
+
+using static dNetBm98.Units;
+
 using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
@@ -56,7 +59,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = Conversions.Nm_From_M( SC.SimConnectClient.Instance.GpsModule.TOD_dist);
+        _value1.Value = (float)Nm_From_M( SC.SimConnectClient.Instance.GpsModule.TOD_dist);
       }
     }
 

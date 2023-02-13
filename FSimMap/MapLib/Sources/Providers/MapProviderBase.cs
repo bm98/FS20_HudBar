@@ -86,7 +86,7 @@ namespace MapLib.Sources.Providers
     /// <summary>
     /// Timeout for connections
     /// </summary>
-    public static int TimeoutMs = 20 * 1000; // 20 sec
+    public static int TimeoutMs = 60 * 1000; // 60 sec
 
     /// <summary>
     /// Time To Live of cache, in hours. Default: 240 (10 days).

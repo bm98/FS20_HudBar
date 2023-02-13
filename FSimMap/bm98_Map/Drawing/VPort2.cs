@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using static dNetBm98.XPoint;
+using static dNetBm98.XSize;
 using CoordLib;
 using MapLib;
 using MapLib.Tiles;

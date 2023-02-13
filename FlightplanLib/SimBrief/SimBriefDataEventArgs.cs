@@ -28,6 +28,10 @@ namespace FlightplanLib.SimBrief
   public class SimBriefDataEventArgs
   {
     /// <summary>
+    /// True if successful
+    /// </summary>
+    public bool Success { get; set; }
+    /// <summary>
     /// SimBrief Data as string
     /// </summary>
     public string SimBriefData { get; set; }
@@ -39,11 +43,11 @@ namespace FlightplanLib.SimBrief
     /// <summary>
     /// cTor:
     /// </summary>
-    public SimBriefDataEventArgs( string data, SimBriefDataFormat dataFormat )
+    public SimBriefDataEventArgs(bool success, string data, SimBriefDataFormat dataFormat )
     {
+      Success = success;
       SimBriefData = data;
       DataFormat = dataFormat;
-
     }
 
   }

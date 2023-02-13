@@ -10,12 +10,13 @@ FS20_CamControl.exe               The program
 - All libraries below MUST be in the same folder as the Exe file
 FCamControl                 CamControl WinForms Library
 
-FSimClientIF.dll            Generic FSim Client interface definition (updated)
+dNetBm98                    Tools for .Net and WinForms
+CoordLib.dll				A coord. handling library
+FSimClientIF.dll            Generic FSim Client interface definition
 SettingsLib.dll             Application settings persistence library
-FSimIF.dll                  Generic FSim interface definition (updated)
-SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect (updated)
-BM98CH_WasmClient.dll       WASM Module client to get LVars (new since V0.51)
-CoordLib.dll				A coord. handling library (updated V0.53)
+FSimIF.dll                  Generic FSim interface definition
+SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
+BM98CH_WasmClient.dll       WASM Module client to get LVars
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)

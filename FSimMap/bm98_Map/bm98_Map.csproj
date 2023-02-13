@@ -35,6 +35,9 @@
     <Reference Include="CoordLib">
       <HintPath>..\..\..\..\Redist\CoordLib.dll</HintPath>
     </Reference>
+    <Reference Include="dNetBm98">
+      <HintPath>..\..\..\..\..\Redist\dNetBm98.dll</HintPath>
+    </Reference>
     <Reference Include="FSimFacilityIF, Version=1.1.0.11, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Redist\FSimFacilityIF.dll</HintPath>
@@ -51,7 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Conversions.cs" />
     <Compile Include="Data\Airport.cs" />
     <Compile Include="Data\AverageCls.cs" />
     <Compile Include="Data\ITrackedAircraft.cs" />
@@ -82,10 +84,6 @@
     <Compile Include="Drawing\RwyVFRMarksItem.cs" />
     <Compile Include="Drawing\TrackHookItem.cs" />
     <Compile Include="Drawing\VPort2.cs" />
-    <Compile Include="Extensions\MOther.cs" />
-    <Compile Include="Extensions\MPoint.cs" />
-    <Compile Include="Extensions\MRect.cs" />
-    <Compile Include="Extensions\MSize.cs" />
     <Compile Include="Drawing\FontsAndColors.cs" />
     <Compile Include="Drawing\PanelConst.cs" />
     <Compile Include="Data\Facility_Extensions.cs" />
@@ -93,6 +91,12 @@
     <Compile Include="Drawing\DisplayList.cs" />
     <Compile Include="Drawing\GProc.cs" />
     <Compile Include="Drawing\IDrawing.cs" />
+    <Compile Include="UI\StripLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\StripPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MapCreator.cs" />
     <Compile Include="MapEventArgs.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

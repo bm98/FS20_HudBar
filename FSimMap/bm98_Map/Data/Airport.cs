@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using FSimFacilityIF;
+using static dNetBm98.Units;
 using CoordLib;
 
 namespace bm98_Map.Data
@@ -21,7 +22,7 @@ namespace bm98_Map.Data
     /// <summary>
     /// Get: The Airport Elevation in Feet
     /// </summary>
-    public float Elevation_ft => Conversions.Ft_From_M( Elevation_m );
+    public double Elevation_ft => Ft_From_M( Elevation_m );
 
     /// <summary>
     /// Create a dummy Airport if none is available

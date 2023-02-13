@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static dNetBm98.XPoint;
 using CoordLib;
 
 namespace bm98_Map.Drawing
@@ -18,27 +19,32 @@ namespace bm98_Map.Drawing
     /// <summary>
     /// Main (Start) runway bearing (deg Mag) for number display
     /// </summary>
-    public float StartHeading_degm = 0;
-    public string StartRunwayIdent = "";
+    public float StartHeading_degm { get; set; } = 0; // default - must be set 
+    public string StartRunwayIdent { get; set; } = ""; // default - must be set 
 
     /// <summary>
     /// Other (End) runway bearing (deg Mag) for number display
     /// </summary>
-    public float EndHeading_degm = 0;
-    public string EndRunwayIdent = "";
+    public float EndHeading_degm { get; set; } = 0; // default - must be set 
+    public string EndRunwayIdent { get; set; } = ""; // default - must be set 
 
     /// <summary>
     /// Ring Range font
     /// </summary>
-    public Font RangeFont;
+    public Font RangeFont { get; set; } = FontsAndColors.FtSmall; // default - must be set 
     /// <summary>
     /// Main Heading Pen for incoming lines and Left hand pattern
     /// </summary>
-    public Pen VfrPenMain;
+    public Pen VfrPenMain { get; set; } = Pens.Pink; // default - must be set 
     /// <summary>
     /// Alternate Heading Pen for outgoing lines and Right hand pattern
     /// </summary>
-    public Pen VfrPenAlt;
+    public Pen VfrPenAlt { get; set; } = Pens.Pink; // default - must be set 
+
+    /// <summary>
+    /// True to show the full VFR painting, False to have just the selected RWY indicated
+    /// </summary>
+    public bool ShowFullDecoration { get; set; } = false;
 
     /// <summary>
     /// cTor: create sprite
@@ -66,7 +72,6 @@ namespace bm98_Map.Drawing
       var save = g.BeginContainer( );
       {
         g.SmoothingMode = SmoothingMode.AntiAlias;
-
         // traffic pattern 
         g.FillPath( mainRwy ? brushPatternR : brushPatternL, pattern ); // Right hand pattern
         g.ScaleTransform( -1, 1 ); // invert X
@@ -81,7 +86,6 @@ namespace bm98_Map.Drawing
           g.RotateTransform( 90 ); // rotate to +45
           g.FillEllipse( FillBrush, new Rectangle( 0, dist * 5, 30, 30 ) );
           g.RotateTransform( -45 ); // rotate to +0
-
           // center Start of runway in Y direction to 0/0
           g.TranslateTransform( 0, rwyLen_px / 2 );
 
@@ -113,6 +117,7 @@ namespace bm98_Map.Drawing
         }
       }
       g.EndContainer( save );
+
       pendash.Dispose( );
       brushPatternL.Dispose( );
       brushPatternR.Dispose( );
@@ -181,41 +186,53 @@ namespace bm98_Map.Drawing
           // rotate so the rwy point upwards for the incomming flight
           g.RotateTransform( (float)startAngle );
           // Runway straight dashed lines
-          var psave = VfrPenMain.DashStyle;
-          VfrPenMain.DashStyle = DashStyle.Dot;
-          VfrPenAlt.DashStyle = DashStyle.Dot;
-          g.DrawLine( VfrPenMain, new Point( 0, dist * 5 ),new Point( 0, (int)rwyLen_px ) ); // fly in
-          g.DrawPie(VfrPenMain , new Rectangle( new Point( -30, (int)rwyLen_px - 60 ), new Size( 60, 120 ) ),+90 -30, 60 );// arrow, kind of
-          g.DrawLine( VfrPenAlt, new Point( 0, -dist * 5 ), new Point( 0, -(int)rwyLen_px ) ); // fly out
-          VfrPenMain.DashStyle = psave;
-          VfrPenAlt.DashStyle = psave;
-          // Runway accross dashed lines
-          g.DrawLine( pendash, new Point( -dist * 5, 0 ), new Point( -(int)rwyLen_px, 0 ) );
-          g.DrawLine( pendash, new Point( (int)rwyLen_px, 0 ), new Point( dist * 5, 0 ) );
-          // Runway 2nm circle
-          g.DrawEllipse( Pen, rect4 );
-          g.RotateTransform( 90 );
-          g.DrawString( "2 nm", RangeFont, TextBrush, rect4.Location.Add( new Point( rect4.Width / 2, 0 ) ), StringFormat );
+          if (ShowFullDecoration) {
+            var psave = VfrPenMain.DashStyle;
+            VfrPenMain.DashStyle = DashStyle.Dot;
+            VfrPenAlt.DashStyle = DashStyle.Dot;
+            g.DrawLine( VfrPenMain, new Point( 0, dist * 5 ), new Point( 0, (int)rwyLen_px ) ); // fly in
+            g.DrawPie( VfrPenMain, new Rectangle( new Point( -30, (int)rwyLen_px - 60 ), new Size( 60, 120 ) ), +90 - 30, 60 );// arrow, kind of
+            g.DrawLine( VfrPenAlt, new Point( 0, -dist * 5 ), new Point( 0, -(int)rwyLen_px ) ); // fly out
+            VfrPenMain.DashStyle = psave;
+            VfrPenAlt.DashStyle = psave;
+          }
+          else {
+            // Only this part is SHOWN when Full Deco is OFF (an arrow pointing towards the runway)
+            g.DrawLine( VfrPenMain, new Point( 0, dist * 5 ), new Point( 0, (int)rwyLen_px ) ); // fly in
+            g.DrawPie( VfrPenMain, new Rectangle( new Point( -30, (int)rwyLen_px - 60 ), new Size( 60, 120 ) ), +90 - 30, 60 );// arrow, kind of
+          }
+
+          if (ShowFullDecoration) {
+            // Runway accross dashed lines
+            g.DrawLine( pendash, new Point( -dist * 5, 0 ), new Point( -(int)rwyLen_px, 0 ) );
+            g.DrawLine( pendash, new Point( (int)rwyLen_px, 0 ), new Point( dist * 5, 0 ) );
+            // Runway 2nm circle
+            g.DrawEllipse( Pen, rect4 );
+            g.RotateTransform( 90 );
+            g.DrawString( "2 nm", RangeFont, TextBrush, rect4.Location.Add( new Point( rect4.Width / 2, 0 ) ), StringFormat );
+          }
         }
         g.EndContainer( saveRwy );
 
-        // draw 'Start' side
-        saveRwy = g.BeginContainer( );
-        {
-          // rotate so the rwy point upwards for the incomming flight
-          g.RotateTransform( (float)startAngle );
-          PaintRwyItems( g, dist, rwyLen_px, StartHeading_degm, StartRunwayIdent, pattern, true );
-        }
-        g.EndContainer( saveRwy );
-
-        // draw 'End' side
-        if (!string.IsNullOrEmpty( EndID )) {
+        if (ShowFullDecoration) {
+          // draw 'Start' side
           saveRwy = g.BeginContainer( );
           {
-            g.RotateTransform( (float)Geo.Wrap360( startAngle + 180 ) );
-            PaintRwyItems( g, dist, rwyLen_px, EndHeading_degm, EndRunwayIdent, pattern, false );
+            // rotate so the rwy point upwards for the incomming flight
+            g.RotateTransform( (float)startAngle );
+            PaintRwyItems( g, dist, rwyLen_px, StartHeading_degm, StartRunwayIdent, pattern, true );
           }
           g.EndContainer( saveRwy );
+
+          // draw 'End' side
+          if (!string.IsNullOrEmpty( EndID )) {
+            saveRwy = g.BeginContainer( );
+            {
+              g.RotateTransform( (float)Geo.Wrap360( startAngle + 180 ) );
+              PaintRwyItems( g, dist, rwyLen_px, EndHeading_degm, EndRunwayIdent, pattern, false );
+            }
+            g.EndContainer( saveRwy );
+          }
         }
       }
       g.EndContainer( saveDrawing );

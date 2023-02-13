@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
+
+using static dNetBm98.Units;
+
 using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 using static FS20_HudBar.Bar.Calculator;
@@ -66,7 +69,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         var hMod = SC.SimConnectClient.Instance.HudBarModule;
-        _value1.Value = (float)Conversions.Kt_From_Kmh( hMod.MacCreadySpeedToFly_kmh );
+        _value1.Value = (float)Kt_From_Kmh( hMod.MacCreadySpeedToFly_kmh );
         _value2.Value = SC.SimConnectClient.Instance.HudBarModule.MacCreadySetting_mps;
       }
     }

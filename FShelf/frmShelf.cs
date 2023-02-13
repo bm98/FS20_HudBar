@@ -188,7 +188,8 @@ namespace FShelf
         using (var sw = new StreamWriter( fname, false, new UTF8Encoding( true ) )) {
           sw.WriteLine( content );
         }
-      }catch { }
+      }
+      catch { }
     }
 
     // Helper for Runways
@@ -650,9 +651,9 @@ namespace FShelf
         nList = _db.DbReader.Navaids_ByQuadList( qs ).ToList( );
       }
 
-      // APT IFR Waypoints if set in Config
+      // APT Approach Waypoints, VORs and NDBs if set in Config
       if (_airport != null && cbxCfgIFRwaypoints.Checked) {
-        nList.AddRange( _airport.Navaids.Where( x => x.IsWaypoint ) );
+        nList.AddRange( _airport.Navaids.Where( x => x.IsApproach ) );
       }
 
       return nList;
@@ -878,6 +879,11 @@ namespace FShelf
     {
       DebSaveRouteString( e.SimBriefData, "json" );
 
+      if (!e.Success) {
+        lblCfgSbPlanData.Text = "No data received";
+        return;
+      }
+
       lblCfgSbPlanData.Text = "OFP data received";
       var js = e.SimBriefData;
       _flightPlan.LoadSbPlan( js );
@@ -920,7 +926,11 @@ namespace FShelf
         if (!string.IsNullOrWhiteSpace( err )) lblCfgSbPlanData.Text = err;
 
       }
+      else {
+        lblCfgSbPlanData.Text = "No OFP received";
+      }
     }
+
 
     // triggered when a DL is completed
     private void _simBrief_SimBriefDownloadEvent( object sender, EventArgs e )

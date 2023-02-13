@@ -12,7 +12,7 @@ namespace MapLib.Sources.Providers
   /// <summary>
   /// OpenTopoMap (CC-BY-SA)
   /// 
-  /// https://tile.opentopomap.org/{z}/{x}/{y}.png
+  /// https://a.tile.opentopomap.org/{z}/{x}/{y}.png
   /// </summary>
   internal sealed class OpenTopoProvider : MapProviderBase
   {
@@ -50,7 +50,7 @@ namespace MapLib.Sources.Providers
 
     #endregion
 
-    private readonly string UrlFormat = "https://tile.opentopomap.org/{z}/{x}/{y}.png";
+    private readonly string UrlFormat = "https://a.tile.opentopomap.org/{z}/{x}/{y}.png";
 
     string MakeTileImageUrl( TileXY tileXY, ushort zoom, string language )
     {

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using static dNetBm98.Units;
+
 using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.GUI.Templates
@@ -64,7 +66,7 @@ namespace FS20_HudBar.GUI.Templates
           }
           else {
             // kts Mode
-            float uValue = _distance_metric ? Conversions.Kmh_From_Kt( (float)value ) : (float)value;
+            float uValue = _distance_metric ? (float)Kmh_From_Kt( (float)value ) : (float)value;
             this.Text = UnitString( RightAlign( $"{uValue,4:###0} {_cManaged}" ) ); // positive only 4 digits, add a blank for alignment with °
           }
         }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static dNetBm98.XMath;
 using CoordLib;
 using CoordLib.MercatorTiles;
 using CoordLib.LLShapes;

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using static dNetBm98.Units;
+
 using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.GUI.Templates
@@ -47,7 +49,7 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( RightAlign( m_default ) );
         }
         else {
-          float uValue = _altitude_metric ? Conversions.M_From_Ft( (float)value ) : (float)value;
+          float uValue = _altitude_metric ? (float)M_From_Ft( (float)value ) : (float)value;
           this.Text = UnitString( RightAlign( $"{uValue,7:##,##0} {_cManaged}" ) ); // 9 chars: sign + 5 digits + 1000 separator, add a blank to aling better with ° values
         }
       }

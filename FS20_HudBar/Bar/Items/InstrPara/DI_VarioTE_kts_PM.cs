@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
+
+using static dNetBm98.Units;
+
 using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 using static FS20_HudBar.Bar.Calculator;
@@ -84,8 +87,8 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         var rate = SC.SimConnectClient.Instance.HudBarModule.VARIO_te_mps;
-        _value1.Value = (float)( Math.Round( Conversions.Kt_From_Mps( rate ) * 20.0 ) / 20.0 ); // 0.05 increments only
-        _value2.Value = (float)( Math.Round( Conversions.Kt_From_Mps( SC.SimConnectClient.Instance.HudBarModule.VARIO_Avg_te_mps ) * 10.0 ) / 10.0 ); // 0.10 increments only
+        _value1.Value = (float)( Math.Round( Kt_From_Mps( rate ) * 20.0 ) / 20.0 ); // 0.05 increments only
+        _value2.Value = (float)( Math.Round( Kt_From_Mps( SC.SimConnectClient.Instance.HudBarModule.VARIO_Avg_te_mps ) * 10.0 ) / 10.0 ); // 0.10 increments only
 
         // Get the new Value and Change the Player if needed
         if ( Calculator.ModNote( _volume, rate, _soundBite ) ) {

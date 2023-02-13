@@ -36,6 +36,9 @@
     <Reference Include="CoordLib">
       <HintPath>..\..\..\..\Redist\CoordLib.dll</HintPath>
     </Reference>
+    <Reference Include="dNetBm98">
+      <HintPath>..\..\..\..\..\Redist\dNetBm98.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -67,10 +70,6 @@
     <Compile Include="Sources\MemCache\MemCacheItem.cs" />
     <Compile Include="Sources\MemCache\MemCacheItemCat.cs" />
     <Compile Include="Sources\MemCache\MemorySource.cs" />
-    <Compile Include="Extensions\MInteger.cs" />
-    <Compile Include="Extensions\MPoint.cs" />
-    <Compile Include="Extensions\MRect.cs" />
-    <Compile Include="Extensions\MSize.cs" />
     <Compile Include="Sources\Providers\Bing\BingManager.cs" />
     <Compile Include="Sources\Providers\Bing\Bing_Imagery.cs" />
     <Compile Include="Sources\Providers\Bing\Bing_ImageryLabels.cs" />
