@@ -17,24 +17,11 @@ using bm98_Map.UI;
 using MapLib;
 using FSimFacilityIF;
 using System.Diagnostics;
+using MapLib.Tiles;
 
 namespace bm98_Map
 {
 
-  /// <summary>
-  /// The Zoom Level of the native Map 
-  /// </summary>
-  public enum MapRange
-  {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    XFar = 7,  //7 == MapZoom..
-    FarFar = 9,  //9 == MapZoom..
-    Far = 10,//10
-    Mid = 12,//12
-    Near = 13,
-    Close = 15,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-  }
 
   /// <summary>
   /// User Control to draw Maps
@@ -46,7 +33,7 @@ namespace bm98_Map
   /// </summary>
   public partial class UC_Map : UserControl
   {
-    // FormEvent Handler
+    // WinForms Invoker
     private dNetBm98.WinFormInvoker _eDispatch;
 
     // The Viewport for this Map
@@ -72,8 +59,8 @@ namespace bm98_Map
     // need to render the static items
     private bool _renderStaticNeeded = false;
 
-    // current map range
-    private MapRange _mapRange = MapRange.Near;
+    // master map range
+    private readonly MapRangeHandler _mapRangeHandler;
 
     // Loop to complete when tiles have failed to load
     private const int c_maxFailedLoadingCount = 5; // try max loops to get the complete image
@@ -119,11 +106,11 @@ namespace bm98_Map
 
     private void OnMapCenterChanged( LatLon center )
     {
-      MapCenterChanged?.Invoke( this, new MapEventArgs( center, MapRange ) );
+      MapCenterChanged?.Invoke( this, new MapEventArgs( center, _mapRangeHandler.MapRange, _mapRangeHandler.ZoomLevel ) );
     }
-    private void OnMapRangeChanged( MapRange mapRange )
+    private void OnMapRangeChanged( )
     {
-      MapRangeChanged?.Invoke( this, new MapEventArgs( _viewport.Map.CenterCoord, mapRange ) );
+      MapRangeChanged?.Invoke( this, new MapEventArgs( _viewport.Map.CenterCoord, _mapRangeHandler.MapRange, _mapRangeHandler.ZoomLevel ) );
     }
 
     /// <summary>
@@ -139,17 +126,20 @@ namespace bm98_Map
     [Category( "Map" )]
     [Description( "Get;Set: the map range" )]
     public MapRange MapRange {
-      get => _mapRange;
-      set {
-        if (value == _mapRange) return; // no change
-        _mapRange = value;
-        // save current center
-        var center = _viewport.ViewCenterLatLon;
-        StartMapLoading( center ); // load around dyncamic center
-        MapRangeButtonUpdate( _mapRange );
+      get => _mapRangeHandler.MapRange;
+      set => _mapRangeHandler.SetMapRange( value );
+    }
 
-        // UpdateMapCenter( center ); // will render if needed  MMMMMMM
-        OnMapRangeChanged( _mapRange );
+    /// <summary>
+    /// Get; Set: The Auto Range property of the Map
+    /// </summary>
+    [Category( "Map" )]
+    [Description( "Get;Set: auto range property" )]
+    public bool AutoRange {
+      get => _viewport.AutoRange;
+      set {
+        _viewport.AutoRange = value;
+        btRangeAuto.ForeColor = value ? _mrColorON : _mrColorOFF;
       }
     }
 
@@ -475,8 +465,7 @@ namespace bm98_Map
         _airportDisplayMgr.SetSelectedNavIdRunwayApproach( approachName );
       }
       // render and redraw
-      _airportDisplayMgr.RenderStatic( );
-      _airportDisplayMgr.Redraw( );
+      RenderStatic( true );
     }
 
     // a strip in the runway panel was clicked
@@ -506,8 +495,7 @@ namespace bm98_Map
       }
       _pnlApproaches.Visible = true;
       // render and redraw
-      _airportDisplayMgr.RenderStatic( );
-      _airportDisplayMgr.Redraw( );
+      RenderStatic( true );
     }
 
     // hide this
@@ -568,7 +556,8 @@ namespace bm98_Map
       foreach (var p in MapManager.Instance.EnabledProviders) {
         var label = new Label( ) {
           AutoSize = true,
-          Text = $"{p}",
+          Text = MapManager.Instance.ProviderName( p ),
+          Tag = p,
           ForeColor = (num++ % 2 == 0) ? f1 : f2,
         };
         label.MouseClick += Provider_MouseClick;
@@ -583,13 +572,12 @@ namespace bm98_Map
     private void Provider_MouseClick( object sender, MouseEventArgs e )
     {
       var lbl = sender as Label;
-      if (Enum.TryParse( lbl.Text, true, out MapProvider mapProvider )) {
-        if (mapProvider != MapProvider.DummyProvider) {
-          // change provider
-          MapManager.Instance.SetNewProvider( mapProvider );
-          StartMapLoading( _mapCenterDyn );
-          flpProvider.Visible = false;
-        }
+      MapProvider mapProvider = (MapProvider)lbl.Tag;
+      if (mapProvider != MapProvider.DummyProvider) {
+        // change provider
+        MapManager.Instance.SetNewProvider( mapProvider );
+        StartMapLoading( _mapCenterDyn );
+        flpProvider.Visible = false;
       }
     }
 
@@ -658,9 +646,20 @@ namespace bm98_Map
       lblLoading.Visible = true;
       lblLoading.BringToFront( );
 
-      _viewport.LoadMap( centerLatLon, (ushort)_mapRange, MapManager.Instance.CurrentProvider );
+      _viewport.LoadMap( centerLatLon, _mapRangeHandler.ZoomLevel, MapManager.Instance.CurrentProvider );
       // need to (re)set the current Range
-      _airportDisplayMgr.SetMapRange( _mapRange );
+      _airportDisplayMgr.SetMapZoom( _mapRangeHandler.ZoomLevel );
+    }
+
+    // to update the View after loading events
+    private void UpdateView( )
+    {
+      // need to set the current Range as it may have changed due to Provider change
+      _airportDisplayMgr.SetMapZoom( _mapRangeHandler.ZoomLevel );
+      UpdateMapCenter( _viewport.ViewCenterLatLon ); // update if it changed only when the Map was extended
+      lblCopyright.Text = _viewport.Map.ProviderCopyright;
+      // repaint the UC
+      _airportDisplayMgr.Redraw( );
     }
 
     // Event triggered by the Map once image loading is complete
@@ -669,16 +668,20 @@ namespace bm98_Map
       //      Debug.WriteLine( $"UC_Map.Canvas_LoadComplete- MatComplete: {e.MatrixComplete}  LoadFailed: {e.LoadFailed}" );
       if (e.MatrixComplete) {
         // complete - but may have failed tiles
-        _eDispatch.HandleEvent( ReloadComplete );
-        //ReloadComplete_Delegate( );
-        // redraw 
+        _eDispatch.HandleEvent( delegate {
+          lblLoading.Visible = false; // hide the MapLoading label
+        } );
         _eDispatch.HandleEvent( UpdateView );
-        //UpdateView_Delegate( );
       }
-      else if (e.LoadFailed) {
-        // matrix load failed - just update the GUI
-        _eDispatch.HandleEvent( UpdateView );
-        //UpdateView_Delegate( );
+      else {
+        // not yet complete
+        if (e.LoadFailed) {
+          // tile load failed
+        }
+        else {
+          // tile load success
+          _eDispatch.HandleEvent( UpdateView );
+        }
       }
     }
 
@@ -689,57 +692,7 @@ namespace bm98_Map
         lblLoading.Visible = true;
         lblLoading.BringToFront( );
       } );
-      /*
-      if (this.InvokeRequired) {
-        this.Invoke( (MethodInvoker)delegate {
-          lblLoading.Visible = true;
-          lblLoading.BringToFront( );
-        } );
-      }
-      else {
-        lblLoading.Visible = true;
-        lblLoading.BringToFront( );
-      }
-      */
     }
-
-    // reload complete, cleanup (within thread)
-    private void ReloadComplete( )
-    {
-      // seems to be fully complete or cannot load any longer
-      lblLoading.Visible = false;
-    }
-
-    private void UpdateView( )
-    {
-      // need to set the current Range as it may have changed due to Provider change
-      _airportDisplayMgr.SetMapRange( _mapRange );
-      UpdateMapCenter( _viewport.ViewCenterLatLon ); // update if it changed only when the Map was extended
-      lblCopyright.Text = _viewport.Map.ProviderCopyright;
-      // repaint the UC
-      _airportDisplayMgr.Redraw( );
-    }
-
-    /*
-    // delegate procssesing into the GUI thread
-    private void ReloadComplete_Delegate( )
-    {
-      if (this.InvokeRequired) {
-        this.Invoke( (MethodInvoker)delegate { ReloadComplete( ); } );
-      }
-      else {
-        ReloadComplete( );
-      }
-    }
-
-    // delegate procssesing into the GUI thread
-    private void UpdateView_Delegate( )
-    {
-      if (this.InvokeRequired) {
-        this.Invoke( (MethodInvoker)delegate { UpdateView( ); } );
-      }
-    }
-    */
 
     #endregion
 
@@ -752,6 +705,20 @@ namespace bm98_Map
       _mrButtons[mapRange].ForeColor = _mrColorON;
     }
 
+    // internal handling the the zoomLevel changes, called from MapRangeHandler
+    private void SetZoomLevel( ushort zoomLevel )
+    {
+      MapRangeButtonUpdate( MapRangeHandler.RangeFromZoom( zoomLevel ) );
+
+      // save current center
+      var center = _viewport.ViewCenterLatLon;
+      if (center.IsEmpty) return; // not a valid center (yet)
+
+      StartMapLoading( center ); // load around dyncamic center
+      // UpdateMapCenter( center ); // will render if needed  MMMMMMM
+      OnMapRangeChanged( ); // signal to owner
+    }
+
     /// <summary>
     /// cTor: for the control
     /// </summary>
@@ -759,10 +726,17 @@ namespace bm98_Map
     {
       InitializeComponent( );
 
+      var stUP = this.GetStyle( ControlStyles.UserPaint );
+      var stWMP = this.GetStyle( ControlStyles.AllPaintingInWmPaint );
+      var stODB = this.GetStyle( ControlStyles.OptimizedDoubleBuffer );
+
+
       lblLoading.Visible = false;
 
       // a handler
       _eDispatch = new dNetBm98.WinFormInvoker( this );
+      // map range handler
+      _mapRangeHandler = new MapRangeHandler( MapRange.Mid, SetZoomLevel );
 
       // load indexed access to MapRange Buttons
       _mrButtons.Add( MapRange.XFar, btRangeXFar );
@@ -772,7 +746,7 @@ namespace bm98_Map
       _mrButtons.Add( MapRange.Near, btRangeNear );
       _mrButtons.Add( MapRange.Close, btRangeClose );
       _mrColorOFF = btRangeFarFar.ForeColor; // default
-      MapRangeButtonUpdate( _mapRange );
+      MapRangeButtonUpdate( _mapRangeHandler.MapRange );
 
       // toggle Show buttons 
       _decoBColorOFF = btTogAcftData.BackColor; // default
@@ -803,7 +777,7 @@ namespace bm98_Map
       flpProvider.Visible = false;
       flpProvider.AutoSize = true;
       flpProvider.Top = btMapProvider.Bottom + 5;
-      _viewport = new VPort2( pbDrawing );
+      _viewport = new VPort2( pbDrawing, _mapRangeHandler );
       _viewport.LoadComplete += Canvas_LoadComplete;
       _viewport.MapLoading += Canvas_MapLoading;
 
@@ -904,6 +878,11 @@ namespace bm98_Map
     {
       flpProvider.Visible = !flpProvider.Visible; // toggle
       if (flpProvider.Visible) { flpProvider.BringToFront( ); }
+    }
+
+    private void btRangeAuto_Click( object sender, EventArgs e )
+    {
+      AutoRange = !AutoRange; // toggle
     }
 
     private void btRangeXFar_Click( object sender, EventArgs e )
@@ -1043,8 +1022,8 @@ namespace bm98_Map
       _speedIsKt = _unitIsImp;
       _vsIsFpm = _unitIsImp;
     }
-    #endregion
 
+    #endregion
 
   }
 }

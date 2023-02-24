@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MapLib</RootNamespace>
     <AssemblyName>MapLib</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,18 +69,27 @@
     <Compile Include="Sources\MemCache\CacheV2.cs" />
     <Compile Include="Sources\MemCache\ICacheItem.cs" />
     <Compile Include="Sources\MemCache\MemCacheItem.cs" />
-    <Compile Include="Sources\MemCache\MemCacheItemCat.cs" />
     <Compile Include="Sources\MemCache\MemorySource.cs" />
     <Compile Include="Sources\Providers\Bing\BingManager.cs" />
     <Compile Include="Sources\Providers\Bing\Bing_Imagery.cs" />
     <Compile Include="Sources\Providers\Bing\Bing_ImageryLabels.cs" />
     <Compile Include="Sources\Providers\Bing\Bing_OSMap.cs" />
+    <Compile Include="Sources\Providers\ChartBundle\CBBase.cs" />
+    <Compile Include="Sources\Providers\ChartBundle\CB_ENRA.cs" />
+    <Compile Include="Sources\Providers\ChartBundle\CB_ENRH.cs" />
+    <Compile Include="Sources\Providers\ChartBundle\CB_ENRL.cs" />
+    <Compile Include="Sources\Providers\ChartBundle\CB_SEC.cs" />
+    <Compile Include="Sources\Providers\ChartBundle\CB_TAC.cs" />
+    <Compile Include="Sources\Providers\ChartBundle\CB_WAC.cs" />
     <Compile Include="Sources\Providers\ProviderIni.cs" />
     <Compile Include="Sources\Providers\OpenSrc\StamenTerrainProvider.cs" />
     <Compile Include="Sources\Providers\User\UserTiles3Provider.cs" />
     <Compile Include="Sources\Providers\User\UserTiles2Provider.cs" />
     <Compile Include="Sources\Providers\User\UserTiles1Provider.cs" />
     <Compile Include="Sources\Providers\User\UserTileBase.cs" />
+    <Compile Include="Sources\Providers\User\UserTiles4Provider.cs" />
+    <Compile Include="Sources\Providers\User\UserTiles5Provider.cs" />
+    <Compile Include="Sources\Providers\User\UserTiles6Provider.cs" />
     <Compile Include="StreamImage.cs" />
     <Compile Include="MapImageID.cs" />
     <Compile Include="MapManager.cs" />
@@ -126,6 +136,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Extensions\DummyImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Extensions\LoadingImage.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

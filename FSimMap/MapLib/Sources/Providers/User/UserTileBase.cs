@@ -18,44 +18,30 @@ namespace MapLib.Sources.Providers
     public UserTileBase( MapProvider mapProvider )
       : base( mapProvider )
     {
-      RefererUrl = UrlFormat;
-      Copyright = string.Format( "User defined tileserver" );
-      // check for Overrides
+      RefererUrl = "";
+      // check for Overrides - MUST else it will not get anyting
       if (!string.IsNullOrWhiteSpace( ProviderIni.ProviderHttp( MapProvider ) )) {
-        UrlFormat = ProviderIni.ProviderHttp( MapProvider );
+        RefererUrl = ProviderIni.ProviderHttp( MapProvider );
       }
+      Copyright = string.Format( "User defined tileserver" );
+      Name = ProviderIni.ProviderName( MapProvider );
     }
 
     #region ProviderBase Members
-
-    public override string ContentID => UrlFormat; // use the URL as ID
 
     public override Guid Id => new Guid( "BEAB409B-6ED0-443F-B8E3-F6DD6F319F30" );
 
     public override string Name { get; } = "User Tile Server";
 
-    public override MapImage GetTileImage( MapImageID mapImageID )
+    protected override MapImage GetTileImage( MapImageID mapImageID )
     {
       if (!this.ProviderEnabled) return null;
 
-      string url = MakeTileImageUrl( mapImageID.TileXY, mapImageID.ZoomLevel, string.Empty );
+      string url = MakeTileImageUrl( mapImageID.TileXY, mapImageID.ZoomLevel, "", "" );
       return base.GetTileImageUsingHttp( url, mapImageID );
     }
 
     #endregion
 
-    private readonly string UrlFormat = "http://userTiles/{z}/{x}/{y}.png";
-
-    string MakeTileImageUrl( TileXY tileXY, ushort zoom, string language )
-    {
-      string url = UrlFormat;
-
-      url = url.Replace( "{z}", "{0}" );
-      url = url.Replace( "{x}", "{1}" );
-      url = url.Replace( "{y}", "{2}" );
-
-      return string.Format( url, zoom, tileXY.X, tileXY.Y );
-
-    }
   }
 }

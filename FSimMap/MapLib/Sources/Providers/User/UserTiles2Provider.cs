@@ -18,12 +18,8 @@ namespace MapLib.Sources.Providers
     private UserTiles2Provider( ) :
       base( MapProvider.USER_TILES_2 )
     {
-      RefererUrl = UrlFormat;
+      // set only distict items here - the rest is done in the base class
       Copyright = string.Format( "User defined Tile Server 2" );
-      // check for Overrides
-      if (!string.IsNullOrWhiteSpace( ProviderIni.ProviderHttp( MapProvider ) )) {
-        UrlFormat = ProviderIni.ProviderHttp( MapProvider );
-      }
     }
 
     #region ProviderBase Members
@@ -33,8 +29,6 @@ namespace MapLib.Sources.Providers
     public override string Name { get; } = "User Tile Server 2";
 
     #endregion
-
-    private readonly string UrlFormat = "http://userTiles1/{z}/{x}/{y}.png";
 
   }
 }

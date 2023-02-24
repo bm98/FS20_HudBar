@@ -99,7 +99,7 @@ namespace MapLib.Sources.DiskCache
 
     }
 
-    private const long c_initialSize = 64 * 1024 * 1024; // 64MB the initial Size for each DB file
+    private const long c_initialSize = 128 * 1024 * 1024; // 64MB the initial Size for each DB file
     private const string c_access = "shared"; // The DBLite access prop (use this for shared access, MapLib uses threads to load tiles)
     private const string c_dbfTemplate = "MapLibCache_{$1}.dblite"; // e.g. MapLibCache_{Provider}.dblite
 

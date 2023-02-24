@@ -8,9 +8,10 @@
     <OutputType>Library</OutputType>
     <RootNamespace>bm98_Map</RootNamespace>
     <AssemblyName>bm98_Map</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,6 +92,7 @@
     <Compile Include="Drawing\DisplayList.cs" />
     <Compile Include="Drawing\GProc.cs" />
     <Compile Include="Drawing\IDrawing.cs" />
+    <Compile Include="MapRangeHandler.cs" />
     <Compile Include="UI\StripLabel.cs">
       <SubType>Component</SubType>
     </Compile>

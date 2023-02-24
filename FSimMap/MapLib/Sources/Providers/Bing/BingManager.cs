@@ -85,17 +85,13 @@ namespace MapLib.Sources.Providers
       /// Returns a Tile URL for this MetaData, language=currentCulture if sent empty, default language if not provided en-us 
       /// </summary>
       /// <param name="tileXY">A TileXY</param>
-      /// <param name="zoom">A ZoomLevel</param>
+      /// <param name="validZoom">A ZoomLevel, clipped to MinMax (please...)</param>
       /// <param name="language">An optional language ID</param>
       /// <returns>The TIle url</returns>
-      public string GetTileUrl( TileXY tileXY, ushort zoom, string language = "en-us" )
+      public string GetTileUrl( TileXY tileXY, ushort validZoom, string language )
       {
-        if (zoom > MaxZoom) {
-          Debug.WriteLine( $"Max Zoom exceeded: asked {zoom} - possible {MaxZoom}" );
-          zoom = (ushort)MaxZoom;
-        }
         var url = ImageUrl.Replace( c_subDomain, SubDomains[Tools.GetServerNum( tileXY, SubDomains.Length )] );
-        url = url.Replace( c_quadKey, tileXY.QuadKey( zoom ).ToString( ) ); // TileXYToQuadKey( tileXY, (int)zoomLevel ) );
+        url = url.Replace( c_quadKey, tileXY.QuadKey( validZoom ).ToString( ) ); // TileXYToQuadKey( tileXY, (int)zoomLevel ) );
         url = url.Replace( c_culture, string.IsNullOrWhiteSpace( language ) ? _currentCulture : language ); // defaults to en-us if left empty
         // remove the Key part (some may have it but does not work - or would need a session key)
         var kPos = url.LastIndexOf( "&key=" );
@@ -107,12 +103,13 @@ namespace MapLib.Sources.Providers
     } // class ImMetadata
 
 
+    // ************ STATIC CLASS IMPLEMENTATION
 
     // Key from Ini File
     private static string BingMapsKey = MapProviderBase.ProviderIni.BingKey;
     // dict of Tile URLs etc.
-    private static ConcurrentDictionary<ImageryType, ImMetadata> _metaCache = new ConcurrentDictionary<ImageryType, ImMetadata>( ); // TODO - make a Concurrent One
-                                                                                                                                    // a default one until we get the MetaData
+    private static ConcurrentDictionary<ImageryType, ImMetadata> _metaCache = new ConcurrentDictionary<ImageryType, ImMetadata>( );
+    // a default one until we get the MetaData
     public const string DefaultCopyright = "(c) Microsoft Corporation et all";
 
     // Makes a REST request and awaits the result to be returned
@@ -190,6 +187,22 @@ namespace MapLib.Sources.Providers
       return null;
     }
 
+    /// <summary>
+    /// Bing specific URL creator
+    /// </summary>
+    /// <param name="imageryType">Kind of map to retrieve</param>
+    /// <param name="tileXY">A TileXY of the requested tile</param>
+    /// <param name="validZoom">A ZoomLevel, clipped to MinMax (please...)</param>
+    /// <param name="language">A language designator (defaults to en-us)</param>
+    /// <returns>A completed URL derived from Bing retrieved access data</returns>
+    public static string MakeBingTileImageUrl( ImageryType imageryType, TileXY tileXY, ushort validZoom, string language = "en-us" )
+    {
+      var imMeta = GetImMetaData( imageryType );
+      if (imMeta == null) return ""; // cannot...
+
+      string url = imMeta.GetTileUrl( tileXY, validZoom, language );
+      return url;
+    }
 
   }
 }

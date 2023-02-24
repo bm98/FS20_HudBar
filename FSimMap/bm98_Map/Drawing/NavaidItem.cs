@@ -32,6 +32,10 @@ namespace bm98_Map.Drawing
     /// The Approach  'RNAV' (if any)
     /// </summary>
     public string RunwayApproachIdent { get; set; } = "";
+    /// <summary>
+    /// The outbound Compass Direction (NSWE) for Approaches
+    /// </summary>
+    public string CompassPoint { get; set; } = "";
 
     /// <summary>
     /// Coord of the Outbound path for waypoints
@@ -90,12 +94,24 @@ namespace bm98_Map.Drawing
             g.TranslateTransform( -textRect.Width / 2, -boxRect.Height * 1.3f, MatrixOrder.Append );// above
           }
           else if (IsWypType) {
-            /* NOT IN USE
-            // LabelEngines locations
-            textRect.X = WypLabelRectangle.X;
-            textRect.Y = WypLabelRectangle.Y;
-            */
-            g.TranslateTransform( -textRect.Width, -boxRect.Height * 1.3f, MatrixOrder.Append );// left above
+            // use the outbound leg CompasPoint to place the Wyp label
+            switch (CompassPoint) {
+              case "N":
+                g.TranslateTransform( -textRect.Width * 1.3f, -boxRect.Height / 2, MatrixOrder.Append );//  left
+                break;
+              case "E":
+                g.TranslateTransform( -textRect.Width / 2, -boxRect.Height * 1.3f, MatrixOrder.Append );//  above
+                break;
+              case "S":
+                g.TranslateTransform( textRect.Width / 2 * 0.3f, -boxRect.Height / 2, MatrixOrder.Append );//  right
+                break;
+              case "W":
+                g.TranslateTransform( -textRect.Width / 2, boxRect.Height / 2, MatrixOrder.Append );// below
+                break;
+              default:
+                g.TranslateTransform( -textRect.Width / 2, -boxRect.Height * 1.3f, MatrixOrder.Append );//  above
+                break;
+            }
           }
           else {
             g.TranslateTransform( -textRect.Width / 2, boxRect.Height / 2, MatrixOrder.Append );// below
@@ -104,6 +120,8 @@ namespace bm98_Map.Drawing
         }
       }
       g.EndContainer( save );
+
+
     }
 
 

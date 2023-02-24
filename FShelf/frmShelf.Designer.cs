@@ -122,7 +122,6 @@ namespace FShelf
       this.label15 = new System.Windows.Forms.Label();
       this.label11 = new System.Windows.Forms.Label();
       this.label10 = new System.Windows.Forms.Label();
-      this.cbxCfgIFRwaypoints = new System.Windows.Forms.CheckBox();
       this.cbxCfgPrettyMetar = new System.Windows.Forms.CheckBox();
       this.btCfgSelFolder = new System.Windows.Forms.Button();
       this.txCfgShelfFolder = new System.Windows.Forms.TextBox();
@@ -356,6 +355,7 @@ namespace FShelf
       // 
       // aMap
       // 
+      this.aMap.AutoRange = false;
       this.aMap.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(16)))));
       this.aMap.CausesValidation = false;
       this.aMap.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1096,7 +1096,6 @@ namespace FShelf
       this.tabConfig.Controls.Add(this.label15);
       this.tabConfig.Controls.Add(this.label11);
       this.tabConfig.Controls.Add(this.label10);
-      this.tabConfig.Controls.Add(this.cbxCfgIFRwaypoints);
       this.tabConfig.Controls.Add(this.cbxCfgPrettyMetar);
       this.tabConfig.Controls.Add(this.btCfgSelFolder);
       this.tabConfig.Controls.Add(this.txCfgShelfFolder);
@@ -1121,7 +1120,7 @@ namespace FShelf
       // 
       this.cbxCfgAcftWind.AutoSize = true;
       this.cbxCfgAcftWind.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.cbxCfgAcftWind.Location = new System.Drawing.Point(249, 287);
+      this.cbxCfgAcftWind.Location = new System.Drawing.Point(249, 262);
       this.cbxCfgAcftWind.Name = "cbxCfgAcftWind";
       this.cbxCfgAcftWind.Size = new System.Drawing.Size(154, 25);
       this.cbxCfgAcftWind.TabIndex = 32;
@@ -1242,7 +1241,7 @@ namespace FShelf
       // 
       this.cbxCfgAcftTrack.AutoSize = true;
       this.cbxCfgAcftTrack.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.cbxCfgAcftTrack.Location = new System.Drawing.Point(23, 318);
+      this.cbxCfgAcftTrack.Location = new System.Drawing.Point(23, 293);
       this.cbxCfgAcftTrack.Name = "cbxCfgAcftTrack";
       this.cbxCfgAcftTrack.Size = new System.Drawing.Size(217, 25);
       this.cbxCfgAcftTrack.TabIndex = 19;
@@ -1253,7 +1252,7 @@ namespace FShelf
       // 
       this.cbxCfgAcftRange.AutoSize = true;
       this.cbxCfgAcftRange.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.cbxCfgAcftRange.Location = new System.Drawing.Point(23, 287);
+      this.cbxCfgAcftRange.Location = new System.Drawing.Point(23, 262);
       this.cbxCfgAcftRange.Name = "cbxCfgAcftRange";
       this.cbxCfgAcftRange.Size = new System.Drawing.Size(199, 25);
       this.cbxCfgAcftRange.TabIndex = 18;
@@ -1264,7 +1263,7 @@ namespace FShelf
       // 
       this.label16.AutoSize = true;
       this.label16.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label16.Location = new System.Drawing.Point(19, 224);
+      this.label16.Location = new System.Drawing.Point(19, 199);
       this.label16.Name = "label16";
       this.label16.Size = new System.Drawing.Size(258, 21);
       this.label16.TabIndex = 17;
@@ -1273,7 +1272,7 @@ namespace FShelf
       // comboCfgRunwayLength
       // 
       this.comboCfgRunwayLength.FormattingEnabled = true;
-      this.comboCfgRunwayLength.Location = new System.Drawing.Point(23, 248);
+      this.comboCfgRunwayLength.Location = new System.Drawing.Point(23, 223);
       this.comboCfgRunwayLength.Name = "comboCfgRunwayLength";
       this.comboCfgRunwayLength.Size = new System.Drawing.Size(390, 33);
       this.comboCfgRunwayLength.TabIndex = 16;
@@ -1310,17 +1309,6 @@ namespace FShelf
       this.label10.Size = new System.Drawing.Size(144, 21);
       this.label10.TabIndex = 12;
       this.label10.Text = "Map Decorations:";
-      // 
-      // cbxCfgIFRwaypoints
-      // 
-      this.cbxCfgIFRwaypoints.AutoSize = true;
-      this.cbxCfgIFRwaypoints.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.cbxCfgIFRwaypoints.Location = new System.Drawing.Point(23, 196);
-      this.cbxCfgIFRwaypoints.Name = "cbxCfgIFRwaypoints";
-      this.cbxCfgIFRwaypoints.Size = new System.Drawing.Size(207, 25);
-      this.cbxCfgIFRwaypoints.TabIndex = 11;
-      this.cbxCfgIFRwaypoints.Text = "Show Airport IFR Navaids";
-      this.cbxCfgIFRwaypoints.UseVisualStyleBackColor = true;
       // 
       // cbxCfgPrettyMetar
       // 
@@ -1577,7 +1565,6 @@ namespace FShelf
     private System.Windows.Forms.Label lblMetArr;
     private System.Windows.Forms.Label lblMetDep;
     private System.Windows.Forms.Label label10;
-    private System.Windows.Forms.CheckBox cbxCfgIFRwaypoints;
     private bm98_Map.UC_Map aMap;
     private System.Windows.Forms.Label label15;
     private System.Windows.Forms.Label label11;

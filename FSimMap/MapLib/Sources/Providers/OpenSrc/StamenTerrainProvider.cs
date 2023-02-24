@@ -23,45 +23,45 @@ namespace MapLib.Sources.Providers
     private StamenTerrainProvider( )
       : base( MapProvider.Stamen_Terrain )
     {
-      RefererUrl = UrlFormat;
+      RefererUrl = DefaultUrl;
       Copyright = string.Format( "Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.", DateTime.Today.Year );
       // check for Overrides
       if (!string.IsNullOrWhiteSpace( ProviderIni.ProviderHttp( MapProvider ) )) {
-        UrlFormat = ProviderIni.ProviderHttp( MapProvider );
+        RefererUrl = ProviderIni.ProviderHttp( MapProvider );
       }
+      Name = ProviderIni.ProviderName( MapProvider );
     }
 
-    #region ProviderBase Members
+    /*
+      Many applications and libraries understand the notion of map URL templates. These are ours:
+          https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png
+          https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg
+          https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg
+      Multiple subdomains can be also be used: https://stamen-tiles-{S}.a.ssl.fastly.net
+      JavaScript can be loaded from https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js.
+      If you need protocol-agnostic URLs, use //stamen-tiles-{s}.a.ssl.fastly.net/, as that endpoint will work for both SSL and non-SSL connections.     
+     */
+    // default URL
+    private const string DefaultUrl = "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg";
 
-    public override string ContentID => UrlFormat; // use the URL as ID
+    #region ProviderBase Members
 
     public override Guid Id => new Guid( "BEAB409B-6ED0-443F-B8E3-E6CC6F419F76" );
 
     public override string Name { get; } = "Stamen Terrain Map";
 
-    public override MapImage GetTileImage( MapImageID mapImageID )
+    protected override MapImage GetTileImage( MapImageID mapImageID )
     {
       if (!this.ProviderEnabled) return null;
 
-      string url = MakeTileImageUrl( mapImageID.TileXY, mapImageID.ZoomLevel, string.Empty );
+      // supports server in the URL
+      char letter = "abcd"[Tools.GetServerNum( mapImageID.TileXY, 4 )];
+      string url = MakeTileImageUrl( mapImageID.TileXY, mapImageID.ZoomLevel, Convert.ToString( letter ), "" );
       return base.GetTileImageUsingHttp( url, mapImageID );
     }
 
     #endregion
 
-    private readonly string UrlFormat = "https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg";
-
-    string MakeTileImageUrl( TileXY tileXY, ushort zoom, string language )
-    {
-      string url = UrlFormat;
-
-      url = url.Replace( "{z}", "{0}" );
-      url = url.Replace( "{x}", "{1}" );
-      url = url.Replace( "{y}", "{2}" );
-
-      return string.Format( url, zoom, tileXY.X, tileXY.Y );
-
-    }
   }
 }
 

@@ -15,18 +15,18 @@ namespace MapLib.Sources.MemCache
   /// 
   /// Reads are performed using a string as Key to retrieve an Item
   /// 
-  /// https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlock?view=netframework-4.7.2
+  /// https://learn.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim?view=netframework-4.7.2
   /// 
   /// </summary>
   internal class CacheV2
   {
     // the cache
-    private const int c_MaxNumberEntries = 400; // about 6 Matrices a 8*8 tiles
+    private const int c_MaxNumberEntries = 800; // about 12 Matrices a 8*8 tiles  (about 25kB per Tile => 20MB)
     private readonly int c_WaterMark = (int)(c_MaxNumberEntries * 0.8); // watermark is 80%
     // Define the shared resource protected by the ReaderWriterLock.
     static Dictionary<string, ICacheItem> _cache = new Dictionary<string, ICacheItem>( );
     // access control
-    static ReaderWriterLock rwl = new ReaderWriterLock( );
+    static ReaderWriterLockSlim rwl = new ReaderWriterLockSlim( );
 
 
 #if DEBUG
@@ -45,25 +45,29 @@ namespace MapLib.Sources.MemCache
     /// <param name="timeout_ms">Timeout ms (default is wait)</param>
     public void TryAdd( string key, ICacheItem item, int timeout_ms = 0 )
     {
-      try {
-        rwl.AcquireWriterLock( timeout_ms );
+      if (rwl.TryEnterUpgradeableReadLock( timeout_ms )) {
         try {
-          // It's safe for this thread to access from the shared resource.
           if (!_cache.ContainsKey( key )) {
-            item.TimeStamp = DateTime.Now;
-            _cache.Add( key, item );
-          }
+            rwl.EnterWriteLock( );
+            try {
+              item.TimeStamp = DateTime.Now;
+              _cache.Add( key, item );
 #if DEBUG
-          Interlocked.Increment( ref writes );
+              Interlocked.Increment( ref writes );
 #endif
+            }
+            finally {
+              rwl.ExitWriteLock( );
+            }
+            return;
+          }
         }
         finally {
           // Ensure that the lock is released.
-          rwl.ReleaseWriterLock( );
+          rwl.ExitUpgradeableReadLock( );
         }
       }
-      catch (ApplicationException) {
-        // The writer lock request timed out.
+      else {
 #if DEBUG
         Interlocked.Increment( ref writerTimeouts );
 #endif
@@ -79,10 +83,8 @@ namespace MapLib.Sources.MemCache
     public bool Contains( string key, int timeout_ms = 0 )
     {
       bool ret = false;
-      try {
-        rwl.AcquireWriterLock( timeout_ms );
+      if (rwl.TryEnterReadLock( timeout_ms )) {
         try {
-          // It's safe for this thread to access from the shared resource.
           ret = _cache.ContainsKey( key );
 #if DEBUG
           Interlocked.Increment( ref writes );
@@ -90,13 +92,12 @@ namespace MapLib.Sources.MemCache
         }
         finally {
           // Ensure that the lock is released.
-          rwl.ReleaseWriterLock( );
+          rwl.ExitReadLock( );
         }
       }
-      catch (ApplicationException) {
-        // The writer lock request timed out.
+      else {
 #if DEBUG
-        Interlocked.Increment( ref writerTimeouts );
+        Interlocked.Increment( ref readerTimeouts );
 #endif
       }
       // exit only here..
@@ -114,26 +115,22 @@ namespace MapLib.Sources.MemCache
     {
       bool ret = false;
       item = null;
-      try {
-        rwl.AcquireReaderLock( timeout_ms );
+      if (rwl.TryEnterReadLock( timeout_ms )) {
         try {
-          // It is safe for this thread to read from the shared resource.
           if (_cache.TryGetValue( key, out ICacheItem value )) {
             item = value;
             ret = true;
           }
-          //Display( "reads resource value " + resource );
 #if DEBUG
           Interlocked.Increment( ref reads );
 #endif
         }
         finally {
           // Ensure that the lock is released.
-          rwl.ReleaseReaderLock( );
+          rwl.ExitReadLock( );
         }
       }
-      catch (ApplicationException) {
-        // The reader lock request timed out.
+      else {
 #if DEBUG
         Interlocked.Increment( ref readerTimeouts );
 #endif
@@ -147,10 +144,8 @@ namespace MapLib.Sources.MemCache
     /// </summary>
     public void Remove_All( int timeout_ms = 0 )
     {
-      try {
-        rwl.AcquireWriterLock( timeout_ms );
+      if (rwl.TryEnterWriteLock( timeout_ms )) {
         try {
-          // It's safe for this thread to access from the shared resource.
           foreach (var entry in _cache) {
             if (_cache.TryGetValue( entry.Key, out ICacheItem _i )) {
               _i.Dispose( );
@@ -163,10 +158,10 @@ namespace MapLib.Sources.MemCache
         }
         finally {
           // Ensure that the lock is released.
-          rwl.ReleaseWriterLock( );
+          rwl.ExitWriteLock( );
         }
       }
-      catch (ApplicationException) {
+      else {
         // The writer lock request timed out.
 #if DEBUG
         Interlocked.Increment( ref writerTimeouts );
@@ -180,27 +175,34 @@ namespace MapLib.Sources.MemCache
     /// </summary>
     public void Remove_OlderThan( DateTime dateTime, int timeout_ms = 0 )
     {
-      try {
-        rwl.AcquireWriterLock( timeout_ms );
+      if (rwl.TryEnterUpgradeableReadLock( timeout_ms )) {
         try {
-          // It's safe for this thread to access from the shared resource.
           var items = _cache.Where( x => x.Value.TimeStamp < dateTime );
-          foreach (var entry in items) {
-            if (_cache.TryGetValue( entry.Key, out ICacheItem _i )) {
-              _i.Dispose( );
-              _cache.Remove( entry.Key );
-            }
-          }
+          if (items.Count( ) > 0) {
+            rwl.EnterWriteLock( );
+            try {
+              foreach (var entry in items) {
+                if (_cache.TryGetValue( entry.Key, out ICacheItem _i )) {
+                  _i.Dispose( );
+                  _cache.Remove( entry.Key );
+                }
+              }
 #if DEBUG
-          Interlocked.Increment( ref writes );
+              Interlocked.Increment( ref writes );
 #endif
+            }
+            finally {
+              rwl.ExitWriteLock( );
+            }
+            return;
+          }
         }
         finally {
           // Ensure that the lock is released.
-          rwl.ReleaseWriterLock( );
+          rwl.ExitUpgradeableReadLock( );
         }
       }
-      catch (ApplicationException) {
+      else {
         // The writer lock request timed out.
 #if DEBUG
         Interlocked.Increment( ref writerTimeouts );
@@ -214,44 +216,47 @@ namespace MapLib.Sources.MemCache
     /// </summary>
     public void MaintainCacheSize( int timeout_ms = 0 )
     {
-      try {
-        rwl.AcquireWriterLock( timeout_ms );
+      if (rwl.TryEnterUpgradeableReadLock( timeout_ms )) {
         try {
-          // It's safe for this thread to access from the shared resource.
           if (_cache.Count > c_MaxNumberEntries) {
             // get below watermark
             int itemsToRemove = _cache.Count - c_WaterMark;
             var rItems = _cache.OrderBy( x => x.Value.TimeStamp );
             Debug.WriteLine( $"MemCacheItemCat.MaintainCacheSize: must remove {itemsToRemove} items" );
-            foreach (var entry in rItems) {
-              if (_cache.TryGetValue( entry.Key, out ICacheItem _i )) {
-                _i.Dispose( );
-                _cache.Remove( entry.Key );
-                itemsToRemove--;
+            if (rItems.Count( ) > 0) {
+              rwl.EnterWriteLock( );
+              try {
+                foreach (var entry in rItems) {
+                  if (_cache.TryGetValue( entry.Key, out ICacheItem _i )) {
+                    _i.Dispose( );
+                    _cache.Remove( entry.Key );
+                    itemsToRemove--;
+                  }
+                  if (itemsToRemove <= 0) break;
+                }
+#if DEBUG
+                Interlocked.Increment( ref writes );
+#endif
               }
-              if (itemsToRemove <= 0) break;
+              finally {
+                rwl.ExitWriteLock( );
+              }
+              return;
             }
           }
-#if DEBUG
-          Interlocked.Increment( ref writes );
-#endif
         }
         finally {
           // Ensure that the lock is released.
-          rwl.ReleaseWriterLock( );
+          rwl.ExitUpgradeableReadLock( );
         }
       }
-      catch (ApplicationException) {
+      else {
         // The writer lock request timed out.
 #if DEBUG
         Interlocked.Increment( ref writerTimeouts );
 #endif
       }
-
-
-
     }
-
 
   }
 }

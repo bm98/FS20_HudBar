@@ -15,7 +15,7 @@ namespace MapLib.Sources.DiskCache
   internal class DiskSource : IImgSource
   {
     // max #tiles to retain in cache (about 25kB per Tile - depends on the source image format)
-    private const int c_maxRecNumber = 64_000 / 25; // ~64MB -> 2560 tiles
+    private const int c_maxRecNumber = 128_000 / 25; // ~128MB -> 5120 tiles per Provider
     // #days to retain cached records
     private const int c_retentionDays = 100;
 
@@ -84,15 +84,13 @@ namespace MapLib.Sources.DiskCache
       Debug.WriteLine( $"DiskSource.MaintainCacheSize: started, {c_retentionDays} days retention " );
 
       foreach (MapProvider provider in Enum.GetValues( typeof( MapProvider ) )) {
-        int deletedRecords = _cache.DeleteByMaxRecNumber( c_maxRecNumber, provider );
-        Debug.WriteLine( $"DiskSource.MaintainCacheSize: deleted {deletedRecords} records from {provider}" );
-      }
-      // cleanup old stuff if there is still any..
-      foreach (MapProvider provider in Enum.GetValues( typeof( MapProvider ) )) {
         int deletedRecords = _cache.DeleteOlderThan( oldDate, provider );
         Debug.WriteLine( $"DiskSource.MaintainCacheSize: deleted {deletedRecords} records from {provider}" );
       }
-
+      foreach (MapProvider provider in Enum.GetValues( typeof( MapProvider ) )) {
+        int deletedRecords = _cache.DeleteByMaxRecNumber( c_maxRecNumber, provider );
+        Debug.WriteLine( $"DiskSource.MaintainCacheSize: deleted {deletedRecords} records from {provider}" );
+      }
     }
 
   }

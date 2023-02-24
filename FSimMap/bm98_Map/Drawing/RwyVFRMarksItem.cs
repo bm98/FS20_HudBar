@@ -33,6 +33,10 @@ namespace bm98_Map.Drawing
     /// </summary>
     public Font RangeFont { get; set; } = FontsAndColors.FtSmall; // default - must be set 
     /// <summary>
+    /// Heading Pen for incoming lines when no VFR deco is shown (ladder)
+    /// </summary>
+    public Pen NoDecoPen { get; set; } = Pens.Pink; // default - must be set 
+    /// <summary>
     /// Main Heading Pen for incoming lines and Left hand pattern
     /// </summary>
     public Pen VfrPenMain { get; set; } = Pens.Pink; // default - must be set 
@@ -143,7 +147,7 @@ namespace bm98_Map.Drawing
         ; // TODO - odd case to handle
         return;
       }
-      rwyLen_px = (rwyLen_px < 1f) ? 1f : rwyLen_px;
+      rwyLen_px = (rwyLen_px < 2f) ? 2f : rwyLen_px;
 
       // calculate the drawing angle of the runway endpoint to place the Numbers (Headings are not matching the drawn items due to mag var)
       // angle between two vectors (where (x2|y2) is set as unity vector pointing North)
@@ -162,18 +166,18 @@ namespace bm98_Map.Drawing
       var rMid = new Point( start_px.X + (int)((end_px.X - start_px.X) / 2.0), start_px.Y + (int)((end_px.Y - start_px.Y) / 2.0) );
       // calculates a point 1 nm in direction of North to calibrate the length
       var out1nm = MapToPixel( Start.DestinationPoint( 1, 0, ConvConsts.EarthRadiusNm ) );
-      int dist = (int)start_px.Distance( out1nm ); // 1 nm vector length in pixels
+      int dist1nm = (int)start_px.Distance( out1nm ); // 1 nm vector length in pixels
       // fine dash for the accross runway center
       var pendash = new Pen( Color.Black, 1f ) { DashStyle = DashStyle.Dot };
 
       // traffic pattern shading 0.5..1nm
       GraphicsPath pattern = new GraphicsPath( );
-      pattern.AddLine( new PointF( dist / 2, 0 ), new PointF( dist, 0 ) );
-      pattern.AddLine( new PointF( dist, 0 ), new PointF( dist, rwyLen_px / 2f + dist ) );
-      pattern.AddLine( new PointF( dist, rwyLen_px / 2f + dist ), new PointF( dist / 2f, rwyLen_px / 2f + dist / 2f ) );
-      pattern.AddLine( new PointF( dist / 2f, rwyLen_px / 2f + dist / 2f ), new PointF( dist / 2, 0 ) );
+      pattern.AddLine( new PointF( dist1nm / 2, 0 ), new PointF( dist1nm, 0 ) );
+      pattern.AddLine( new PointF( dist1nm, 0 ), new PointF( dist1nm, rwyLen_px / 2f + dist1nm ) );
+      pattern.AddLine( new PointF( dist1nm, rwyLen_px / 2f + dist1nm ), new PointF( dist1nm / 2f, rwyLen_px / 2f + dist1nm / 2f ) );
+      pattern.AddLine( new PointF( dist1nm / 2f, rwyLen_px / 2f + dist1nm / 2f ), new PointF( dist1nm / 2, 0 ) );
       // 2nm circle box
-      Rectangle rect4 = new Rectangle( new Point( -dist * 4 / 2, -dist * 4 / 2 ), new Size( dist * 4, dist * 4 ) );
+      Rectangle rect4 = new Rectangle( new Point( -dist1nm * 4 / 2, -dist1nm * 4 / 2 ), new Size( dist1nm * 4, dist1nm * 4 ) );
 
       var saveDrawing = g.BeginContainer( );
       {
@@ -190,22 +194,29 @@ namespace bm98_Map.Drawing
             var psave = VfrPenMain.DashStyle;
             VfrPenMain.DashStyle = DashStyle.Dot;
             VfrPenAlt.DashStyle = DashStyle.Dot;
-            g.DrawLine( VfrPenMain, new Point( 0, dist * 5 ), new Point( 0, (int)rwyLen_px ) ); // fly in
-            g.DrawPie( VfrPenMain, new Rectangle( new Point( -30, (int)rwyLen_px - 60 ), new Size( 60, 120 ) ), +90 - 30, 60 );// arrow, kind of
-            g.DrawLine( VfrPenAlt, new Point( 0, -dist * 5 ), new Point( 0, -(int)rwyLen_px ) ); // fly out
+//            g.DrawLine( VfrPenMain, new Point( 0, dist1nm * 5 ), new Point( 0, (int)rwyLen_px ) ); // fly in
+//            g.DrawPie( VfrPenMain, new Rectangle( new Point( -30, (int)rwyLen_px - 60 ), new Size( 60, 120 ) ), +90 - 30, 60 );// arrow, kind of
+            g.DrawLine( VfrPenAlt, new Point( 0, -dist1nm * 5 ), new Point( 0, -(int)rwyLen_px ) ); // fly out
             VfrPenMain.DashStyle = psave;
             VfrPenAlt.DashStyle = psave;
           }
-          else {
+
+          {
             // Only this part is SHOWN when Full Deco is OFF (an arrow pointing towards the runway)
-            g.DrawLine( VfrPenMain, new Point( 0, dist * 5 ), new Point( 0, (int)rwyLen_px ) ); // fly in
-            g.DrawPie( VfrPenMain, new Rectangle( new Point( -30, (int)rwyLen_px - 60 ), new Size( 60, 120 ) ), +90 - 30, 60 );// arrow, kind of
+            float lineStart = rwyLen_px / 2f;
+            float lineEnd = lineStart + dist1nm * 16f;
+            g.DrawLine( NoDecoPen, new PointF( 0, lineStart ), new PointF( 0, lineEnd ) ); // fly in
+            g.DrawLine( NoDecoPen, new PointF( -10, lineStart ), new PointF( 10, lineStart ) ); // step 2nm
+            g.DrawLine( NoDecoPen, new PointF( -30, lineStart + 2 * dist1nm ), new PointF( 30, lineStart + 2 * dist1nm ) ); // step 2nm
+            g.DrawLine( NoDecoPen, new PointF( -30, lineStart + 4 * dist1nm ), new PointF( 30, lineStart + 4 * dist1nm ) ); // step 4nm
+            g.DrawLine( NoDecoPen, new PointF( -30, lineStart + 8 * dist1nm ), new PointF( 30, lineStart + 8 * dist1nm ) ); // step 8nm
+            g.DrawLine( NoDecoPen, new PointF( -30, lineEnd ), new PointF( 30, lineEnd ) ); // step end
           }
 
           if (ShowFullDecoration) {
             // Runway accross dashed lines
-            g.DrawLine( pendash, new Point( -dist * 5, 0 ), new Point( -(int)rwyLen_px, 0 ) );
-            g.DrawLine( pendash, new Point( (int)rwyLen_px, 0 ), new Point( dist * 5, 0 ) );
+            g.DrawLine( pendash, new Point( -dist1nm * 5, 0 ), new Point( -(int)rwyLen_px, 0 ) );
+            g.DrawLine( pendash, new Point( (int)rwyLen_px, 0 ), new Point( dist1nm * 5, 0 ) );
             // Runway 2nm circle
             g.DrawEllipse( Pen, rect4 );
             g.RotateTransform( 90 );
@@ -220,7 +231,7 @@ namespace bm98_Map.Drawing
           {
             // rotate so the rwy point upwards for the incomming flight
             g.RotateTransform( (float)startAngle );
-            PaintRwyItems( g, dist, rwyLen_px, StartHeading_degm, StartRunwayIdent, pattern, true );
+            PaintRwyItems( g, dist1nm, rwyLen_px, StartHeading_degm, StartRunwayIdent, pattern, true );
           }
           g.EndContainer( saveRwy );
 
@@ -229,7 +240,7 @@ namespace bm98_Map.Drawing
             saveRwy = g.BeginContainer( );
             {
               g.RotateTransform( (float)Geo.Wrap360( startAngle + 180 ) );
-              PaintRwyItems( g, dist, rwyLen_px, EndHeading_degm, EndRunwayIdent, pattern, false );
+              PaintRwyItems( g, dist1nm, rwyLen_px, EndHeading_degm, EndRunwayIdent, pattern, false );
             }
             g.EndContainer( saveRwy );
           }

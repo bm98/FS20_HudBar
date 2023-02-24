@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CoordLib;
+using CoordLib.MercatorTiles;
 using MapLib.Service;
 
 namespace MapLib.Sources.Providers
@@ -132,6 +133,13 @@ namespace MapLib.Sources.Providers
       _ = OSM_OpenStreetMap.Instance;
       _ = OpenTopoProvider.Instance;
       _ = StamenTerrainProvider.Instance;
+      // init ChartBundle
+      _ = CB_WAC.Instance;
+      _ = CB_SEC.Instance;
+      _ = CB_TAC.Instance;
+      _ = CB_ENRA.Instance;
+      _ = CB_ENRL.Instance;
+      _ = CB_ENRH.Instance;
       // init ESRI/ARCGIS
       _ = ESRI_Imagery.Instance;
       _ = ESRI_StreetMap.Instance;
@@ -144,6 +152,9 @@ namespace MapLib.Sources.Providers
       _ = UserTiles1Provider.Instance;
       _ = UserTiles2Provider.Instance;
       _ = UserTiles3Provider.Instance;
+      _ = UserTiles4Provider.Instance;
+      _ = UserTiles5Provider.Instance;
+      _ = UserTiles6Provider.Instance;
 
       // initialized
       _initStatus = true;
@@ -204,12 +215,51 @@ namespace MapLib.Sources.Providers
       s_providerCat.Add( MapProvider, this );
     }
 
-    #region Abstract Templates
+    /// <summary>
+    /// Our internal Name
+    /// </summary>
+    public MapProvider MapProvider { get; private set; } = MapProvider.DummyProvider;
 
     /// <summary>
-    /// A content ID string - where the same content shall share the same ID
+    /// Minimum level of zoom for this Map
     /// </summary>
-    public abstract string ContentID { get; }
+    public int MinZoom { get; protected set; } = 1; // LIMITED  BY POLICY
+
+    /// <summary>
+    /// Maximum level of zoom for this Map
+    /// </summary>
+    public int MaxZoom { get; protected set; } = 15; // LIMITED BY POLICY not server (may go down to 17)
+
+    /// <summary>
+    /// Get; Set: Referer HTTP header.
+    /// </summary>
+    public string RefererUrl { get; protected set; } = "";
+
+    /// <summary>
+    /// Map Provider Copyright string
+    /// </summary>
+    public string Copyright { get; protected set; } = "";
+
+    /// <summary>
+    /// True if tile origin at BottomLeft, WMS-C
+    /// </summary>
+    public bool InvertedAxisY { get; protected set; } = false;
+
+    /// <summary>
+    /// Language to capture localized versions (if available)
+    /// must be a 2 letter lang code (defaults to 'en')
+    /// </summary>
+    public string LanguageStr { get; private set; } = "en";
+
+    /// <summary>
+    /// return the ZoomValue within the Providers limits
+    /// </summary>
+    /// <param name="zoom">Desired zoom level</param>
+    /// <returns>Zoom level clipped within limits</returns>
+    protected ushort ZoomCheck( ushort zoom ) => (ushort)Math.Min( Math.Max( zoom, MinZoom ), MaxZoom );
+
+
+    #region Abstract Templates
 
     /// <summary>
     /// Unique provider id
@@ -232,47 +282,35 @@ namespace MapLib.Sources.Providers
     /// </summary>
     /// <param name="mapImageID">The Map Image to retrive</param>
     /// <returns>A MapImage or null</returns>
-    public abstract MapImage GetTileImage( MapImageID mapImageID );
+    protected abstract MapImage GetTileImage( MapImageID mapImageID );
 
     #endregion
 
-    #region Overrideable Properties
+    #region Overrideable Properties / Methods
+
+    // A distinct provider would need to change those...
 
     /// <summary>
-    /// Our internal Name
+    /// Generic URL constructor for basic URLs which require subsitituting of {x},{y},{z}, optional {s} and {l}
     /// </summary>
-    public virtual MapProvider MapProvider { get; private set; } = MapProvider.DummyProvider;
+    /// <param name="tileXY">A TileXY of the requested tile {x},{y}</param>
+    /// <param name="zoom">A zoomlevel {z}</param>
+    /// <param name="server">A server string (if supported) {s}</param>
+    /// <param name="language">A language designator (if supported) {l}</param>
+    /// <returns>A completed URL derived from RefererUrl</returns>
+    protected virtual string MakeTileImageUrl( TileXY tileXY, ushort zoom, string server, string language )
+    {
+      string url = RefererUrl;
+      ushort z = ZoomCheck( zoom );
+      url = url.Replace( "{x}", $"{tileXY.X}" );
+      url = url.Replace( "{y}", $"{tileXY.Y}" );
+      url = url.Replace( "{z}", $"{z}" );
 
-    /// <summary>
-    /// Minimum level of zoom for this Map
-    /// </summary>
-    public virtual int MinZoom { get; protected set; } = 0;// A distinct provider would need to change this...
+      url = url.Replace( "{s}", $"{server}" );
+      url = url.Replace( "{l}", $"{language}" );
 
-    /// <summary>
-    /// Maximum level of zoom for this Map
-    /// </summary>
-    public virtual int? MaxZoom { get; protected set; } = 17;// A distinct provider would need to change this...
-
-    /// <summary>
-    /// Get; Set: Referer HTTP header.
-    /// </summary>
-    public virtual string RefererUrl { get; protected set; } = string.Empty;// A distinct provider would need to change this...
-
-    /// <summary>
-    /// Map Provider Copyright string
-    /// </summary>
-    public virtual string Copyright { get; protected set; } = string.Empty;// A distinct provider would need to change this...
-
-    /// <summary>
-    /// True if tile origin at BottomLeft, WMS-C
-    /// </summary>
-    public virtual bool InvertedAxisY { get; protected set; } = false; // A distinct provider would need to change this...
-
-    /// <summary>
-    /// Language to capture localized versions (if available)
-    /// must be a 2 letter lang code (defaults to 'en')
-    /// </summary>
-    public virtual string LanguageStr { get; private set; } = "en";
+      return url;
+    }
 
     #endregion
 
@@ -363,7 +401,7 @@ namespace MapLib.Sources.Providers
           }
         }
         else {
-          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: Response Exception:\n{ex}" );
+          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: Response Exception:\n{ex}\nURL:${url}" );
         }
       }
 

@@ -1,5 +1,5 @@
 FS20_FlightBag V 0.63 - Build 63 BETA
-(c) M. Burri - 17-Feb-2023
+(c) M. Burri - 24-Feb-2023
 
 Contains files:
 
@@ -51,7 +51,7 @@ x86\SQLite.Interop.dll      3rd party data management library 32bit C-library
 
 ReadMe-FlightBag.txt                   This file
 
-MSFS Hud Bar (.Net 4.7.2)
+MSFS Hud Bar (.Net 4.8)
 
 Extract the Zip File into a folder and hit FS20_FlighBag.exe to run it
 
@@ -67,13 +67,21 @@ Changelog:
 
 V 0.63-B63
 - RERUN FacilityDataLoader !!!
+- CHECK MapLibProvider.ini  to enable chartbundle tiles (only FAA coverage)
 
 - Add Approach panel and selection to Map (Runway Table)
-- Update OpenTopoMap URL and timeout for map retrieval set to 60sec
+- Add AutoRange feature for zooming the map
+- Add ChartsBundle.com Tile servers (disabled by default, use MapLibProvider.ini)
+- Add UserTileServer 4..6 to be used
+- Add Selected runway 'ladder' line (replaces the blue dotted arrow)
+- Update Rwy and Approach Panel selection readability
+- Update OpenTopoMap, Stamen URL and timeout for map retrieval set to 60sec
 - Fix Exception when SimBrief Image/Doc Source is disabled (from Website)
 - FacilityDataLoader: major rework for Approaches and Navigraph merges
 - Refactoring, consolidation for commonly used stuff (dNetBm98 library now)
 - Update QuickGuide
+
+- Update to .Net Framework 4.8
 
 V 0.62-B62
 - Fix Allow 4..7 digit SimBrief Pilot ID (no clear doc what it is found...)

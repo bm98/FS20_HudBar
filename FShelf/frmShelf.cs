@@ -462,8 +462,8 @@ namespace FShelf
       aMap.ShowVFRMarks = AppSettings.Instance.VFRmarks;
       aMap.ShowAptMarks = AppSettings.Instance.AptMarks;
       aMap.ShowTrackedAircraft = AppSettings.Instance.AcftMark;
+      aMap.AutoRange = AppSettings.Instance.AutoRange;
       // config settings
-      cbxCfgIFRwaypoints.Checked = AppSettings.Instance.IFRwaypoints;
       cbxCfgAcftRange.Checked = AppSettings.Instance.AcftRange;
       cbxCfgAcftWind.Checked = AppSettings.Instance.AcftWind;
       cbxCfgAcftTrack.Checked = AppSettings.Instance.AcftTrack;
@@ -570,7 +570,6 @@ namespace FShelf
       // save last known config and Airport settings for the next start
       AppSettings.Instance.WeightLbs = rbKLbs.Checked;
       AppSettings.Instance.NotePadText = rtbNotes.Text;
-      AppSettings.Instance.IFRwaypoints = cbxCfgIFRwaypoints.Checked;
       AppSettings.Instance.MinRwyLengthCombo = comboCfgRunwayLength.SelectedIndex;
       AppSettings.Instance.DepICAO = DEP_Airport;
       AppSettings.Instance.ArrICAO = ARR_Airport;
@@ -582,6 +581,7 @@ namespace FShelf
       AppSettings.Instance.VFRmarks = aMap.ShowVFRMarks;
       AppSettings.Instance.AptMarks = aMap.ShowAptMarks;
       AppSettings.Instance.AcftMark = aMap.ShowTrackedAircraft;
+      AppSettings.Instance.AutoRange = aMap.AutoRange;
       // config settings
       AppSettings.Instance.PrettyMetar = cbxCfgPrettyMetar.Checked;
       AppSettings.Instance.AcftRange = cbxCfgAcftRange.Checked;
@@ -652,7 +652,7 @@ namespace FShelf
       }
 
       // APT Approach Waypoints, VORs and NDBs if set in Config
-      if (_airport != null && cbxCfgIFRwaypoints.Checked) {
+      if (_airport != null /* && cbxCfgIFRwaypoints.Checked */) {
         nList.AddRange( _airport.Navaids.Where( x => x.IsApproach ) );
       }
 

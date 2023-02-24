@@ -54,7 +54,7 @@ namespace MapLib
     }
 
     /// <summary>
-    /// Get: a position index based 'randomized' to access not the same setver all the time
+    /// Get: a position index based 'randomized' to access not the same server all the time
     ///  Returns 0...(max-1)
     /// </summary>
     /// <param name="tileXY">A TileXY</param>

@@ -5,7 +5,8 @@
 ;  /// BingKey=KEY
 ;  /// 
 ;  /// [PROVIDER]
-;  /// Enabled=TRUE
+;  /// Name=a name
+;  /// Enabled=true / false
 ;  /// Http=URL
 ;
 ; Text after a semicolon is treated as comment
@@ -16,16 +17,18 @@
 ; 
 ; In each providers section:
 ;   Set 'Enabled=true' to be able to use it
+;   Change Name=new name     if you don't like it
+;
 ;   Uncomment 'Http=http....' to override the URL used to retrieve map tiles
 ;    -> If unsure, leave it alone (The App may break or not respond any longer)
 ;
 ; For URLs:
 ;   There are 3 placeholders for {x},{y},{z} (xy tile coords + zoom)
-;   When multiple server instances are available - {s} can be used
+;   When multiple server subdomains are available - {s} can be used
 ; For some you need an accees key (personal, subscription etc)
 ;   Key=sadfsdfsdf
 ;
-;  NOTE there is not privacy or protection when typing the key here
+;  NOTE there is no privacy or protection when typing the key here
 ;       the key is only used in the tile loading HTTP request as per provider guidance
 ;
 ;
@@ -38,17 +41,12 @@ DefaultProvider=OSM_OpenStreetMap    ; OSM_OpenStreetMap is the free default pro
 ; Here comes your Bing Map Key if you want to use Bing Maps
 BingKey=<YOUR KEY>
 
-;DefaultProvider=Bing_Imagery
-;DefaultProvider=Bing_ImageryLabels
-;DefaultProvider=Bing_OStreetMap
 
-;DefaultProvider=ESRI_Imagery
-;DefaultProvider=ESRI_StreetMap
-;DefaultProvider=ESRI_WorldTopo
-
+; PROVIDER SECTIONS
 
 [OSM_OpenStreetMap]
 ; OpenStreetMap (see terms of use before using it)
+Name=OSM OpenStreetMap
 Enabled=true   ; should never be disabled
 ;Http=https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png  ; default, labeled according to the region (e.g. Japanese etc)
 ;Http=https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png   ; adds translated names to the local ones
@@ -57,14 +55,60 @@ Enabled=true   ; should never be disabled
 [OpenTopo]
 ; Street Map 3D enhanced
 ; OpenTopo (see terms of use before using it)
+Name=OpenTopo
 Enabled=true
-;Http=https://tile.opentopomap.org/{z}/{x}/{y}.png  ; default
+;Http=https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png  ; default
+;Http=https://a.tile.opentopomap.org/{z}/{x}/{y}.png  ; without subdomain
 
 [Stamen_Terrain]
 ; Street Map 3D shaped
 ; Stamen.com (see terms of use before using it)
+Name=Stamen 3D Street Map
 Enabled=true
-;Http=https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg  ; default
+;Http=https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg  ; default
+;Http=https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg  ; without subdomain
+
+
+; ***************
+; From http://www.chartbundle.com/charts/  see terms of use 
+; For US regions only (FAA provides data at no cost, other countries do not...)
+;   Disabled per default - change: Enabled=true   to get the ones you need
+; ***************
+[CB_WAC]
+; World Aeronautical Charts
+Name=CB World Aeronautical Charts
+Enabled=false
+;Http=https://wms.chartbundle.com/tms/1.0.0/wac/{z}/{x}/{y}.png?origin=nw  ; default
+
+[CB_SEC]
+; Sectional Charts
+Name=CB Sectional Charts
+Enabled=false
+;Http=https://wms.chartbundle.com/tms/1.0.0/sec/{z}/{x}/{y}.png?origin=nw  ; default
+
+[CB_TAC]
+; Terminal Area Charts
+Name=CB Terminal Area Charts
+Enabled=false
+;Http=https://wms.chartbundle.com/tms/1.0.0/tac/{z}/{x}/{y}.png?origin=nw  ; default
+
+[CB_ENRA]
+; IFR Area Charts
+Name=CB IFR Area Charts
+Enabled=false
+;Http=https://wms.chartbundle.com/tms/1.0.0/enra/{z}/{x}/{y}.png?origin=nw  ; default
+
+[CB_ENRL]
+; IFR Enroute Low Charts
+Name=CB IFR Enroute Low Charts
+Enabled=false
+;Http=https://wms.chartbundle.com/tms/1.0.0/enrl/{z}/{x}/{y}.png?origin=nw  ; default
+
+[CB_ENRH]
+; IFR Enroute High Charts
+Name=CB IFR Enroute High Charts
+Enabled=false
+;Http=https://wms.chartbundle.com/tms/1.0.0/enrh/{z}/{x}/{y}.png?origin=nw  ; default
 
 
 ; ***************
@@ -74,16 +118,19 @@ Enabled=true
 
 [Bing_Imagery]
 ; Satellite Imagery
+Name=Bing Satellite Imagery
 Enabled=false
 ;Http=https://ecn.{subdomain}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=12552 ; not used, for reference only
 
 [Bing_ImageryLabels]
 ; Satellite Imagery with road labels
+Name=Bing Satellite Imagery w. Labels
 Enabled=false
 ;Http=https://ecn.{subdomain}.tiles.virtualearth.net/tiles/h{quadkey}.jpeg?g=12552&mkt={culture} ; not used, for reference only
 
 [Bing_OStreetMap]
 ; Street Map
+Name=Bing OSM StreetMap
 Enabled=false
 ;Http=https://ecn.{subdomain}.tiles.virtualearth.net/tiles/r{quadkey}.jpeg?g=12552&mkt={culture}&shading=hill ; not used, for reference only
 
@@ -95,18 +142,21 @@ Enabled=false
 [ESRI_Imagery]
 ; Satellite Imagery
 ; ESRI/ARCGIS World Imagery (see terms of use before using it)
+Name=ESRI/ARCGIS World Imagery
 Enabled=false
 ;Http=https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}  ; default
 
 [ESRI_StreetMap]
 ; Street Map
 ; ESRI/ARCGIS StreetMap (see terms of use before using it)
+Name=ESRI/ARCGIS StreetMap
 Enabled=false
 ;Http=https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}  ; default
 
 [ESRI_WorldTopo]
 ; Street Map 3D shaped
 ; ESRI/ARCGIS WorldTopo (see terms of use before using it)
+Name=ESRI/ARCGIS WorldTopo
 Enabled=false
 ;Http=https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}  ; default
 
@@ -117,16 +167,37 @@ Enabled=false
 
 [USER_TILES_1]
 ; User defines Tile Server No 1
+Name=User Tiles 1
 Enabled=false
-;Http=https://ip_or_address/route/{z}/{y}/{x}.imageformat ; MUST be changed to something meaningful
+;Http=https://ip_or_address/route/{z}/{x}/{y}.imageformat ; MUST be changed to something meaningful
 
 [USER_TILES_2]
 ; User defines Tile Server No 2
+Name=User Tiles 2
 Enabled=false
-;Http=https://ip_or_address/route/{z}/{y}/{x}.imageformat ; MUST be changed to something meaningful
+;Http=https://ip_or_address/route/{z}/{x}/{y}.imageformat ; MUST be changed to something meaningful
 
 [USER_TILES_3]
 ; User defines Tile Server No 3
+Name=User Tiles 3
 Enabled=false
-;Http=https://ip_or_address/route/{z}/{y}/{x}.imageformat ; MUST be changed to something meaningful
+;Http=https://ip_or_address/route/{z}/{x}/{y}.imageformat ; MUST be changed to something meaningful
+
+[USER_TILES_4]
+; User defines Tile Server No 4
+Name=User Tiles 4
+Enabled=false
+;Http=https://ip_or_address/route/{z}/{x}/{y}.imageformat ; MUST be changed to something meaningful
+
+[USER_TILES_5]
+; User defines Tile Server No 5
+Name=User Tiles 5
+Enabled=false
+;Http=https://ip_or_address/route/{z}/{x}/{y}.imageformat ; MUST be changed to something meaningful
+
+[USER_TILES_6]
+; User defines Tile Server No 6
+Name=User Tiles 6
+Enabled=false
+;Http=https://ip_or_address/route/{z}/{x}/{y}.imageformat ; MUST be changed to something meaningful
 

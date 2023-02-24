@@ -18,17 +18,24 @@ namespace bm98_Map
     /// </summary>
     public LatLon CenterCoordinate {get;set;}
     /// <summary>
-    /// Range or ZoomLevel of the base map
+    /// Range of the base map
     /// </summary>
     public MapRange MapRange { get; set; }
 
     /// <summary>
+    /// ZoomLevel of the base map
+    /// </summary>
+    public ushort ZoomLevel { get; set; }
+
+    /// <summary>
     /// cTor:
     /// </summary>
-    public MapEventArgs( LatLon center, MapRange mapRange )
+    public MapEventArgs( LatLon center, MapRange mapRange, ushort zoomLevel )
     {
       CenterCoordinate = center;
       MapRange = mapRange;
+      ZoomLevel = zoomLevel;
     }
+
   }
 }

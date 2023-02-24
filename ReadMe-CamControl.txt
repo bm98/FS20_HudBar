@@ -1,5 +1,5 @@
-FS20_CamControl V 0.58 - Build 58 BETA
-(c) M. Burri - 03-Jan-2023
+FS20_CamControl V 0.63 - Build 63 BETA
+(c) M. Burri - 24-Feb-2023
 
 Contains files:
 
@@ -25,7 +25,7 @@ From MSFS2020 Developer Kit for convenience included:
 
 ReadMe-CamControl.txt                   This file
 
-MSFS Hud Bar (.Net 4.7.2)
+MSFS Hud Bar (.Net 4.8)
 
 Extract the Zip File into a folder and hit FS20_CamControl.exe to run it
 
@@ -38,6 +38,9 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.63-B63
+- Update to .Net Framework 4.8
 
 V 0.58-B58
 - Fix Exception raised when closing the App (when the WASM module in not used)

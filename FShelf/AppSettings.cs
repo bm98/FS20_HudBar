@@ -183,6 +183,12 @@ namespace FShelf
       set { this["MinRwyLengthCombo"] = value; }
     }
 
+    [DefaultSettingValue( "False" )]
+    public bool AutoRange {
+      get { return (bool)this["AutoRange"]; }
+      set { this["AutoRange"] = value; }
+    }
+
 
     #endregion
 

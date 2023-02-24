@@ -9,15 +9,17 @@ using System.Threading.Tasks;
 namespace MapLib.Tiles
 {
   /// <summary>
-  /// Utility to server MapTiles 
+  /// Utility to serve MapTiles 
   /// </summary>
-  internal class MapTileServer : IDisposable
+  internal sealed class MapTileServer : IDisposable
   {
     // expected number of tiles to handle
     private uint _numTiles = 0;
 
     // tracking list of all tiles created
     private List<MapTile> _tiles;
+    // manage no longer used tiles
+    private List<MapTile> _obsoleteTiles;
 
     // server queue
     private ConcurrentQueue<MapTile> _tileQueue;
@@ -31,6 +33,7 @@ namespace MapLib.Tiles
       _numTiles = numTiles;
       _tileQueue = new ConcurrentQueue<MapTile>( );
       _tiles = new List<MapTile>( (int)numTiles );
+      _obsoleteTiles = new List<MapTile>( (int)numTiles / 2 );
     }
 
     /// <summary>
@@ -53,7 +56,6 @@ namespace MapLib.Tiles
 #if DEBUG
           // many consumed - track the behavior on Slow Providers (Stamen...)
           Console.WriteLine( $"Tiles in circulation: {_tiles.Count} (mark is {_numTiles})" );
-          // throw new ApplicationException( "No more tiles to serve" );
 #endif
         }
         return tile;
@@ -66,6 +68,9 @@ namespace MapLib.Tiles
     /// <param name="mapTile">The returned MapTile</param>
     public void ReturnTile( MapTile mapTile )
     {
+      // sanity
+      if (mapTile == null) return;
+
       if (_tiles.Contains( mapTile )) {
         mapTile.ClearTileContent( );
         if (_tiles.Count > _numTiles) {
@@ -82,7 +87,54 @@ namespace MapLib.Tiles
       }
       else {
         // we did not serve this returned tile... (Programm Error)
-        throw new ApplicationException( "Returned unsolicited MapTile" );
+        throw new ApplicationException( $"Returned unsolicited MapTile {mapTile.TrackKey}" );
+      }
+    }
+
+    /// <summary>
+    /// Returns an obsolete tile - to be hold until removed
+    /// </summary>
+    /// <param name="mapTile">An obsolete Tile</param>
+    public void ReturnObsoleteTile( MapTile mapTile )
+    {
+      // sanity
+      if (mapTile == null) return;
+
+      lock (_obsoleteTiles) {
+        _obsoleteTiles.Add( mapTile ); // add - to be removed after completion
+        mapTile.MarkObsolete( );
+      }
+    }
+
+    /// <summary>
+    /// Remove this tile from the obsolete list
+    /// </summary>
+    /// <param name="tileKey">A tile Key</param>
+    public void RemoveObsoleteTile( string tileKey )
+    {
+      if (string.IsNullOrEmpty( tileKey )) { return; } // fast exit
+
+      // handle obsoletes after the the loading cycle
+      lock (_obsoleteTiles) {
+        var obsolete = _obsoleteTiles.FirstOrDefault( x => x.TrackKey == tileKey );
+        if (obsolete != null) {
+          _obsoleteTiles.Remove( obsolete );
+          this.ReturnTile( obsolete );
+        }
+      }
+    }
+
+    /// <summary>
+    /// Remove all Obsoletes
+    /// </summary>
+    public void ClearObsoleteTiles( )
+    {
+      lock (_obsoleteTiles) {
+        var oTiles = _obsoleteTiles.ToList( );
+        foreach (var ot in oTiles) {
+          this.ReturnTile( ot );
+        }
+        _obsoleteTiles.Clear( );
       }
     }
 
@@ -90,11 +142,12 @@ namespace MapLib.Tiles
 
     private bool disposedValue;
 
-    protected virtual void Dispose( bool disposing )
+    private void Dispose( bool disposing )
     {
       if (!disposedValue) {
         if (disposing) {
           // TODO: dispose managed state (managed objects)
+          ClearObsoleteTiles( );
           foreach (var tile in _tiles) { tile.Dispose( ); }
           _tiles.Clear( );
           _tileQueue = null;

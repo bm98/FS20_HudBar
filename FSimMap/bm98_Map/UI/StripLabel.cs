@@ -23,8 +23,6 @@ namespace bm98_Map.UI
     private int _index = -1;
     private bool _selectable = false;
     private bool _itemSelected = false;
-    // flag if we are processing an event
-    private bool _inEvent = false;
 
     /// <summary>
     /// Fired when the user selects an item
@@ -162,10 +160,7 @@ namespace bm98_Map.UI
     // when clicked
     private void StripLabel_Click( object sender, EventArgs e )
     {
-    //  _inEvent = true;
       this.OnClicked( e ); // base event is handled before our own event
-    //  ItemSelected = true;
-      _inEvent=false;
     }
 
 

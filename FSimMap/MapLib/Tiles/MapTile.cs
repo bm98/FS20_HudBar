@@ -27,6 +27,8 @@ namespace MapLib.Tiles
     // a tile version for ID
     private int _version = 0;
     private EventHandler<LoadCompleteEventArgs> _handler = null;
+    // obsolesence support
+    private bool _obsolete = false;
 
     /// <summary>
     /// Event triggered on LoadComplete or LoadFailed
@@ -71,6 +73,11 @@ namespace MapLib.Tiles
     /// The MapTile Version
     /// </summary>
     public int Version => _version;
+
+    /// <summary>
+    /// True if marked as obsolete
+    /// </summary>
+    public bool IsObsolete => _obsolete;
 
     // calc from live values so we don't need to track changes
 
@@ -223,6 +230,11 @@ namespace MapLib.Tiles
     }
 
     /// <summary>
+    /// Mark the Tile as obsolete
+    /// </summary>
+    public void MarkObsolete( ) => _obsolete = true;
+
+    /// <summary>
     /// Set the Tile configuration the tile
     /// </summary>
     /// <param name="zoomLevel">The Zoomlevel</param>
@@ -330,12 +342,6 @@ namespace MapLib.Tiles
     /// </summary>
     internal void OnDone( )
     {
-      //      Debug.WriteLine( $"MapTile.OnDone" );
-      /*
-      if (!Service.RequestScheduler.Instance.TileWorkflowCatalog.ContainsKey( FullKey )) {
-        // not (yet) found
-      }
-      */
       //   Debug.WriteLine( $"{DateTime.Now.Ticks} MapTile.OnDone: Called for: {FullKey}" );
       if (Service.RequestScheduler.Instance.TileWorkflowCatalog.ContainsKey( FullKey )) {
         // try until the concurrent access is granted
@@ -376,6 +382,7 @@ namespace MapLib.Tiles
       MapProvider = MapProvider.DummyProvider;
       MapImageID = new MapImageID( TileXY.Empty, 0, MapProvider.DummyProvider );
       _version = 0;
+      _obsolete= false;
       _providerInstance = null;
       this.LoadComplete -= _handler;
       // Clear allocated resources
@@ -443,7 +450,10 @@ namespace MapLib.Tiles
     public void Draw( Graphics g, Point tlLocation, bool drawTileBorder = false )
     {
       if (MapImage == null || this.LoadingStatus != ImageLoadingStatus.LoadComplete || !MapImage.IsValid) {
-        var refImg = Properties.Resources.DummyImage;
+        var refImg = Properties.Resources.LoadingImage;
+        if (this.LoadingStatus == ImageLoadingStatus.LoadFailed) {
+          refImg = Properties.Resources.DummyImage; // not available
+        }
         g.DrawImage( refImg, tlLocation ); // send a cannot find an image here
         g.DrawRectangle( Pens.Red, tlLocation.X, tlLocation.Y, refImg.Width, refImg.Height );
         return;

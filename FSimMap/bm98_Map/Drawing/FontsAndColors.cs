@@ -58,7 +58,7 @@ namespace bm98_Map.Drawing
 
     public readonly static Pen PenRoute = new Pen( ColRoute, 3f );
     public readonly static Pen PenRouteSid = new Pen( ColRouteSid, 3f );
-    public readonly static Pen PenRouteApt = new Pen( ColRoute, 1f ) { DashStyle = DashStyle.DashDotDot }; // to rwy/apt
+    public readonly static Pen PenRouteApt = new Pen( ColRoute ) { Width = 2, DashPattern = new float[] { 5.0F, 10.0F, 2.0F, 10.0F } }; // to rwy/apt
 
     public readonly static Pen PenRouteApr = new Pen( ColRouteApr, 3f );
 
@@ -71,6 +71,7 @@ namespace bm98_Map.Drawing
     public readonly static Pen PenRwNumber = new Pen( ColRwNumber );
     public readonly static Pen PenAptRange = new Pen( ColAptRange, 2f );
     public readonly static Pen PenHeadingLine = new Pen( ColAptRange, 3f );
+    public readonly static Pen PenVfrNoDeco = new Pen( ColVfrMain ) { Width = 2, DashStyle = DashStyle.DashDot }; // dim
     public readonly static Pen PenVfrMain = new Pen( ColVfrMain, 3f );
     public readonly static Pen PenVfrAlt = new Pen( ColVfrAlt, 3f );
 

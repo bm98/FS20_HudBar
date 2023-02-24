@@ -18,46 +18,29 @@ namespace MapLib.Sources.Providers
       : base( MapProvider.BING_OStreetMap )
     {
       var im = BingManager.GetImMetaData( _imagery ); // trigger loading of MetaData
+      Copyright = (im != null) ? im.Copyright : BingManager.DefaultCopyright;
+      Name = ProviderIni.ProviderName( MapProvider );
     }
 
-    #region ProviderBase Members
+    // Type of map to retrieve
+    private const BingMapsRESTToolkit.ImageryType _imagery = BingMapsRESTToolkit.ImageryType.Road;
 
-    public override string ContentID => UrlFormat; // use the URL as ID
+    #region ProviderBase Members
 
     public override Guid Id => new Guid( "BEAB409B-6ED0-443F-B8E3-E6CC6F313F33" );
 
     public override string Name { get; } = "Bing Roadmap";
 
-    public override MapImage GetTileImage( MapImageID mapImageID )
+    protected override MapImage GetTileImage( MapImageID mapImageID )
     {
       if (!this.ProviderEnabled) return null;
 
-      string url = MakeTileImageUrl( mapImageID.TileXY, mapImageID.ZoomLevel, "" );  // TODO RE ADD LANGUAGE
+      ushort z = ZoomCheck( mapImageID.ZoomLevel );
+      string url = BingManager.MakeBingTileImageUrl( _imagery, mapImageID.TileXY, z );// TODO RE ADD LANGUAGE
       return base.GetTileImageUsingHttp( url, mapImageID );
-    }
-    public override string Copyright {
-      get {
-        var im = BingManager.GetImMetaData( _imagery );
-        if (im != null) return im.Copyright;
-        return BingManager.DefaultCopyright;
-
-      }
     }
 
     #endregion
-
-    private BingMapsRESTToolkit.ImageryType _imagery = BingMapsRESTToolkit.ImageryType.Road;
-
-    private readonly string UrlFormat = "";
-
-    string MakeTileImageUrl( TileXY tileXY, ushort zoom, string language )
-    {
-      var imMeta = BingManager.GetImMetaData( _imagery );
-      if (imMeta == null) return ""; // cannot...
-
-      string url = imMeta.GetTileUrl( tileXY, zoom, language );
-      return url;
-    }
 
   }
 }

@@ -24,6 +24,13 @@ namespace MapLib
     OpenTopo,
     Stamen_Terrain,
 
+    CB_WAC,
+    CB_SEC,
+    CB_TAC,
+    CB_ENRA,
+    CB_ENRL,
+    CB_ENRH,
+
     ESRI_Imagery,
     ESRI_StreetMap,
     ESRI_WorldTopo,
@@ -35,6 +42,9 @@ namespace MapLib
     USER_TILES_1,
     USER_TILES_2,
     USER_TILES_3,
+    USER_TILES_4,
+    USER_TILES_5,
+    USER_TILES_6,
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
   }
 
@@ -161,6 +171,17 @@ namespace MapLib
     /// Enabled Providers from the INI file
     /// </summary>
     public IEnumerable<MapProvider> EnabledProviders => MapProviderBase.ProviderIni.EnabledProviders;
+
+
+    /// <summary>
+    /// Returns the common name for a provider
+    /// </summary>
+    /// <param name="provider">A provider</param>
+    /// <returns>The Name</returns>
+    public string ProviderName(MapProvider provider )
+    {
+      return MapProviderBase.ProviderIni.ProviderName( provider );
+    }
 
     /// <summary>
     /// Get: the disk cache location (folder path)

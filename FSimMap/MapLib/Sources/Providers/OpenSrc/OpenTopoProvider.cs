@@ -22,46 +22,38 @@ namespace MapLib.Sources.Providers
     private OpenTopoProvider( )
       : base( MapProvider.OpenTopo )
     {
-      RefererUrl = UrlFormat;
+      RefererUrl = DefaultUrl;
       Copyright = string.Format( "Kartendaten: © OpenStreetMap-Mitwirkende, SRTM | Kartendarstellung: ©{0} OpenTopoMap (CC-BY-SA)", DateTime.Today.Year );
       // check for Overrides
       if (!string.IsNullOrWhiteSpace( ProviderIni.ProviderHttp( MapProvider ) )) {
-        UrlFormat = ProviderIni.ProviderHttp( MapProvider );
+        RefererUrl = ProviderIni.ProviderHttp( MapProvider );
       }
-
-
+      Name = ProviderIni.ProviderName( MapProvider );
     }
 
-    #region ProviderBase Members
+    /*
+        Die Kacheln können unter folgendem Pfad abgerufen werden:
+        https://{a|b|c}.tile.opentopomap.org/{z}/{x}/{y}.png
+    */
+    // default URL
+    private const string DefaultUrl = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
 
-    public override string ContentID => UrlFormat; // use the URL as ID
+    #region ProviderBase Members
 
     public override Guid Id => new Guid( "BEAB409B-6ED0-443F-B8E3-E6CC6F419F66" );
 
     public override string Name { get; } = "Open Topo Map";
 
-    public override MapImage GetTileImage( MapImageID mapImageID )
+    protected override MapImage GetTileImage( MapImageID mapImageID )
     {
       if (!this.ProviderEnabled) return null;
 
-      string url = MakeTileImageUrl(mapImageID.TileXY, mapImageID.ZoomLevel, string.Empty );
+      // supports server in the URL
+      char letter = "abc"[Tools.GetServerNum( mapImageID.TileXY, 3 )];
+      string url = MakeTileImageUrl( mapImageID.TileXY, mapImageID.ZoomLevel, Convert.ToString( letter ), "" );
       return base.GetTileImageUsingHttp( url, mapImageID );
     }
 
     #endregion
-
-    private readonly string UrlFormat = "https://a.tile.opentopomap.org/{z}/{x}/{y}.png";
-
-    string MakeTileImageUrl( TileXY tileXY, ushort zoom, string language )
-    {
-      string url = UrlFormat;
-
-      url = url.Replace( "{z}", "{0}" );
-      url = url.Replace( "{x}", "{1}" );
-      url = url.Replace( "{y}", "{2}" );
-
-      return string.Format( url, zoom, tileXY.X, tileXY.Y );
-
-    }
   }
 }

@@ -12,7 +12,7 @@ namespace bm98_Map.Drawing
   /// <summary>
   /// An invisible Hook for a substream of items
   /// </summary>
-  internal class HookItem:DisplayItem
+  internal class HookItem : DisplayItem
   {
 
     /// <summary>

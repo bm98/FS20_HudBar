@@ -18,7 +18,8 @@ namespace MapLib.Sources.Providers
   /// BingKey=KEY
   /// 
   /// [PROVIDER]
-  /// Enabled=TRUE
+  /// Enabled=true / false
+  /// Name=string
   /// Http=URL
   /// 
   /// </summary>
@@ -34,10 +35,12 @@ namespace MapLib.Sources.Providers
     {
       public MapProvider Provider { get; private set; } = MapProvider.DummyProvider;
       public string UrlOverride { get; private set; } = "";
-      public ProviderIniEntry( MapProvider provider, string url )
+      public string Name { get; private set; } = "";
+      public ProviderIniEntry( MapProvider provider, string url, string name )
       {
         Provider = provider;
         UrlOverride = url; // wether or not it will apply is decided in the Provider Class
+        Name= name;
       }
     }
 
@@ -58,6 +61,17 @@ namespace MapLib.Sources.Providers
     /// The Bing Key (may apply or not)
     /// </summary>
     public string BingKey { get; private set; } = "";
+
+    /// <summary>
+    /// A Provider URL template override or empty if there is no such entry
+    /// </summary>
+    public string ProviderName( MapProvider provider )
+    {
+      if (_enabledProviders.TryGetValue( provider, out ProviderIniEntry item )) {
+        return item.Name;
+      }
+      return $"{provider}";
+    }
 
     /// <summary>
     /// A Provider URL template override or empty if there is no such entry
@@ -94,9 +108,10 @@ namespace MapLib.Sources.Providers
         bool enabled = iniFile.ItemValue( sect.Name, "Enabled" ).ToLowerInvariant( ) == "true";
         string urlOverride = iniFile.ItemValue( sect.Name, "http" );
         urlOverride = urlOverride.StartsWith( "http" ) ? urlOverride : ""; // some sanity.. must start with http...
+        string name = iniFile.ItemValue( sect.Name, "Name" );
 
         if (enabled) {
-          var entry = new ProviderIniEntry( provider, urlOverride );
+          var entry = new ProviderIniEntry( provider, urlOverride, name.Trim() );
           _enabledProviders.Add( provider, entry );
         }
       }

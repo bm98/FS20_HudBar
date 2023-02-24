@@ -17,18 +17,16 @@ namespace MapLib.Sources.Providers
     private EmptyProvider( )
       : base( MapProvider.DummyProvider )
     {
-      MaxZoom = null;
+      MaxZoom = 1;
     }
 
     #region ProviderBase Members
-
-    public override string ContentID => "Empty Provider Master Content ID";
 
     public override Guid Id => Guid.Empty;
 
     public override string Name { get; } = "Empty - not to be used";
 
-    public override MapImage GetTileImage( MapImageID mapImageID )
+    protected override MapImage GetTileImage( MapImageID mapImageID )
     {
       return null;
     }
