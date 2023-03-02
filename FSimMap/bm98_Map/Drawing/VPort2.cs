@@ -47,7 +47,7 @@ namespace bm98_Map.Drawing
     // display scale range
     private const float c_scaleMax = 20f;
     // *2 would be the change over to a new tile set
-    private const float c_scaleAutoRange = 1.736654408f;// c_scaleInMult^3  
+    private const float c_scaleAutoRange = 1;//use MapZoom as step // NOT USED  1.736654408f;// c_scaleInMult^3  as the decorations zoom as well, gives a weird impression..
     private const float c_scaleMin = 1.0f; // below we use Tiles from the Range above the current one
     // output control
     private readonly Control _view = null;
@@ -57,9 +57,8 @@ namespace bm98_Map.Drawing
     private readonly TileMatrix _tileMatrix = new TileMatrix( 8, 8 );
 
     // The drawing canvas (will need the same size as the TileMatrix)
-    private Bitmap _canvasStatic = null; // static map and world
-    private object _canvasStaticLock = new object( ); // lock for this item
-    private Bitmap _canvas = null; // final canvas, i.e. static + sprites
+    private readonly Bitmap _canvasStatic = null; // static map and world
+    private readonly Bitmap _canvas = null; // final canvas, i.e. static + sprites
 
     // scaling applied to the canvas drawing (ratio of matrix height/with vs. drawn width)
     private readonly float c_drawScale = 1f;
@@ -67,16 +66,16 @@ namespace bm98_Map.Drawing
     private readonly Size _canvasDrawSize;
 
     // the Display List Managers
-    private GProc _gProc;
-    private GProc _gProcSprite;
+    private readonly GProc _gProc;
+    private readonly GProc _gProcSprite;
 
     // Scale and Move 
-    private MapRangeHandler _mapRangeHandlerRef; // the RangeHandler for tile zoom changes
+    private readonly MapRangeHandler _mapRangeHandlerRef; // the RangeHandler for tile zoom changes
 
     private float _scaleMult = 1; // current scale factor
-    private Matrix _toScaleMat = new Matrix( );
+    private readonly Matrix _toScaleMat = new Matrix( );
     private Matrix _fromScaleMat = new Matrix( ); // Inverse of the _toScaleMat (precalculated)
-    private Matrix _moveMat = new Matrix( );
+    private readonly Matrix _moveMat = new Matrix( );
     // the precalculated transformation Matrix (don't calc at every Paint)
     private Matrix _transformMat = new Matrix( );
 
@@ -93,7 +92,7 @@ namespace bm98_Map.Drawing
     private int _fallOffBottom = 0;
 
     // Embedding the calculations and Redraw as an entity
-    private AutoResetEvent _vpTransaction = new AutoResetEvent( true );
+    private readonly AutoResetEvent _vpTransaction = new AutoResetEvent( true );
 
     // a timer to pace the display when loading takes long
     private long _matLoadStart = 0;
@@ -885,7 +884,7 @@ namespace bm98_Map.Drawing
     // WinForm Invoker
     private dNetBm98.WinFormInvoker _eDispatch;
     // repaint event queue
-    private ConcurrentQueue<bool> _paintQueue = new ConcurrentQueue<bool>( );
+    private readonly ConcurrentQueue<bool> _paintQueue = new ConcurrentQueue<bool>( );
 
     // start the blend refesher algo
     private void StartBGRefresher( Control control )
@@ -935,13 +934,13 @@ namespace bm98_Map.Drawing
     // main drawn canvas to blend with
     private Bitmap _drawnCanvas = null;
     // just change the alpha
-    private ColorMatrix _blendMatrix = new ColorMatrix( new float[][]{
+    private readonly ColorMatrix _blendMatrix = new ColorMatrix( new float[][]{
                 new float[] {1F, 0, 0, 0, 0},
                 new float[] {0, 1F, 0, 0, 0},
                 new float[] {0, 0, 1F, 0, 0},
                 new float[] {0, 0, 0, 0.73f, 0}, // blending factor
                 new float[] {0, 0, 0, 0, 1F}} );
-    private ImageAttributes _imageAttributes = new ImageAttributes( );
+    private readonly ImageAttributes _imageAttributes = new ImageAttributes( );
     // tracks the matrix version i.e. changes of the covered area
     private int _drawnMatVersion = -1;
 
@@ -951,9 +950,7 @@ namespace bm98_Map.Drawing
       if (_tileMatrix.Version > _drawnMatVersion) {
         // a change in the matrix version means that the previous image is no longer
         // matching the current one and a blend would create a screwed up final image for the user
-        if (_drawnCanvas != null) {
-          _drawnCanvas.Dispose( );
-        }
+        _drawnCanvas?.Dispose( );
         _drawnCanvas = (Bitmap)_canvas.Clone( );
         _drawnMatVersion = _tileMatrix.Version;
       }

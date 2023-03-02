@@ -5,7 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using CoordLib;
+using CoordLib.MercatorTiles;
+using CoordLib.Extensions;
+
+using FSimFacilityIF;
 using SC = SimConnectClient;
+
+using bm98_Map;
 
 namespace FShelf
 {
@@ -13,7 +20,7 @@ namespace FShelf
   /// Performance tracker 
   /// Writes the Touchdown Data to a file
   /// </summary>
-  internal class PerfTracker
+  internal sealed class PerfTracker
   {
     private readonly string c_PerfFile = "TouchDownLog.csv";
 
@@ -100,9 +107,10 @@ namespace FShelf
           _tdPitch_deg = simData.TouchDownPitch_deg;
           _tdBank_deg = simData.TouchDownBank_deg;
           _tdHdg_degm = simData.TouchDownHdg_degm;
+
           _tdCapture = DateTime.Now;
 
-          WriteTouchDown( );
+          WriteTouchDownV2( );
         }
       }
     }
@@ -119,10 +127,48 @@ namespace FShelf
       var simData = SC.SimConnectClient.Instance.AircraftTrackingModule;
       // append
       using (StreamWriter sw = new StreamWriter( tdFile, true )) {
-        string log = $"{simData.AcftConfigFile};{simData.AcftID};{_tdCapture.ToString( "s" )}"
+        string log = $"{simData.AcftConfigFile};{simData.AcftID};{_tdCapture:s}"
                   + $";{Rate_fpm:###0.0};{Pitch_deg:#0.0};{Bank_deg:#0.0};{Hdg_degm:000};{RwyLatDev:##0.0};{RwyLonDev:####0.0}";
         sw.WriteLine( log );
       }
+    }
+
+    // V2 includes the Airport and runway if possible
+    private void WriteTouchDownV2( )
+    {
+      var tdFile = Path.Combine( Folders.UserFilePath, c_PerfFile );
+      if (!File.Exists( tdFile )) {
+        // write header when a new file is created
+        using (StreamWriter sw = new StreamWriter( tdFile, true )) {
+          sw.WriteLine( $"Aircraft;Callsign;Date_Time;VRate_fpm;Pitch_deg;Bank_deg;Hdg_degm;RwyLatDev_ft;RwyLonDev_ft;Airport" );
+        }
+      }
+      var simData = SC.SimConnectClient.Instance.AircraftTrackingModule;
+      // append
+      using (StreamWriter sw = new StreamWriter( tdFile, true )) {
+        string log = $"{simData.AcftConfigFile};{simData.AcftID};{_tdCapture:s}"
+                  + $";{Rate_fpm:###0.0};{Pitch_deg:#0.0};{Bank_deg:#0.0};{Hdg_degm:000};{RwyLatDev:##0.0};{RwyLonDev:####0.0};{GetAirport( simData.Lat, simData.Lon )}";
+        sw.WriteLine( log );
+      }
+    }
+
+    // get the airport by Lat, Lon - the Sim one is from ATC and not always the one we land on...
+    private string GetAirport( double lat, double lon )
+    {
+      return GetAirport( new LatLon( lat, lon ) );
+    }
+
+    // get the airport by LatLon - the Sim one is from ATC and not always the one we land on...
+    private string GetAirport( LatLon pos )
+    {
+      using (var _db = new FSimFacilityDataLib.AirportDB.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
+        if (!_db.Open( Folders.GenAptDBFile )) return "n.a."; // no db available
+
+        var aptList = _db.DbReader.AirportDescs_ByQuad( pos.AsQuad( 11 ) ).ToList( ); // 11=> 20km^2 field
+        if (aptList.Count > 0) return aptList[0].ICAO;
+        else return "n.a."; // no Apt found
+      }
+
     }
 
 

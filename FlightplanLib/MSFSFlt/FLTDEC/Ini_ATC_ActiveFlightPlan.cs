@@ -69,6 +69,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// </summary>
     [IniFileKey( "departure_position" )]
     public string DeparturePosition { get; set; } = ""; // runway or parking spot e.g. 11, N PARKING 2, 
+
     /// <summary>
     /// Destination_id field
     /// </summary>
@@ -89,6 +90,12 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// </summary>
     [IniFileKey( "destination_name" )]
     public string DestinationName { get; set; } = ""; // an Airport common name
+
+    /// <summary>
+    /// Waypoint. field for enumeration, find Waypoint.N (0.. max)
+    /// </summary>
+    [IniFileKey( "waypoint." )] // waypoint.0 .. .N
+    public Dictionary<string, string> Waypoints { get; internal set; } = new Dictionary<string, string>( );
 
     /// <summary>
     /// Departure LatLonAlt (derived field)

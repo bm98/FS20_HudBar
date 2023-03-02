@@ -19,7 +19,7 @@ namespace MapLib.Tiles
   internal class MapTile : IDisposable
   {
     // To lock the Img Use
-    private object _imageLockObj = new object( );
+    private readonly object _imageLockObj = new object( );
 
     private readonly TileXY c_tileNone = TileXY.Empty;
 
@@ -342,10 +342,13 @@ namespace MapLib.Tiles
     /// </summary>
     internal void OnDone( )
     {
+      // sanity
+      if (MapProvider == MapProvider.DummyProvider) return; 
+
       //   Debug.WriteLine( $"{DateTime.Now.Ticks} MapTile.OnDone: Called for: {FullKey}" );
       if (Service.RequestScheduler.Instance.TileWorkflowCatalog.ContainsKey( FullKey )) {
         // try until the concurrent access is granted
-        var removed = false;
+        bool removed;
         do {
           removed = Service.RequestScheduler.Instance.TileWorkflowCatalog.TryRemove( FullKey, out MapImage mapImage );
           if (removed) {

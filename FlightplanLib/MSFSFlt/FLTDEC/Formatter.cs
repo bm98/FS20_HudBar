@@ -35,7 +35,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// Convert a WorldPosition (LLA) to a LatLon
     /// </summary>
     /// <param name="worldPosition">An LLA string</param>
-    /// <returns>A LatLon</returns>
+    /// <returns>A LatLon which might be Empty of the LLA is not valid</returns>
     internal static LatLon ToLatLon( string worldPosition )
     {
       LatLon ll = LatLon.Empty;
@@ -276,7 +276,10 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
           default: ret.AltLimit = AltLimitType.NoLimit; break;
         }
 
-        ret.IsValid = true;
+        // There are 'unknown' which derive from Navaids not in the MS database (outdated ones)
+        // also they are set to N90 W180 (but alt remains..)
+        ret.IsValid =  !(ret.ID == "unknown" || (ret.LatLon.Lat == 90.0 && ret.LatLon.Lon == -180.0));
+;
         return ret;
       }
       // ERROR cannot decode

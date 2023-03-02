@@ -165,6 +165,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// </summary>
     public int AltLimit2_ft { get; internal set; } = 0;
 
+
     /// <summary>
     /// True if the Wyp is part of an Airway
     /// </summary>

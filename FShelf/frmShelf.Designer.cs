@@ -374,8 +374,6 @@ namespace FShelf
       this.aMap.ShowVFRMarks = false;
       this.aMap.Size = new System.Drawing.Size(600, 640);
       this.aMap.TabIndex = 1;
-      this.aMap.MapCenterChanged += new System.EventHandler<bm98_Map.MapEventArgs>(this.AMap_MapCenterChanged);
-      this.aMap.MapRangeChanged += new System.EventHandler<bm98_Map.MapEventArgs>(this.AMap_MapRangeChanged);
       // 
       // tabMetar
       // 

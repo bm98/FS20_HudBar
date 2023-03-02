@@ -23,41 +23,48 @@ namespace FlightplanLib.MSFSFlt
     /// <returns>A generic FlightPlan obj</returns>
     public static FlightPlan AsFlightPlan( FLT msfsPlan )
     {
+      // a lot may be missing depending on the FLT state
+
       // create gen doc items
       var plan = new FlightPlan {
         Source = SourceOfFlightPlan.MS_Pln,
         Title = msfsPlan.Main.Title,
-        CruisingAlt_ft = msfsPlan.ATC_Aircraft.CruisingAltitude,
-        FlightPlanType = msfsPlan.ATC_Flightplan.FlightPlanType,
-        RouteType = msfsPlan.ATC_Flightplan.RouteType,
+        CruisingAlt_ft = msfsPlan.Used_ATC_FlightPlan.CruisingAltitude_ft,
+        FlightPlanType = msfsPlan.Used_ATC_FlightPlan.FlightPlanType,
+        RouteType = msfsPlan.Used_ATC_FlightPlan.RouteType,
         StepProfile = "" // dont have one or need to calculate it
       };
+
       // create Origin (for the runway assuming the First Waypoint is the Airport)
+      // Optional (seen missing origins)
       var loc = new Location {
-        Icao_Ident = new IcaoRec { ICAO = msfsPlan.ATC_Flightplan.DepartureICAO },
+        Icao_Ident = new IcaoRec { ICAO = msfsPlan.Used_ATC_FlightPlan.DepartureICAO },
         Iata_Ident = "", // not available
-        Name = msfsPlan.ATC_Flightplan.DepartureName,
-        LatLonAlt_ft = msfsPlan.ATC_Flightplan.DEP_LatLon,
-        RunwayNumber_S = msfsPlan.ATC_Aircraft.Waypoint( msfsPlan.ATC_Aircraft.Waypoints.First( ).Key ).RunwayNumber_S,
-        RunwayDesignation = msfsPlan.ATC_Aircraft.Waypoint( msfsPlan.ATC_Aircraft.Waypoints.First( ).Key ).RunwayDesignation,
+        Name = msfsPlan.Used_ATC_FlightPlan.DepartureName,
+        LatLonAlt_ft = msfsPlan.Used_ATC_FlightPlan.DEP_LatLon,
+        RunwayNumber_S = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.First( ).Key ).RunwayNumber_S,
+        RunwayDesignation = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.First( ).Key ).RunwayDesignation,
       };
       plan.Origin = loc;
+
       // create Destination (for the runway assuming the Last Waypoint is the Airport)
+      // Optional (seen missing destinations)
       loc = new Location( ) {
-        Icao_Ident = new IcaoRec { ICAO = msfsPlan.ATC_Flightplan.DestinationICAO },
+        Icao_Ident = new IcaoRec { ICAO = msfsPlan.Used_ATC_FlightPlan.DestinationICAO },
         Iata_Ident = "", // not available
-        Name = msfsPlan.ATC_Flightplan.DestinationName,
-        LatLonAlt_ft = msfsPlan.ATC_Flightplan.DST_LatLon,
-        RunwayNumber_S = msfsPlan.ATC_Aircraft.Waypoint( msfsPlan.ATC_Aircraft.Waypoints.Last( ).Key ).RunwayNumber_S,
-        RunwayDesignation = msfsPlan.ATC_Aircraft.Waypoint( msfsPlan.ATC_Aircraft.Waypoints.Last( ).Key ).RunwayDesignation,
+        Name = msfsPlan.Used_ATC_FlightPlan.DestinationName,
+        LatLonAlt_ft = msfsPlan.Used_ATC_FlightPlan.DST_LatLon,
+        RunwayNumber_S = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.Last( ).Key ).RunwayNumber_S,
+        RunwayDesignation = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.Last( ).Key ).RunwayDesignation,
       };
       plan.Destination = loc;
+
       // create waypoints
       var wypList = new List<Waypoint>( );
-      foreach (var fixKey in msfsPlan.ATC_Aircraft.Waypoints.Keys) {
-        var fix = msfsPlan.ATC_Aircraft.Waypoint( fixKey );
+      foreach (var fixKey in msfsPlan.Used_Waypoints.Keys) {
+        var fix = msfsPlan.Waypoint( fixKey );
+        // create Waypoint, omit invalid ones
         if (!fix.IsValid) continue; // there are FLT Waypoints inserted by MS which are not decoded and return an empty Wyp
-        // create Waypoint
         var wyp = new Waypoint( ) {
           WaypointType = fix.WaypointType,
           ID = fix.ID,
@@ -90,7 +97,7 @@ namespace FlightplanLib.MSFSFlt
       // calculate missing items
       plan.RecalcWaypoints( );
       return plan;
-      
+
     }
 
 

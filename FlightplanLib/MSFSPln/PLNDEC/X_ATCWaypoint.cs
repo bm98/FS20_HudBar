@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Windows.UI.Xaml.Documents;
 
 namespace FlightplanLib.MSFSPln.PLNDEC
 {
@@ -94,6 +95,12 @@ namespace FlightplanLib.MSFSPln.PLNDEC
     // Non XML
 
     /// <summary>
+    /// True if valid 
+    /// There are 'unknown' which derive from Navaids not in the MS database (outdated ones)
+    /// also they are set to N90 W180 (but alt remains..)
+    /// </summary>
+    public bool IsValid => !(ID == "unknown" || (LatLon.Lat == 90.0 && LatLon.Lon == -180.0));
+    /// <summary>
     /// True if the Wyp is part of an Airway
     /// </summary>
     public bool IsAirway => !string.IsNullOrWhiteSpace( Airway_Ident );
@@ -165,7 +172,7 @@ namespace FlightplanLib.MSFSPln.PLNDEC
     /// <summary>
     /// The type of the Waypoint as enum
     /// </summary>
-    public TypeOfWaypoint WaypointType => ToTypeOfWP( WypType_S );
+    public TypeOfWaypoint WaypointType => IsValid ? ToTypeOfWP( WypType_S ) : TypeOfWaypoint.Other;
 
 
     // local only

@@ -682,15 +682,15 @@ namespace FS20_HudBar
       }
       CheckFacilityDB( );
 
+      // attach a Callback for the SimClient
+      SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
+      FltPlanMgr.Enabled = false; // start disabled, will be re-checked in InitGUI
+      // Layout may need to update when the Aircraft changes (due to Engine Count)
+      SC.SimConnectClient.Instance.AircraftChange += Instance_AircraftChange;
+
       // Get the controls the first time from Config
       InitGUI( );
       WPTracker.Reset( );
-
-      // attach a Callback for the SimClient
-      SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
-      SC.SimConnectClient.Instance.FlightPlanModule.Enabled = false; // start disabled, will be re-checked in InitGUI
-      // Layout may need to update when the Aircraft changes (due to Engine Count)
-      SC.SimConnectClient.Instance.AircraftChange += Instance_AircraftChange;
 
       // Pacer to connect and other repetitive chores
       timer1.Interval = 5000; // try to connect in 5 sec intervals
@@ -1254,9 +1254,10 @@ namespace FS20_HudBar
       m_initDone = false; // stop updating values while reconfiguring
       SynchGUIVisible( false ); // hide, else we see all kind of shaping
 
-      LOG.Log( $"InitGUI", "FlightPlanModule Setup" );
-      SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode = (FSimClientIF.FlightPlanMode)AppSettingsV2.Instance.FltAutoSaveATC;
-      SC.SimConnectClient.Instance.FlightPlanModule.Enabled = (SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode != FSimClientIF.FlightPlanMode.Disabled);
+      LOG.Log( $"InitGUI", "FltPlanMgr Setup" );
+      FltPlanMgr.FlightPlanMode = (FSimClientIF.FlightPlanMode)AppSettingsV2.Instance.FltAutoSaveATC;
+      FltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
+      LOG.Log( $"InitGUI", "FlightLogModule Setup" );
       SC.SimConnectClient.Instance.FlightLogModule.Enabled = AppSettingsV2.Instance.FRecorder;
       LOG.Log( $"InitGUI", "AirportMgr Reset" );
       AirportMgr.Reset( );
@@ -1463,7 +1464,7 @@ namespace FS20_HudBar
         SetupInGameHook( false );
         flp.SetEnginesVisible( -1 ); // reset for the next attempt
 
-        SC.SimConnectClient.Instance.FlightPlanModule.Enabled = false;
+        FltPlanMgr.Enabled = false; // disable when disconnecting
         SC.SimConnectClient.Instance.Disconnect( );
         LOG.Log( $"SimConnect", "Disconnected now" );
       }
@@ -1504,7 +1505,7 @@ namespace FS20_HudBar
 
           // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
           _ = SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile;
-          SC.SimConnectClient.Instance.FlightPlanModule.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
+          FltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
           // enable game hooks if newly connected and desired
           SetupInGameHook( AppSettingsV2.Instance.InGameHook );
           // Set Engines 

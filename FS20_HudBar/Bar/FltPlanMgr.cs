@@ -7,22 +7,26 @@ using System.Threading.Tasks;
 
 using SC = SimConnectClient;
 using FSimClientIF.Flightplan;
+using FS20_HudBar.GUI;
 
 namespace FS20_HudBar.Bar
 {
   /// <summary>
   /// Handles the FLT File to get some more information other than SimConnect
   /// As we can only interface to one FLT file this is build as static entity
+  /// 
+  /// DON'T Use the SimConnectClient FlightPlanModule outside, use the Manager...
+  /// 
   /// </summary>
   internal static class FltPlanMgr
   {
-//    private static FS20FltFile m_fltFile = null;
+    //    private static FS20FltFile m_fltFile = null;
     private static int m_currentHash = 0;
 
-    private static object m_lock = new object();
+    private static object m_lock = new object( );
 
     private static FlightPlan m_FP; // The managed one
-    private static FlightPlan m_dummyFP = new FlightPlan(); // an empty one to return when needed
+    private static FlightPlan m_dummyFP = new FlightPlan( ); // an empty one to return when needed
 
     /// <summary>
     /// Event triggered when a new FlightPlan is available
@@ -33,14 +37,45 @@ namespace FS20_HudBar.Bar
       NewFlightPlan?.Invoke( null, new EventArgs( ) );
     }
 
+    /// <summary>
+    /// Get;Set: True if the FPlan Module is enabled and returns events
+    /// </summary>
+    public static bool Enabled {
+      get => SC.SimConnectClient.Instance.FlightPlanModule.Enabled;
+      set {
+        SC.SimConnectClient.Instance.FlightPlanModule.Enabled = value;
+        if (value) {
+          // enable - reset state
+          m_currentHash = FlightPlan.Hash;
+          HasChanged = true;
+        }
+        else {
+          // disable
+          HasChanged = false;
+          m_currentHash = 0;
+          lock (m_lock) {
+            m_FP = null; // Note: The FlightPlan property returns an empty one now
+          }
+        }
+
+      }
+    }
+
+    /// <summary>
+    /// Get; Set: The current Flightplan Mode
+    /// </summary>
+    public static FSimClientIF.FlightPlanMode FlightPlanMode {
+      get => SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode;
+      set => SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode = value;
+    }
 
     /// <summary>
     /// The most current FlightPlan (can be an empty one)
     /// </summary>
     public static FlightPlan FlightPlan {
       get {
-        lock ( m_lock ) {
-          if ( m_FP != null )
+        lock (m_lock) {
+          if (m_FP != null)
             return m_FP;
           else
             return m_dummyFP; // the empty one
@@ -85,42 +120,15 @@ namespace FS20_HudBar.Bar
     // Handle new FLT files comming in
     private static void Instance_FltSave( object sender, SC.State.FltSaveEventArgs e )
     {
-      lock ( m_lock ) {
-        m_FP = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Copy(); // we have a copy
-        HasChanged = ( m_currentHash != m_FP.Hash );
+      lock (m_lock) {
+        m_FP = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Copy( ); // we have a copy
+        HasChanged = (m_currentHash != m_FP.Hash);
         m_currentHash = m_FP.Hash;
       }
       // call the owner
-      if ( HasChanged )
+      if (HasChanged)
         OnNewFlightPlan( ); // inform the Bar
     }
-
-
-    /// <summary>
-    /// Enable the FLT processing
-    /// </summary>
-    public static void Enable( )
-    {
-      SC.SimConnectClient.Instance.FltSaveModule.Enabled = true;
-      // reset state
-      m_currentHash = FlightPlan.Hash;
-      HasChanged = true;
-    }
-
-
-    /// <summary>
-    /// Disable the FLT processing
-    /// </summary>
-    public static void Disable( )
-    {
-      SC.SimConnectClient.Instance.FltSaveModule.Enabled = false;
-      HasChanged = false;
-      m_currentHash = 0;
-      lock ( m_lock ) {
-        m_FP = null; // Note: The FlightPlan property returns an empty one now
-      }
-    }
-
 
   }
 }

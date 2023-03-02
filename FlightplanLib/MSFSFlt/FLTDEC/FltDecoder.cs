@@ -12,14 +12,14 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
   public class FltDecoder
   {
     /// <summary>
-    /// Decode a JSON Flight Plan string 
+    /// Decode a FLT Ini Flight Plan string 
     /// returns a filled OFP or an empty one if something failed
     /// </summary>
-    /// <param name="jsonString">The flight plan as JSON string</param>
+    /// <param name="fltIniString">The flight plan as Flt Ini string</param>
     /// <returns>An OFP</returns>
-    public static FLT FromString( string jsonString )
+    public static FLT FromString( string fltIniString )
     {
-      var ofp = Formatter.FromIniString<FLT>( jsonString );
+      var ofp = Formatter.FromIniString<FLT>( fltIniString );
       if (ofp != null) {
         return ofp;
       }
@@ -27,14 +27,14 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     }
 
     /// <summary>
-    /// Decode a JSON Flight Plan from a File 
+    /// Decode a FLT Ini Flight Plan from a File 
     /// returns a filled OFP or an empty one if something failed
     /// </summary>
-    /// <param name="jsonFile">The flight plan as JSON filename</param>
+    /// <param name="fltIniFile">The flight plan as FLT Ini filename</param>
     /// <returns>An OFP</returns>
-    public static FLT FromFile( string jsonFile )
+    public static FLT FromFile( string fltIniFile )
     {
-      var ofp = Formatter.FromIniFile<FLT>( jsonFile );
+      var ofp = Formatter.FromIniFile<FLT>( fltIniFile );
       if (ofp != null) {
         return ofp;
       }

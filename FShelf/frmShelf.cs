@@ -40,31 +40,31 @@ namespace FShelf
     private FSimFacilityIF.IAirport _airport = null;
     // registered obs ID for the aircraft update subscription
     private int _observerID = -1;
-    private string _observerName = "SHELF_FORM";
+    private const string _observerName = "SHELF_FORM";
 
     // flags a missing Facility database
-    private bool _dbMissing = false;
+    private readonly bool _dbMissing = false;
 
     // data update tracker to allow to pace down the updates towards the user control
     private int _updates;
     // comm item with the Mapping user control
-    private bm98_Map.Data.TrackedAircraftCls _tAircraft = new bm98_Map.Data.TrackedAircraftCls( );
+    private readonly TrackedAircraftCls _tAircraft = new TrackedAircraftCls( );
 
     // default Airport Entry fore color
     private Color _txForeColorDefault;
 
     // METAR Provider
-    private MetarLib.Metar _metar;
+    private readonly MetarLib.Metar _metar;
 
     // Plan Wrapper
-    private FpWrapper _flightPlan = new FpWrapper( ); // only one instance, don't null it !!
+    private readonly FpWrapper _flightPlan = new FpWrapper( ); // only one instance, don't null it !!
 
     // SimBrief Provider
-    private SimBrief _simBrief;
+    private readonly SimBrief _simBrief;
 
     // MSFS Pln Provider
-    private MSFSPln _msfsPln;
-    private MSFSFlt _msfsFlt;
+    private readonly MSFSPln _msfsPln;
+    private readonly MSFSFlt _msfsFlt;
     private string _selectedPlanFile = "";
     private bool _awaitingFLTfile = false; // true when FLT is requested
 
@@ -72,13 +72,13 @@ namespace FShelf
     private Point _lastLiveLocation;
     private Size _lastLiveSize;
 
-    private PerfTracker _perfTracker = new PerfTracker( );
+    private readonly PerfTracker _perfTracker = new PerfTracker( );
 
     // Profiles
-    private ProfileCat _profileCat = new ProfileCat( );
-    private BindingSource _profileBinding = new BindingSource( );
-    private BindingSource _vsRateBinding = new BindingSource( );
-    private BindingSource _altBinding = new BindingSource( );
+    private readonly ProfileCat _profileCat = new ProfileCat( );
+    private readonly BindingSource _profileBinding = new BindingSource( );
+    private readonly BindingSource _vsRateBinding = new BindingSource( );
+    private readonly BindingSource _altBinding = new BindingSource( );
     private static readonly DataGridViewCellStyle _vCellStyle
       = new DataGridViewCellStyle( ) { Alignment = DataGridViewContentAlignment.MiddleRight, BackColor = Color.Gainsboro, SelectionBackColor = Color.CornflowerBlue };
     private static readonly DataGridViewCellStyle _vCellStyleMarked
@@ -705,56 +705,65 @@ namespace FShelf
       // no action (so far)
     }
 
-    // retrieve an airport from the DB
-    private void SetAirport( string aptICAO )
+    // return an airport from the DB or null
+    private IAirport GetAirport( string aptICAO )
     {
       // sanity
-      if (_dbMissing) {
-        _airport = null; // cannot get facilities
-        return;
-      }
+      if (_dbMissing) return null;
 
+      IAirport airport = null;
       using (var _db = new FSimFacilityDataLib.AirportDB.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
-        if (!_db.Open( Folders.GenAptDBFile )) {
-          txEntry.ForeColor = Color.Red; // clear the one not available
-          txEntry.Text = "No DB";
-          _airport = null; // no db available
+        if (_db.Open( Folders.GenAptDBFile )) {
+          airport = _db.DbReader.GetAirport( aptICAO ); ;
         }
-        _airport = _db.DbReader.GetAirport( aptICAO ); ;
       }
+      return airport;
     }
 
     // try to load an airport from the Database into the Map
-    private void LoadAirport( string aptICAO )
+    private void LoadAirport( )
     {
-      SetAirport( aptICAO );
       if (_airport != null) {
-        txEntry.ForeColor = _txForeColorDefault; // clear the one not available
         aMap.MapCreator.Reset( );
         aMap.MapCreator.SetAirport( _airport );
         aMap.MapCreator.Commit( );
-      }
-      else {
-        txEntry.ForeColor = Color.Red; // clear the one not available
       }
     }
 
     // Departure Label clicked
     private void lblDEP_Click( object sender, EventArgs e )
     {
-      LoadAirport( lblDEP.Text );
+      var apt = GetAirport( lblDEP.Text );
+      if (apt != null) {
+        _airport = apt;
+        LoadAirport( );
+      }
     }
 
     // Arrival Label clicked
     private void lblARR_Click( object sender, EventArgs e )
     {
-      LoadAirport( lblARR.Text );
+      var apt = GetAirport( lblARR.Text );
+      if (apt != null) {
+        _airport = apt;
+        LoadAirport( );
+      }
     }
 
     // Airport entry button clicked
     private void btGetAirport_Click( object sender, EventArgs e )
     {
-      LoadAirport( txEntry.Text.Trim( ) );
+      var apt = GetAirport( txEntry.Text.Trim( ) );
+      if (apt == null) {
+        txEntry.ForeColor = Color.Red; // clear the one not available
+        txEntry.Text = "n.a.";
+        // don't change the _airport when nothing is found
+      }
+      else {
+        txEntry.ForeColor = _txForeColorDefault; // clear the one not available
+        _airport = apt;
+        LoadAirport( );
+      }
     }
 
     // shortcut on Enter
@@ -781,7 +790,7 @@ namespace FShelf
       var simData = SC.SimConnectClient.Instance.AircraftTrackingModule;
       // TODO: the next two selectors will cause loosing tracking of the Acft, may be update it anyway
       if (!this.Visible) return;  // no need to update while the shelf is not visible ???? TODO decide if or if not cut reporting ????
-      //if (!(tab.SelectedTab == tabMap)) return;  //don't update while not showing the MapTab - this causes track disruptions when in METAR etc
+                                  //if (!(tab.SelectedTab == tabMap)) return;  //don't update while not showing the MapTab - this causes track disruptions when in METAR etc
 
       // update pace slowed down to an acceptable CPU load - (native is 200ms)
       if ((_updates++ % 3) == 0) { // every third.. 600ms pace - slow enough ?? performance penalty...
@@ -894,8 +903,8 @@ namespace FShelf
 
         // preselect airports
         txCfgDep.Text = _flightPlan.FlightPlan.Origin.Icao_Ident.ICAO;
-        SetAirport( txCfgDep.Text );
-        if (_airport == null) {
+        var apt = GetAirport( txCfgDep.Text );
+        if (apt == null) {
           txCfgDep.ForeColor = Color.Red;
           this.DEP_Airport = "n.a.";
           lblCfgDep.Text = this.DEP_Airport;
@@ -903,12 +912,12 @@ namespace FShelf
         else {
           txCfgDep.ForeColor = Color.GreenYellow;
           this.DEP_Airport = txCfgDep.Text;
-          lblCfgDep.Text = _airport.Name;
+          lblCfgDep.Text = apt.Name;
         }
 
         txCfgArr.Text = _flightPlan.FlightPlan.Destination.Icao_Ident.ICAO;
-        SetAirport( txCfgArr.Text );
-        if (_airport == null) {
+        apt = GetAirport( txCfgArr.Text );
+        if (apt == null) {
           txCfgArr.ForeColor = Color.Red;
           this.ARR_Airport = "n.a.";
           lblCfgArr.Text = this.ARR_Airport;
@@ -916,7 +925,7 @@ namespace FShelf
         else {
           txCfgArr.ForeColor = Color.GreenYellow;
           this.ARR_Airport = txCfgArr.Text;
-          lblCfgArr.Text = _airport.Name;
+          lblCfgArr.Text = apt.Name;
         }
 
         // Set Map Route
@@ -946,7 +955,7 @@ namespace FShelf
     {
       DebSaveRouteString( e.MSFSPlnData, "PLN" );
 
-      lblCfgSbPlanData.Text = "PLN data received";
+      lblCfgMsPlanData.Text = "PLN data received";
       var xs = e.MSFSPlnData;
       _flightPlan.LoadMsFsPLN( xs );
       if (_flightPlan.IsMsFsPLN) {
@@ -961,8 +970,8 @@ namespace FShelf
 
         // preselect airports
         txCfgDep.Text = _flightPlan.FlightPlan.Origin.Icao_Ident.ICAO;
-        SetAirport( txCfgDep.Text );
-        if (_airport == null) {
+        var apt = GetAirport( txCfgDep.Text );
+        if (apt == null) {
           txCfgDep.ForeColor = Color.Red;
           this.DEP_Airport = "n.a.";
           lblCfgDep.Text = this.DEP_Airport;
@@ -970,12 +979,12 @@ namespace FShelf
         else {
           txCfgDep.ForeColor = Color.GreenYellow;
           this.DEP_Airport = txCfgDep.Text;
-          lblCfgDep.Text = _airport.Name;
+          lblCfgDep.Text = apt.Name;
         }
 
         txCfgArr.Text = _flightPlan.FlightPlan.Destination.Icao_Ident.ICAO;
-        SetAirport( txCfgArr.Text );
-        if (_airport == null) {
+        apt = GetAirport( txCfgArr.Text );
+        if (apt == null) {
           txCfgArr.ForeColor = Color.Red;
           this.ARR_Airport = "n.a.";
           lblCfgArr.Text = this.ARR_Airport;
@@ -983,7 +992,7 @@ namespace FShelf
         else {
           txCfgArr.ForeColor = Color.GreenYellow;
           this.ARR_Airport = txCfgArr.Text;
-          lblCfgArr.Text = _airport.Name;
+          lblCfgArr.Text = apt.Name;
         }
 
         // Set Map Route
@@ -1002,7 +1011,7 @@ namespace FShelf
     {
       DebSaveRouteString( e.MSFSFltData, "FLT" );
 
-      lblCfgSbPlanData.Text = "FLT data received";
+      lblCfgMsPlanData.Text = "FLT data received";
       var ins = e.MSFSFltData;
       _flightPlan.LoadMsFsFLT( ins );
       if (_flightPlan.IsMsFsPLN) {
@@ -1012,34 +1021,38 @@ namespace FShelf
         }
 
         // populate CFG fields
-        lblCfgMsPlanData.Text = $"PLN: {_flightPlan.FlightPlan.Origin.Icao_Ident} to {_flightPlan.FlightPlan.Destination.Icao_Ident}";
+        lblCfgMsPlanData.Text = $"FLT: {_flightPlan.FlightPlan.Origin.Icao_Ident} to {_flightPlan.FlightPlan.Destination.Icao_Ident}";
         lblCfgSbPlanData.Text = "..."; // clear the SB one
 
         // preselect airports
-        txCfgDep.Text = _flightPlan.FlightPlan.Origin.Icao_Ident.ICAO;
-        SetAirport( txCfgDep.Text );
-        if (_airport == null) {
-          txCfgDep.ForeColor = Color.Red;
-          this.DEP_Airport = "n.a.";
-          lblCfgDep.Text = this.DEP_Airport;
-        }
-        else {
-          txCfgDep.ForeColor = Color.GreenYellow;
-          this.DEP_Airport = txCfgDep.Text;
-          lblCfgDep.Text = _airport.Name;
+        if (_flightPlan.FlightPlan.Origin.IsValid) {
+          txCfgDep.Text = _flightPlan.FlightPlan.Origin.Icao_Ident.ICAO;
+          var apt = GetAirport( txCfgDep.Text );
+          if (apt == null) {
+            txCfgDep.ForeColor = Color.Red;
+            this.DEP_Airport = "n.a.";
+            lblCfgDep.Text = this.DEP_Airport;
+          }
+          else {
+            txCfgDep.ForeColor = Color.GreenYellow;
+            this.DEP_Airport = txCfgDep.Text;
+            lblCfgDep.Text = apt.Name;
+          }
         }
 
-        txCfgArr.Text = _flightPlan.FlightPlan.Destination.Icao_Ident.ICAO;
-        SetAirport( txCfgArr.Text );
-        if (_airport == null) {
-          txCfgArr.ForeColor = Color.Red;
-          this.ARR_Airport = "n.a.";
-          lblCfgArr.Text = this.ARR_Airport;
-        }
-        else {
-          txCfgArr.ForeColor = Color.GreenYellow;
-          this.ARR_Airport = txCfgArr.Text;
-          lblCfgArr.Text = _airport.Name;
+        if (_flightPlan.FlightPlan.Destination.IsValid) {
+          txCfgArr.Text = _flightPlan.FlightPlan.Destination.Icao_Ident.ICAO;
+          var apt = GetAirport( txCfgArr.Text );
+          if (apt == null) {
+            txCfgArr.ForeColor = Color.Red;
+            this.ARR_Airport = "n.a.";
+            lblCfgArr.Text = this.ARR_Airport;
+          }
+          else {
+            txCfgArr.ForeColor = Color.GreenYellow;
+            this.ARR_Airport = txCfgArr.Text;
+            lblCfgArr.Text = apt.Name;
+          }
         }
 
         // Set Map Route
@@ -1167,7 +1180,6 @@ namespace FShelf
       // sanity
       if (dgvAlt.SelectedRows.Count <= 0) return;
 
-      var selRow = dgvAlt.SelectedRows[0];
       _profileCat.SetStartAltitude( dgvAlt.SelectedRows[0] );
     }
 
@@ -1190,8 +1202,8 @@ namespace FShelf
       txCfgDep.ForeColor = _txForeColorDefault; // clear the one not available
       if (e.KeyChar == (char)Keys.Return) {
         e.Handled = true;
-        SetAirport( txCfgDep.Text );
-        if (_airport == null) {
+        var apt = GetAirport( txCfgDep.Text );
+        if (apt == null) {
           txCfgDep.ForeColor = Color.Red;
           this.DEP_Airport = "n.a.";
           lblCfgDep.Text = this.DEP_Airport;
@@ -1199,7 +1211,7 @@ namespace FShelf
         else {
           txCfgDep.ForeColor = Color.GreenYellow;
           this.DEP_Airport = txCfgDep.Text;
-          lblCfgDep.Text = _airport.Name;
+          lblCfgDep.Text = apt.Name;
         }
       }
     }
@@ -1210,8 +1222,8 @@ namespace FShelf
       txCfgArr.ForeColor = _txForeColorDefault; // clear the one not available
       if (e.KeyChar == (char)Keys.Return) {
         e.Handled = true;
-        SetAirport( txCfgArr.Text );
-        if (_airport == null) {
+        var apt = GetAirport( txCfgArr.Text );
+        if (apt == null) {
           txCfgArr.ForeColor = Color.Red;
           this.ARR_Airport = "n.a.";
           lblCfgArr.Text = this.ARR_Airport;
@@ -1219,7 +1231,7 @@ namespace FShelf
         else {
           txCfgArr.ForeColor = Color.GreenYellow;
           this.ARR_Airport = txCfgArr.Text;
-          lblCfgArr.Text = _airport.Name;
+          lblCfgArr.Text = apt.Name;
         }
       }
     }

@@ -28,8 +28,8 @@ namespace FlightplanLib.MSFSPln
         Source = SourceOfFlightPlan.MS_Pln,
         Title = msfsPlan.FlightPlan.Title,
         CruisingAlt_ft = msfsPlan.FlightPlan.CruisingAlt_ft,
-        FlightPlanType= msfsPlan.FlightPlan.FlightPlanType,
-        RouteType= msfsPlan.FlightPlan.RouteType,
+        FlightPlanType = msfsPlan.FlightPlan.FlightPlanType,
+        RouteType = msfsPlan.FlightPlan.RouteType,
         StepProfile = "" // dont have one or need to calculate it
       };
       // create Origin (for the runway assuming the First Waypoint is the Airport)
@@ -55,7 +55,8 @@ namespace FlightplanLib.MSFSPln
       // create waypoints
       var wypList = new List<Waypoint>( );
       foreach (var fix in msfsPlan.FlightPlan.WaypointCat) {
-        // create Waypoint
+        // create Waypoint, omit invalid ones
+        if (!fix.IsValid) continue;
         var wyp = new Waypoint( ) {
           WaypointType = fix.WaypointType,
           ID = fix.ID,

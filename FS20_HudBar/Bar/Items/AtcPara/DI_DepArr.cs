@@ -66,10 +66,10 @@ namespace FS20_HudBar.Bar.Items
 
       var TTX = new Config.frmApt( );
       // load default
-      if (SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.HasFlightPlan) {
+      if (FltPlanMgr.FlightPlan.HasFlightPlan) {
         // dest from FPLan
-        TTX.DepAptICAO = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Departure;
-        TTX.ArrAptICAO = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Destination;
+        TTX.DepAptICAO = FltPlanMgr.FlightPlan.Departure;
+        TTX.ArrAptICAO = FltPlanMgr.FlightPlan.Destination;
       }
       else {
         // no Flightplan
@@ -96,9 +96,9 @@ namespace FS20_HudBar.Bar.Items
         // Update DEP
         if (string.IsNullOrWhiteSpace( TTX.DepAptICAO )) {
           // empty entry to clear
-          if (SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.HasFlightPlan) {
+          if (FltPlanMgr.FlightPlan.HasFlightPlan) {
             // update with FP destination
-            AirportMgr.UpdateDep( SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Departure );
+            AirportMgr.UpdateDep( FltPlanMgr.FlightPlan.Departure );
           }
           else {
             // clear with N.A. airport
@@ -112,9 +112,9 @@ namespace FS20_HudBar.Bar.Items
         // Update ARR
         if (string.IsNullOrWhiteSpace( TTX.ArrAptICAO )) {
           // empty entry to clear
-          if (SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.HasFlightPlan) {
+          if (FltPlanMgr.FlightPlan.HasFlightPlan) {
             // update with FP destination
-            AirportMgr.UpdateArr( SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Destination );
+            AirportMgr.UpdateArr( FltPlanMgr.FlightPlan.Destination );
           }
           else {
             // clear with N.A. airport

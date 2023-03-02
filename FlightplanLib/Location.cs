@@ -62,6 +62,10 @@ namespace FlightplanLib
 
     // Tools
 
+    /// <summary>
+    /// True if the Location is valid (has a valid LatLon)
+    /// </summary>
+    public bool IsValid => !LatLonAlt_ft.IsEmpty;
 
   }
 }

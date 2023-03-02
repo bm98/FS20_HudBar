@@ -88,6 +88,7 @@ FlightBag Update
 - Fix Exception when SimBrief Image/Doc Source is disabled (from Website)
 - FacilityDataLoader: major rework for Approaches and Navigraph merges
 - Refactoring, consolidation for commonly used stuff (dNetBm98 library now)
+- Fix A number of issues found while testing...
 - Update QuickGuide
 
 - Update to .Net Framework 4.8

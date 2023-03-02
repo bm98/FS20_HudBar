@@ -7,17 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
+using FSimFacilityIF;
 using static dNetBm98.Units;
 using static dNetBm98.XColor;
 using CoordLib;
+using CoordLib.Extensions;
+using MapLib;
+
 using bm98_Map.Drawing;
 using bm98_Map.Data;
 using bm98_Map.UI;
-using MapLib;
-using FSimFacilityIF;
-using System.Diagnostics;
-using MapLib.Tiles;
+using System.Threading;
 
 namespace bm98_Map
 {
@@ -34,23 +36,23 @@ namespace bm98_Map
   public partial class UC_Map : UserControl
   {
     // WinForms Invoker
-    private dNetBm98.WinFormInvoker _eDispatch;
+    private readonly dNetBm98.WinFormInvoker _eDispatch;
 
     // The Viewport for this Map
-    private VPort2 _viewport;
+    private readonly VPort2 _viewport;
     // our TT instance
-    private ToolTip _toolTip;
+    private readonly ToolTip _toolTip;
 
     // Map Creator Toolings
-    private MapCreator _mapCreator;
+    private readonly MapCreator _mapCreator;
 
     // Holding a ref to the commited airport here
     private Airport _airportRef;
     // maintains all the visuals of the Airport
-    private DisplayListMgr _airportDisplayMgr;
+    private readonly DisplayListMgr _airportDisplayMgr;
 
     // internal Aircraft Data Tracking obj
-    private TrackedAircraft _aircraftTrack = new TrackedAircraft( );
+    private readonly TrackedAircraft _aircraftTrack = new TrackedAircraft( );
 
     // Center of the Map (airport) when loaded
     // private LatLon _airportCoord = new LatLon( );
@@ -65,7 +67,7 @@ namespace bm98_Map
     // Loop to complete when tiles have failed to load
     private const int c_maxFailedLoadingCount = 5; // try max loops to get the complete image
 
-    private Dictionary<MapRange, Button> _mrButtons = new Dictionary<MapRange, Button>( );
+    private readonly Dictionary<MapRange, Button> _mrButtons = new Dictionary<MapRange, Button>( );
     private readonly Color _mrColorOFF;
     private readonly Color _mrColorON = Color.Yellow;
 
@@ -83,11 +85,12 @@ namespace bm98_Map
     private bool _vsIsFpm = true;
 
     // Panels
-    private StripPanel _pnlRunways;
-    private StripPanel _pnlApproaches;
-    private StripPanel _pnlNavaids;
-    private StripPanel _pnlTower;
+    private readonly StripPanel _pnlRunways;
+    private readonly StripPanel _pnlApproaches;
+    private readonly StripPanel _pnlNavaids;
+    private readonly StripPanel _pnlTower;
 
+    private readonly StripPanel _pnlProviders;
 
     #region User Control API
 
@@ -375,7 +378,7 @@ namespace bm98_Map
           _pnlTower.AddItem( frq.CommString( ).PadRight( 63 ), null, false );
         }
       }
-      _pnlTower.CommitUpdate( this.ClientRectangle.Bottom - lblCopyright.Height );
+      _pnlTower.CommitUpdate( -1, this.ClientRectangle.Bottom - lblCopyright.Height );
     }
 
     // hide this
@@ -393,7 +396,6 @@ namespace bm98_Map
     {
       _pnlApproaches.InitUpdate( );
       _pnlApproaches.ClearItems( );
-
       if (runway != null) {
         // Airport Runways
         _pnlApproaches.Title = $"Runway {runway.Ident} - Approaches";
@@ -409,7 +411,7 @@ namespace bm98_Map
           _pnlApproaches.AddItem( $"{appName,-7} {$"({fix.ICAO})",-8} RWY {runway.Ident}  {ngTag}".PadRight( 30 ), appName, true );
         }
       }
-      _pnlApproaches.CommitUpdate( _pnlRunways.Top );
+      _pnlApproaches.CommitUpdate( -1, _pnlRunways.Top );
     }
 
     // Fill the runways panel from an airport
@@ -443,7 +445,7 @@ namespace bm98_Map
           }
         }
       }
-      _pnlRunways.CommitUpdate( this.ClientRectangle.Bottom - lblCopyright.Height );
+      _pnlRunways.CommitUpdate( -1, this.ClientRectangle.Bottom - lblCopyright.Height );
       // init approach panel empty and unselected, will populate on runway strip click
       // needs runway panel to be layed out for the placement
       PopulateRunwayApproaches( null );
@@ -525,7 +527,7 @@ namespace bm98_Map
           continue; // skip waypoints
         _pnlNavaids.AddItem( nav.VorNdbNameString( ).PadRight( 63 ), null, false );
       }
-      _pnlNavaids.CommitUpdate( this.ClientRectangle.Bottom - lblCopyright.Height );
+      _pnlNavaids.CommitUpdate( -1, this.ClientRectangle.Bottom - lblCopyright.Height );
     }
 
     // hide this
@@ -543,41 +545,29 @@ namespace bm98_Map
     {
       if (DesignMode) return;
 
-      // clear all controls from the FLP
-      while (flpProvider.Controls.Count > 0) {
-        var cx = flpProvider.Controls[0];
-        flpProvider.Controls.Remove( cx );
-        cx.Dispose( );
-      }
+      _pnlProviders.InitUpdate( );
+      _pnlProviders.ClearItems( );
 
-      var f1 = flpProvider.ForeColor.Dimmed( 60 );
-      var f2 = flpProvider.ForeColor;
-      int num = 0;
       foreach (var p in MapManager.Instance.EnabledProviders) {
-        var label = new Label( ) {
-          AutoSize = true,
-          Text = MapManager.Instance.ProviderName( p ),
-          Tag = p,
-          ForeColor = (num++ % 2 == 0) ? f1 : f2,
-        };
-        label.MouseClick += Provider_MouseClick;
-        flpProvider.Controls.Add( label );
+        _pnlProviders.AddItem( MapManager.Instance.ProviderName( p ).PadRight( 42 ), p, true );
       }
-      flpProvider.Cursor = Cursors.Hand;
-      flpProvider.BringToFront( );
-
+      _pnlProviders.CommitUpdate( btMapProvider.Bottom + 5, -1 );
     }
 
     // handle provider was clicked
-    private void Provider_MouseClick( object sender, MouseEventArgs e )
+    private void ProviderLabel_Click( object sender, EventArgs e )
     {
-      var lbl = sender as Label;
-      MapProvider mapProvider = (MapProvider)lbl.Tag;
-      if (mapProvider != MapProvider.DummyProvider) {
-        // change provider
-        MapManager.Instance.SetNewProvider( mapProvider );
-        StartMapLoading( _mapCenterDyn );
-        flpProvider.Visible = false;
+      // sanity
+      if (!(sender is Label label)) return;
+      if (!(label.Tag is MapProvider)) return;
+
+      if (label.Tag is MapProvider mapProvider) {
+        if (mapProvider != MapProvider.DummyProvider) {
+          // change provider
+          MapManager.Instance.SetNewProvider( mapProvider );
+          StartMapLoading( _mapCenterDyn );
+          _pnlProviders.Visible = false;
+        }
       }
     }
 
@@ -630,7 +620,8 @@ namespace bm98_Map
     // Update the mapCenter only via this method !!
     private void UpdateMapCenter( LatLon newCenter )
     {
-      if (newCenter != _mapCenterDyn) {
+      // if the center is not in the same Quad_15 as the current one, change
+      if (newCenter.AsQuad( 15 ) != _mapCenterDyn.AsQuad( 15 )) {
         _mapCenterDyn = newCenter;
         OnMapCenterChanged( _mapCenterDyn );
         // may be something needs to be rendered
@@ -766,17 +757,21 @@ namespace bm98_Map
       _pnlTower.EmptyClicked += _pnlTower_EmptyClicked;
       this.Controls.Add( _pnlTower );
 
-      _pnlNavaids = new StripPanel( new Size( 550, 500 ), "Area - Navaids" ) { Location = new Point( 5, 50 ) };// only X matters
+      _pnlNavaids = new StripPanel( new Size( 550, 500 ), "Area - Navaids" ) { Location = new Point( 5, 50 ) };
       _pnlNavaids.EmptyClicked += _pnlNavaids_EmptyClicked;
       this.Controls.Add( _pnlNavaids );
+
+      _pnlProviders = new StripPanel( new Size( 290, 360 ), "Map Providers", new Font( this.Font.FontFamily, 10f, FontStyle.Bold ) ) {
+        Anchor = AnchorStyles.Top | AnchorStyles.Right,
+        Location = new Point( btNavaids.Right - 290, 50 ),  // only X matters
+      };
+      _pnlProviders.ItemClicked += ProviderLabel_Click;
+      this.Controls.Add( _pnlProviders );
 
       flpAcftData.Visible = false;
       flpAcftData.Location = new Point( 5, lblAirport.Bottom + 5 );
       flpAcftData.AutoSize = true;
 
-      flpProvider.Visible = false;
-      flpProvider.AutoSize = true;
-      flpProvider.Top = btMapProvider.Bottom + 5;
       _viewport = new VPort2( pbDrawing, _mapRangeHandler );
       _viewport.LoadComplete += Canvas_LoadComplete;
       _viewport.MapLoading += Canvas_MapLoading;
@@ -876,8 +871,9 @@ namespace bm98_Map
 
     private void btMapProvider_Click( object sender, EventArgs e )
     {
-      flpProvider.Visible = !flpProvider.Visible; // toggle
-      if (flpProvider.Visible) { flpProvider.BringToFront( ); }
+      _pnlProviders.Visible = !_pnlProviders.Visible;
+      //flpProvider.Visible = !flpProvider.Visible; // toggle
+      //if (flpProvider.Visible) { flpProvider.BringToFront( ); }
     }
 
     private void btRangeAuto_Click( object sender, EventArgs e )

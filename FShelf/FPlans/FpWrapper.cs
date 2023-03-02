@@ -77,10 +77,10 @@ namespace FShelf.FPlans
     /// <summary>
     /// Decode and Load the MSFS FLT Plan
     /// </summary>
-    /// <param name="plnIniString">The received MSFS Plan as string</param>
-    public void LoadMsFsFLT( string plnIniString )
+    /// <param name="fltIniString">The received MSFS Plan as string</param>
+    public void LoadMsFsFLT( string fltIniString )
     {
-      var flt = FlightplanLib.MSFSFlt.FLTDEC.FltDecoder.FromString( plnIniString );
+      var flt = FlightplanLib.MSFSFlt.FLTDEC.FltDecoder.FromString( fltIniString );
       if (flt.IsValid) {
         _fPlan = MSFSFlt.AsFlightPlan( flt );
       }

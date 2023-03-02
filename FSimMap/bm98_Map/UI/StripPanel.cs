@@ -83,11 +83,11 @@ namespace bm98_Map.UI
       get => base.Visible;
       set {
         base.Visible = value;
-        if (value) { this.BringToFront( ); }
+        if (value) { base.BringToFront( ); }
       }
     }
 
-    // base init for all ctors. (set base colors, font before calling)
+    // this init for all ctors. (set this colors, font before calling)
     private void InitPanel( Size maxSize, string title )
     {
       base.ForeColor = _foreCol;
@@ -103,9 +103,9 @@ namespace bm98_Map.UI
       base.Size = base.MinimumSize;
       base.Visible = false; // initially invisible
       // init zebra colors
-      _f1 = this.ForeColor;
+      _f1 = base.ForeColor;
       _f2 = _f1.Dimmed( 10 );
-      _b1 = this.BackColor.Dimmed( 20 );
+      _b1 = base.BackColor.Dimmed( 20 );
       _b2 = _b1.Dimmed( 30 );
       // Add title item
       _lTitle = new StripLabel( ) {
@@ -121,7 +121,7 @@ namespace bm98_Map.UI
     }
 
     /// <summary>
-    /// cTor: Define max size and initial title, Base Colors and Font
+    /// cTor: Define max size and initial title, this Colors and Font
     /// </summary>
     /// <param name="maxSize">Max Size of the panel</param>
     /// <param name="title">Initial title strip content</param>
@@ -139,7 +139,23 @@ namespace bm98_Map.UI
     }
 
     /// <summary>
-    /// cTor: Define max size and initial title
+    /// cTor: Define max size and initial title 
+    ///       using default colors 
+    /// </summary>
+    /// <param name="maxSize">Max Size of the panel</param>
+    /// <param name="title">Initial title strip content</param>
+    /// <param name="font">Strip font</param>
+    public StripPanel( Size maxSize, string title, Font font )
+    {
+      // use default font and colors
+      base.Font = new Font( font.FontFamily, font.Size, font.Style );
+      InitPanel( maxSize, title );
+    }
+
+
+    /// <summary>
+    /// cTor: Define max size and initial title 
+    ///       using default colors and font (Consoloas 11.25 bold)
     /// </summary>
     /// <param name="maxSize">Max Size of the panel</param>
     /// <param name="title">Initial title strip content</param>
@@ -222,34 +238,46 @@ namespace bm98_Map.UI
     public void InitUpdate( )
     {
       _visSafe = base.Visible;
+      base.Visible = false;
       base.SuspendLayout( );
       base.AutoSize = false;
+      base.AutoScroll = false;
     }
 
     /// <summary>
     /// Commit and refresh the updates
     /// </summary>
-    /// <param name="bottomY">The bottom Y coord of the placement</param>
-    public void CommitUpdate( int bottomY )
+    /// <param name="topY">The top Y coord of the placement or -1 if not used</param>
+    /// <param name="bottomY">The bottom Y coord of the placement or -1 if not used</param>
+    public void CommitUpdate( int topY, int bottomY )
     {
       // prepare to show
       base.AutoSize = true;
+      base.AutoScroll = true;
       base.ResumeLayout( );
-      base.Top = bottomY - base.Height - 5;
+      if (topY >= 0) {
+        base.Top = topY;
+      }
+      else if (bottomY >= 0) {
+        base.Top = bottomY - base.Height - 5;
+      }
       base.Visible = _visSafe;
     }
+
 
     // manages the selected frame of an FLP, selected=null deselects all
     private void LabelFLP_SetSelected( StripLabel selected )
     {
       // clear any but never fail
       try {
+        base.AutoScroll = false; // avoids scrollbars popping up while changing
         for (int i = 1; i < base.Controls.Count; i++) { (base.Controls[i] as StripLabel).ItemSelected = false; }
         if (selected == null) return; // unselect all
         // select one
         selected.ItemSelected = true;
       }
       catch { }
+      base.AutoScroll = true;
     }
 
     // a strip item was selected

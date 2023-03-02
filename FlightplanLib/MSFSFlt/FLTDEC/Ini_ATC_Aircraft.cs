@@ -19,6 +19,11 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     [IniFileKey( "ActiveFlightPlan" )]
     public string ActiveFlightPlan_S { get; internal set; } = ""; // True, False
     /// <summary>
+    /// RequestedFlightPlan field
+    /// </summary>
+    [IniFileKey( "RequestedFlightPlan" )]
+    public string RequestedFlightPlan_S { get; internal set; } = ""; // True, False
+    /// <summary>
     /// Waypoint. field for enumeration, find Waypoint.N (0.. max)
     /// </summary>
     [IniFileKey( "Waypoint." )] // Waypoint.0 .. .N
@@ -32,24 +37,20 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// CruisingAltitude field (ft)
     /// </summary>
     [IniFileKey( "CruisingAltitude" )]
-    public double CruisingAltitude { get; internal set; } = 0.0;
+    public double CruisingAltitude_ft { get; internal set; } = 0.0;
 
     // non Ini file
 
     /// <summary>
-    /// Get the decoded Waypoint for a Key
+    /// True if ActiveFlightPlan is true
     /// </summary>
-    /// <param name="wypName">A waypoint Key</param>
-    /// <returns>The Waypoint obj</returns>
-    public Ini_Waypoint Waypoint( string wypName )
-    {
-      var ret = new Ini_Waypoint( );
-      if (Waypoints.ContainsKey( wypName )) {
-        ret = Ini_Waypoint.GetWaypoint( Waypoints[wypName] );
-      }
-      return ret ?? new Ini_Waypoint( );
-    }
-
+    [IniFileIgnore]
+    public bool HasActiveFlightPlan => Formatter.ToBool( ActiveFlightPlan_S );
+    /// <summary>
+    /// True if RequestedFlightPlan is true
+    /// </summary>
+    [IniFileIgnore]
+    public bool HasRequestedFlightPlan => Formatter.ToBool( RequestedFlightPlan_S );
 
   }
 }
