@@ -1,5 +1,5 @@
 FS20_FlightBag V 0.63 - Build 63 BETA
-(c) M. Burri - 24-Feb-2023
+(c) M. Burri - 03-Mar-2023
 
 Contains files:
 
@@ -71,7 +71,7 @@ V 0.63-B63
 
 - Add Approach panel and selection to Map (Runway Table)
 - Add AutoRange feature for zooming the map
-- Add ChartsBundle.com Tile servers (disabled by default, use MapLibProvider.ini)
+- Add ChartBundle.com Tile servers (disabled by default, use MapLibProvider.ini)
 - Add UserTileServer 4..6 to be used
 - Add Selected runway 'ladder' line (replaces the blue dotted arrow)
 - Update Rwy and Approach Panel selection readability

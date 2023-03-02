@@ -74,12 +74,6 @@ Enabled=true
 ; For US regions only (FAA provides data at no cost, other countries do not...)
 ;   Disabled per default - change: Enabled=true   to get the ones you need
 ; ***************
-[CB_WAC]
-; World Aeronautical Charts
-Name=CB World Aeronautical Charts
-Enabled=false
-;Http=https://wms.chartbundle.com/tms/1.0.0/wac/{z}/{x}/{y}.png?origin=nw  ; default
-
 [CB_SEC]
 ; Sectional Charts
 Name=CB Sectional Charts
