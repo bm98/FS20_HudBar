@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 using static FS20_HudBar.Bar.Calculator;
 
@@ -14,6 +13,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -49,31 +49,31 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_VSpeed_mPsPM( value2Proto ) { ItemForeColor = cTxAvg };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
-    private EVolume _volume= EVolume.V_Silent;
-    private PingLib.SoundBitePitched _soundBite = new PingLib.SoundBitePitched( HudBar.LoopSound);
+    private EVolume _volume = EVolume.V_Silent;
+    private PingLib.SoundBitePitched _soundBite = new PingLib.SoundBitePitched( HudBar.LoopSound );
 
     private void DI_Vario_ButtonClicked( object sender, ClickedEventArgs e )
     {
       // rotate through the Volumes
       _volume++;
-      _volume = ( _volume == EVolume.V_LAST ) ? EVolume.V_Silent : _volume;
+      _volume = (_volume == EVolume.V_LAST) ? EVolume.V_Silent : _volume;
 
       // Set Note to Silence if not connected (just in case..)
-      if ( !SC.SimConnectClient.Instance.IsConnected ) {
+      if (!SC.SimConnectClient.Instance.IsConnected) {
         // this will change the Volume if needed and clears the Ping when not connected (else it is taken in the next Update)
         _soundBite.Tone = 0; // Ask for Silence
       }
 
       // color if enabled, else default BG
-      _label.ItemBackColor = ( _volume == EVolume.V_Silent ) ? cActBG : ( _volume == EVolume.V_PlusMinus ) ? cMetB : cLiveBG;
+      _label.ItemBackColor = (_volume == EVolume.V_Silent) ? cActBG : (_volume == EVolume.V_PlusMinus) ? cMetB : cLiveBG;
     }
 
     /// <summary>
@@ -81,14 +81,14 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        var rate = SC.SimConnectClient.Instance.HudBarModule.VARIO_te_mps;
+      if (this.Visible) {
+        var rate = SV.Get<float>( SItem.fG_Acft_VARIO_te_mps );
 
         _scale.Value = rate;
-        _value2.Value = (float)( Math.Round( SC.SimConnectClient.Instance.HudBarModule.VARIO_Avg_te_mps * 10.0 ) / 10.0 ); // 0.10 increments only
+        _value2.Value = (float)(Math.Round( SV.Get<float>( SItem.fG_Acft_VARIO_Avg_te_mps ) * 10.0 ) / 10.0); // 0.10 increments only
 
         // Get the new Value and Change the Player if needed
-        if ( ModNote( _volume, rate, _soundBite ) ) {
+        if (ModNote( _volume, rate, _soundBite )) {
           HudBar.PingLoop.PlayAsync( _soundBite ); // this will change the note if needed
         }
       }

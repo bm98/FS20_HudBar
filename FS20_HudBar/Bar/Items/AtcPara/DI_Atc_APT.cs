@@ -16,6 +16,7 @@ using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -65,12 +66,12 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
+      m_observerID = SV.AddObserver( Short, 5, OnDataArrival );// use the Location tracer
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
 
@@ -104,13 +105,13 @@ namespace FS20_HudBar.Bar.Items
         // Distance to Destination
         if (HudBar.AtcFlightPlan.HasFlightPlan) {
           _value2.Value = HudBar.AtcFlightPlan.RemainingDist_nm(
-            SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
-            SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
+              SV.Get<string>( SItem.sG_Gps_WYP_nextID ),
+              SV.Get<float>( SItem.fG_Gps_WYP_dist_nm ) );
           _value2.ItemForeColor = cTxGps;
         }
         else {
           // calc straight distance if we don't have an ATC flightplan with waypoints
-          var latLon = new LatLon( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon );
+          var latLon = new LatLon( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) );
           _value2.Value = AirportMgr.ArrDistance_nm( latLon );
           _value2.ItemForeColor = cTxInfo;
         }

@@ -10,10 +10,10 @@ using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
-using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -43,12 +43,12 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Text( value2Proto ) { ItemForeColor = cTxInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.GpsModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -56,17 +56,17 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        ColorType fCol = cTxInfo; // default color
+      if (this.Visible) {
+        ColorType fCol; // default color
         // The Approach Type 
-        string info = $"{SC.SimConnectClient.Instance.GpsModule.GpsAPR_Type}"; // None, GPS, RNAV, ILS, VOR .... see enum
-        if ( SC.SimConnectClient.Instance.GpsModule.GpsAPR_Type == FSimClientIF.APRtype.GPS ) fCol = cTxGps;
-        else if ( SC.SimConnectClient.Instance.GpsModule.GpsAPR_Type == FSimClientIF.APRtype.RNAV ) fCol = cTxGps;
+        string info = $"{SV.Get<APRtype>( SItem.aptG_Gps_APR_type )}"; // None, GPS, RNAV, ILS, VOR .... see enum
+        if (SV.Get<APRtype>( SItem.aptG_Gps_APR_type ) == APRtype.GPS) fCol = cTxGps;
+        else if (SV.Get<APRtype>( SItem.aptG_Gps_APR_type ) == APRtype.RNAV) fCol = cTxGps;
         else fCol = cTxNav;
         // The Approach Phase
-        if ( SC.SimConnectClient.Instance.GpsModule.IsGpsAPR_active
-             && ( SC.SimConnectClient.Instance.GpsModule.GpsAPR_Mode != FSimClientIF.APRmode.None ) ) {
-          info += $" - {SC.SimConnectClient.Instance.GpsModule.GpsAPR_Mode}"; // Transition, Final, Missed
+        if (SV.Get<bool>( SItem.bGS_Ap_APRhold_on )
+             && (SV.Get<APRmode>( SItem.apmG_Gps_APR_mode ) != APRmode.None)) {
+          info += $" - {SV.Get<APRmode>( SItem.apmG_Gps_APR_mode )}"; // Transition, Final, Missed
         }
         _value1.Text = info;
         _value1.ItemForeColor = fCol;

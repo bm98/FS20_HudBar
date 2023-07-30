@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 using FS20_HudBar.Bar;
 
 using SC = SimConnectClient;
+using static FSimClientIF.Sim;
 using MetarLib;
-using CoordLib;
+using FSimClientIF.Modules;
 
 namespace FS20_HudBar.Bar
 {
@@ -18,6 +19,9 @@ namespace FS20_HudBar.Bar
   /// </summary>
   internal class HudMetar : Metar
   {
+    // SimVar access
+    private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
+
     public string MText { get; private set; } = "";
     public string StationText { get; private set; } = "";
 
@@ -50,21 +54,21 @@ namespace FS20_HudBar.Bar
     /// <param name="metarDatas"></param>
     public void Update( MetarTafDataList metarDatas )
     {
-      var closest = metarDatas.GetClosest( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon );
-      if ( closest.Valid ) {
+      var closest = metarDatas.GetClosest( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) );
+      if (closest.Valid) {
         MText = closest.Pretty;
         StationText = $"{closest.Data.Station.StationID}";
-        if ( !float.IsNaN( closest.Distance_nm ) )
+        if (!float.IsNaN( closest.Distance_nm ))
           StationText += $" {closest.Distance_nm:##0.0} nm @{closest.Bearing_deg:000}°";
 
         HasNewData = true;
         ConditionColor =
-          ( closest.Data.FlightCategory.FlightCategoryColor == "green" ) ? GUI.GUI_Colors.ColorType.cMetG :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "blue" ) ? GUI.GUI_Colors.ColorType.cMetB :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "red" ) ? GUI.GUI_Colors.ColorType.cMetR :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "magenta" ) ? GUI.GUI_Colors.ColorType.cMetM :
-          ( closest.Data.FlightCategory.FlightCategoryColor == "black" ) ? GUI.GUI_Colors.ColorType.cMetK :  // SUB ILS
-          ( closest.Data.FlightCategory.FlightCategoryColor == "white" ) ? GUI.GUI_Colors.ColorType.cMetR : GUI.GUI_Colors.ColorType.cActBG; // unknown
+          (closest.Data.FlightCategory.FlightCategoryColor == "green") ? GUI.GUI_Colors.ColorType.cMetG :
+          (closest.Data.FlightCategory.FlightCategoryColor == "blue") ? GUI.GUI_Colors.ColorType.cMetB :
+          (closest.Data.FlightCategory.FlightCategoryColor == "red") ? GUI.GUI_Colors.ColorType.cMetR :
+          (closest.Data.FlightCategory.FlightCategoryColor == "magenta") ? GUI.GUI_Colors.ColorType.cMetM :
+          (closest.Data.FlightCategory.FlightCategoryColor == "black") ? GUI.GUI_Colors.ColorType.cMetK :  // SUB ILS
+          (closest.Data.FlightCategory.FlightCategoryColor == "white") ? GUI.GUI_Colors.ColorType.cMetR : GUI.GUI_Colors.ColorType.cActBG; // unknown
       }
       else {
         MText = "";

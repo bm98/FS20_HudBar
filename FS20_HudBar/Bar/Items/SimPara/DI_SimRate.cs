@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
@@ -14,6 +13,7 @@ using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
 using FSimClientIF;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -41,19 +41,19 @@ namespace FS20_HudBar.Bar.Items
       LabelID = LItem;
       var item = VItem.SimRate;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
-      _value1 = new V_SRate( value2Proto ) { ItemBackColor=cValBG };
+      _value1 = new V_SRate( value2Proto ) { ItemBackColor = cValBG };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
       _label.ButtonClicked += _label_ButtonClicked;
       _value1.MouseWheel += _value1_MouseWheel;
       _value1.Cursor = Cursors.SizeNS;
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
@@ -63,24 +63,24 @@ namespace FS20_HudBar.Bar.Items
 
       if (e.Delta > 0) {
         // Up
-        SC.SimConnectClient.Instance.HudBarModule.SimRate_setting( FSimClientIF.CmdMode.Inc );
+        SV.Set( SItem.cmS_Sim_Rate_step, CmdMode.Inc );
       }
       else if (e.Delta < 0) {
         // Down
-        SC.SimConnectClient.Instance.HudBarModule.SimRate_setting( FSimClientIF.CmdMode.Dec );
+        SV.Set( SItem.cmS_Sim_Rate_step, CmdMode.Dec );
       }
 
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
-      if ( SC.SimConnectClient.Instance.IsConnected ) {
+      if (SC.SimConnectClient.Instance.IsConnected) {
         // eval the steps and exec the Inc, Dec needed
-        var steps = Calculator.SimRateStepsToNormal(); // returns the needed steps in either direction
-        while ( steps != 0 ) {
-          CmdMode dir = (steps>0)? CmdMode.Inc : CmdMode.Dec;
-          steps += ( steps > 0 ) ? -1 : 1;
-          SC.SimConnectClient.Instance.HudBarModule.SimRate_setting( dir );
+        var steps = Calculator.SimRateStepsToNormal( ); // returns the needed steps in either direction
+        while (steps != 0) {
+          CmdMode dir = (steps > 0) ? CmdMode.Inc : CmdMode.Dec;
+          steps += (steps > 0) ? -1 : 1;
+          SV.Set( SItem.cmS_Sim_Rate_step, dir );
         }
       }
     }
@@ -90,10 +90,10 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.SimRate_rate;
-        _value1.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.SimRate_rate != 1.0f ) ? cTxInfoInverse : cTxInfo;
-        _value1.ItemBackColor = ( SC.SimConnectClient.Instance.HudBarModule.SimRate_rate != 1.0f ) ? cSimRateWarnBG : cValBG;
+      if (this.Visible) {
+        _value1.Value = SV.Get<float>( SItem.fG_Sim_Rate_rate );
+        _value1.ItemForeColor = (SV.Get<float>( SItem.fG_Sim_Rate_rate ) != 1.0f) ? cTxInfoInverse : cTxInfo;
+        _value1.ItemBackColor = (SV.Get<float>( SItem.fG_Sim_Rate_rate ) != 1.0f) ? cSimRateWarnBG : cValBG;
       }
     }
 

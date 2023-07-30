@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -47,12 +45,12 @@ namespace FS20_HudBar.Bar.Items
       _scaleFlow = new A_Scale( ) { Minimum = 0, Maximum = 500, AlertValue = 0, ItemForeColor_Alert = cWarn, BorderStyle = BorderStyle.FixedSingle };
       this.AddItem( _scaleFlow ); vCat.AddLbl( item, _scaleFlow );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 5, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     // flow has strange units should be gallons/hour but is very small ~0.00013 for 0.055 gal/sec
@@ -65,21 +63,21 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        var ds = SC.SimConnectClient.Instance.HudBarModule;
+        var ds = SV;
         // we need to set the visibility and limits each time as we cannot guess when a new plane is loaded..
-        _scaleQuan.Visible = ds.NumWaterBallastTanks > 0;
+        _scaleQuan.Visible = SV.Get<int>( SItem.iG_Acft_NumWaterBallastTanks_num ) > 0;
         _scaleFlow.Visible = _scaleQuan.Visible;
 
         // Value update
         // Quantity
         if (_scaleQuan.Visible) {
-          _scaleQuan.Maximum = ds.WaterBallastCapacityTotal_pound;
-          _scaleQuan.Value = ds.WaterBallastQuantityTotal_pound;
+          _scaleQuan.Maximum = SV.Get<float>( SItem.fG_Acft_WaterBallast_capacity_pound );
+          _scaleQuan.Value = SV.Get<float>( SItem.fG_Acft_WaterBallast_quantity_pound );
         }
 
         // Flow
         if (_scaleFlow.Visible) {
-          var flow = ds.WaterBallastFlowRateTotal_gph * c_flowFact; // scale up for the graph use
+          var flow = SV.Get<float>( SItem.fG_Acft_WaterBallast_flowrate_gph ) * c_flowFact; // scale up for the graph use
           _maxFlow = (flow > _maxFlow) ? flow : _maxFlow;
           _scaleFlow.Maximum = _maxFlow;
           _scaleFlow.Value = flow;

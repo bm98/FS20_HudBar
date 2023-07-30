@@ -5,14 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
 using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -42,28 +41,28 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Speed( valueProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
 
     // Retuns a ColorType for the IAS based on DesignSpeeds
     private ColorType IAScolor( )
     {
-      if ( SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) return cTxInfo;
+      if (SV.Get<bool>( SItem.bG_Sim_OnGround )) return cTxInfo;
 
-      if ( SC.SimConnectClient.Instance.HudBarModule.Overspeed_warn ) return cTxAlert;
-      if ( SC.SimConnectClient.Instance.HudBarModule.Stall_warn ) return cTxAlert;
+      if (SV.Get<bool>( SItem.bG_Warn_Overspeed_warn )) return cTxAlert;
+      if (SV.Get<bool>( SItem.bG_Warn_Stall_warn )) return cTxAlert;
 
-      var flapsSpeed = (SC.SimConnectClient.Instance.HudBarModule.FlapsDeployment_prct> 0.8 )
-                        ? SC.SimConnectClient.Instance.HudBarModule.DesingSpeedVS0_kt
-                        : SC.SimConnectClient.Instance.HudBarModule.DesingSpeedVS1_kt;
-      if ( SC.SimConnectClient.Instance.HudBarModule.IAS_kt <= flapsSpeed ) return cTxAlert;
-      if ( SC.SimConnectClient.Instance.HudBarModule.IAS_kt <= ( flapsSpeed + 5 ) ) return cTxWarn; // within 5kts of Flaps speed
+      var flapsSpeed = (SV.Get<float>( SItem.fG_Flp_Deployment_prct ) > 0.8)
+                        ? SV.Get<float>( SItem.fG_Dsg_SpeedVS0_kt )
+                        : SV.Get<float>( SItem.fG_Dsg_SpeedVS1_kt );
+      if (SV.Get<float>( SItem.fG_Acft_IAS_kt ) <= flapsSpeed) return cTxAlert;
+      if (SV.Get<float>( SItem.fG_Acft_IAS_kt ) <= (flapsSpeed + 5)) return cTxWarn; // within 5kts of Flaps speed
 
       return cInfo;
     }
@@ -73,8 +72,8 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.IAS_kt;
+      if (this.Visible) {
+        _value1.Value = SV.Get<float>( SItem.fG_Acft_IAS_kt );
         _value1.ItemForeColor = IAScolor( );
       }
     }

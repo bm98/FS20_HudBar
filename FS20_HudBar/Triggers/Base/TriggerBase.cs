@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using FS20_HudBar.Triggers;
+using SC = SimConnectClient;
 using FSimClientIF.Modules;
 
 namespace FS20_HudBar.Triggers.Base
@@ -14,8 +14,10 @@ namespace FS20_HudBar.Triggers.Base
   /// </summary>
   abstract class TriggerBase : ITriggers
   {
+    protected readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
+
     // the Voice output ref
-    protected private GUI.GUI_Speech speakerRef;
+    protected GUI.GUI_Speech speakerRef;
 
     protected int m_observerID = 0; // obs IDs start with 1..
     protected string m_name = "";
@@ -99,7 +101,7 @@ namespace FS20_HudBar.Triggers.Base
     {
       // not registered
       if (m_observerID < 1) {
-        var obsID = module.AddObserver( m_name, callback );
+        var obsID = module.AddObserver( m_name, 2, callback );
         m_observerID = (obsID > 0) ? obsID : m_observerID;
       }
     }

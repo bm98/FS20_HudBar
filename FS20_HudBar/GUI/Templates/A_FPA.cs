@@ -81,7 +81,6 @@ namespace FS20_HudBar.GUI.Templates
     /// <summary>
     /// cTor: Create a UserControl based on a prototype control
     /// </summary>
-    /// <param name="proto">A label Prototype to derive from</param>
     public A_FPA( )
     {
       ItemForeColor = GUI_Colors.ColorType.cInfo;

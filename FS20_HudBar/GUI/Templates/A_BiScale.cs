@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     public new float? Value {
       set {
-        if ( value == null ) {
+        if (value == null) {
           base.Enabled = false;
         }
         else {

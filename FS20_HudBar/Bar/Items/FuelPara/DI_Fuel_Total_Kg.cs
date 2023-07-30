@@ -5,14 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -47,12 +46,12 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_TimeHHMM( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 5, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -60,11 +59,11 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
+      if (this.Visible) {
         // Fuel Tot & Reach
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityTotal_kg;
+        _value1.Value = (float)UnitConv.Lbs_to_Kg( SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) );
         _value2.Value = Calculator.FuelReach_sec( );
-        _value2.ItemForeColor = Calculator.FuelReachAlert ? cTxAlert : ( Calculator.FuelReachWarn ? cTxWarn : cTxInfo);
+        _value2.ItemForeColor = Calculator.FuelReachAlert ? cTxAlert : (Calculator.FuelReachWarn ? cTxWarn : cTxInfo);
       }
     }
 

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 using static FS20_HudBar.Bar.Calculator;
 
@@ -14,6 +13,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -49,12 +49,12 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_VSpeed_mPsPM( value2Proto ) { ItemForeColor = cTxAvg };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private EVolume _volume = EVolume.V_Silent;
@@ -82,10 +82,13 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        var rate = SC.SimConnectClient.Instance.HudBarModule.VARIO_netto_mps;
+        var rate = SV.Get<float>( SItem.fG_Acft_VARIO_netto_mps );
+
+        // if NETTO is not natively supporte we receive NaN...
+        if (float.IsNaN( rate )) return; // cannot help.. bailing out TODO - mark the Graph as Inop
 
         _scale.Value = rate;
-        _value2.Value = (float)(Math.Round( SC.SimConnectClient.Instance.HudBarModule.VARIO_Avg_netto_mps * 10.0 ) / 10.0); // 0.10 increments only
+        _value2.Value = (float)(Math.Round( SV.Get<float>( SItem.fG_Acft_VARIO_Avg_netto_mps ) * 10.0 ) / 10.0); // 0.10 increments only
 
         // Get the new Value and Change the Player if needed
         if (ModNote( _volume, rate, _soundBite )) {

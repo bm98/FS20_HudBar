@@ -10,6 +10,9 @@ using System.Windows.Forms;
 
 using FSimClientIF;
 using SC = SimConnectClient;
+using static FSimClientIF.Sim;
+using FSimClientIF.Modules;
+using System.Numerics;
 
 namespace FCamControl
 {
@@ -18,6 +21,8 @@ namespace FCamControl
   /// </summary>
   public partial class frmCamera : Form
   {
+    private ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
+
     private Dictionary<CameraSetting, ModeButton> _btMode = new Dictionary<CameraSetting, ModeButton>( );
     private List<Button> _btIndex = new List<Button>( ); // Cam Index
     private List<Button> _btSlot = new List<Button>( ); // Starred Slots
@@ -51,18 +56,20 @@ namespace FCamControl
 
     private const int c_triggerUpdate = 3; // N tries to update values after the Sim has changed them, sometimes it needs persistence...
     private int _droneValueUpdate = 0; // trigger delayed update to Sim
-    private int _droneMovement = 4;  // initial values as the sim has them
-    private int _droneRotation = 50; // initial values as the sim has them
+    private float _droneMovement = 4;  // initial values as the sim has them
+    private float _droneRotation = 50; // initial values as the sim has them
 
-
-    private int _camUpdate = 0; // trigger delayed update to Sim
-    private CameraSetting _camSetting = CameraSetting.NONE;
-    private uint _camIndex = 0;
+    // requested cam settings
+    private int _camUpdateRequested = 0; // trigger delayed update to Sim
+    private CameraSetting _camSettingRequested = CameraSetting.NONE;
+    private int _camIndexRequested = 0;
+    private Vector3 _cam6dPositionRequested = new Vector3( );
+    private Vector3 _cam6dGimbalRequested = new Vector3( );
 
     private UInt64 _smartTargetHash = 0; // triggers update of the Smart Target List if changed
     private int _prevSmartTarget = 99;
 
-    private uint _maxIndexEnabled = 0; // track the enabled Index Buttons and change only when needed to avoid flicker
+    private int _maxIndexEnabled = 0; // track the enabled Index Buttons and change only when needed to avoid flicker
 
     private bool _slotSaving = false;
 
@@ -123,13 +130,20 @@ namespace FCamControl
     }
 
     // Updates the SmartCam Target list if needed (something has changed)
-    private void PopulateSmartTargets( FSimClientIF.Modules.ICamera cam )
+    private void PopulateSmartTargets( )
     {
       // Build the list
       var list = new List<string>( );
-      for (uint i = 0; i < 10; i++) {
-        var s = cam.SmartCamTarget_name( i ); // can be null
-        list.Add( string.IsNullOrEmpty( s ) ? "---" : $"{cam.TargetTypeClass( cam.SmartCamTarget_type( i ) )}-{s}" );
+      for (int i = 0; i < 10; i++) {
+        // set the Query for the N.th item
+        SV.Set( SItem.iS_Cam_Smart_targetQuery_index, i );
+        var ttype = SV.Get<CameraTargetType>( SItem.cttG_Cam_Smart_targettype_of );
+        var s = SV.Get<string>( SItem.sG_Cam_Smart_targetname_of ); // can be null
+        // new query value for the class
+        SV.Set( SItem.iS_Cam_Smart_targetQuery_index, (int)ttype );
+        var ttClass = SV.Get<string>( SItem.sG_Cam_Smart_targettypeClass_of );
+        // comlpete the entry
+        list.Add( string.IsNullOrEmpty( s ) ? "---" : $"{ttClass}-{s}" );
       }
       // if changed - load the list into the ListBox
       var tgtHash = CalculateHash( string.Concat( list ) );
@@ -172,13 +186,14 @@ namespace FCamControl
         { CameraSetting.Ext_Quick,new ModeButton(CameraSetting.Ext_Quick, btExternalQuick, SwitchCamera )},
         { CameraSetting.ShCase_Drone,new ModeButton(CameraSetting.ShCase_Drone, btDrone, SwitchCamera )},
         { CameraSetting.ShCase_Fixed,new ModeButton( CameraSetting.ShCase_Fixed, btShowcase, SwitchCamera) },
+        { CameraSetting.Cam_6DOF,new ModeButton( CameraSetting.Cam_6DOF,bt6DOF, SwitchCamera) },
       };
       _btIndex = new List<Button> { btIndex01, btIndex02, btIndex03, btIndex04, btIndex05, btIndex06, btIndex07, btIndex08,
                                     btIndex09, btIndex10, btIndex11, btIndex12, btIndex13, btIndex14, btIndex15, btIndex16, btIndex17, btIndex18,
                                     btIndex19, btIndex20, btIndex21, btIndex22, btIndex23, btIndex24, btIndex25, btIndex26, btIndex27, btIndex28  };
       _btSlot = new List<Button> { btSlot01, btSlot02, btSlot03, btSlot04, btSlot05, btSlot06, btSlot07, btSlot08,
                                     btSlot09, btSlot10 };
-      _btSlotFolder = new List<Button> { btSlotFolderA, btSlotFolderB, btSlotFolderC, btSlotFolderD, btSlotFolderE, btSlotFolderF };
+      _btSlotFolder = new List<Button> { btSlotFolderA, btSlotFolderB, btSlotFolderC, btSlotFolderD, btSlotFolderE, btSlotFolderF, btSlotFolderG, btSlotFolderH };
 
       // Starred Slots init
       SlotCat.InitSlotFolders( _btSlot, SwitchCamera );
@@ -186,6 +201,9 @@ namespace FCamControl
       foreach (var slotFolder in SlotCat.SlotFolders) {
         slotFolder.SlotSaved += _slots_SlotSaved;
       }
+
+      // attach 6DOF panel
+      uc6Entry.ValueChanged += Uc6Entry_ValueChanged;
 
       // use another WindowFrame
       if (Standalone) {
@@ -216,6 +234,8 @@ namespace FCamControl
       _tooltip.SetToolTip( cbxDroneLock, "Drone locks to the target" );
       _tooltip.SetToolTip( tbMove, "Drone movement speed" );
       _tooltip.SetToolTip( tbRotate, "Drone rotation speed" );
+
+      _tooltip.SetToolTip( bt6DOF, "6DOF View - numeric controls" );
 
       _tooltip.SetToolTip( btResetView, "Reset the view" );
       _tooltip.SetToolTip( btSaveToSlot, "Save the current view to a slot" );
@@ -251,6 +271,8 @@ namespace FCamControl
       SlotCat.SlotFolders[3].AppSettingString = AppSettings.Instance.CameraSlotFolder3;
       SlotCat.SlotFolders[4].AppSettingString = AppSettings.Instance.CameraSlotFolder4;
       SlotCat.SlotFolders[5].AppSettingString = AppSettings.Instance.CameraSlotFolder5;
+      SlotCat.SlotFolders[6].AppSettingString = AppSettings.Instance.CameraSlotFolder6;
+      SlotCat.SlotFolders[7].AppSettingString = AppSettings.Instance.CameraSlotFolder7;
       // Enable SlotFolder A
       SlotCat.SetActiveSlotFolder( 0 );
       _btSlotFolder[SlotCat.CurrentSlotFolder.SlotFolderNo].ForeColor = c_sfActive;
@@ -277,7 +299,7 @@ namespace FCamControl
       timer1.Enabled = true;
       // register DataUpdates if in shared mode and if not yet done 
       if (!Standalone && SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
-        _observerID = SC.SimConnectClient.Instance.CameraModule.AddObserver( _observerName, OnDataArrival );
+        _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
       }
     }
 
@@ -296,7 +318,7 @@ namespace FCamControl
 
       // UnRegister DataUpdates
       if (SC.SimConnectClient.Instance.IsConnected && (_observerID >= 0))
-        SC.SimConnectClient.Instance.CameraModule.RemoveObserver( _observerID );
+        SV.RemoveObserver( _observerID );
       _observerID = -1;
 
       // save last known good form location
@@ -346,14 +368,15 @@ namespace FCamControl
       if (_droneValueUpdate > 0) {
         _droneValueUpdate--;
         // restore Drone speeds if in Drone Mode
-        if (SC.SimConnectClient.Instance.CameraModule.CameraSetting == CameraSetting.ShCase_Drone) {
-          SC.SimConnectClient.Instance.CameraModule.DroneCam_movespeed = _droneMovement;
-          SC.SimConnectClient.Instance.CameraModule.DroneCam_rotspeed = _droneRotation;
+        if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) == CameraSetting.ShCase_Drone) {
+          SV.Set( SItem.fGS_Cam_Drone_movespeed, _droneMovement );
+          SV.Set( SItem.fGS_Cam_Drone_rotspeed, _droneRotation );
         }
       }
-      if (_camUpdate > 0) {
-        _camUpdate--;
-        SwitchCamera_low( _camSetting, _camIndex );
+      // sometimes the cam needs to be enforced - so try again if needed
+      if (_camUpdateRequested > 0) {
+        _camUpdateRequested--;
+        SwitchCamera_low( _camSettingRequested, _camIndexRequested, _cam6dPositionRequested, _cam6dGimbalRequested );
       }
     }
 
@@ -370,41 +393,52 @@ namespace FCamControl
 
       _updating = true;
 
-      var cam = SC.SimConnectClient.Instance.CameraModule;
-
       // Index Buttons (_prevIndex SHALL never be out of range...)
       _btIndex[_prevIndex].BackColor = c_vPassive;
-      if (cam.ActCamView_index < _btIndex.Count) {
+      if (SV.Get<int>( SItem.iGS_Cam_Viewindex ) < _btIndex.Count) {
         _prevIndex = _actIndex;
-        _actIndex = (int)cam.ActCamView_index;
+        _actIndex = SV.Get<int>( SItem.iGS_Cam_Viewindex );
         _btIndex[_actIndex].BackColor = c_vActive;
       }
-      SetIndexEnabled( cam.ActCam_View_index_max( cam.ActCam_viewType ) );
+      var vt = SV.Get<CameraViewType>( SItem.cvtG_Cam_Viewtype );
+      switch (vt) {
+        case CameraViewType.Unknown_default: SetIndexEnabled( SV.Get<int>( SItem.iG_Cam_Viewindex_max_default ) ); break;
+        case CameraViewType.PilotView: SetIndexEnabled( SV.Get<int>( SItem.iG_Cam_Viewindex_max_pilot ) ); break;
+        case CameraViewType.InstrumentView: SetIndexEnabled( SV.Get<int>( SItem.iG_Cam_Viewindex_max_instrument ) ); break;
+        case CameraViewType.Quickview: SetIndexEnabled( SV.Get<int>( SItem.iG_Cam_Viewindex_max_quick ) ); break;
+        case CameraViewType.Quickview_External: SetIndexEnabled( SV.Get<int>( SItem.iG_Cam_Viewindex_max_external ) ); break;
+        case CameraViewType.OtherView: SetIndexEnabled( SV.Get<int>( SItem.iG_Cam_Viewindex_max_other ) ); break;
+        default: SetIndexEnabled( SV.Get<int>( SItem.iG_Cam_Viewindex_max_default ) ); break;
+      }
 
       // ViewMode Buttons
       _btMode[_prevSetting].Button.BackColor = c_vPassive;
-      if (cam.CameraSetting != CameraSetting.NONE) {
+      if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) != CameraSetting.NONE) {
         _prevSetting = _actSetting;
-        _actSetting = cam.CameraSetting;
+        _actSetting = SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting );
         _btMode[_actSetting].Button.BackColor = c_vActive;
       }
 
       // Drone 
-      cbxDroneLock.CheckState = cam.DroneCam_locked ? CheckState.Checked : CheckState.Unchecked;
-      cbxDroneFollow.CheckState = cam.DroneCam_follow ? CheckState.Checked : CheckState.Unchecked;
+      cbxDroneLock.CheckState = SV.Get<bool>( SItem.bGS_Cam_Drone_locked ) ? CheckState.Checked : CheckState.Unchecked;
+      cbxDroneFollow.CheckState = SV.Get<bool>( SItem.bGS_Cam_Drone_follow ) ? CheckState.Checked : CheckState.Unchecked;
       // rot and move have their own Sim behavior - will reset at times
       // trying to preserve the user settings here
       // there is User Slider input and SimGui input which is either user triggered or by the Sim when switching views
       // _droneXY is restored when switching back to DroneView _droneXY is set via Slider or here
       // Rot Mov == 0 is problematic as nothing moves and is likely overlooked
-      tbMove.Value = (int)cam.DroneCam_movespeed;
-      tbRotate.Value = (int)cam.DroneCam_rotspeed;
-      if (_droneMovement < 2) _droneMovement = (int)cam.DroneCam_movespeed; // init or don't stay at 0
-      if (_droneRotation < 2) _droneRotation = (int)cam.DroneCam_rotspeed; // init or don't stay at 0
-      if (cam.CameraSetting == CameraSetting.ShCase_Drone) {
+
+      if (!_mouseDown) {
+        // prevent changes while changing the sliders
+        tbMove.Value = (int)SV.Get<float>( SItem.fGS_Cam_Drone_movespeed );
+        tbRotate.Value = (int)SV.Get<float>( SItem.fGS_Cam_Drone_rotspeed );
+        if (_droneMovement < 2) _droneMovement = tbMove.Value; // init or don't stay at 0
+        if (_droneRotation < 2) _droneRotation = tbRotate.Value; // init or don't stay at 0
+      }
+      if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) == CameraSetting.ShCase_Drone) {
         lblDroneMove.ForeColor = (_droneMovement < 2) ? Color.Orange : pnlDroneSlider.ForeColor;
         lblDroneRot.ForeColor = (_droneRotation < 2) ? Color.Orange : pnlDroneSlider.ForeColor;
-        pnlDroneSlider.BackColor = pnlDrone.BackColor;
+        pnlDroneSlider.BackColor = Color.FromArgb( 46, 69, 97 ); // pnlDrone.BackColor;- transparent, does not work...
         cbxDroneFollow.Enabled = true;
         cbxDroneLock.Enabled = true;
       }
@@ -415,9 +449,9 @@ namespace FCamControl
       }
 
       // SmartTarget 
-      if (cam.SmartCam_active) {
-        txSmartTargetType.Text = $"{cam.SmarCamTarget_selected_type}";
-        txSmartTargetName.Text = cam.SmarCamTarget_selected_name;
+      if (SV.Get<bool>( SItem.bGS_Cam_Smart_active )) {
+        txSmartTargetType.Text = $"{SV.Get<CameraTargetType>( SItem.cttG_Cam_Smart_targettype )}";
+        txSmartTargetName.Text = SV.Get<string>( SItem.sG_Cam_Smart_targetname_selected );
         txSmartTargetType.ForeColor = c_scActiveText;
         txSmartTargetName.ForeColor = c_scActiveText;
         lbxSmartTargets.ForeColor = c_scActiveText;
@@ -429,8 +463,10 @@ namespace FCamControl
         txSmartTargetName.ForeColor = c_scPassiveText;
         lbxSmartTargets.ForeColor = c_scPassiveText;
       }
+      PopulateSmartTargets( ); // new targets to show
 
-      PopulateSmartTargets( cam ); // new targets to show
+      // 6D cam
+      uc6Entry.Visible = (_actSetting == CameraSetting.Cam_6DOF);
 
       _updating = false;
     }
@@ -448,6 +484,9 @@ namespace FCamControl
       AppSettings.Instance.CameraSlotFolder3 = SlotCat.SlotFolders[3].AppSettingString;
       AppSettings.Instance.CameraSlotFolder4 = SlotCat.SlotFolders[4].AppSettingString;
       AppSettings.Instance.CameraSlotFolder5 = SlotCat.SlotFolders[5].AppSettingString;
+      AppSettings.Instance.CameraSlotFolder6 = SlotCat.SlotFolders[6].AppSettingString;
+      AppSettings.Instance.CameraSlotFolder7 = SlotCat.SlotFolders[7].AppSettingString;
+      AppSettings.Instance.Save( );
 
       lblSaveStar.Visible = false;
       _slotSaving = false;
@@ -469,7 +508,7 @@ namespace FCamControl
         // click when inactive will trigger the save
         _slotSaving = true;
         lblSaveStar.Visible = true;
-        SlotCat.CurrentSlotFolder.ExpectSlotSave( );
+        SlotCat.CurrentSlotFolder.ExpectSlotSave( uc6Entry.Position, uc6Entry.Gimbal );
       }
     }
 
@@ -480,7 +519,7 @@ namespace FCamControl
       // sanity
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      SC.SimConnectClient.Instance.CameraModule.ActCam_Reset( );
+      SV.Set( SItem.S_Cam_Actual_reset, true );
       // restore Drone speeds
       _droneValueUpdate = c_triggerUpdate;
     }
@@ -497,27 +536,27 @@ namespace FCamControl
       var index = _btIndex.FindIndex( x => x.Name == bt.Name );
       if (index >= 0) {
         // Cam Index Selectors
-        SC.SimConnectClient.Instance.CameraModule.ActCamView_index = (uint)index;
-        _btMode[SC.SimConnectClient.Instance.CameraModule.CameraSetting].ViewIndex = (uint)index; // save the last selected for later use
+        SV.Set( SItem.iGS_Cam_Viewindex, index );
+        _btMode[SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting )].ViewIndex = index; // save the last selected for later use
 
       }
       else {
         // Pilot View Position Selectors
-        uint idx = 0;
+        int idx = 0;
         if (bt.Name == "btIndexPilot") {
-          idx = (uint)PilotCamPosition.Pilot;
+          idx = (int)PilotCamPosition.Pilot;
         }
         else if (bt.Name == "btIndexClose") {
-          idx = (uint)PilotCamPosition.Close;
+          idx = (int)PilotCamPosition.Close;
         }
         else if (bt.Name == "btIndexLand") {
-          idx = (uint)PilotCamPosition.Landing;
+          idx = (int)PilotCamPosition.Landing;
         }
         else if (bt.Name == "btIndexCoPilot") {
-          idx = (uint)PilotCamPosition.Copilot;
+          idx = (int)PilotCamPosition.Copilot;
         }
         // switch
-        SwitchCamera( CameraSetting.Cockpit_Pilot, idx );
+        SwitchCamera( CameraSetting.Cockpit_Pilot, idx, new Vector3( ), new Vector3( ) ); // not DOF
       }
     }
 
@@ -540,20 +579,21 @@ namespace FCamControl
       // sanity
       if (_updating) return;
       if (!SC.SimConnectClient.Instance.IsConnected) return;
-      if (SC.SimConnectClient.Instance.CameraModule.CameraSetting == CameraSetting.ShCase_Drone) return;
-      if (SC.SimConnectClient.Instance.CameraModule.CameraSetting == CameraSetting.ShCase_Fixed) return;
+      if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) == CameraSetting.ShCase_Drone) return;
+      if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) == CameraSetting.ShCase_Fixed) return;
+      if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) == CameraSetting.Cam_6DOF) return;
 
       int selected = lbxSmartTargets.SelectedIndex;
       if ((selected >= 0) && (selected < 10)) {
         if (selected != _prevSmartTarget) {
-          if (!SC.SimConnectClient.Instance.CameraModule.SmartCam_active)
-            SC.SimConnectClient.Instance.CameraModule.SmartCam_active = true;
+          if (!SV.Get<bool>( SItem.bGS_Cam_Smart_active ))
+            SV.Set( SItem.bGS_Cam_Smart_active, true );
 
-          SC.SimConnectClient.Instance.CameraModule.SmartCamTarget_selected = (uint)selected;
+          SV.Set( SItem.iGS_Cam_Smart_targetindex_selected, selected );
           _prevSmartTarget = selected;
         }
         else {
-          SC.SimConnectClient.Instance.CameraModule.SmartCam_active = false;
+          SV.Set( SItem.bGS_Cam_Smart_active, false );
           _prevSmartTarget = 99;
         }
       }
@@ -565,7 +605,7 @@ namespace FCamControl
       if (!SC.SimConnectClient.Instance.IsConnected) return;
       if (_updating) return;
 
-      SC.SimConnectClient.Instance.CameraModule.DroneCam_locked = cbxDroneLock.Checked;
+      SV.Set( SItem.bGS_Cam_Drone_locked, cbxDroneLock.Checked );
     }
 
     private void cbxDroneFollow_CheckedChanged( object sender, EventArgs e )
@@ -574,7 +614,7 @@ namespace FCamControl
       if (!SC.SimConnectClient.Instance.IsConnected) return;
       if (_updating) return;
 
-      SC.SimConnectClient.Instance.CameraModule.DroneCam_follow = cbxDroneFollow.Checked;
+      SV.Set( SItem.bGS_Cam_Drone_follow, cbxDroneFollow.Checked );
     }
 
     private void tbMove_ValueChanged( object sender, EventArgs e )
@@ -584,7 +624,7 @@ namespace FCamControl
       if (_updating) return;
 
       _droneMovement = tbMove.Value;
-      SC.SimConnectClient.Instance.CameraModule.DroneCam_movespeed = _droneMovement;
+      SV.Set( SItem.fGS_Cam_Drone_movespeed, _droneMovement );
     }
 
     private void tbRotate_ValueChanged( object sender, EventArgs e )
@@ -594,7 +634,28 @@ namespace FCamControl
       if (_updating) return;
 
       _droneRotation = tbRotate.Value;
-      SC.SimConnectClient.Instance.CameraModule.DroneCam_rotspeed = _droneRotation;
+      SV.Set( SItem.fGS_Cam_Drone_rotspeed, _droneRotation );
+    }
+
+    private bool _mouseDown = false;
+    private void tbMove_MouseDown( object sender, MouseEventArgs e )
+    {
+      _mouseDown = true;
+    }
+
+    private void tbMove_MouseUp( object sender, MouseEventArgs e )
+    {
+      _mouseDown = false;
+    }
+
+    private void tbRotate_MouseDown( object sender, MouseEventArgs e )
+    {
+      _mouseDown = true;
+    }
+
+    private void tbRotate_MouseUp( object sender, MouseEventArgs e )
+    {
+      _mouseDown = false;
     }
 
     #endregion
@@ -606,43 +667,76 @@ namespace FCamControl
     /// </summary>
     /// <param name="setting">The Cam Setting</param>
     /// <param name="viewIndex">The CamView Index</param>
-    private void SwitchCamera_low( CameraSetting setting, uint viewIndex )
+    /// <param name="position">6DOF Position</param>
+    /// <param name="gimbal">6DOF Gimbal</param>
+    private void SwitchCamera_low( CameraSetting setting, int viewIndex, Vector3 position, Vector3 gimbal )
     {
       // sanity
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      var cam = SC.SimConnectClient.Instance.CameraModule;
+      var cam = SV;
 
       _btMode[setting].ViewIndex = viewIndex; // save preset default
-      if (SC.SimConnectClient.Instance.CameraModule.CameraSetting != setting) {
+      if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) != setting) {
         // change if not already there
-        cam.SmartCam_active = false;
-        SC.SimConnectClient.Instance.CameraModule.CameraSetting = setting;
+        SV.Set( SItem.bGS_Cam_Smart_active, false );
+        SV.Set( SItem.csetGS_Cam_Actual_setting, setting );
       }
       // Set the ViewIndex
       if (setting != CameraSetting.Cockpit_Custom) {
         // custom cams don't have a ViewIndex
-        SC.SimConnectClient.Instance.CameraModule.ActCamView_index = viewIndex;
+        SV.Set( SItem.iGS_Cam_Viewindex, viewIndex );
       }
+      // Set the 6DOF
+      if (setting == CameraSetting.Cam_6DOF) {
+        Set6DOFcam( position, gimbal );
+        uc6Entry.Position = position;
+        uc6Entry.Gimbal = gimbal;
+      }
+
       // restore Drone speeds
       _droneValueUpdate = c_triggerUpdate;
 
+
+      // the GUI may change once we read the effective cam setting via DataArrival
     }
+
+    /// <summary>
+    /// The MAIN switch the Camera View Method to set 6DOF
+    /// </summary>
+    /// <param name="setting">The Cam Setting</param>
+    /// <param name="viewIndex">The CamView Index</param>
+    /// <param name="position">6DOF Position</param>
+    /// <param name="gimbal">6DOF Gimbal</param>
+    private void SwitchCamera( CameraSetting setting, int viewIndex, Vector3 position, Vector3 gimbal )
+    {
+      // set requested cam props
+      _camSettingRequested = setting;
+      _camIndexRequested = viewIndex;
+      _cam6dPositionRequested = position;
+      _cam6dGimbalRequested = gimbal;
+      _camUpdateRequested = c_triggerUpdate;
+      // switch cam
+      SwitchCamera_low( _camSettingRequested, _camIndexRequested, _cam6dPositionRequested, _cam6dGimbalRequested );
+    }
+
     /// <summary>
     /// The MAIN switch the Camera View Method
     /// </summary>
     /// <param name="setting">The Cam Setting</param>
     /// <param name="viewIndex">The CamView Index</param>
-    private void SwitchCamera( CameraSetting setting, uint viewIndex )
+    private void SwitchCamera( CameraSetting setting, int viewIndex )
     {
-      _camSetting = setting;
-      _camIndex = viewIndex;
-      _camUpdate = c_triggerUpdate;
-      SwitchCamera_low( setting, viewIndex );
+      // set requested cam props
+      _camSettingRequested = setting;
+      _camIndexRequested = viewIndex;
+      _camUpdateRequested = c_triggerUpdate;
+      // switch cam
+      SwitchCamera_low( _camSettingRequested, _camIndexRequested, _cam6dPositionRequested, _cam6dGimbalRequested );
     }
 
     // set the Index buttons 1..N enabled and the rest disabled
-    private void SetIndexEnabled( uint maxIndex )
+    private void SetIndexEnabled( int maxIndex )
     {
       if (maxIndex == _maxIndexEnabled) return; // already there
 
@@ -655,6 +749,25 @@ namespace FCamControl
 
     #endregion
 
+    #region 6DOF 
+
+    // update the sim Cam
+    private void Set6DOFcam( Vector3 pos, Vector3 gimbal )
+    {
+      if (_actSetting == CameraSetting.Cam_6DOF) {
+        SV.Set( SItem.v3GS_Cam_6DOF_xyz, pos );
+        SV.Set( SItem.v3GS_Cam_6DOF_pbh, gimbal );
+        SV.Set( SItem.bS_Cam_6DOF_set, true );
+      }
+    }
+
+    // data entry
+    private void Uc6Entry_ValueChanged( object sender, EventArgs e )
+    {
+      Set6DOFcam( uc6Entry.Position, uc6Entry.Gimbal );
+    }
+
+    #endregion
 
     #region SimConnectClient chores
 
@@ -691,7 +804,7 @@ namespace FCamControl
 
         // Unregister DataUpdates if not done 
         if (_observerID >= 0) {
-          SC.SimConnectClient.Instance.CameraModule.RemoveObserver( _observerID );
+          SV.RemoveObserver( _observerID );
           _observerID = -1;
         }
         SC.SimConnectClient.Instance.Disconnect( );
@@ -735,10 +848,10 @@ namespace FCamControl
         // Happens when HudBar is running when the Sim is starting only.
         // Sometimes the Connection is made but was not hooking up to the event handling
         // Disconnect and try to reconnect 
-        if (m_awaitingEvent || SC.SimConnectClient.Instance.CameraModule.Camera_state <= 0) {
+        if (m_awaitingEvent || SV.Get<CameraState>( SItem.cstaG_Cam_State ) <= 0) {
           // No events seen so far
           // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
-          _ = SC.SimConnectClient.Instance.CameraModule.Camera_state;
+          _ = SV.Get<CameraState>( SItem.cstaG_Cam_State );
 
           if (m_scGracePeriod <= 0) {
             // grace period is expired !
@@ -751,7 +864,7 @@ namespace FCamControl
           lblSimConnected.BackColor = Color.DarkGreen;
           // register DataUpdates if not done 
           if (SC.SimConnectClient.Instance.IsConnected && _observerID < 0) {
-            _observerID = SC.SimConnectClient.Instance.CameraModule.AddObserver( _observerName, OnDataArrival );
+            _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
           }
         }
       }
@@ -765,5 +878,6 @@ namespace FCamControl
     }
 
     #endregion
+
   }
 }

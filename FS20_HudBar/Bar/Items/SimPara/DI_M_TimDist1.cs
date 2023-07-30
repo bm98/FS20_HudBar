@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
@@ -14,13 +13,14 @@ using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
   class DI_M_TimDist1 : DispItem
   {
     // Checkpoint Meters live throughout the application 
-    private static readonly CPointMeter _cpMeter = new CPointMeter();
+    private static readonly CPointMeter _cpMeter = new CPointMeter( );
 
     /// <summary>
     /// The Label ID 
@@ -55,24 +55,24 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 5, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
-      if ( SC.SimConnectClient.Instance.IsConnected ) {
-        if ( _cpMeter.Started && _cpMeter.Duration <= 2 ) {
+      if (SC.SimConnectClient.Instance.IsConnected) {
+        if (_cpMeter.Started && _cpMeter.Duration <= 2) {
           // if stopped within 2 sec, Stop it
           _cpMeter.Stop( );
         }
         else {
-          _cpMeter.Start( new LatLon( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon ),
-                      SC.SimConnectClient.Instance.HudBarModule.SimTime_zulu_sec );
+          _cpMeter.Start( new LatLon( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) ),
+                      SV.Get<double>( SItem.dG_Env_Time_zulu_sec ) );
         }
       }
     }
@@ -82,9 +82,9 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        var latLon = new LatLon( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon );
-        _cpMeter.Lapse( latLon, SC.SimConnectClient.Instance.HudBarModule.SimTime_zulu_sec );
+      if (this.Visible) {
+        var latLon = new LatLon( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) );
+        _cpMeter.Lapse( latLon, SV.Get<double>( SItem.dG_Env_Time_zulu_sec ) );
         _value1.Value = _cpMeter.Duration;
         _value2.Value = (float)_cpMeter.Distance;
         this.ColorType.ItemBackColor = _cpMeter.Started ? cLiveBG : cActBG;

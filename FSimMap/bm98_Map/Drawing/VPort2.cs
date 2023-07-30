@@ -930,7 +930,7 @@ namespace bm98_Map.Drawing
     // number of repaints to get the image 99% opaque with regards to the current canvas
     // i.e. end of blending the new one over the current one 
     // the smaller the blending factor the more repaints are needed
-    private const int c_numRepaints = 5;
+    private const int c_numRepaints = 2;
     // main drawn canvas to blend with
     private Bitmap _drawnCanvas = null;
     // just change the alpha
@@ -938,7 +938,7 @@ namespace bm98_Map.Drawing
                 new float[] {1F, 0, 0, 0, 0},
                 new float[] {0, 1F, 0, 0, 0},
                 new float[] {0, 0, 1F, 0, 0},
-                new float[] {0, 0, 0, 0.73f, 0}, // blending factor
+                new float[] {0, 0, 0, 0.85f, 0}, // blending factor
                 new float[] {0, 0, 0, 0, 1F}} );
     private readonly ImageAttributes _imageAttributes = new ImageAttributes( );
     // tracks the matrix version i.e. changes of the covered area

@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
-using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
-using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -53,12 +50,12 @@ namespace FS20_HudBar.Bar.Items
       _value3 = new V_ICAO( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
+      m_observerID = SV.AddObserver( Short, 5, OnDataArrival );// use the Location tracer
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>

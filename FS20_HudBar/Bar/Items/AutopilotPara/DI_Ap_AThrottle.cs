@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
-using static System.Net.Mime.MediaTypeNames;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -63,23 +62,23 @@ namespace FS20_HudBar.Bar.Items
       _value2.Click += _value2_Click;
       _value2.Cursor = Cursors.Hand;
 
-      m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private void _value1_Click( object sender, EventArgs e )
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      if (SC.SimConnectClient.Instance.AP_G1000Module.ATHR_active || SC.SimConnectClient.Instance.AP_G1000Module.ATHRmanaged_active) {
-        SC.SimConnectClient.Instance.AP_G1000Module.ATHR_disconnect( );
+      if (SV.Get<bool>( SItem.bG_Ap_ATHR_active ) || SV.Get<bool>( SItem.bG_Ap_ATHRmanaged_active )) {
+        SV.Set( SItem.S_Ap_ATHR_disconnect, true );
       }
       else {
-        SC.SimConnectClient.Instance.AP_G1000Module.ATHR_armed_toggle( );
+        SV.Set( SItem.bGS_Ap_ATHR_armed, true ); // toggles
       }
     }
 
@@ -87,7 +86,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      SC.SimConnectClient.Instance.AP_G1000Module.TOGA_toggle( );
+      SV.Set( SItem.bGS_Ap_TOGA_active, true ); // toggles
     }
 
 
@@ -97,8 +96,8 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        if (SC.SimConnectClient.Instance.AP_G1000Module.ATHR_active) {
-          if (SC.SimConnectClient.Instance.AP_G1000Module.ATHRmanaged_active) {
+        if (SV.Get<bool>( SItem.bG_Ap_ATHR_active )) {
+          if (SV.Get<bool>( SItem.bG_Ap_ATHRmanaged_active )) {
             _value1.ItemForeColor = cTxInfo;
             _value1.Text = c_activeM;
           }
@@ -107,7 +106,7 @@ namespace FS20_HudBar.Bar.Items
             _value1.Text = c_active;
           }
         }
-        else if (SC.SimConnectClient.Instance.AP_G1000Module.ATHR_armed) {
+        else if (SV.Get<bool>( SItem.bGS_Ap_ATHR_armed )) {
           _value1.ItemForeColor = cTxSet;
           _value1.Text = c_armed;
         }
@@ -117,8 +116,8 @@ namespace FS20_HudBar.Bar.Items
         }
 
         // TOGA
-        _value2.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.TOGA_active ? cTxActive : cTxDim;
-        _value2.Text = SC.SimConnectClient.Instance.AP_G1000Module.TOGA_active ? c_toga.ToUpperInvariant( ) : c_toga;
+        _value2.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_TOGA_active ) ? cTxActive : cTxDim;
+        _value2.Text = SV.Get<bool>( SItem.bGS_Ap_TOGA_active ) ? c_toga.ToUpperInvariant( ) : c_toga;
 
       }
     }

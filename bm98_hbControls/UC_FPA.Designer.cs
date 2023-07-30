@@ -30,7 +30,7 @@ namespace bm98_hbControls
     {
       this.SuspendLayout();
       // 
-      // US_FPA
+      // UC_FPA
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
       this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -38,8 +38,8 @@ namespace bm98_hbControls
       this.DoubleBuffered = true;
       this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.MinimumSize = new System.Drawing.Size(10, 10);
-      this.Name = "US_FPA";
-      this.Size = new System.Drawing.Size(8, 8);
+      this.Name = "UC_FPA";
+      this.Size = new System.Drawing.Size(10, 10);
       this.ClientSizeChanged += new System.EventHandler(this.UC_FPA_ClientSizeChanged);
       this.Paint += new System.Windows.Forms.PaintEventHandler(this.UC_FPA_Paint);
       this.Resize += new System.EventHandler(this.UC_FPA_Resize);

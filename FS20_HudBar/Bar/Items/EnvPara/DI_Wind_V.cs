@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
-using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
-using System.Drawing;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -50,12 +48,12 @@ namespace FS20_HudBar.Bar.Items
       _wind = new A_WindDot( ) { BorderStyle = BorderStyle.FixedSingle, AutoSizeWidth = true };
       this.AddItem( _wind ); vCat.AddLbl( item, _wind );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -64,8 +62,8 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.WindVert_kt;
-        _wind.Value = SC.SimConnectClient.Instance.HudBarModule.WindVert_mPerSec;
+        _value1.Value = SV.Get<float>( SItem.fG_Acft_Wind_down_kt ); // Y
+        _wind.Value = SV.Get<float>( SItem.fG_Env_WindVert_mPs );
       }
     }
 

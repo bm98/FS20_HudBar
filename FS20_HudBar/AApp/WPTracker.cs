@@ -13,23 +13,23 @@ namespace FS20_HudBar
   {
     private static bool m_started = false;   // true if the flight has started
 
-    private static int m_simTime = -1;        // start of flight
-    private static int m_timeElapsed = 0;    // sec since start of flight
+    private static double m_simTime = -1;        // start of flight
+    private static double m_timeElapsed = 0;    // sec since start of flight
 
     private static string m_prevWP = "";     // the previous WP name
     private static string m_nextWP = "";     // the next WP name
-    private static int m_wpSimTime = -1;      // start of WP
-    private static int m_wpTimeElapsed = 0;  // sec since start of WP
+    private static double m_wpSimTime = -1;      // start of WP
+    private static double m_wpTimeElapsed = 0;  // sec since start of WP
     private static bool m_wpChange = false;  // change track for the timer
 
     /// <summary>
     /// The time elapsed from the last WP [sim seconds]
     /// </summary>
-    public static int WPTimeEnroute_sec => m_wpTimeElapsed;
+    public static int WPTimeEnroute_sec => (int)m_wpTimeElapsed;
     /// <summary>
     /// The time elapsed since the flight started [sim seconds]
     /// </summary>
-    public static int TimeEnroute_sec => m_timeElapsed;
+    public static int TimeEnroute_sec => (int)m_timeElapsed;
 
     /// <summary>
     /// The used Previous WP
@@ -79,7 +79,7 @@ namespace FS20_HudBar
     }
 
     // have to maintain the 24h changeover (only one 24h change is captured)
-    private static int Elapsed( int refSeconds, int simSeconds )
+    private static double Elapsed( double refSeconds, double simSeconds )
     {
       if (simSeconds < refSeconds) {
         // 24h changeover (simSeconds reset to 0
@@ -99,7 +99,7 @@ namespace FS20_HudBar
     /// <param name="next">Nect WP ID</param>
     /// <param name="simSeconds">SimTime</param>
     /// <param name="onGround">OnGround Flag</param>
-    public static void Track( string prev, string next, int simSeconds, bool onGround )
+    public static void Track( string prev, string next, double simSeconds, bool onGround )
     {
       if (next != m_nextWP) {
         m_nextWP = next;

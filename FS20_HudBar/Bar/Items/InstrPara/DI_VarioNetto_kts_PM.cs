@@ -9,7 +9,6 @@ using SC = SimConnectClient;
 
 using static dNetBm98.Units;
 
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 using static FS20_HudBar.Bar.Calculator;
 
@@ -17,6 +16,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -52,12 +52,12 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_VSpeed_ktPM( value2Proto ) { ItemForeColor = cTxAvg };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
 
@@ -86,9 +86,11 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        var rate = SC.SimConnectClient.Instance.HudBarModule.VARIO_netto_mps;
-        _value1.Value = (float)(Math.Round( Kt_From_Mps( rate ) * 20.0 ) / 20.0); // 0.05 increments only
-        _value2.Value = (float)(Math.Round( Kt_From_Mps( SC.SimConnectClient.Instance.HudBarModule.VARIO_Avg_netto_mps ) * 10.0 ) / 10.0); // 0.10 increments only
+        var rate = SV.Get<float>( SItem.fG_Acft_VARIO_netto_mps );
+        // 0.05 increments only
+        _value1.Value = (float)(Math.Round( Kt_From_Mps( rate ) * 20.0 ) / 20.0);
+        // 0.10 increments only
+        _value2.Value = (float)(Math.Round( Kt_From_Mps( SV.Get<float>( SItem.fG_Acft_VARIO_Avg_netto_mps ) ) * 10.0 ) / 10.0);
 
         // Get the new Value and Change the Player if needed
         if (Calculator.ModNote( _volume, rate, _soundBite )) {

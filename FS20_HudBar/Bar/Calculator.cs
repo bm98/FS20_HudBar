@@ -10,6 +10,9 @@ using static FS20_HudBar.Conversions;
 using static FS20_HudBar.GUI.GUI_Colors;
 using PingLib;
 using FS20_HudBar.GUI.Templates;
+using static FSimClientIF.Sim;
+using FSimClientIF.Modules;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar
 {
@@ -18,6 +21,8 @@ namespace FS20_HudBar.Bar
   /// </summary>
   internal static class Calculator
   {
+    private static readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
+
     // Timing infrastructure
     private static double _LastTick = 0;
     private static double _tick = 0;
@@ -33,7 +38,7 @@ namespace FS20_HudBar.Bar
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
       // use Zulu seconds - we will not update while Sim is paused
-      double newTick = SC.SimConnectClient.Instance.HudBarModule.SimTime_zulu_Dsec;
+      double newTick = SV.Get<double>( SItem.dG_Env_Time_zulu_sec );
       if (newTick < (_LastTick - 1.0)) {
         // new Tick is in the past (change in SimTime?? or Zulu Midnight change)
         _LastTick = newTick; // try to recover next round
@@ -50,9 +55,9 @@ namespace FS20_HudBar.Bar
 
         // Update Estimate Calculation with Acf data
         UpdateValues(
-          SC.SimConnectClient.Instance.HudBarModule.Groundspeed_kt,
-          SC.SimConnectClient.Instance.HudBarModule.AltMsl_ft,
-          SC.SimConnectClient.Instance.HudBarModule.VS_ftPmin
+              SV.Get<float>( SItem.fG_Acft_GS_kt ),
+              SV.Get<float>( SItem.fG_Acft_AltMsl_ft ),
+              SV.Get<float>( SItem.fG_Acft_VS_ftPmin )
         );
 
       }
@@ -181,9 +186,11 @@ namespace FS20_HudBar.Bar
       get {
         if (!SC.SimConnectClient.Instance.IsConnected) return false; // cannot calculate anything
 
-        var imbalanceGal = Math.Abs( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal
-                                      - SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal );
-        var min = Math.Min( SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal, SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal );
+        var imbalanceGal = Math.Abs(
+              SV.Get<float>( SItem.fG_Fuel_Quantity_left_gal )
+            - SV.Get<float>( SItem.fG_Fuel_Quantity_right_gal )
+         );
+        var min = Math.Min( SV.Get<float>( SItem.fG_Fuel_Quantity_left_gal ), SV.Get<float>( SItem.fG_Fuel_Quantity_right_gal ) );
         if (imbalanceGal > (min * 0.15)) {
           //Imbalance > 15% Total Fuel
           return true;
@@ -226,11 +233,11 @@ namespace FS20_HudBar.Bar
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return; // cannot calculate anything
 
-      var eModule = SC.SimConnectClient.Instance.HudBarModule;
-      float ff = eModule.Engine1_FuelFlow_lbPh;
-      if (eModule.NumEngines > 1) ff += eModule.Engine2_FuelFlow_lbPh;
-      if (eModule.NumEngines > 2) ff += eModule.Engine3_FuelFlow_lbPh;
-      if (eModule.NumEngines > 3) ff += eModule.Engine4_FuelFlow_lbPh;
+      int numE = SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num );
+      float ff = SV.Get<float>( SItem.fG_Eng_E1_fuelflow_lbPh );
+      if (numE > 1) ff += SV.Get<float>( SItem.fG_Eng_E2_fuelflow_lbPh );
+      if (numE > 2) ff += SV.Get<float>( SItem.fG_Eng_E3_fuelflow_lbPh );
+      if (numE > 3) ff += SV.Get<float>( SItem.fG_Eng_E4_fuelflow_lbPh );
 
       m_avgFuelFlowModule.Sample( ff );
     }
@@ -252,7 +259,7 @@ namespace FS20_HudBar.Bar
     {
       if (AvgFuelFlowTotal_lbPh( ) <= 0) return float.NaN;
 
-      return (SC.SimConnectClient.Instance.HudBarModule.FuelQuantityTotal_lb / m_avgFuelFlowModule.Avg) * 3600f;
+      return (SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) / m_avgFuelFlowModule.Avg) * 3600f;
     }
 
     #endregion
@@ -333,7 +340,7 @@ namespace FS20_HudBar.Bar
       get {
         if (!SC.SimConnectClient.Instance.IsConnected) return false; // cannot calculate anything
 
-        return SC.SimConnectClient.Instance.HudBarModule.OutsideTemperature_degC < 4;
+        return SV.Get<float>( SItem.fG_Env_OutsideTemperature_degC ) < 4;
       }
     }
     #endregion
@@ -348,10 +355,10 @@ namespace FS20_HudBar.Bar
       get {
         if (!SC.SimConnectClient.Instance.IsConnected) return "  "; // cannot calculate anything
 
-        string gsi = (SC.SimConnectClient.Instance.NavModule.GS1_flag ? " ◊"        // GS received
-          : SC.SimConnectClient.Instance.NavModule.GS1_available ? " ‡"  // GS available
-          : " ");
-        string id = SC.SimConnectClient.Instance.NavModule.Nav1_Ident + gsi;
+        string gsi = SV.Get<bool>( SItem.bG_Nav_1_GS_flag ) ? " ◊"        // GS received
+          : SV.Get<bool>( SItem.bG_Nav_1_hasGS ) ? " ‡"  // GS available
+          : " ";
+        string id = SV.Get<string>( SItem.sG_Nav_1_Ident ) + gsi;
 
         return id;
       }
@@ -363,10 +370,10 @@ namespace FS20_HudBar.Bar
       get {
         if (!SC.SimConnectClient.Instance.IsConnected) return "  "; // cannot calculate anything
 
-        string gsi = (SC.SimConnectClient.Instance.NavModule.GS2_flag ? " ◊"        // GS received
-          : SC.SimConnectClient.Instance.NavModule.GS2_available ? " ‡"  // GS available
-          : " ");
-        string id = SC.SimConnectClient.Instance.NavModule.Nav2_Ident + gsi;
+        string gsi = SV.Get<bool>( SItem.bG_Nav_2_GS_flag ) ? " ◊"        // GS received
+          : SV.Get<bool>( SItem.bG_Nav_2_hasGS ) ? " ‡"  // GS available
+          : " ";
+        string id = SV.Get<string>( SItem.sG_Nav_2_Ident ) + gsi;
 
         return id;
       }
@@ -385,7 +392,7 @@ namespace FS20_HudBar.Bar
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return 0; // cannot calculate anything
 
-      var r = SC.SimConnectClient.Instance.HudBarModule.SimRate_rate;
+      var r = SV.Get<float>( SItem.fG_Sim_Rate_rate );
       int steps = 0;
       // (0.25, 0.5, 1, 2, 4, 8, ..) only a float may not represent the numbers exactly 
       // so we add some tolerance for the resolution here (shifting all to Integers then rounding would be a solution too... e.g. *8)
@@ -521,10 +528,10 @@ namespace FS20_HudBar.Bar
 
     // wait for GA detection
     private static readonly double c_GaWait_sec = 3 * 60.0;
-    // min flaps depl. percent / 100
-    private static readonly float c_GaMinFlaps_prc100 = 0.2f;
-    // min Thrust lever percent / 100
-    private static readonly float c_GaMinThrust_prc100 = 0.9f;
+    // min flaps depl. percent
+    private static readonly float c_GaMinFlaps_prc = 20f;
+    // min Thrust lever percent
+    private static readonly float c_GaMinThrust_prc = 90f;
     // max Alt AOG 
     private static readonly float c_GaMaxAOG_ft = 1000f;
 
@@ -544,10 +551,10 @@ namespace FS20_HudBar.Bar
     /// </summary>
     private static void PosRateUpdate( )
     {
-      var ds = SC.SimConnectClient.Instance.HudBarModule;
-      if (ds.Sim_OnGround) {
+      float amsl = SV.Get<float>( SItem.fG_Acft_AltMsl_ft );
+      if (SV.Get<bool>( SItem.bG_Sim_OnGround )) {
         // reset while on ground
-        _startAlt_ft = ds.AltMsl_ft;
+        _startAlt_ft = amsl;
         _posRate = false;
         _repeatCount = 0;
       }
@@ -555,17 +562,17 @@ namespace FS20_HudBar.Bar
         // in air and waiting for PosRate
         bool posRate = true;
         // above detection alt
-        posRate &= ds.AltMsl_ft > (_startAlt_ft + c_MinAOG_ft); // using RA would see terrain alt changes after takeoff
+        posRate &= amsl > (_startAlt_ft + c_MinAOG_ft); // using RA would see terrain alt changes after takeoff
         // increasing altitude
-        posRate &= ds.AltMsl_ft > _prevAlt_ft;
+        posRate &= amsl > _prevAlt_ft;
         // above min VS 
-        posRate &= ds.VS_ftPmin > c_PRrate_fpm;
+        posRate &= SV.Get<float>( SItem.fG_Acft_VS_ftPmin ) > c_PRrate_fpm;
         // evaluate this cycle
         _repeatCount = posRate ? _repeatCount + 1 : 0; // reset if not met
         // evaluate total
         _posRate = (_repeatCount >= c_MinRepeat);
         if (_posRate) {
-          _triggerTime_sec = ds.SimTime_sec;
+          _triggerTime_sec = SV.Get<double>( SItem.dG_Env_Time_sec );
         }
       }
       else {
@@ -573,21 +580,21 @@ namespace FS20_HudBar.Bar
         // can we detect a GoAround situation ?? to retrigger the PosRate
         // something like: gear down, flaps > 0, full thrust applied, > 5Min since last trigger
         bool ga = true;
-        ga &= ds.FlapsDeployment_prct > c_GaMinFlaps_prc100;
-        ga &= ds.ThrottleLever_prct > c_GaMinThrust_prc100;
-        ga &= ds.AltAoG_ft < c_GaMaxAOG_ft;
-        ga &= ds.SimTime_sec > (_triggerTime_sec + c_GaWait_sec); // wait time elapsed
-        ga &= ds.GearPos == FSimClientIF.GearPosition.Down;
+        ga &= SV.Get<float>( SItem.fG_Flp_Deployment_prct ) > c_GaMinFlaps_prc;
+        ga &= SV.Get<float>( SItem.fGS_Thr_Lever_prct ) > c_GaMinThrust_prc;
+        ga &= SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) < c_GaMaxAOG_ft;
+        ga &= SV.Get<double>( SItem.dG_Env_Time_sec ) > (_triggerTime_sec + c_GaWait_sec); // wait time elapsed
+        ga &= SV.Get<GearPosition>( SItem.gpGS_Gear_Position ) == GearPosition.Down;
 
         if (ga) {
           // reset when detecting GA criteria
-          _startAlt_ft = ds.AltMsl_ft; // assume the current alt as lower limit, acft will usually go below for a while and then regain this alt
+          _startAlt_ft = amsl; // assume the current alt as lower limit, acft will usually go below for a while and then regain this alt
           _posRate = false; // disable flag
           _repeatCount = 0; // init cycle count
         }
       }
       // for the next cycle
-      _prevAlt_ft = ds.AltMsl_ft;
+      _prevAlt_ft = amsl;
     }
 
     /// <summary>

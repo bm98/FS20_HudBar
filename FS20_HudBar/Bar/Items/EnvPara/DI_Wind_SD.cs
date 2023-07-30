@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
@@ -10,10 +11,9 @@ using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
-using System.Drawing;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -54,12 +54,12 @@ namespace FS20_HudBar.Bar.Items
       _wind = new A_WindArrow( ) { BorderStyle = BorderStyle.FixedSingle, AutoSizeWidth = true, ItemForeColor = cScale0 };
       this.AddItem( _wind ); vCat.AddLbl( item, _wind );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -67,23 +67,23 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.WindDirection_deg;
-        _wind.DirectionFrom = (int)SC.SimConnectClient.Instance.HudBarModule.WindDirection_deg;
-        _wind.Heading = (int)SC.SimConnectClient.Instance.NavModule.HDG_true_deg;
-        _wind.ItemForeColor = WindColor( SC.SimConnectClient.Instance.HudBarModule.WindSpeed_kt );
-        _value2.Value = SC.SimConnectClient.Instance.HudBarModule.WindSpeed_kt;
+      if (this.Visible) {
+        _value1.Value = SV.Get<float>( SItem.fG_Acft_WindDirection_deg );
+        _wind.DirectionFrom = (int)SV.Get<float>( SItem.fG_Acft_WindDirection_deg );
+        _wind.Heading = (int)SV.Get<float>( SItem.fG_Nav_HDG_true_deg );
+        _wind.ItemForeColor = WindColor( SV.Get<float>( SItem.fG_Acft_WindSpeed_kt ) );
+        _value2.Value = SV.Get<float>( SItem.fG_Acft_WindSpeed_kt );
       }
     }
 
     // Get a Color for the Arrow (Beaufort scale based)
-    private ColorType WindColor (float knots )
+    private ColorType WindColor( float knots )
     {
-      if ( knots <= 1 ) return cScale0;   // Beaufort <=1
-      if ( knots <= 7 ) return cScale1;   // Beaufort >1 <=3
-      if ( knots <= 16 ) return cScale2;  // Beaufort >3 <=5
-      if ( knots <= 28 ) return cScale3;  // Beaufort >5 <=7
-      if ( knots <= 41 ) return cScale4;  // Beaufort >7 <=9
+      if (knots <= 1) return cScale0;   // Beaufort <=1
+      if (knots <= 7) return cScale1;   // Beaufort >1 <=3
+      if (knots <= 16) return cScale2;  // Beaufort >3 <=5
+      if (knots <= 28) return cScale3;  // Beaufort >5 <=7
+      if (knots <= 41) return cScale4;  // Beaufort >7 <=9
       return cScale5;                     // Beaufort >9
     }
   }

@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
-using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -37,18 +35,18 @@ namespace FS20_HudBar.Bar.Items
     public DI_SurfacesGraph( ValueItemCat vCat, Label lblProto )
     {
       LabelID = LItem;
-      _label = new L_Text(lblProto) { Text = Short }; this.AddItem(_label);
+      _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
 
       var item = VItem.SURF_ANI;
-      _surf1 = new A_Surfaces() { };
-      this.AddItem(_surf1); vCat.AddLbl(item, _surf1);
+      _surf1 = new A_Surfaces( ) { };
+      this.AddItem( _surf1 ); vCat.AddLbl( item, _surf1 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver(Short, OnDataArrival);
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -56,11 +54,10 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if (this.Visible)
-      {
-        _surf1.Rudder_prct = SC.SimConnectClient.Instance.HudBarModule.Rudder_prct; // +-1..0
-        _surf1.Elevator_prct = SC.SimConnectClient.Instance.HudBarModule.Elevator_prct; // +-1..0
-        _surf1.Aileron_prct = SC.SimConnectClient.Instance.HudBarModule.Aileron_prct; // +-1..0
+      if (this.Visible) {
+        _surf1.Rudder_prct = SV.Get<float>( SItem.fG_Steer_Rudder_prct100 ); // +-1..0
+        _surf1.Elevator_prct = SV.Get<float>( SItem.fG_Steer_Elevator_prct100 ); // +-1..0
+        _surf1.Aileron_prct = SV.Get<float>( SItem.fG_Steer_Aileron_prct100 ); // +-1..0
       }
     }
 

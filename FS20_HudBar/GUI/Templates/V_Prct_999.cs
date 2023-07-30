@@ -28,6 +28,7 @@ namespace FS20_HudBar.GUI.Templates
 
     /// <summary>
     /// Set the value of the Control - formatted as +N0.0% or +NN0%
+    /// PERCENT 0..100
     /// </summary>
     override public float? Value {
       set {
@@ -39,10 +40,10 @@ namespace FS20_HudBar.GUI.Templates
         }
         else {
           if ( Math.Abs( (float)value ) > 99f ) {
-            this.Text = UnitString( $"{value,6:##0%}" );  // sign 3.0 digits %
+            this.Text = UnitString( $"{value,6:##0}%" );  // sign 3.0 digits %
           }
           else {
-            this.Text = UnitString( $"{value,6:#0.0%}" );  // sign 2.1 digits %
+            this.Text = UnitString( $"{value,6:#0.0}%" );  // sign 2.1 digits %
           }
         }
       }

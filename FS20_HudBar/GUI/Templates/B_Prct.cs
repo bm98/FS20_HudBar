@@ -30,7 +30,8 @@ namespace FS20_HudBar.GUI.Templates
     }
 
     /// <summary>
-    /// Set the value of the Control - formatted as +NN'NN0ft
+    /// Set the value of the Control 
+    ///  PERCENT 0..100
     /// </summary>
     override public float? Value {
       set {
@@ -41,7 +42,7 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,4:#0%}" );  // sign 2 digits %
+          this.Text = UnitString( $"{value,4:#0}%" );  // sign 2 digits %
         }
       }
     }

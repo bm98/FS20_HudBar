@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
-using FSimClientIF.Modules;
+using static FSimClientIF.Sim;
 
 
 namespace FS20_HudBar.Triggers
@@ -27,14 +27,14 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SC.SimConnectClient.Instance.HudBarModule, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, OnDataArrival ); // use generic
     }
     /// <summary>
     /// Calls to un-register for dataupdates
     /// </summary>
     public override void UnRegisterObserver( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use generic
+      UnregisterObserver_low( SV ); // use generic
     }
 
     /// <summary>
@@ -46,8 +46,8 @@ namespace FS20_HudBar.Triggers
       if (!m_enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
 
-      var ds = SC.SimConnectClient.Instance.HudBarModule;
-      DetectStateChange( ds.SpoilerHandlePosition_prct );
+      var ds = SV;
+      DetectStateChange( SV.Get<float>( SItem.fGS_Flp_SpoilerHandle_position_prct ) );
     }
 
     // Implements the means to speak out the Flaps State
@@ -63,15 +63,15 @@ namespace FS20_HudBar.Triggers
       m_test = "Spoilers out";
 
       // add the proc most likely to be hit as the first - saves some computing time on the long run
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.0f, 0.05f ), Callback = Say, Text = "Spoilers retracted" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.2f, 0.05f ), Callback = Say, Text = "Spoilers 20" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.3f, 0.05f ), Callback = Say, Text = "Spoilers 30" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.4f, 0.05f ), Callback = Say, Text = "Spoilers 40" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.5f, 0.05f ), Callback = Say, Text = "Spoilers 50" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.6f, 0.05f ), Callback = Say, Text = "Spoilers 60" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.7f, 0.05f ), Callback = Say, Text = "Spoilers 70" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0.8f, 0.05f ), Callback = Say, Text = "Spoilers 80" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 1.0f, 0.05f ), Callback = Say, Text = "Spoilers out" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 0f, 5f ), Callback = Say, Text = "Spoilers retracted" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 20f, 5f ), Callback = Say, Text = "Spoilers 20" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 30f, 5f ), Callback = Say, Text = "Spoilers 30" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 40f, 5f ), Callback = Say, Text = "Spoilers 40" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 50f, 5f ), Callback = Say, Text = "Spoilers 50" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 60f, 5f ), Callback = Say, Text = "Spoilers 60" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 70f, 5f ), Callback = Say, Text = "Spoilers 70" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 80f, 5f ), Callback = Say, Text = "Spoilers 80" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 1.0f, 5f ), Callback = Say, Text = "Spoilers out" } );
     }
 
   }

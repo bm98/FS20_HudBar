@@ -121,4 +121,13 @@
   <data name="background" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\background.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Cam6DOF" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Cam6DOF.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Target_Next_Escort" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Target-Next-Escort.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Target_Next_Tower" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Target-Next-Tower.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

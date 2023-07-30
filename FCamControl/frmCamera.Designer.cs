@@ -85,7 +85,6 @@ namespace FCamControl
       this.btSlotFolderC = new System.Windows.Forms.Button();
       this.btSlotFolderD = new System.Windows.Forms.Button();
       this.label2 = new System.Windows.Forms.Label();
-      this.label1 = new System.Windows.Forms.Label();
       this.label3 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
       this.tbMove = new System.Windows.Forms.TrackBar();
@@ -105,11 +104,13 @@ namespace FCamControl
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.pnlDroneSlider = new System.Windows.Forms.Panel();
       this.lblSimConnected = new System.Windows.Forms.Label();
-      this.pnlDrone = new System.Windows.Forms.Panel();
+      this.bt6DOF = new System.Windows.Forms.Button();
+      this.uc6Entry = new FCamControl.UC_6DOFEntry();
+      this.btSlotFolderG = new System.Windows.Forms.Button();
+      this.btSlotFolderH = new System.Windows.Forms.Button();
       ((System.ComponentModel.ISupportInitialize)(this.tbMove)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.tbRotate)).BeginInit();
       this.pnlDroneSlider.SuspendLayout();
-      this.pnlDrone.SuspendLayout();
       this.SuspendLayout();
       // 
       // btIndex01
@@ -331,9 +332,9 @@ namespace FCamControl
       this.btDrone.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
       this.btDrone.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btDrone.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btDrone.Location = new System.Drawing.Point(14, 80);
+      this.btDrone.Location = new System.Drawing.Point(275, 115);
       this.btDrone.Name = "btDrone";
-      this.btDrone.Size = new System.Drawing.Size(70, 50);
+      this.btDrone.Size = new System.Drawing.Size(70, 33);
       this.btDrone.TabIndex = 2;
       this.btDrone.UseVisualStyleBackColor = false;
       // 
@@ -399,9 +400,9 @@ namespace FCamControl
       this.btExternal.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
       this.btExternal.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btExternal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btExternal.Location = new System.Drawing.Point(14, 24);
+      this.btExternal.Location = new System.Drawing.Point(275, 75);
       this.btExternal.Name = "btExternal";
-      this.btExternal.Size = new System.Drawing.Size(70, 50);
+      this.btExternal.Size = new System.Drawing.Size(70, 34);
       this.btExternal.TabIndex = 2;
       this.btExternal.UseVisualStyleBackColor = false;
       // 
@@ -546,7 +547,7 @@ namespace FCamControl
       this.btSlot10.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btSlot10.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btSlot10.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btSlot10.ForeColor = System.Drawing.Color.DarkTurquoise;
+      this.btSlot10.ForeColor = System.Drawing.Color.Teal;
       this.btSlot10.Location = new System.Drawing.Point(390, 403);
       this.btSlot10.Name = "btSlot10";
       this.btSlot10.Size = new System.Drawing.Size(36, 36);
@@ -970,23 +971,11 @@ namespace FCamControl
       this.label2.BackColor = System.Drawing.Color.Transparent;
       this.label2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label2.ForeColor = System.Drawing.Color.DarkGray;
-      this.label2.Location = new System.Drawing.Point(386, 379);
+      this.label2.Location = new System.Drawing.Point(11, 442);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(44, 21);
       this.label2.TabIndex = 3;
       this.label2.Text = "Slots";
-      // 
-      // label1
-      // 
-      this.label1.AutoSize = true;
-      this.label1.BackColor = System.Drawing.Color.Transparent;
-      this.label1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label1.ForeColor = System.Drawing.Color.DarkGray;
-      this.label1.Location = new System.Drawing.Point(300, 351);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(61, 21);
-      this.label1.TabIndex = 3;
-      this.label1.Text = "Folders";
       // 
       // label3
       // 
@@ -1003,9 +992,10 @@ namespace FCamControl
       // label4
       // 
       this.label4.AutoSize = true;
+      this.label4.BackColor = System.Drawing.Color.Transparent;
       this.label4.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label4.ForeColor = System.Drawing.Color.DarkGray;
-      this.label4.Location = new System.Drawing.Point(33, 4);
+      this.label4.Location = new System.Drawing.Point(294, 55);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(33, 17);
       this.label4.TabIndex = 15;
@@ -1025,6 +1015,8 @@ namespace FCamControl
       this.tbMove.TabIndex = 17;
       this.tbMove.TickFrequency = 10;
       this.tbMove.ValueChanged += new System.EventHandler(this.tbMove_ValueChanged);
+      this.tbMove.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tbMove_MouseDown);
+      this.tbMove.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tbMove_MouseUp);
       // 
       // tbRotate
       // 
@@ -1040,6 +1032,8 @@ namespace FCamControl
       this.tbRotate.TabIndex = 17;
       this.tbRotate.TickFrequency = 10;
       this.tbRotate.ValueChanged += new System.EventHandler(this.tbRotate_ValueChanged);
+      this.tbRotate.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tbRotate_MouseDown);
+      this.tbRotate.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tbRotate_MouseUp);
       // 
       // txSmartTargetName
       // 
@@ -1245,17 +1239,59 @@ namespace FCamControl
       this.lblSimConnected.Size = new System.Drawing.Size(441, 5);
       this.lblSimConnected.TabIndex = 25;
       // 
-      // pnlDrone
+      // bt6DOF
       // 
-      this.pnlDrone.BackColor = System.Drawing.Color.Transparent;
-      this.pnlDrone.CausesValidation = false;
-      this.pnlDrone.Controls.Add(this.label4);
-      this.pnlDrone.Controls.Add(this.btExternal);
-      this.pnlDrone.Controls.Add(this.btDrone);
-      this.pnlDrone.Location = new System.Drawing.Point(259, 51);
-      this.pnlDrone.Name = "pnlDrone";
-      this.pnlDrone.Size = new System.Drawing.Size(100, 139);
-      this.pnlDrone.TabIndex = 15;
+      this.bt6DOF.BackColor = System.Drawing.Color.SteelBlue;
+      this.bt6DOF.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+      this.bt6DOF.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.bt6DOF.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.bt6DOF.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.bt6DOF.Location = new System.Drawing.Point(275, 154);
+      this.bt6DOF.Name = "bt6DOF";
+      this.bt6DOF.Size = new System.Drawing.Size(70, 33);
+      this.bt6DOF.TabIndex = 16;
+      this.bt6DOF.Text = "6DOF";
+      this.bt6DOF.UseVisualStyleBackColor = false;
+      // 
+      // uc6Entry
+      // 
+      this.uc6Entry.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("uc6Entry.BackgroundImage")));
+      this.uc6Entry.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+      this.uc6Entry.Location = new System.Drawing.Point(3, 195);
+      this.uc6Entry.Name = "uc6Entry";
+      this.uc6Entry.Size = new System.Drawing.Size(437, 140);
+      this.uc6Entry.TabIndex = 26;
+      this.uc6Entry.Visible = false;
+      // 
+      // btSlotFolderG
+      // 
+      this.btSlotFolderG.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(44)))), ((int)(((byte)(67)))));
+      this.btSlotFolderG.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.btSlotFolderG.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btSlotFolderG.Font = new System.Drawing.Font("Segoe Script", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btSlotFolderG.ForeColor = System.Drawing.Color.Olive;
+      this.btSlotFolderG.Location = new System.Drawing.Point(300, 351);
+      this.btSlotFolderG.Name = "btSlotFolderG";
+      this.btSlotFolderG.Size = new System.Drawing.Size(42, 42);
+      this.btSlotFolderG.TabIndex = 27;
+      this.btSlotFolderG.TabStop = false;
+      this.btSlotFolderG.Text = "G";
+      this.btSlotFolderG.UseVisualStyleBackColor = false;
+      // 
+      // btSlotFolderH
+      // 
+      this.btSlotFolderH.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(44)))), ((int)(((byte)(67)))));
+      this.btSlotFolderH.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.btSlotFolderH.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btSlotFolderH.Font = new System.Drawing.Font("Segoe Script", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btSlotFolderH.ForeColor = System.Drawing.Color.Olive;
+      this.btSlotFolderH.Location = new System.Drawing.Point(348, 351);
+      this.btSlotFolderH.Name = "btSlotFolderH";
+      this.btSlotFolderH.Size = new System.Drawing.Size(42, 42);
+      this.btSlotFolderH.TabIndex = 28;
+      this.btSlotFolderH.TabStop = false;
+      this.btSlotFolderH.Text = "H";
+      this.btSlotFolderH.UseVisualStyleBackColor = false;
       // 
       // frmCamera
       // 
@@ -1265,9 +1301,16 @@ namespace FCamControl
       this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
       this.CausesValidation = false;
       this.ClientSize = new System.Drawing.Size(441, 645);
+      this.Controls.Add(this.btSlotFolderH);
+      this.Controls.Add(this.btSlotFolderG);
+      this.Controls.Add(this.uc6Entry);
+      this.Controls.Add(this.bt6DOF);
       this.Controls.Add(this.btSlotFolderA);
+      this.Controls.Add(this.label4);
       this.Controls.Add(this.btSlotFolderF);
+      this.Controls.Add(this.btExternal);
       this.Controls.Add(this.btIndex01);
+      this.Controls.Add(this.btDrone);
       this.Controls.Add(this.btSlot01);
       this.Controls.Add(this.btIndex06);
       this.Controls.Add(this.btSlotFolderB);
@@ -1298,12 +1341,10 @@ namespace FCamControl
       this.Controls.Add(this.cbxDroneLock);
       this.Controls.Add(this.label2);
       this.Controls.Add(this.lbxSmartTargets);
-      this.Controls.Add(this.label1);
       this.Controls.Add(this.txSmartTargetType);
       this.Controls.Add(this.lblSaveStar);
       this.Controls.Add(this.txSmartTargetName);
       this.Controls.Add(this.btSaveToSlot);
-      this.Controls.Add(this.pnlDrone);
       this.Controls.Add(this.btIndex24);
       this.Controls.Add(this.btIndex23);
       this.Controls.Add(this.btIndex28);
@@ -1350,8 +1391,6 @@ namespace FCamControl
       ((System.ComponentModel.ISupportInitialize)(this.tbRotate)).EndInit();
       this.pnlDroneSlider.ResumeLayout(false);
       this.pnlDroneSlider.PerformLayout();
-      this.pnlDrone.ResumeLayout(false);
-      this.pnlDrone.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -1412,7 +1451,6 @@ namespace FCamControl
     private System.Windows.Forms.Button btSlotFolderD;
     private System.Windows.Forms.Button btSlotFolderE;
     private System.Windows.Forms.Button btSlotFolderF;
-    private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Label label3;
     private System.Windows.Forms.Label label4;
@@ -1433,6 +1471,9 @@ namespace FCamControl
     private System.Windows.Forms.Timer timer1;
     private System.Windows.Forms.Panel pnlDroneSlider;
     private System.Windows.Forms.Label lblSimConnected;
-    private System.Windows.Forms.Panel pnlDrone;
+    private System.Windows.Forms.Button bt6DOF;
+    private UC_6DOFEntry uc6Entry;
+    private System.Windows.Forms.Button btSlotFolderG;
+    private System.Windows.Forms.Button btSlotFolderH;
   }
 }

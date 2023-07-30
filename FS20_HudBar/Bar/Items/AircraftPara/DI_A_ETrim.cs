@@ -13,6 +13,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -56,12 +57,12 @@ namespace FS20_HudBar.Bar.Items
       _label.MouseWheel += _label_MouseWheel;
       _label.Cursor = Cursors.SizeNS;
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private void _label_MouseWheel( object sender, MouseEventArgs e )
@@ -71,22 +72,26 @@ namespace FS20_HudBar.Bar.Items
       // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
       _label.ActivateForm( e );
 
+      float current = SV.Get<float>( SItem.fGS_Trm_ElevatorTrim_prct100 );
+
       if (e.Delta > 0) {
         // Wheel Up - nose down
-        SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct -= c_incPerWheel;
+        SV.Set( SItem.fGS_Trm_ElevatorTrim_prct100, current - c_incPerWheel );
       }
       else if (e.Delta < 0) {
         // Wheel Down
-        SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct += c_incPerWheel;
+        SV.Set( SItem.fGS_Trm_ElevatorTrim_prct100, current + c_incPerWheel );
       }
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
+      /* TODO REMOVED
       if (SC.SimConnectClient.Instance.IsConnected) {
         SC.SimConnectClient.Instance.AutoETrimModule.Enabled = !SC.SimConnectClient.Instance.AutoETrimModule.Enabled; // toggles
         _endTime = DateTime.Now + TimeSpan.FromSeconds( c_aETrim_sec ); // does not matter if it is off, else it starts again
       }
+      */
     }
 
     /// <summary>
@@ -94,15 +99,17 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
+      /* TODO REMOVED
       if (this.Visible) {
         this.ColorType.ItemBackColor = SC.SimConnectClient.Instance.AutoETrimModule.Enabled ? cLiveBG : cActBG;
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.ElevatorTrim_prct;
+        _value1.Value = SC.SimConnectClient.Instance.SV.ElevatorTrim_prct;
       }
 
       // switch the module off if the end time has passed
       if (SC.SimConnectClient.Instance.AutoETrimModule.Enabled && (DateTime.Now > _endTime)) {
         SC.SimConnectClient.Instance.AutoETrimModule.Enabled = false;
       }
+      */
     }
 
   }

@@ -5,14 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -42,12 +41,12 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Lights( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -55,22 +54,22 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
+      if (this.Visible) {
         // Consolidated lights (RA colored for Taxi and/or Landing lights on)
         int lightsInt = 0;
         _value1.ItemForeColor = cTxInfo;
-        if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Beacon ) lightsInt |= (int)V_Lights.Lights.Beacon;
-        if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Nav ) lightsInt |= (int)V_Lights.Lights.Nav;
-        if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Strobe ) lightsInt |= (int)V_Lights.Lights.Strobe;
-        if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Taxi ) {
+        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Beacon ) == CmdMode.On) lightsInt |= (int)V_Lights.Lights.Beacon;
+        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Nav ) == CmdMode.On) lightsInt |= (int)V_Lights.Lights.Nav;
+        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Strobe ) == CmdMode.On) lightsInt |= (int)V_Lights.Lights.Strobe;
+        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Taxi ) == CmdMode.On) {
           lightsInt |= (int)V_Lights.Lights.Taxi;
           _value1.ItemForeColor = cTxWarn;
         }
-        if ( SC.SimConnectClient.Instance.HudBarModule.Lights_Landing ) {
+        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Landing_L ) == CmdMode.On) {
           lightsInt |= (int)V_Lights.Lights.Landing;
           _value1.ItemForeColor = cTxWarn;
         }
-          _value1.IntValue = lightsInt;
+        _value1.IntValue = lightsInt;
       }
     }
 

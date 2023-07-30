@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -57,12 +58,12 @@ namespace FS20_HudBar.Bar.Items
       _value1.MouseWheel += _value1_MouseWheel;
       _value1.Cursor = Cursors.SizeNS;
 
-      m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
@@ -78,22 +79,22 @@ namespace FS20_HudBar.Bar.Items
       if (e.Delta > 0) {
         // Up
         if (largeChange) {
-          int value = (int)SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt + 10;
-          SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt = value;
+          int value = (int)SV.Get<float>( SItem.fGS_Ap_IAS_setting_kt ) + 10;
+          SV.Set<float>( SItem.fGS_Ap_IAS_setting_kt, value );
         }
         else {
-          SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting( FSimClientIF.CmdMode.Inc );
+          SV.Set( SItem.cmS_Ap_IAS_setting_step, CmdMode.Inc );
         }
       }
       else if (e.Delta < 0) {
         // Down
         if (largeChange) {
-          int value = (int)SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt - 10;
+          int value = (int)SV.Get<float>( SItem.fGS_Ap_IAS_setting_kt ) - 10;
           value = (value < 0) ? 0 : value; // cannot supply neg values
-          SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt = value;
+          SV.Set<float>( SItem.fGS_Ap_IAS_setting_kt, value );
         }
         else {
-          SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting( FSimClientIF.CmdMode.Dec );
+          SV.Set( SItem.cmS_Ap_IAS_setting_step, CmdMode.Dec );
         }
       }
     }
@@ -102,11 +103,12 @@ namespace FS20_HudBar.Bar.Items
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      //      SC.SimConnectClient.Instance.AP_G1000Module.FLChold_active = true; // toggles independent of the set value
-      if (!SC.SimConnectClient.Instance.AP_G1000Module.FLChold_active) {
-        SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt = SC.SimConnectClient.Instance.HudBarModule.IAS_kt;
+      //      SV.FLChold_active = true; // toggles independent of the set value
+      if (!SV.Get<bool>( SItem.bGS_Ap_FLC_hold )) {
+        // gets us Hold Current...
+        SV.Set( SItem.fGS_Ap_IAS_setting_kt, SV.Get<float>( SItem.fG_Acft_IAS_kt ) );
       }
-      SC.SimConnectClient.Instance.AP_G1000Module.FLC_hold( FSimClientIF.CmdMode.Toggle );
+      SV.Set( SItem.bGS_Ap_FLC_hold, true );
     }
 
     /// <summary>
@@ -115,14 +117,14 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.FLChold_active ? cTxAPActive : cTxLabel;
-        _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.IAS_setting_kt;
+        this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_FLC_hold ) ? cTxAPActive : cTxLabel;
+        _value1.Value = SV.Get<float>( SItem.fGS_Ap_IAS_setting_kt );
 
         // Managed Mode NOT USED SO FAR
         /*
-        _value2.Managed = SC.SimConnectClient.Instance.AP_G1000Module.SPD_managed;
-        _value2.Value = SC.SimConnectClient.Instance.AP_G1000Module.IAS_managed_kt;
-        _value2.Visible = SC.SimConnectClient.Instance.AP_G1000Module.SPD_managed;
+        _value2.Managed = SV.SPD_managed;
+        _value2.Value = SV.IAS_managed_kt;
+        _value2.Visible = SV.SPD_managed;
         */
       }
     }

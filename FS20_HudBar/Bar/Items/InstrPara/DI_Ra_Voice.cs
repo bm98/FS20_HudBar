@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -42,12 +40,12 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_RAaudio( valueProto, HudBar.SpeechLib ) { ItemForeColor = cTxRA };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 1, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
       // must unregister the callout as well
       _value1.UnregisterDataSource( );
     }
@@ -58,9 +56,9 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        if (SC.SimConnectClient.Instance.HudBarModule.AltAoG_ft <= 1500) {
-          this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ? cTxActive : cTxLabel;
-          _value1.Value = SC.SimConnectClient.Instance.HudBarModule.AltAoG_ft;
+        if (SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) <= 1500) {
+          this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bG_Sim_OnGround ) ? cTxActive : cTxLabel;
+          _value1.Value = SV.Get<float>( SItem.fG_Acft_AltAoG_ft );
         }
         else {
           this.ColorType.ItemForeColor = cTxLabel;

@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -58,12 +56,12 @@ namespace FS20_HudBar.Bar.Items
       _scale4 = new A_TwinScale( ) { Visible = false, Minimum = 0, Maximum = 110, AlertValue = 101, ItemForeColor_Alert = cAlert, ItemForeColor = cOK, ItemForeColor_LScale = cOK };
       this.AddItem( _scale4 ); vCat.AddLbl( item, _scale4 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -71,46 +69,47 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        _scale1.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines == 1 ); // Single
-        _scale2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );  // Twin Left
-        _scale3.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines == 3 ); // Twin Left + Single Right
-        _scale4.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 3 );  // Twin Left + Twin Right
+      if (this.Visible) {
+        int nEng = SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num );
+        _scale1.Visible = (nEng == 1); // Single
+        _scale2.Visible = (nEng > 1);  // Twin Left
+        _scale3.Visible = (nEng == 3); // Twin Left + Single Right
+        _scale4.Visible = (nEng > 3);  // Twin Left + Twin Right
 
-        if ( _scale1.Visible ) {
-          _scale1.Value = SC.SimConnectClient.Instance.HudBarModule.Turbine1_Torque_prct; // 0..100
-          _scale1.ItemBackColor = ( SC.SimConnectClient.Instance.HudBarModule.Turbine1_Torque_prct > 102 ) ? cWarnBG : cBG;
+        if (_scale1.Visible) {
+          _scale1.Value = SV.Get<float>( SItem.fG_Eng_T1_Torque_prct ); // 0..100
+          _scale1.ItemBackColor = (SV.Get<float>( SItem.fG_Eng_T1_Torque_prct ) > 102) ? cWarnBG : cBG;
         }
 
-        if ( _scale2.Visible && !( _scale3.Visible || _scale4.Visible ) ) {
-          _scale2.Value = SC.SimConnectClient.Instance.HudBarModule.Turbine1_Torque_prct; // 0..100
-          _scale2.ValueLScale = SC.SimConnectClient.Instance.HudBarModule.Turbine2_Torque_prct; // 0..100
-          _scale2.ItemBackColor = ( ( SC.SimConnectClient.Instance.HudBarModule.Turbine1_Torque_prct > 102 ) ||
-                                    ( SC.SimConnectClient.Instance.HudBarModule.Turbine2_Torque_prct > 102 ) ) ? cWarnBG : cBG;
+        if (_scale2.Visible && !(_scale3.Visible || _scale4.Visible)) {
+          _scale2.Value = SV.Get<float>( SItem.fG_Eng_T1_Torque_prct ); // 0..100
+          _scale2.ValueLScale = SV.Get<float>( SItem.fG_Eng_T2_Torque_prct ); // 0..100
+          _scale2.ItemBackColor = ((SV.Get<float>( SItem.fG_Eng_T1_Torque_prct ) > 102) ||
+                                    (SV.Get<float>( SItem.fG_Eng_T2_Torque_prct ) > 102)) ? cWarnBG : cBG;
         }
 
-        if ( _scale3.Visible ) {
+        if (_scale3.Visible) {
           // reorder for 3 Engines
-          _scale2.Value = SC.SimConnectClient.Instance.HudBarModule.Turbine1_Torque_prct; // 0..100
-          _scale2.ValueLScale = SC.SimConnectClient.Instance.HudBarModule.Turbine3_Torque_prct; // 0..100
-          _scale2.ItemBackColor = ( ( SC.SimConnectClient.Instance.HudBarModule.Turbine1_Torque_prct > 102 ) ||
-                                    ( SC.SimConnectClient.Instance.HudBarModule.Turbine3_Torque_prct > 102 ) ) ? cWarnBG : cBG;
+          _scale2.Value = SV.Get<float>( SItem.fG_Eng_T1_Torque_prct ); // 0..100
+          _scale2.ValueLScale = SV.Get<float>( SItem.fG_Eng_T3_Torque_prct ); // 0..100
+          _scale2.ItemBackColor = ((SV.Get<float>( SItem.fG_Eng_T1_Torque_prct ) > 102) ||
+                                    (SV.Get<float>( SItem.fG_Eng_T3_Torque_prct ) > 102)) ? cWarnBG : cBG;
 
-          _scale3.Value = SC.SimConnectClient.Instance.HudBarModule.Turbine2_Torque_prct; // 0..100
-          _scale3.ItemBackColor = ( SC.SimConnectClient.Instance.HudBarModule.Turbine2_Torque_prct > 102 ) ? cWarnBG : cBG;
+          _scale3.Value = SV.Get<float>( SItem.fG_Eng_T2_Torque_prct ); // 0..100
+          _scale3.ItemBackColor = (SV.Get<float>( SItem.fG_Eng_T2_Torque_prct ) > 102) ? cWarnBG : cBG;
         }
 
-        if ( _scale4.Visible ) {
+        if (_scale4.Visible) {
           // reorder for 4 Engines
-          _scale2.Value = SC.SimConnectClient.Instance.HudBarModule.Turbine1_Torque_prct; // 0..100
-          _scale2.ValueLScale = SC.SimConnectClient.Instance.HudBarModule.Turbine3_Torque_prct; // 0..100
-          _scale2.ItemBackColor = ( ( SC.SimConnectClient.Instance.HudBarModule.Turbine1_Torque_prct > 102 ) ||
-                                    ( SC.SimConnectClient.Instance.HudBarModule.Turbine3_Torque_prct > 102 ) ) ? cWarnBG : cBG;
+          _scale2.Value = SV.Get<float>( SItem.fG_Eng_T1_Torque_prct ); // 0..100
+          _scale2.ValueLScale = SV.Get<float>( SItem.fG_Eng_T3_Torque_prct ); // 0..100
+          _scale2.ItemBackColor = ((SV.Get<float>( SItem.fG_Eng_T1_Torque_prct ) > 102) ||
+                                    (SV.Get<float>( SItem.fG_Eng_T3_Torque_prct ) > 102)) ? cWarnBG : cBG;
 
-          _scale4.Value = SC.SimConnectClient.Instance.HudBarModule.Turbine2_Torque_prct; // 0..100
-          _scale4.ValueLScale = SC.SimConnectClient.Instance.HudBarModule.Turbine4_Torque_prct; // 0..100
-          _scale4.ItemBackColor = ( ( SC.SimConnectClient.Instance.HudBarModule.Turbine2_Torque_prct > 102 ) ||
-                                    ( SC.SimConnectClient.Instance.HudBarModule.Turbine4_Torque_prct > 102 ) ) ? cWarnBG : cBG;
+          _scale4.Value = SV.Get<float>( SItem.fG_Eng_T2_Torque_prct ); // 0..100
+          _scale4.ValueLScale = SV.Get<float>( SItem.fG_Eng_T4_Torque_prct ); // 0..100
+          _scale4.ItemBackColor = ((SV.Get<float>( SItem.fG_Eng_T2_Torque_prct ) > 102) ||
+                                    (SV.Get<float>( SItem.fG_Eng_T4_Torque_prct ) > 102)) ? cWarnBG : cBG;
         }
       }
     }

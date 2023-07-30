@@ -5,15 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
-using System.Drawing;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -50,12 +47,12 @@ namespace FS20_HudBar.Bar.Items
       _comp = new A_WindArrow( ) { BorderStyle = BorderStyle.FixedSingle, AutoSizeWidth = true, ItemForeColor = cInfo };
       this.AddItem( _comp ); vCat.AddLbl( item, _comp );
 
-      m_observerID = SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.NavModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -64,8 +61,8 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = SC.SimConnectClient.Instance.NavModule.Compass_degm;
-        _comp.DirectionFrom = (int)SC.SimConnectClient.Instance.NavModule.Compass_degm;
+        _value1.Value = SV.Get<float>( SItem.fG_Nav_Compass_degm );
+        _comp.DirectionFrom = (int)SV.Get<float>( SItem.fG_Nav_Compass_degm );
         _comp.Heading = 180;
       }
     }

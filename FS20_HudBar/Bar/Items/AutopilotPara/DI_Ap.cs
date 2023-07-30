@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -41,18 +42,18 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.AP;
       _label = new B_Text( item, value2Proto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += DI_Ap_ButtonClicked;
-      m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private void DI_Ap_ButtonClicked( object sender, ClickedEventArgs e )
     {
-      if ( SC.SimConnectClient.Instance.IsConnected ) {
-        SC.SimConnectClient.Instance.AP_G1000Module.Master_toggle( );
+      if (SC.SimConnectClient.Instance.IsConnected) {
+        SV.Set( SItem.cmGS_Ap_AP1, CmdMode.Toggle );
       }
     }
 
@@ -61,8 +62,8 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.AP_Master_on ? cTxAPActive : cTxLabel;
+      if (this.Visible) {
+        this.ColorType.ItemForeColor = (SV.Get<CmdMode>( SItem.cmGS_Ap_AP1 ) == CmdMode.On) ? cTxAPActive : cTxLabel;
       }
     }
 

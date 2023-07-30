@@ -14,18 +14,18 @@ namespace FS20_HudBar.Bar
   /// </summary>
   class CPointMeter
   {
-    private const int c_secPerDay = 24*60*60;
+    private const int c_secPerDay = 24 * 60 * 60;
 
     /// <summary>
     /// True if the Meter has ever started
     /// </summary>
     public bool Started { get; private set; } = false;
 
-    private LatLon m_startLatLon = new LatLon();
-    private int m_startSec;
+    private LatLon m_startLatLon = new LatLon( );
+    private double m_startSec;
 
-    private LatLon m_lapseLatLon = new LatLon();
-    private int m_lapseSec;
+    private LatLon m_lapseLatLon = new LatLon( );
+    private double m_lapseSec;
 
     /// <summary>
     /// Start the Meter with parameters
@@ -33,7 +33,7 @@ namespace FS20_HudBar.Bar
     /// <param name="lat">Latitude</param>
     /// <param name="lon">Longitude</param>
     /// <param name="sec">SimSeconds since Zulu 00:00</param>
-    public void Start( LatLon latLon, int sec )
+    public void Start( LatLon latLon, double sec )
     {
       m_startLatLon = latLon;
       m_startSec = sec;
@@ -44,15 +44,14 @@ namespace FS20_HudBar.Bar
     /// Lapse the Meter for readout
     ///  takes care of midnight change over but not further days
     /// </summary>
-    /// <param name="lat">Latitude</param>
-    /// <param name="lon">Longitude</param>
+    /// <param name="latLon">Latitude, Longitude</param>
     /// <param name="sec">SimSeconds since Zulu 00:00</param>
-    public void Lapse( LatLon latLon, int sec )
+    public void Lapse( LatLon latLon, double sec )
     {
       m_lapseLatLon = latLon;
       m_lapseSec = sec;
       // could be crossing midnight .. but we don't cover another day...
-      if ( m_lapseSec < m_startSec )
+      if (m_lapseSec < m_startSec)
         m_lapseSec += c_secPerDay;
     }
 
@@ -67,12 +66,12 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// The elapsed distance in nm
     /// </summary>
-    public double Distance => ( Started ) ? m_startLatLon.DistanceTo( m_lapseLatLon, ConvConsts.EarthRadiusNm ) : 0;
+    public double Distance => (Started) ? m_startLatLon.DistanceTo( m_lapseLatLon, ConvConsts.EarthRadiusNm ) : 0;
 
     /// <summary>
     /// The elapsed seconds
     /// </summary>
-    public int Duration => ( Started ) ? m_lapseSec - m_startSec : 0;
+    public int Duration => (int)((Started) ? m_lapseSec - m_startSec : 0);
 
   }
 

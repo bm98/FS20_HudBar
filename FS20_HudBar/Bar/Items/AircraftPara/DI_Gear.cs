@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
-using static FS20_HudBar.GUI.GUI_Colors.ColorType;
-
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using FSimClientIF;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -42,12 +40,12 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Steps( signProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -55,14 +53,14 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        if ( SC.SimConnectClient.Instance.HudBarModule.IsGearRetractable ) {
+      if (this.Visible) {
+        if (SV.Get<bool>( SItem.bG_Gear_Retractable )) {
           _value1.Step =
-              ( SC.SimConnectClient.Instance.HudBarModule.GearPos == FSimClientIF.GearPosition.Down )
+              (SV.Get<GearPosition>( SItem.gpGS_Gear_Position ) == GearPosition.Down)
               ? Steps.Down
-              : ( ( SC.SimConnectClient.Instance.HudBarModule.GearPos == FSimClientIF.GearPosition.Up )
+              : ((SV.Get<GearPosition>( SItem.gpGS_Gear_Position ) == GearPosition.Up)
                   ? Steps.Up
-                  : Steps.Unk );
+                  : Steps.Unk);
         }
         else {
           _value1.Step = Steps.Down;

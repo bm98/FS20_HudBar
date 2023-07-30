@@ -8,6 +8,7 @@ using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
 using FS20_HudBar.Bar;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Triggers
 {
@@ -36,14 +37,14 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SC.SimConnectClient.Instance.HudBarModule, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, OnDataArrival ); // use generic
     }
     /// <summary>
     /// Calls to un-register for dataupdates
     /// </summary>
     public override void UnRegisterObserver( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use generic
+      UnregisterObserver_low( SV ); // use generic
     }
 
     /// <summary>
@@ -55,9 +56,9 @@ namespace FS20_HudBar.Triggers
       if (!Enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
 
-      var ds = SC.SimConnectClient.Instance.HudBarModule;
+      var ds = SV;
 
-      if (ds.Sim_OnGround) {
+      if (SV.Get<bool>( SItem.bG_Sim_OnGround)) {
         // on ground we disable callouts, this lasts on the way up until a positive rate is detected
         m_lastTriggered = false;
       }

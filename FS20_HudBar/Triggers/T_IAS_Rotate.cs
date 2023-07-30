@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
-using FSimClientIF.Modules;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Triggers
 {
@@ -20,14 +20,14 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SC.SimConnectClient.Instance.HudBarModule, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, OnDataArrival ); // use generic
     }
     /// <summary>
     /// Calls to un-register for dataupdates
     /// </summary>
     public override void UnRegisterObserver( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use generic
+      UnregisterObserver_low( SV ); // use generic
     }
 
     /// <summary>
@@ -39,22 +39,20 @@ namespace FS20_HudBar.Triggers
       if (!m_enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
 
-      var ds = SC.SimConnectClient.Instance.HudBarModule;
-
       // Rotate is only triggered while OnGround and accelerating (else it calls on touchdown)
-      if (!ds.Sim_OnGround) return; // not on ground
-      if (ds.Accel_AcftZ_fps2 < 0.1f) return; // not accelerating (enough to be considered as takeoff..)
+      if (!SV.Get<bool>( SItem.bG_Sim_OnGround )) return; // not on ground
+      if (SV.Get<float>( SItem.fG_Acft_Accel_acftZ_fps2 ) < 0.1f) return; // not accelerating (enough to be considered as takeoff..)
 
-      var rotSpeed = ds.DesingSpeedMinRotation_kt;
-      if (rotSpeed < 10) rotSpeed = ds.DesingSpeedTakeoff_kt; // try takeoff speed (some don't have Rot..)
+      var rotSpeed = SV.Get<float>( SItem.fG_Dsg_SpeedMinRotation_kt );
+      if (rotSpeed < 10) rotSpeed = SV.Get<float>( SItem.fG_Dsg_SpeedTakeoff_kt ); // try takeoff speed (some don't have Rot..)
       if (rotSpeed < 10) return; // not properly set or otherwise not meaningful value from SIM
 
       this.m_actions.ElementAt( 0 ).Value.TriggerStateF.Level = rotSpeed; // set the trigger level
-      _smooth.Add( ds.IAS_kt ); // smoothen
+      _smooth.Add( SV.Get<float>( SItem.fG_Acft_IAS_kt ) ); // smoothen
       DetectStateChange( _smooth.GetFloat );
 
       // reset when again on ground and below 10 kt - Rotate will only trigger if within limits +-2
-      if (ds.IAS_kt < 10) {
+      if (SV.Get<float>( SItem.fG_Acft_IAS_kt ) < 10) {
         this.Reset( );
       }
     }

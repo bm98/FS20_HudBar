@@ -96,6 +96,16 @@ namespace FCamControl
       get { return (string)this["CameraSlotFolder5"]; }
       set { this["CameraSlotFolder5"] = value; }
     }
+    [DefaultSettingValue( "" )]
+    public string CameraSlotFolder6 {
+      get { return (string)this["CameraSlotFolder6"]; }
+      set { this["CameraSlotFolder6"] = value; }
+    }
+    [DefaultSettingValue( "" )]
+    public string CameraSlotFolder7 {
+      get { return (string)this["CameraSlotFolder7"]; }
+      set { this["CameraSlotFolder7"] = value; }
+    }
 
 
     #endregion

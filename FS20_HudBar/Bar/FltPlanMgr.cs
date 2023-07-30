@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using SC = SimConnectClient;
 using FSimClientIF.Flightplan;
 using FS20_HudBar.GUI;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar
 {
@@ -118,7 +119,7 @@ namespace FS20_HudBar.Bar
     }
 
     // Handle new FLT files comming in
-    private static void Instance_FltSave( object sender, SC.State.FltSaveEventArgs e )
+    private static void Instance_FltSave( object sender, FltSaveEventArgs e )
     {
       lock (m_lock) {
         m_FP = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Copy( ); // we have a copy

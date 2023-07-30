@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -47,12 +45,12 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_ICAO_L( value2Proto ) { ItemForeColor = cTxGps };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.GpsModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     // format an empty wyp as null -> ____ readout
@@ -65,15 +63,14 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        var module = SC.SimConnectClient.Instance.GpsModule;
-        if (module.IsGpsFlightplan_active) {
-          _value1.Text = module.IsGpsDirectTo_active ? "Ð→" : module.WYP_prevID;
-          _value2.Text = module.WYP_nextID;
+        if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
+          _value1.Text = SV.Get<bool>( SItem.bG_Gps_DirectTo_active ) ? "Ð→" : SV.Get<string>( SItem.sG_Gps_WYP_prevID );
+          _value2.Text = SV.Get<string>( SItem.sG_Gps_WYP_nextID );
         }
         else {
           // No SIM GPS - Flightplan active (WYPs still valid??) provider returns "" when the GPS WYP is not set valid anyway
-          _value1.Text = module.IsGpsDirectTo_active ? "Ð→" : WypLabel( module.WYP_prevID );
-          _value2.Text = WypLabel( module.WYP_nextID );
+          _value1.Text = SV.Get<bool>( SItem.bG_Gps_DirectTo_active ) ? "Ð→" : WypLabel( SV.Get<string>( SItem.sG_Gps_WYP_prevID ) );
+          _value2.Text = WypLabel( SV.Get<string>( SItem.sG_Gps_WYP_nextID ) );
         }
       }
     }

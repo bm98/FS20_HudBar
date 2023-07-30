@@ -13,6 +13,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -23,11 +24,10 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>63</ApplicationRevision>
-    <ApplicationVersion>0.63.0.63</ApplicationVersion>
+    <ApplicationRevision>65</ApplicationRevision>
+    <ApplicationVersion>0.65.0.65</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -218,6 +218,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\AircraftPara\DI_WaterBallast.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\CtrlPara\DI_ToeBrakes.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_AccelGraph.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\InstrPara\DI_VarioMCS_mps.cs">
@@ -635,6 +641,9 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="GUI\GUI_ColorSet.cs" />
     <Compile Include="GUI\IAlign.cs" />
+    <Compile Include="GUI\Templates\A_Accel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="GUI\Templates\A_AHor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -923,10 +932,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Microsoft.FlightSimulator.SimConnect.dll" />
     <Content Include="SimConnect.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\Inop.png" />
     <None Include="AApp\3x3dot.png" />
     <None Include="AApp\3x3void.png" />
     <None Include="AApp\Button Next-01.png" />

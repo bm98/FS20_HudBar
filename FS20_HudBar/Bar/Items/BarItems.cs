@@ -191,6 +191,9 @@ namespace FS20_HudBar.Bar.Items
     MCRAD_KT,     // MacCready Speed and Setting [kt]
 
     WBALLAST_ANI, // Glider Water Ballast Graphs
+
+    TBRAKE,       // Toe Brakes [%]
+    ACCEL_ANI,    // Acceleration Graph
   }
 
 
@@ -443,6 +446,7 @@ namespace FS20_HudBar.Bar.Items
     FP_ANGLE,      // Flight Path Angle
     ATT_ANI,       // Attitude Visual
     FPA_ANI,       // FPA Visual
+    ACCEL_ANI,     // Acceleration Visual
     GFORCE_Cur,    // GForce Current
     GFORCE_Min,    // GForce Minimum
     GFORCE_Max,    // GForce Maximum
@@ -554,10 +558,21 @@ namespace FS20_HudBar.Bar.Items
     // CONTROLs
     E1_THR_LEV,    // Throttle Lever Engine 1
     E2_THR_LEV,    // Throttle Lever Engine 2
+    E3_THR_LEV,    // Throttle Lever Engine 3
+    E4_THR_LEV,    // Throttle Lever Engine 4
+
     E1_MIX_LEV,    // Mixture Lever Engine 1
     E2_MIX_LEV,    // Mixture Lever Engine 2
+    E3_MIX_LEV,    // Mixture Lever Engine 3
+    E4_MIX_LEV,    // Mixture Lever Engine 4
+
     E1_PROP_LEV,   // Propeller Lever Engine 1
     E2_PROP_LEV,   // Propeller Lever Engine 2
+    E3_PROP_LEV,   // Propeller Lever Engine 3
+    E4_PROP_LEV,   // Propeller Lever Engine 4
+
+    TBRAKE_LEFT,   // Left Toe Brakes
+    TBRAKE_RIGHT,  // Right Toe Brakes
 
     E1_A320THR,    // A320 Throttle
     E2_A320THR,    // A320 Throttle

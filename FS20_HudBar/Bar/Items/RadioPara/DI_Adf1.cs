@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
-using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -53,12 +51,12 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Text( value2Proto ) { ItemForeColor = cTxNav };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.NavModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     // Inc/Dec Standby Frequ
@@ -73,10 +71,10 @@ namespace FS20_HudBar.Bar.Items
       var whole = e.Location.X < (_value1.Width / 3 * 2);
 
       if (e.Delta > 0) {
-        SC.SimConnectClient.Instance.NavModule.Adf1_Set( whole ? FSimClientIF.CmdMode.Inc : FSimClientIF.CmdMode.Inc_Fract );
+        SV.Set( SItem.cmS_Nav_ADF1_step, whole ? FSimClientIF.CmdMode.Inc : FSimClientIF.CmdMode.Inc_Fract );
       }
       else if (e.Delta < 0) {
-        SC.SimConnectClient.Instance.NavModule.Adf1_Set( whole ? FSimClientIF.CmdMode.Dec : FSimClientIF.CmdMode.Dec_Fract );
+        SV.Set( SItem.cmS_Nav_ADF1_step, whole ? FSimClientIF.CmdMode.Dec : FSimClientIF.CmdMode.Dec_Fract );
       }
     }
 
@@ -85,7 +83,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      SC.SimConnectClient.Instance.NavModule.Adf1_Set( FSimClientIF.CmdMode.Toggle );
+      SV.Set( SItem.cmS_Nav_ADF1_step, FSimClientIF.CmdMode.Toggle );
     }
 
     /// <summary>
@@ -94,8 +92,8 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Text = $"{SC.SimConnectClient.Instance.NavModule.Adf1_stdby_hz / 1_000f:#000.0}";
-        _value2.Text = $"{SC.SimConnectClient.Instance.NavModule.Adf1_active_hz / 1_000f:#000.0}";
+        _value1.Text = $"{SV.Get<int>( SItem.iGS_Nav_ADF1_stdby_hz ) / 1_000f:#000.0}";
+        _value2.Text = $"{SV.Get<int>( SItem.iG_Nav_ADF1_active_hz ) / 1_000f:#000.0}";
       }
     }
 

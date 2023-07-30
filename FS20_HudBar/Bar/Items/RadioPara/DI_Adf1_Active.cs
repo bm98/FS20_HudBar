@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
-using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -53,12 +51,12 @@ namespace FS20_HudBar.Bar.Items
       _brg = new A_WindArrow( ) { BorderStyle = BorderStyle.FixedSingle, AutoSizeWidth = true, ItemForeColor = cScale3 };
       this.AddItem( _brg ); vCat.AddLbl( item, _brg );
 
-      m_observerID = SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.NavModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -67,18 +65,20 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        if (SC.SimConnectClient.Instance.NavModule.Adf1_Ident != "") {
+        if (SV.Get<string>( SItem.sG_Nav_ADF1_Ident ) != "") {
           _value1.ItemForeColor = cTxNav;
-          _value1.Text = SC.SimConnectClient.Instance.NavModule.Adf1_Ident;
+          _value1.Text = SV.Get<string>( SItem.sG_Nav_ADF1_Ident );
         }
         else {
           _value1.ItemForeColor = cTxDim;
-          _value1.Text = $"{SC.SimConnectClient.Instance.NavModule.Adf1_active_hz / 1_000f:#000.0}";
+          _value1.Text = $"{SV.Get<int>( SItem.iG_Nav_ADF1_active_hz ) / 1_000f:#000.0}";
         }
 
-        if (SC.SimConnectClient.Instance.NavModule.Adf1_hasSignal) {
-          _value2.Value = SC.SimConnectClient.Instance.NavModule.Adf1_Radial_deg+SC.SimConnectClient.Instance.NavModule.HDG_mag_degm;// desired heading to the NDB
-          _brg.DirectionFrom = (int)CoordLib.Geo.Wrap360( (int)SC.SimConnectClient.Instance.NavModule.Adf1_Radial_deg ); // Deviation from actual course
+        if (SV.Get<bool>( SItem.bG_Nav_ADF1_hasSignal )) {
+          // desired heading to the NDB
+          _value2.Value = SV.Get<float>( SItem.fG_Nav_ADF1_Radial_mag_degm ) + SV.Get<float>( SItem.fG_Nav_HDG_mag_degm );
+          // Deviation from actual course
+          _brg.DirectionFrom = (int)CoordLib.Geo.Wrap360( (int)SV.Get<float>( SItem.fG_Nav_ADF1_Radial_mag_degm ) );
           _brg.ItemForeColor = cScale3;
           _brg.Heading = 180; // Wind indicator is used - so inverse direction
         }

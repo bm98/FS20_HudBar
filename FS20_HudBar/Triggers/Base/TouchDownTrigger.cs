@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using SC = SimConnectClient;
 using FS20_HudBar.GUI;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Triggers.Base
 {
@@ -58,12 +59,12 @@ namespace FS20_HudBar.Triggers.Base
 
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SC.SimConnectClient.Instance.HudBarModule, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, OnDataArrival ); // use generic
     }
 
     public override void UnRegisterObserver( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use generic
+      UnregisterObserver_low( SV ); // use generic
     }
 
     protected override void OnDataArrival( string dataRefName )
@@ -72,14 +73,14 @@ namespace FS20_HudBar.Triggers.Base
         _state = TState.Unknown;
         return;
       }
-
+      bool onGround = SV.Get<bool>( SItem.bG_Sim_OnGround );
       switch (_state) {
         case TState.Unknown:
-          _state = SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ? TState.OnGround : TState.InAir;
+          _state = onGround ? TState.OnGround : TState.InAir;
           break;
 
         case TState.OnGround:
-          if (SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround) {
+          if (onGround) {
             ; // remains on ground
           }
           else {
@@ -90,7 +91,7 @@ namespace FS20_HudBar.Triggers.Base
           break;
 
         case TState.InAir:
-          if (SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround) {
+          if (onGround) {
             // only when InAir -> OnGround triggers once a TouchDown
             _state = TState.TouchDown;
             if (m_enabled) Say( "Touchdown" );
@@ -110,7 +111,7 @@ namespace FS20_HudBar.Triggers.Base
           if (_delay > 0) { _delay--; return; }  // wait for next round
 
           // after a wait time decide on the next state
-          if (SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround) {
+          if (onGround) {
             _state = TState.OnGround;
           }
           else {

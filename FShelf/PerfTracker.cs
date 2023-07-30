@@ -11,8 +11,10 @@ using CoordLib.Extensions;
 
 using FSimFacilityIF;
 using SC = SimConnectClient;
+using static FSimClientIF.Sim;
 
 using bm98_Map;
+using FSimClientIF.Modules;
 
 namespace FShelf
 {
@@ -23,6 +25,9 @@ namespace FShelf
   internal sealed class PerfTracker
   {
     private readonly string c_PerfFile = "TouchDownLog.csv";
+
+    // SimVar access
+    private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
 
     private float _tdRate_fps = 0;
     private float _tdPitch_deg = 0;
@@ -67,7 +72,7 @@ namespace FShelf
     /// </summary>
     public void Reset( )
     {
-      _tdRate_fps = SC.SimConnectClient.Instance.AircraftTrackingModule.TouchDownVS_fps; // set current
+      _tdRate_fps = SV.Get<float>( SItem.fG_Acft_TouchDown_VS_fps ); // set current
       _tdPitch_deg = 0;
       _tdBank_deg = 0;
       _tdHdg_degm = 0;
@@ -84,29 +89,27 @@ namespace FShelf
     {
       // sanity
       if (!SC.SimConnectClient.Instance.IsConnected) return;
-      if (string.IsNullOrEmpty( SC.SimConnectClient.Instance.AircraftTrackingModule.AcftConfigFile )) {
+      if (string.IsNullOrEmpty( SV.Get<string>( SItem.sG_Cfg_AcftConfigFile ) )) {
         // no aircraft in use - usually at init or while changing flights etc.
         Reset( );
         return;
       }
 
-      var simData = SC.SimConnectClient.Instance.AircraftTrackingModule;
-
       // track while in air
-      if (!simData.Sim_OnGround) {
-        _tdRwyLatDev_ft = simData.AtcRunwaySelected ? simData.AtcRunway_Displacement_ft : float.NaN;
-        _tdRwyLonDev_ft = simData.AtcRunwaySelected ? simData.AtcRunway_Distance_ft : float.NaN;
+      if (!SV.Get<bool>( SItem.bG_Sim_OnGround )) {
+        _tdRwyLatDev_ft = SV.Get<bool>( SItem.bG_Atc_RunwaySelected ) ? SV.Get<float>( SItem.fG_Atc_Runway_Displacement_ft ) : float.NaN;
+        _tdRwyLonDev_ft = SV.Get<bool>( SItem.bG_Atc_RunwaySelected ) ? SV.Get<float>( SItem.fG_Atc_Runway_Distance_nm ) : float.NaN;
       }
 
-      if (_tdRate_fps != simData.TouchDownVS_fps) {
+      if (_tdRate_fps != SV.Get<float>( SItem.fG_Acft_TouchDown_VS_fps )) {
         // changed
         // try to avoid bouncing landings, get the first one i.e. wait 30 sec before registering the next one
         // and then only when moving faster than usual taxiing
-        if ((simData.GS > 30) && (DateTime.Now > (_tdCapture + TimeSpan.FromSeconds( 30 )))) {
-          _tdRate_fps = simData.TouchDownVS_fps;
-          _tdPitch_deg = simData.TouchDownPitch_deg;
-          _tdBank_deg = simData.TouchDownBank_deg;
-          _tdHdg_degm = simData.TouchDownHdg_degm;
+        if ((SV.Get<float>( SItem.fG_Acft_GS_kt ) > 30) && (DateTime.Now > (_tdCapture + TimeSpan.FromSeconds( 30 )))) {
+          _tdRate_fps = SV.Get<float>( SItem.fG_Acft_TouchDown_VS_fps );
+          _tdPitch_deg = SV.Get<float>( SItem.fG_Acft_TouchDown_Pitch_deg );
+          _tdBank_deg = SV.Get<float>( SItem.fG_Acft_TouchDown_Bank_deg );
+          _tdHdg_degm = SV.Get<float>( SItem.fG_Acft_TouchDown_Heading_degm );
 
           _tdCapture = DateTime.Now;
 
@@ -124,10 +127,9 @@ namespace FShelf
           sw.WriteLine( $"Aircraft;Callsign;Date_Time;VRate_fpm;Pitch_deg;Bank_deg;Hdg_degm;RwyLatDev_ft;RwyLonDev_ft" );
         }
       }
-      var simData = SC.SimConnectClient.Instance.AircraftTrackingModule;
       // append
       using (StreamWriter sw = new StreamWriter( tdFile, true )) {
-        string log = $"{simData.AcftConfigFile};{simData.AcftID};{_tdCapture:s}"
+        string log = $"{SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )};{SV.Get<string>( SItem.sG_Cfg_AircraftID )};{_tdCapture:s}"
                   + $";{Rate_fpm:###0.0};{Pitch_deg:#0.0};{Bank_deg:#0.0};{Hdg_degm:000};{RwyLatDev:##0.0};{RwyLonDev:####0.0}";
         sw.WriteLine( log );
       }
@@ -143,11 +145,10 @@ namespace FShelf
           sw.WriteLine( $"Aircraft;Callsign;Date_Time;VRate_fpm;Pitch_deg;Bank_deg;Hdg_degm;RwyLatDev_ft;RwyLonDev_ft;Airport" );
         }
       }
-      var simData = SC.SimConnectClient.Instance.AircraftTrackingModule;
       // append
       using (StreamWriter sw = new StreamWriter( tdFile, true )) {
-        string log = $"{simData.AcftConfigFile};{simData.AcftID};{_tdCapture:s}"
-                  + $";{Rate_fpm:###0.0};{Pitch_deg:#0.0};{Bank_deg:#0.0};{Hdg_degm:000};{RwyLatDev:##0.0};{RwyLonDev:####0.0};{GetAirport( simData.Lat, simData.Lon )}";
+        string log = $"{SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )};{SV.Get<string>( SItem.sG_Cfg_AircraftID )};{_tdCapture:s}"
+                  + $";{Rate_fpm:###0.0};{Pitch_deg:#0.0};{Bank_deg:#0.0};{Hdg_degm:000};{RwyLatDev:##0.0};{RwyLonDev:####0.0};{GetAirport( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) )}";
         sw.WriteLine( log );
       }
     }

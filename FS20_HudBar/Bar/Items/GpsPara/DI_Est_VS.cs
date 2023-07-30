@@ -5,14 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
 using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -42,12 +41,12 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_VSpeedPerMin( valueProto ) { ItemForeColor = cTxEst };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.GpsModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -55,17 +54,17 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
-          float tgtAlt = SC.SimConnectClient.Instance.GpsModule.WYP_Alt;
+      if (this.Visible) {
+        if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
+          float tgtAlt = SV.Get<float>( SItem.fG_Gps_WYP_alt_ft );
           // Estimates use WYP ALT if >0 (there is no distinction if a WYP ALT is given - it is 0 if not)
           ColorType estCol = cTxEst;
-          if ( tgtAlt == 0 ) {
+          if (tgtAlt == 0) {
             // use Set Alt if WYP ALT is zero (see comment above)
-            tgtAlt = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
+            tgtAlt = SV.Get<float>( SItem.fGS_Ap_ALT_setting_ft );
             estCol = cTxSet;
           }
-          _value1.Value = Calculator.VSToTgt_AtAltitude( tgtAlt, SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
+          _value1.Value = Calculator.VSToTgt_AtAltitude( tgtAlt, SV.Get<float>( SItem.fG_Gps_WYP_dist_nm ) );
           _value1.ItemForeColor = estCol;
         }
         else {

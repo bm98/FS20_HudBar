@@ -12,6 +12,7 @@ using DbgLib;
 
 using SC = SimConnectClient;
 using static FS20_HudBar.GUI.GUI_Colors;
+using static FSimClientIF.Sim;
 
 using FS20_HudBar.GUI.Templates.Base;
 using FS20_HudBar.Bar.Items.Base;
@@ -20,6 +21,7 @@ using FS20_HudBar.Bar;
 using FS20_HudBar.Config;
 using System.IO;
 using FS20_HudBar.GUI;
+using FSimClientIF.Modules;
 
 namespace FS20_HudBar
 {
@@ -73,6 +75,9 @@ namespace FS20_HudBar
 
     // MSFS Input handlers
     private Dictionary<Hotkeys, SC.Input.InputHandler> _fsInputCat = new Dictionary<Hotkeys, SC.Input.InputHandler>( );
+
+    // SimVar access
+    private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
 
     // The Flightbag
     private FShelf.frmShelf m_shelf;
@@ -587,7 +592,7 @@ namespace FS20_HudBar
       // collect the Menus for the profiles
       m_profileMenu = new ToolStripMenuItem[] { mP1, mP2, mP3, mP4, mP5, mP6, mP7, mP8, mP9, mP10 };
 
-      LOG.Log( "frmMain","Load Colors" );
+      LOG.Log( "frmMain", "Load Colors" );
       Colorset = ToColorSet( AppSettingsV2.Instance.Appearance );
 
       mAltMetric.CheckState = AppSettingsV2.Instance.Altitude_Metric ? CheckState.Checked : CheckState.Unchecked;
@@ -1126,6 +1131,7 @@ namespace FS20_HudBar
     #endregion
 
     #region Camera Selector
+
     private void mCamera_Click( object sender, EventArgs e )
     {
       // sanity check 
@@ -1138,6 +1144,17 @@ namespace FS20_HudBar
       else {
         m_camera.TopMost = true;
         m_camera.Show( );
+      }
+    }
+
+    #endregion
+
+    #region Backup Selector
+
+    private void mManBackup_Click( object sender, EventArgs e )
+    {
+      if (SC.SimConnectClient.Instance.IsConnected) {
+        SC.SimConnectClient.Instance.FlightPlanModule.RequestFlightBackup( );
       }
     }
 
@@ -1361,7 +1378,7 @@ namespace FS20_HudBar
         HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cTxActive;
         HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse; // not cBG so we still can select it in Transp. Mode
         // Set Engines if already connected
-        flp.SetEnginesVisible( SC.SimConnectClient.Instance.HudBarModule.NumEngines );
+        flp.SetEnginesVisible( SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num ) );
       }
       else {
         HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cTxInfo;
@@ -1387,9 +1404,9 @@ namespace FS20_HudBar
 
       var sec = DateTimeOffset.UtcNow.ToUnixTimeSeconds( );
       // maintain the Engine Visibility
-      flp.SetEnginesVisible( SC.SimConnectClient.Instance.HudBarModule.NumEngines );
+      flp.SetEnginesVisible( SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num ) );
       // It is called prematurely when the Bar connects or a flight is loaded - reset if no acft is selected
-      if (string.IsNullOrEmpty( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile )) {
+      if (string.IsNullOrEmpty( SV.Get<string>( SItem.sG_Cfg_AcftConfigFile ) )) {
         AirportMgr.Reset( );
         WPTracker.Reset( );
       }
@@ -1500,16 +1517,16 @@ namespace FS20_HudBar
         // Happens when HudBar is running when the Sim is starting only.
         // Sometimes the Connection is made but was not hooking up to the event handling
         // Disconnect and try to reconnect 
-        if (m_awaitingEvent || SC.SimConnectClient.Instance.HudBarModule.SimRate_rate <= 0) {
+        if (m_awaitingEvent || SV.Get<float>( SItem.fG_Sim_Rate_rate ) <= 0) {
           // landing here if Initialization is about to be confirmed - i.e. waiting for the Sim to deliver data
 
           // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
-          _ = SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile;
+          _ = SV.Get<float>( SItem.fG_Sim_Rate_rate );
           FltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
           // enable game hooks if newly connected and desired
           SetupInGameHook( AppSettingsV2.Instance.InGameHook );
           // Set Engines 
-          flp.SetEnginesVisible( SC.SimConnectClient.Instance.HudBarModule.NumEngines );
+          flp.SetEnginesVisible( SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num ) );
           LOG.Log( $"SimConnect", "Connected now" );
 
           // No events seen so far
@@ -1537,10 +1554,10 @@ namespace FS20_HudBar
       }
     }
 
+
+
+
     #endregion
-
-
-
 
   }
 }

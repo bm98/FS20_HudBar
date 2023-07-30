@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
-using FSimClientIF.Modules;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Triggers
 {
@@ -30,14 +30,14 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, OnDataArrival ); // use generic
     }
     /// <summary>
     /// Calls to un-register for dataupdates
     /// </summary>
     public override void UnRegisterObserver( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use generic
+      UnregisterObserver_low( SV ); // use generic
     }
 
     /// <summary>
@@ -46,14 +46,16 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAP_G1000 object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if ( !m_enabled ) return; // not enabled
-      if ( !SC.SimConnectClient.Instance.IsConnected ) return; // sanity, capture odd cases
-      if ( SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround ) return; // not while on ground
+      if (!m_enabled) return; // not enabled
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
+      if (SV.Get<bool>( SItem.bG_Sim_OnGround )) return; // not while on ground
 
-      var ds = SC.SimConnectClient.Instance.AP_G1000Module;
-      this.m_actions[true].Text = ds.GPS_active ? _path : _slope; // change according to NAV mode
-      DetectStateChange( ds.GS_active );
-      if ( ds.GS_active == false )
+      this.m_actions[true].Text = SV.Get<bool>( SItem.bG_Ap_GP_active ) ? _path : _slope; // GS may be active even on GP (then both are..)
+
+      DetectStateChange( SV.Get<bool>( SItem.bG_Ap_GS_active ) || SV.Get<bool>( SItem.bG_Ap_GP_active ) );
+
+      if ((SV.Get<bool>( SItem.bG_Ap_GS_active ) == false)
+        && (SV.Get<bool>( SItem.bG_Ap_GP_active ) == false))
         m_lastTriggered = false; // RESET if no longer captured
     }
 

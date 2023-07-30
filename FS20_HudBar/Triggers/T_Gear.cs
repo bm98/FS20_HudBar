@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
-using FSimClientIF.Modules;
+using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Triggers
 {
@@ -26,14 +27,14 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SC.SimConnectClient.Instance.HudBarModule, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, OnDataArrival ); // use generic
     }
     /// <summary>
     /// Calls to un-register for dataupdates
     /// </summary>
     public override void UnRegisterObserver( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use generic
+      UnregisterObserver_low( SV ); // use generic
     }
 
     /// <summary>
@@ -45,15 +46,15 @@ namespace FS20_HudBar.Triggers
       if (!m_enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
 
-      var ds = SC.SimConnectClient.Instance.HudBarModule;
+      var ds = SV;
 
-      if (ds.IsGearRetractable) {
+      if (SV.Get<bool>( SItem.bG_Gear_Retractable )) {
         // only if we have a retractable gear...
-        switch (ds.GearPos) {
-          case FSimClientIF.GearPosition.Up: // Binary False state
+        switch (SV.Get<GearPosition>( SItem.gpGS_Gear_Position )) {
+          case GearPosition.Up: // Binary False state
             DetectStateChange( false );
             break;
-          case FSimClientIF.GearPosition.Down:// Binary True state
+          case GearPosition.Down:// Binary True state
             DetectStateChange( true );
             break;
           default:

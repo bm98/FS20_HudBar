@@ -5,15 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using CoordLib;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -43,12 +41,12 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Dist( valueProto ) { ItemForeColor = cTxGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 5, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -58,19 +56,19 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         // Distance to Destination
-        if (SC.SimConnectClient.Instance.GpsModule.DEST_dist > 0) {
-          _value1.Value = SC.SimConnectClient.Instance.GpsModule.DEST_dist;
+        if (SV.Get<float>( SItem.fG_Gps_DEST_dist_nm ) > 0) {
+          _value1.Value = SV.Get<float>( SItem.fG_Gps_DEST_dist_nm );
           _value1.ItemForeColor = cTxGps;
         }
         else if (HudBar.AtcFlightPlan.HasFlightPlan) {
           _value1.Value = HudBar.AtcFlightPlan.RemainingDist_nm(
-          SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
-          SC.SimConnectClient.Instance.GpsModule.WYP_Dist );
+               SV.Get<string>( SItem.sG_Gps_WYP_nextID ),
+               SV.Get<float>( SItem.fG_Gps_WYP_dist_nm ) );
           _value1.ItemForeColor = cTxGps;
         }
         else {
           // calc straight distance if we don't have an ATC flightplan with waypoints
-          var latLon = new LatLon( SC.SimConnectClient.Instance.HudBarModule.Lat, SC.SimConnectClient.Instance.HudBarModule.Lon );
+          var latLon = new LatLon( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) );
           _value1.Value = AirportMgr.ArrDistance_nm( latLon );
           _value1.ItemForeColor = cTxInfo;
         }

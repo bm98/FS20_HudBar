@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
-using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -52,12 +51,12 @@ namespace FS20_HudBar.Bar.Items
       _label.MouseWheel += _label_MouseWheel;
       _label.Cursor = Cursors.SizeNS;
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private void _label_MouseWheel( object sender, MouseEventArgs e )
@@ -67,20 +66,21 @@ namespace FS20_HudBar.Bar.Items
       // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
       _label.ActivateForm( e );
 
-      if ( e.Delta > 0 ) {
+      float current = SV.Get<float>( SItem.fGS_Trm_AileronTrim_prct100 );
+      if (e.Delta > 0) {
         // Wheel Up - roll Right (same as mouse in Sim)
-        SC.SimConnectClient.Instance.HudBarModule.AileronTrim_prct += c_incPerWheel;
+        SV.Set( SItem.fGS_Trm_AileronTrim_prct100, current + c_incPerWheel );
       }
-      else if ( e.Delta < 0 ) {
+      else if (e.Delta < 0) {
         // Wheel Down - roll Left (same as mouse in Sim)
-        SC.SimConnectClient.Instance.HudBarModule.AileronTrim_prct -= c_incPerWheel;
+        SV.Set( SItem.fGS_Trm_AileronTrim_prct100, current - c_incPerWheel );
       }
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
-      if ( SC.SimConnectClient.Instance.IsConnected ) {
-        SC.SimConnectClient.Instance.HudBarModule.AileronTrim_prct = 0; // Set 0
+      if (SC.SimConnectClient.Instance.IsConnected) {
+        SV.Set( SItem.fGS_Trm_AileronTrim_prct100, 0f ); // Set 0
       }
     }
 
@@ -89,8 +89,8 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.AileronTrim_prct;
+      if (this.Visible) {
+        _value1.Value = SV.Get<float>( SItem.fGS_Trm_AileronTrim_prct100 ) * 100f;
       }
     }
 

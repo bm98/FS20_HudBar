@@ -19,6 +19,8 @@ using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 
 using FS20_HudBar.Config;
+using FSimClientIF.Modules;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar
 {
@@ -82,7 +84,7 @@ namespace FS20_HudBar.Bar
       {LItem.TIME, DI_Time.Desc },            {LItem.ZULU, DI_ZuluTime.Desc },  {LItem.CTIME, DI_CompTime.Desc },
 
       {LItem.ETRIM, DI_ETrim.Desc },          {LItem.RTRIM, DI_RTrim.Desc },    {LItem.ATRIM, DI_ATrim.Desc },
-      {LItem.A_ETRIM, DI_A_ETrim.Desc},
+     // {LItem.A_ETRIM, DI_A_ETrim.Desc},
 
       {LItem.WBALLAST_ANI,DI_WaterBallast.Desc},
 
@@ -147,7 +149,8 @@ namespace FS20_HudBar.Bar
       {LItem.VARIO_MPS, DI_VarioTE_mps_PM.Desc },    {LItem.VARIO_KTS, DI_VarioTE_kts_PM.Desc },   {LItem.VARIO_ANI, DI_VarioTEGraph.Desc },
       {LItem.NETTO_MPS, DI_VarioNetto_mps_PM.Desc }, {LItem.NETTO_KT,DI_VarioNetto_kts_PM.Desc }, {LItem.NETTO_ANI, DI_VarioNettoGraph.Desc },
       {LItem.MCRAD_MPS, DI_VarioMCS_mps.Desc },      {LItem.MCRAD_KT,DI_VarioMCS_kt.Desc },
-      {LItem.AOA, DI_Aoa.Desc },              {LItem.FP_ANGLE, DI_FPAngle.Desc },             {LItem.ESI_ANI, DI_ESIGraph.Desc },
+      {LItem.AOA, DI_Aoa.Desc },              {LItem.FP_ANGLE, DI_FPAngle.Desc },
+      {LItem.ESI_ANI, DI_ESIGraph.Desc },     {LItem.ACCEL_ANI,DI_AccelGraph.Desc },
       {LItem.GFORCE, DI_GForce.Desc },        {LItem.GFORCE_MM, DI_Gforce_MM.Desc },
 
       {LItem.AP, DI_Ap.Desc },
@@ -176,11 +179,15 @@ namespace FS20_HudBar.Bar
       {LItem.M_TIM_DIST1, DI_M_TimDist1.Desc },{LItem.M_TIM_DIST2, DI_M_TimDist2.Desc }, {LItem.M_TIM_DIST3, DI_M_TimDist3.Desc },
 
       {LItem.THR_LEV, DI_Thr_LEV.Desc },      {LItem.MIX_LEV, DI_Mix_LEV.Desc }, {LItem.PROP_LEV, DI_Prop_LEV.Desc },
+      {LItem.TBRAKE, DI_ToeBrakes.Desc },
       {LItem.A320THR, DI_A320Throttle.Desc },
       {LItem.SURF_ANI, DI_SurfacesGraph.Desc },
     };
 
     #endregion  // STATIC
+
+    // SimVar access
+    private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
 
     /// <summary>
     /// The currently used profile settings for the Bar
@@ -437,7 +444,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_FuelGraph( m_valueItems, lblProto ) );
       // Trim
       m_dispItems.AddDisp( new DI_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
-      m_dispItems.AddDisp( new DI_A_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      // m_dispItems.AddDisp( new DI_A_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_RTrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ATrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Water Ballast
@@ -483,6 +490,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Aoa( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_FPAngle( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ESIGraph( m_valueItems, lblProto ) );
+      m_dispItems.AddDisp( new DI_AccelGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_GForce( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gforce_MM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -532,8 +540,9 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Thr_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Mix_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Prop_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
-      m_dispItems.AddDisp( new DI_A320Throttle( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_SurfacesGraph( m_valueItems, lblProto ) );
+      m_dispItems.AddDisp( new DI_A320Throttle( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_ToeBrakes( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
 
       LOG.Log( $"cTor HudBar: {m_dispItems.Count} items loaded" );
 
@@ -653,13 +662,13 @@ namespace FS20_HudBar.Bar
       // ATC Airport - maintain APTs (we should always have a Destination here)
       AirportMgr.Update( AtcFlightPlan.Departure, AtcFlightPlan.Destination );
       // Maintain the Waypoint Tracker to support the GPS Flightplan 
-      if (SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active) {
+      if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
         // WP Enroute Tracker
         WPTracker.Track(
-          SC.SimConnectClient.Instance.GpsModule.WYP_prevID,
-          SC.SimConnectClient.Instance.GpsModule.WYP_nextID,
-          SC.SimConnectClient.Instance.HudBarModule.SimTime_loc_sec,
-          SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround
+             SV.Get<string>( SItem.sG_Gps_WYP_prevID ),
+             SV.Get<string>( SItem.sG_Gps_WYP_nextID ),
+             SV.Get<double>( SItem.dG_Env_Time_loc_sec ),
+             SV.Get<bool>( SItem.bG_Sim_OnGround )
         );
       }
 
@@ -695,25 +704,24 @@ namespace FS20_HudBar.Bar
       }
 
       if (_aircraftChanged || (secondsTic > _nextSecTic)) {
-        LOG.Log( $"UpdateGUI: Aircraft has changed to {SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile}" );
+        LOG.Log( $"UpdateGUI: Aircraft has changed to {SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )}" );
         string tt = "";
-        if (!string.IsNullOrWhiteSpace( SC.SimConnectClient.Instance.HudBarModule.AcftConfigFile )) {
-          var ds = SC.SimConnectClient.Instance.HudBarModule;
-          tt = $"Aircraft Type:     {ds.AcftConfigFile}\n\n"
-             + $"Cruise Altitude:   {ds.DesingCruiseAlt_ft:##,##0} ft\n"
-             + $"Vc  Cruise Speed:  {ds.DesingSpeedVC_kt:##0} kt\n"
-             + $"Vy  Climb Speed    {ds.DesingSpeedClimb_kt:##0} kt\n"
-             + $"Vmu Takeoff Speed: {ds.DesingSpeedTakeoff_kt:##0} kt\n"
-             + $"Vr  Min Rotation:  {ds.DesingSpeedMinRotation_kt:##0} kt\n"
-             + $"Vs1 Stall Speed:   {ds.DesingSpeedVS1_kt:##0} kt\n"
-             + $"Vs0 Stall Speed:   {ds.DesingSpeedVS0_kt:##0} kt\n\n"
-             + $"Fuel Weight:       {ds.FuelQuantityTotal_lb:###,##0} lbs ({Kg_From_Lbs( ds.FuelQuantityTotal_lb ):###,##0} kg)\n"
-             + $"Payload Weight:    {ds.AcftPLS_weight_lbs:###,##0} lbs ({Kg_From_Lbs( ds.AcftPLS_weight_lbs ):###,##0} kg)\n"
-             + $"TOTAL Weight:      {ds.TotalAcftWeight_lbs:###,##0} lbs ({Kg_From_Lbs( ds.TotalAcftWeight_lbs ):###,##0} kg)\n"
-             + $"Zero Fuel Weight:  {ds.TotalAcftWeight_lbs - ds.FuelQuantityTotal_lb:###,##0} lbs ({Kg_From_Lbs( ds.TotalAcftWeight_lbs - ds.FuelQuantityTotal_lb ):###,##0} kg)\n"
-             + $"CG lon / lat:      {ds.AcftCGlong_perc * 100f:#0.0} % / {ds.AcftCGlat_perc * 100f:#0.0} %\n"
-             + $"Empty Weight:      {ds.EmptyAcftWeight_lbs:###,##0} lbs ({Kg_From_Lbs( ds.EmptyAcftWeight_lbs ):###,##0} kg)\n"
-             + $"Max. Weight:       {ds.MaxAcftWeight_lbs:###,##0} lbs ({Kg_From_Lbs( ds.MaxAcftWeight_lbs ):###,##0} kg)\n"
+        if (!string.IsNullOrWhiteSpace( SV.Get<string>( SItem.sG_Cfg_AcftConfigFile ) )) {
+          tt = $"Aircraft Type:     {SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )}\n\n"
+             + $"Cruise Altitude:   {SV.Get<float>( SItem.fG_Dsg_CruiseAlt_ft ):##,##0} ft\n"
+             + $"Vc  Cruise Speed:  {SV.Get<float>( SItem.fG_Dsg_SpeedVC_kt ):##0} kt\n"
+             + $"Vy  Climb Speed    {SV.Get<float>( SItem.fG_Dsg_SpeedClimb_kt ):##0} kt\n"
+             + $"Vmu Takeoff Speed: {SV.Get<float>( SItem.fG_Dsg_SpeedTakeoff_kt ):##0} kt\n"
+             + $"Vr  Min Rotation:  {SV.Get<float>( SItem.fG_Dsg_SpeedMinRotation_kt ):##0} kt\n"
+             + $"Vs1 Stall Speed:   {SV.Get<float>( SItem.fG_Dsg_SpeedVS1_kt ):##0} kt\n"
+             + $"Vs0 Stall Speed:   {SV.Get<float>( SItem.fG_Dsg_SpeedVS0_kt ):##0} kt\n\n"
+             + $"Fuel Weight:       {SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ):###,##0} kg)\n"
+             + $"Payload Weight:    {SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ) ):###,##0} kg)\n"
+             + $"TOTAL Weight:      {SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) ):###,##0} kg)\n"
+             + $"Zero Fuel Weight:  {SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ):###,##0} kg)\n"
+             + $"CG lon / lat:      {SV.Get<float>( SItem.fG_Acft_AcftCGlong_perc ) * 100f:#0.0} % / {SV.Get<float>( SItem.fG_Acft_AcftCGlat_perc ) * 100f:#0.0} %\n"
+             + $"Empty Weight:      {SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) ):###,##0} kg)\n"
+             + $"Max. Weight:       {SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ) ):###,##0} kg)\n"
              ;
         }
         var di = this.DispItem( LItem.IAS );

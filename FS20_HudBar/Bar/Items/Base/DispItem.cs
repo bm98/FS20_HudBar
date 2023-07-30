@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using SC = SimConnectClient;
 using FS20_HudBar.GUI;
 using FSimClientIF.Modules;
 
@@ -57,6 +58,8 @@ namespace FS20_HudBar.Bar.Items.Base
     /// i.e. Must contain 4 Value items which represent Engine 1..4 in this order
     /// </summary>
     public bool IsEngineItem { get; protected set; } = false;
+
+    protected readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
 
     /// <summary>
     /// Generic item used when registering as Observer

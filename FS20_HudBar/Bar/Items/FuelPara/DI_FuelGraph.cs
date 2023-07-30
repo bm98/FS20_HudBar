@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -47,12 +45,12 @@ namespace FS20_HudBar.Bar.Items
       _scaleLR = new A_TwinScale( ) { Minimum = 0, Maximum = 60000, AlertValue = 1, ItemForeColor_Alert = cWarn, BorderStyle = BorderStyle.FixedSingle };
       this.AddItem( _scaleLR ); vCat.AddLbl( item, _scaleLR );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 5, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -60,34 +58,34 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
+      if (this.Visible) {
         // we need to set the visibility and limits each time as we cannot guess when a new plane is loaded..
-        _scaleC.Visible = ( SC.SimConnectClient.Instance.HudBarModule.FuelCapacityCenter_gal > 0 );
-        _scaleLR.Visible = ( ( SC.SimConnectClient.Instance.HudBarModule.FuelCapacityLeft_gal > 0 )
-                           || ( SC.SimConnectClient.Instance.HudBarModule.FuelCapacityRight_gal > 0 ) );
+        _scaleC.Visible = (SV.Get<float>( SItem.fG_Fuel_Capacity_center_gal ) > 0);
+        _scaleLR.Visible = ((SV.Get<float>( SItem.fG_Fuel_Capacity_left_gal ) > 0)
+                           || (SV.Get<float>( SItem.fG_Fuel_Capacity_right_gal ) > 0));
 
         // Value update
         // Check Center Tank
-        if ( _scaleC.Visible ) {
+        if (_scaleC.Visible) {
           _scaleC.AlertValue = _scaleC.Minimum; // reset before setting Max to avoid Argument exceptions when setting max
-          _scaleC.Maximum = SC.SimConnectClient.Instance.HudBarModule.FuelCapacityCenter_gal;
-          _scaleC.AlertValue = SC.SimConnectClient.Instance.HudBarModule.FuelCapacityCenter_gal / 4;
-          _scaleC.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityCenter_gal;
+          _scaleC.Maximum = SV.Get<float>( SItem.fG_Fuel_Capacity_center_gal );
+          _scaleC.AlertValue = SV.Get<float>( SItem.fG_Fuel_Capacity_center_gal ) / 4;
+          _scaleC.Value = SV.Get<float>( SItem.fG_Fuel_Quantity_center_gal );
         }
 
         // Handle LR Tanks with one Gauge
-        if ( _scaleLR.Visible ) {
-          var cap = Math.Max (SC.SimConnectClient.Instance.HudBarModule.FuelCapacityLeft_gal,
-                                SC.SimConnectClient.Instance.HudBarModule.FuelCapacityRight_gal);
+        if (_scaleLR.Visible) {
+          var cap = Math.Max( SV.Get<float>( SItem.fG_Fuel_Capacity_left_gal ),
+                                SV.Get<float>( SItem.fG_Fuel_Capacity_right_gal ) );
 
           _scaleLR.AlertValue = _scaleLR.Minimum; // reset before setting Max to avoid Argument exceptions when setting max
           _scaleLR.Maximum = cap;
           _scaleLR.AlertValue = cap / 4;
-          _scaleLR.Value = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityLeft_gal;
-          _scaleLR.ValueLScale = SC.SimConnectClient.Instance.HudBarModule.FuelQuantityRight_gal;
+          _scaleLR.Value = SV.Get<float>( SItem.fG_Fuel_Quantity_left_gal );
+          _scaleLR.ValueLScale = SV.Get<float>( SItem.fG_Fuel_Quantity_right_gal );
 
           // Color when there is a substantial unbalance
-          if ( Calculator.HasFuelImbalance ) {
+          if (Calculator.HasFuelImbalance) {
             _scaleLR.ItemForeColor = cAlert;
             _scaleLR.ItemForeColor_LScale = cAlert;
           }

@@ -1,5 +1,5 @@
-FS20_HudBar V 0.63 - Build 63 BETA
-(c) M. Burri - 03-Mar-2023
+FS20_HudBar V 0.65 - Build 65 BETA
+(c) M. Burri - 31-Aug-2023
 
 Contains files:
 
@@ -72,6 +72,17 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.65-B65
+- Add Engine 3+4 Levers for Throttle, Mix and Propeller
+- Add Toe Brake % item
+- Add Manual FLT Save in the context menu
+- Add 6DOF Camera
+- Update Uses LVar Get via SimVar framework (Set of such LVars still needs the WASM module)
+- Refactoring, complete rework of the DataProvider DLLs 
+
+V 0.64-B64 (not published)
+- Refactoring, complete rework of the DataProvider DLLs 
 
 V 0.63-B63
 FlightBag Update

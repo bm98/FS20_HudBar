@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
@@ -14,6 +13,7 @@ using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
 using static FS20_HudBar.GUI.GUI_Fonts;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -58,12 +58,12 @@ namespace FS20_HudBar.Bar.Items
       _value1.MouseWheel += _value1_MouseWheel;
       _value1.Cursor = Cursors.SizeNS;
 
-      m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
@@ -79,22 +79,19 @@ namespace FS20_HudBar.Bar.Items
       if (e.Delta > 0) {
         // Up
         if (largeChange) {
-          int value = ((int)(SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft / 100f) + 10) * 100;
-          SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft = value;
+          SV.Set( SItem.cmS_Ap_ALT_setting_step1000ft, FSimClientIF.CmdMode.Inc );
         }
         else {
-          SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting( FSimClientIF.CmdMode.Inc );
+          SV.Set( SItem.cmS_Ap_ALT_setting_step, FSimClientIF.CmdMode.Inc );
         }
       }
       else if (e.Delta < 0) {
         // Down
         if (largeChange) {
-          int value = ((int)(SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft / 100f) - 10) * 100;
-          value = (value < 0) ? 0 : value; // cannot supply neg values
-          SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft = value;
+          SV.Set( SItem.cmS_Ap_ALT_setting_step1000ft, FSimClientIF.CmdMode.Dec );
         }
         else {
-          SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting( FSimClientIF.CmdMode.Dec );
+          SV.Set( SItem.cmS_Ap_ALT_setting_step, FSimClientIF.CmdMode.Dec );
         }
       }
     }
@@ -103,8 +100,8 @@ namespace FS20_HudBar.Bar.Items
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      //SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active = true; // toggles independent of the set value
-      SC.SimConnectClient.Instance.AP_G1000Module.ALT_hold_current( FSimClientIF.CmdMode.Toggle );
+      //SV.ALThold_active = true; // toggles independent of the set value
+      SV.Set( SItem.cmS_Ap_ALT_hold_current, FSimClientIF.CmdMode.Toggle );
     }
 
     /// <summary>
@@ -113,24 +110,31 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _label.Text = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_armed ? "ALTS" + c_space : "ALT" + c_space + c_space;
-        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active ? cTxAPActive : cTxLabel;
+        _label.Text = SV.Get<bool>( SItem.bGS_Ap_ALT_hold )
+          ? $"ALT{c_space}{c_space}"
+          : SV.Get<bool>( SItem.bG_Ap_ALT_armed )
+              ? (SV.Get<bool>( SItem.bG_Ap_VNAV_useTargetAlt ) ? $"ALTV{c_space}" : $"ALTS{c_space}")
+              : $"ALT{c_space}{c_space}";
+        this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_ALT_hold ) ? cTxAPActive : cTxLabel;
 
-        _value1.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_setting_ft;
+        _value1.Value = SV.Get<float>( SItem.fGS_Ap_ALT_setting_ft );
 
         // second item
-        if (SC.SimConnectClient.Instance.AP_G1000Module.ALT_managed) {
+        if (SV.Get<bool>( SItem.bG_Ap_ALT_managed )) {
           // Managed Mode
           _value2.Managed = true;
           _value2.ItemForeColor = cTxInfo;
-          _value2.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_selSlot_ft;
+          _value2.Value = SV.Get<float>( SItem.fGS_Ap_ALT_setting_ft );
         }
         else {
           // the Alt Ref currently holding (can get NaN)
           _value2.Managed = false;
-          _value2.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.ALThold_active ? cTxAPActive
-            : SC.SimConnectClient.Instance.AP_G1000Module.ALThold_armed ? cTxInfo : cTxDim;
-          _value2.Value = SC.SimConnectClient.Instance.AP_G1000Module.ALT_holding_ft;
+          _value2.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_ALT_hold )
+            ? cTxAPActive
+            : SV.Get<bool>( SItem.bG_Ap_ALT_armed )
+                ? cTxInfo
+                : cTxDim;
+          _value2.Value = SV.Get<float>( SItem.fG_Ap_ALT_holding_ft );
         }
 
       }

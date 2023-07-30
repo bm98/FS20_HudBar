@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
-using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
-using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -40,7 +38,7 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
 
     // A HudBar standard ToolTip for the Metar Display
-    private ToolTip_Base _toolTip = new ToolTip_Base();
+    private ToolTip_Base _toolTip = new ToolTip_Base( );
 
     public DI_Metar( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
@@ -53,12 +51,12 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
+      m_observerID = SV.AddObserver( Short, 5, OnDataArrival );// use the Location tracer
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private void _metar_MetarDataEvent( object sender, MetarLib.MetarTafDataEventArgs e )
@@ -68,11 +66,11 @@ namespace FS20_HudBar.Bar.Items
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
-      if ( SC.SimConnectClient.Instance.IsConnected ) {
+      if (SC.SimConnectClient.Instance.IsConnected) {
         _metar.Clear( );
-        _metar.PostMETAR_Request( SC.SimConnectClient.Instance.HudBarModule.Lat,
-                                    SC.SimConnectClient.Instance.HudBarModule.Lon,
-                                    SC.SimConnectClient.Instance.GpsModule.GTRK ); // from current pos along the current track
+        _metar.PostMETAR_Request( SV.Get<double>( SItem.dG_Acft_Lat ),
+                                  SV.Get<double>( SItem.dG_Acft_Lon ),
+                                  SV.Get<float>( SItem.fG_Gps_GTRK_mag_degm ) ); // from current pos along the current track
       }
     }
 
@@ -81,9 +79,9 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
+      if (this.Visible) {
         // Location METAR
-        if ( _metar.HasNewData ) {
+        if (_metar.HasNewData) {
           // avoiding redraw for every cycle
           _value1.Text = _metar.StationText;
           _toolTip.SetToolTip( this.Label, _metar.Read( ) );

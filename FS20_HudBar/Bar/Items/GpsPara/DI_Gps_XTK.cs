@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -42,12 +40,12 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Xtk( valueProto ) { ItemForeColor = cTxGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SC.SimConnectClient.Instance.GpsModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.GpsModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -55,9 +53,9 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        if ( SC.SimConnectClient.Instance.GpsModule.IsGpsFlightplan_active ) {
-          _value1.Value = SC.SimConnectClient.Instance.GpsModule.GpsWaypointCrossTRK_nm;
+      if (this.Visible) {
+        if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
+          _value1.Value = SV.Get<float>( SItem.fG_Gps_WYP_XTRK_nm );
         }
         else {
           // No SIM GPS - Flightplan active

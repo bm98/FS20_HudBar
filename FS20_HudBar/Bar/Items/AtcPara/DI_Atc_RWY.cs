@@ -5,15 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
-using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -53,12 +50,12 @@ namespace FS20_HudBar.Bar.Items
       _value3 = new V_Alt( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );// use the Location tracer
+      m_observerID = SV.AddObserver( Short, 5, OnDataArrival );// use the Location tracer
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -66,18 +63,18 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
+      if (this.Visible) {
         // ATC Runway
-        if ( SC.SimConnectClient.Instance.HudBarModule.AtcRunwaySelected ) {
-          _value1.Value = SC.SimConnectClient.Instance.HudBarModule.AtcRunway_Distance_nm;
+        if (SV.Get<bool>( SItem.bG_Atc_RunwaySelected )) {
+          _value1.Value = SV.Get<float>( SItem.fG_Atc_Runway_Distance_nm );
 
-          float f = SC.SimConnectClient.Instance.HudBarModule.AtcRunway_Displacement_ft;
+          float f = SV.Get<float>( SItem.fG_Atc_Runway_Displacement_ft );
           _value2.Value = f;
-          _value2.ItemForeColor = ( Math.Abs( f ) <= 3 ) ? cTxActive : cTxInfo; // green if within +- 3ft
+          _value2.ItemForeColor = (Math.Abs( f ) <= 3) ? cTxActive : cTxInfo; // green if within +- 3ft
 
-          f = SC.SimConnectClient.Instance.HudBarModule.AtcRunway_HeightAbove_ft;
+          f = SV.Get<float>( SItem.fG_Atc_Runway_HeightAbove_ft );
           _value3.Value = f;
-          _value3.ItemForeColor = ( f <= 1500 ) ? cTxRA : cTxInfo;  // yellow if below 1500ft
+          _value3.ItemForeColor = (f <= 1500) ? cTxRA : cTxInfo;  // yellow if below 1500ft
         }
         else {
           _value1.Value = null;

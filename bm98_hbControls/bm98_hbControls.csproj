@@ -46,6 +46,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Damper.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UC_Accel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_Accel.Designer.cs">
+      <DependentUpon>UC_Accel.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_AHor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -104,6 +115,13 @@
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_Accel.resx">
+      <DependentUpon>UC_Accel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UC_AHor.resx">
       <DependentUpon>UC_AHor.cs</DependentUpon>
     </EmbeddedResource>
@@ -131,6 +149,9 @@
     <EmbeddedResource Include="UC_WindDot.resx">
       <DependentUpon>UC_WindDot.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Inop.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

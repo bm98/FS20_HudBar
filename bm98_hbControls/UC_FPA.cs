@@ -1,4 +1,5 @@
-﻿using System;
+﻿using bm98_hbControls.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,34 +13,35 @@ using System.Windows.Forms;
 namespace bm98_hbControls
 {
   /// <summary>
-  /// FPS Display
+  /// FPA Display
   ///   when in range, draws a arrow head shape with tip at Value
   ///   out of range, draws two hor. lines at the out of range end (top or bottom)
   /// </summary>
   public partial class UC_FPA : UserControl
   {
-    private readonly Size _minSize = new Size( 20, 10);
+    private readonly Size _minSize = new Size( 20, 10 );
     private readonly float _aspect = 2; // Height*_aspect => Width
 
     /// <summary>
     /// Properties
     /// </summary>
-    private Damper _pDamperVert = new Damper(0, 1);
-    private Damper _pDamperHor = new Damper(0, 1);
+    private Damper _pDamperVert = new Damper( 0, 1 );
+    private Damper _pDamperHor = new Damper( 0, 1 );
 
     private float _pMinV = -100;
     private float _pMaxV = 100;
-    private float _pMinH= -100;
+    private float _pMinH = -100;
     private float _pMaxH = 100;
     private bool _pAutoSizeHeight = false;
     private bool _pAutoSizeWidth = false;
     private Color _pOutOfRangeColor = Color.Gold;
+    private bool _inop = false;
 
     private const float c_penSize = 2;
 
-    private Pen _pen = new Pen(Color.Green, c_penSize);
-    private Pen _penOutOfRange = new Pen(Color.Gold, c_penSize);
-    private Size _border = new Size( -2, -2); // internal border for the scale drawn rectangle
+    private Pen _pen = new Pen( Color.Green, c_penSize );
+    private Pen _penOutOfRange = new Pen( Color.Gold, c_penSize );
+    private Size _border = new Size( -2, -2 ); // internal border for the scale drawn rectangle
     private float _vScale = 1;
     private float _hScale = 1;
 
@@ -51,7 +53,13 @@ namespace bm98_hbControls
     public float VerticalAngle {
       get => _pDamperVert.Avg;
       set {
-        _pDamperVert.Sample( value );
+        if (float.IsNaN( value )) {
+          this.Inop = true;
+        }
+        else {
+          this.Inop = false;
+          _pDamperVert.Sample( value );
+        }
         this.Invalidate( this.ClientRectangle );
       }
     }
@@ -64,7 +72,13 @@ namespace bm98_hbControls
     public float HorizontalAngle {
       get => _pDamperHor.Avg;
       set {
-        _pDamperHor.Sample( value );
+        if (float.IsNaN( value )) {
+          this.Inop = true;
+        }
+        else {
+          this.Inop = false;
+          _pDamperHor.Sample( value );
+        }
         this.Invalidate( this.ClientRectangle );
       }
     }
@@ -78,7 +92,7 @@ namespace bm98_hbControls
     public ushort Dampening {
       get => _pDamperVert.Factor;
       set {
-        if ( value == _pDamperVert.Factor ) return; // already set
+        if (value == _pDamperVert.Factor) return; // already set
         _pDamperVert = new Damper( _pDamperVert.Avg, value );
         _pDamperHor = new Damper( _pDamperHor.Avg, value );
       }
@@ -92,7 +106,7 @@ namespace bm98_hbControls
     public float MinimumVer {
       get => _pMinV;
       set {
-        if ( value >= _pMaxV ) throw new ArgumentException( "Property value is invalid" );
+        if (value >= _pMaxV) throw new ArgumentException( "Property value is invalid" );
         _pMinV = value;
         RecalcPrimitives( );
         this.Invalidate( this.ClientRectangle );
@@ -107,7 +121,7 @@ namespace bm98_hbControls
     public float MaximumVer {
       get => _pMaxV;
       set {
-        if ( value <= _pMinV ) throw new ArgumentException( "Property value is invalid" );
+        if (value <= _pMinV) throw new ArgumentException( "Property value is invalid" );
         _pMaxV = value;
         RecalcPrimitives( );
         this.Invalidate( this.ClientRectangle );
@@ -122,7 +136,7 @@ namespace bm98_hbControls
     public float MinimumHor {
       get => _pMinH;
       set {
-        if ( value >= _pMaxH ) throw new ArgumentException( "Property value is invalid" );
+        if (value >= _pMaxH) throw new ArgumentException( "Property value is invalid" );
         _pMinH = value;
         RecalcPrimitives( );
         this.Invalidate( this.ClientRectangle );
@@ -137,7 +151,7 @@ namespace bm98_hbControls
     public float MaximumHor {
       get => _pMaxH;
       set {
-        if ( value <= _pMinH ) throw new ArgumentException( "Property value is invalid" );
+        if (value <= _pMinH) throw new ArgumentException( "Property value is invalid" );
         _pMaxH = value;
         RecalcPrimitives( );
         this.Invalidate( this.ClientRectangle );
@@ -151,7 +165,7 @@ namespace bm98_hbControls
     public Color ForeColor_OutOfRange {
       get => _pOutOfRangeColor;
       set {
-        if ( value == _pOutOfRangeColor ) return; // already set
+        if (value == _pOutOfRangeColor) return; // already set
         _pOutOfRangeColor = value;
         _penOutOfRange?.Dispose( );
         _penOutOfRange = new Pen( _pOutOfRangeColor, c_penSize );
@@ -186,6 +200,19 @@ namespace bm98_hbControls
     }
 
     /// <summary>
+    /// Inop flag
+    /// </summary>
+    [DefaultValue( false )]
+    [Description( "Set the control as Inop" ), Category( "Appearance" )]
+    public bool Inop {
+      get => _inop;
+      set {
+        _inop = value;
+        this.Refresh( );
+      }
+    }
+
+    /// <summary>
     /// cTor:
     /// </summary>
     public UC_FPA( )
@@ -207,7 +234,7 @@ namespace bm98_hbControls
     public override Color ForeColor {
       get => base.ForeColor;
       set {
-        if ( value == base.ForeColor ) return; // already set
+        if (value == base.ForeColor) return; // already set
         base.ForeColor = value;
         _pen?.Dispose( );
         _pen = new Pen( value, c_penSize );
@@ -218,109 +245,113 @@ namespace bm98_hbControls
 
     private void UC_FPA_Paint( object sender, PaintEventArgs e )
     {
-      if ( _pen == null ) return;
-      if ( !this.Enabled ) return;
+      if (_pen == null) return;
+      if (!this.Enabled) return;
 
       var g = e.Graphics;
 
-      var saved = g.Save();
+      var saved = g.Save( );
       g.SmoothingMode = SmoothingMode.HighQuality;
 
       var rect = this.ClientRectangle;
-      g.TranslateTransform( rect.Left + rect.Width / 2, rect.Top + rect.Height / 2 );
-      // center is now at 0/0
-      // guide Rect (half size around the center)
-      g.DrawRectangle( Pens.DimGray, -rect.Width / _aspect / 4, -rect.Height / 4, rect.Width / _aspect / 2, rect.Height / 2 );
-
-      // Hor Guides
-      // - 1/2 guides
-      g.DrawLine( Pens.Gray, -rect.Width / _aspect / 2f, -rect.Height / 2, -rect.Width / _aspect / 2f, -rect.Height / 2 + 3 );
-      g.DrawLine( Pens.Gray, -rect.Width / _aspect / 2f, 3, -rect.Width / _aspect / 2f, -3 );
-      g.DrawLine( Pens.Gray, -rect.Width / _aspect / 2f, rect.Height / 2, -rect.Width / _aspect / 2f, rect.Height / 2 - 3 );
-      
-      // Center guides
-      g.DrawLine( Pens.Gray, 0, -rect.Height / 2, 0, -rect.Height / 2 + 3 );
-      g.DrawLine( Pens.Gray, 0, rect.Height / 2, 0, rect.Height / 2 - 3 );
-      // + 1/2 guides
-      g.DrawLine( Pens.Gray, rect.Width / _aspect / 2f, -rect.Height / 2, rect.Width / _aspect / 2f, -rect.Height / 2 + 3 );
-      g.DrawLine( Pens.Gray, rect.Width / _aspect / 2f, 3, rect.Width / _aspect / 2f, -3 );
-      g.DrawLine( Pens.Gray, rect.Width / _aspect / 2f, rect.Height / 2, rect.Width / _aspect / 2f, rect.Height / 2 - 3 );
-      
-      // Vertical Center guides 
-      g.DrawLine( Pens.Gray, -rect.Width / 2, 0, -rect.Width / 2 + 3, 0 );
-      g.DrawLine( Pens.Gray, -rect.Width / _aspect / 2f - 3, 0, -rect.Width / _aspect / 2f + 3, 0 );
-      g.DrawLine( Pens.Gray, rect.Width / _aspect / 2f - 3, 0, rect.Width / _aspect / 2f + 3, 0 );
-      g.DrawLine( Pens.Gray, rect.Width / 2, 0, rect.Width / 2 - 3, 0 );
-
-      // center cross
-      g.DrawLine( Pens.Gray, -3, 0, 3, 0 );
-      g.DrawLine( Pens.Gray, 0, -3, 0, 3 );
-
-      // use Size Only !! X/Y was shifted in Transform above
-      rect.Inflate( _border );
-
-      // Value
-      float nX = rect.Width/2 - _hScale * HorizontalAngle; // Mid is in the center
-      float nY = rect.Height/2 - _vScale * VerticalAngle; // Mid is in the center
-
-      PointF[] aPts = new PointF[3]{ new PointF(-rect.Width / _aspect / 4, rect.Height / 4), new PointF(0,0), new PointF(rect.Width / _aspect / 4,rect.Height/4)};
-
-      // 4x both out of range all combinations
-      if ( ( nX < 0 ) && ( nY < 0 ) ) {
-        //out of sight left and upper
-        g.TranslateTransform( -rect.Width / 2, -rect.Height / 2 );
-        g.RotateTransform( -45, MatrixOrder.Prepend );
-        g.DrawLines( _penOutOfRange, aPts );
+      if (_inop) {
+        g.DrawImage( Resources.Inop, rect );
       }
-      else if ( ( nX > rect.Width ) && ( nY > rect.Height ) ) {
-        //out of sight right and lower
-        g.TranslateTransform( rect.Width / 2, rect.Height / 2 );
-        g.RotateTransform( 135, MatrixOrder.Prepend );
-        g.DrawLines( _penOutOfRange, aPts );
-      }
-      else if ( ( nX < 0 ) && ( nY > rect.Height ) ) {
-        //out of sight left and lower
-        g.TranslateTransform( -rect.Width / 2, rect.Height / 2 );
-        g.RotateTransform( -135, MatrixOrder.Prepend );
-        g.DrawLines( _penOutOfRange, aPts );
-      }
-      else if ( ( nX > rect.Width ) && ( nY < 0 ) ) {
-        //out of sight right and upper
-        g.TranslateTransform( rect.Width / 2, -rect.Height / 2 );
-        g.RotateTransform( 45, MatrixOrder.Prepend );
-        g.DrawLines( _penOutOfRange, aPts );
-      }
-      // 4x one out of range
-      else if ( nX < 0 ) {
-        //out of sight left only
-        g.TranslateTransform( -rect.Width / 2, nY - rect.Height / 2 );
-        g.RotateTransform( -90, MatrixOrder.Prepend );
-        g.DrawLines( _penOutOfRange, aPts );
-      }
-      else if ( nX > rect.Width ) {
-        //out of sight right only
-        g.TranslateTransform( rect.Width / 2, nY - rect.Height / 2 );
-        g.RotateTransform( 90, MatrixOrder.Prepend );
-        g.DrawLines( _penOutOfRange, aPts );
-      }
-      else if ( nY < 0 ) {
-        //out of sight upper only
-        //g.RotateTransform( 90, MatrixOrder.Prepend );
-        g.TranslateTransform( nX - rect.Width / 2, -rect.Height / 2 );
-        g.DrawLines( _penOutOfRange, aPts );
-      }
-      else if ( nY > rect.Height ) {
-        //out of sight lower only
-        g.TranslateTransform( nX - rect.Width / 2, rect.Height / 2 );
-        g.RotateTransform( 180, MatrixOrder.Prepend );
-        g.DrawLines( _penOutOfRange, aPts );
-      }
-      // draw arrowhead
       else {
-        g.TranslateTransform( nX - rect.Width / 2, nY - rect.Height / 2 );
-        g.DrawLines( _pen, aPts );
-      }
+        g.TranslateTransform( rect.Left + rect.Width / 2, rect.Top + rect.Height / 2 );
+        // center is now at 0/0
+        // guide Rect (half size around the center)
+        g.DrawRectangle( Pens.DimGray, -rect.Width / _aspect / 4, -rect.Height / 4, rect.Width / _aspect / 2, rect.Height / 2 );
 
+        // Hor Guides
+        // - 1/2 guides
+        g.DrawLine( Pens.Gray, -rect.Width / _aspect / 2f, -rect.Height / 2, -rect.Width / _aspect / 2f, -rect.Height / 2 + 3 );
+        g.DrawLine( Pens.Gray, -rect.Width / _aspect / 2f, 3, -rect.Width / _aspect / 2f, -3 );
+        g.DrawLine( Pens.Gray, -rect.Width / _aspect / 2f, rect.Height / 2, -rect.Width / _aspect / 2f, rect.Height / 2 - 3 );
+
+        // Center guides
+        g.DrawLine( Pens.Gray, 0, -rect.Height / 2, 0, -rect.Height / 2 + 3 );
+        g.DrawLine( Pens.Gray, 0, rect.Height / 2, 0, rect.Height / 2 - 3 );
+        // + 1/2 guides
+        g.DrawLine( Pens.Gray, rect.Width / _aspect / 2f, -rect.Height / 2, rect.Width / _aspect / 2f, -rect.Height / 2 + 3 );
+        g.DrawLine( Pens.Gray, rect.Width / _aspect / 2f, 3, rect.Width / _aspect / 2f, -3 );
+        g.DrawLine( Pens.Gray, rect.Width / _aspect / 2f, rect.Height / 2, rect.Width / _aspect / 2f, rect.Height / 2 - 3 );
+
+        // Vertical Center guides 
+        g.DrawLine( Pens.Gray, -rect.Width / 2, 0, -rect.Width / 2 + 3, 0 );
+        g.DrawLine( Pens.Gray, -rect.Width / _aspect / 2f - 3, 0, -rect.Width / _aspect / 2f + 3, 0 );
+        g.DrawLine( Pens.Gray, rect.Width / _aspect / 2f - 3, 0, rect.Width / _aspect / 2f + 3, 0 );
+        g.DrawLine( Pens.Gray, rect.Width / 2, 0, rect.Width / 2 - 3, 0 );
+
+        // center cross
+        g.DrawLine( Pens.Gray, -3, 0, 3, 0 );
+        g.DrawLine( Pens.Gray, 0, -3, 0, 3 );
+
+        // use Size Only !! X/Y was shifted in Transform above
+        rect.Inflate( _border );
+
+        // Value
+        float nX = rect.Width / 2 - _hScale * HorizontalAngle; // Mid is in the center
+        float nY = rect.Height / 2 - _vScale * VerticalAngle; // Mid is in the center
+
+        PointF[] aPts = new PointF[3] { new PointF( -rect.Width / _aspect / 4, rect.Height / 4 ), new PointF( 0, 0 ), new PointF( rect.Width / _aspect / 4, rect.Height / 4 ) };
+
+        // 4x both out of range all combinations
+        if ((nX < 0) && (nY < 0)) {
+          //out of sight left and upper
+          g.TranslateTransform( -rect.Width / 2, -rect.Height / 2 );
+          g.RotateTransform( -45, MatrixOrder.Prepend );
+          g.DrawLines( _penOutOfRange, aPts );
+        }
+        else if ((nX > rect.Width) && (nY > rect.Height)) {
+          //out of sight right and lower
+          g.TranslateTransform( rect.Width / 2, rect.Height / 2 );
+          g.RotateTransform( 135, MatrixOrder.Prepend );
+          g.DrawLines( _penOutOfRange, aPts );
+        }
+        else if ((nX < 0) && (nY > rect.Height)) {
+          //out of sight left and lower
+          g.TranslateTransform( -rect.Width / 2, rect.Height / 2 );
+          g.RotateTransform( -135, MatrixOrder.Prepend );
+          g.DrawLines( _penOutOfRange, aPts );
+        }
+        else if ((nX > rect.Width) && (nY < 0)) {
+          //out of sight right and upper
+          g.TranslateTransform( rect.Width / 2, -rect.Height / 2 );
+          g.RotateTransform( 45, MatrixOrder.Prepend );
+          g.DrawLines( _penOutOfRange, aPts );
+        }
+        // 4x one out of range
+        else if (nX < 0) {
+          //out of sight left only
+          g.TranslateTransform( -rect.Width / 2, nY - rect.Height / 2 );
+          g.RotateTransform( -90, MatrixOrder.Prepend );
+          g.DrawLines( _penOutOfRange, aPts );
+        }
+        else if (nX > rect.Width) {
+          //out of sight right only
+          g.TranslateTransform( rect.Width / 2, nY - rect.Height / 2 );
+          g.RotateTransform( 90, MatrixOrder.Prepend );
+          g.DrawLines( _penOutOfRange, aPts );
+        }
+        else if (nY < 0) {
+          //out of sight upper only
+          //g.RotateTransform( 90, MatrixOrder.Prepend );
+          g.TranslateTransform( nX - rect.Width / 2, -rect.Height / 2 );
+          g.DrawLines( _penOutOfRange, aPts );
+        }
+        else if (nY > rect.Height) {
+          //out of sight lower only
+          g.TranslateTransform( nX - rect.Width / 2, rect.Height / 2 );
+          g.RotateTransform( 180, MatrixOrder.Prepend );
+          g.DrawLines( _penOutOfRange, aPts );
+        }
+        // draw arrowhead
+        else {
+          g.TranslateTransform( nX - rect.Width / 2, nY - rect.Height / 2 );
+          g.DrawLines( _pen, aPts );
+        }
+      }
       g.Restore( saved );
     }
 
@@ -331,9 +362,9 @@ namespace bm98_hbControls
 
     private void UC_FPA_Resize( object sender, EventArgs e )
     {
-      if ( AutoSizeHeight && AutoSizeWidth ) { this.Size = _minSize; }
-      else if ( AutoSizeHeight ) { this.Height = (int)( this.Width / _aspect ); }
-      else if ( AutoSizeWidth ) { this.Width = (int)( this.Height * _aspect ); }
+      if (AutoSizeHeight && AutoSizeWidth) { this.Size = _minSize; }
+      else if (AutoSizeHeight) { this.Height = (int)(this.Width / _aspect); }
+      else if (AutoSizeWidth) { this.Width = (int)(this.Height * _aspect); }
     }
 
     // recalculate our internal primitives (avoiding cal for every paint)
@@ -343,8 +374,8 @@ namespace bm98_hbControls
       var rect = this.ClientRectangle;
       // for scaling we reduce the size
       rect.Inflate( _border );
-      _hScale = -rect.Width / ( MaximumHor - MinimumHor );
-      _vScale = rect.Height / ( MaximumVer - MinimumVer );
+      _hScale = -rect.Width / (MaximumHor - MinimumHor);
+      _vScale = rect.Height / (MaximumVer - MinimumVer);
     }
 
   }

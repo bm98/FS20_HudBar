@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
-using FSimClientIF.Modules;
+using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Triggers
 {
@@ -25,14 +26,14 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, OnDataArrival ); // use generic
     }
     /// <summary>
     /// Calls to un-register for dataupdates
     /// </summary>
     public override void UnRegisterObserver( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use generic
+      UnregisterObserver_low( SV ); // use generic
     }
 
     private string AvNum( int n, bool nine = false )
@@ -126,17 +127,16 @@ namespace FS20_HudBar.Triggers
     {
       if (!m_enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
-      if (SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround) return; // not while on ground
+      if (SV.Get<bool>( SItem.bG_Sim_OnGround )) return; // not while on ground
 
-      var aps = SC.SimConnectClient.Instance.AP_G1000Module;
-      var hs = SC.SimConnectClient.Instance.HudBarModule;
       // if capturing ALT
-      if (aps.ALThold_active && (aps.AP_mode == FSimClientIF.APMode.On)) {
+      if ((SV.Get<APMode>( SItem.apmG_Ap_mode ) == APMode.On) && SV.Get<bool>( SItem.bGS_Ap_ALT_hold )) {
         // find out what ALT we are holding - if at all
         // ALT hold gets active while approaching the target Alt in ALTS mode
         // or holds the current ALT if the pilot hits the ALT hold button.
         // If the Setting is more than 500ft away from the current ALT we assume the pilot pushed the ALT hold button (best guess...)
-        float altHolding = aps.ALT_setting_ft; // target ALT
+        float altHolding = SV.Get<float>( SItem.fG_Ap_ALT_holding_ft ); // target ALT
+        /*
         if (altHolding > (hs.Altimeter_ft + 500f)) {
           // seems ALT button was pressed on the way UP to SET ALT
           altHolding = (int)Math.Ceiling( hs.Altimeter_ft / 100f ) * 100; // round current ALT UP 
@@ -145,12 +145,13 @@ namespace FS20_HudBar.Triggers
           // seems ALT button was pressed on the way DOWN to SET ALT
           altHolding = (int)Math.Floor( hs.Altimeter_ft / 100f ) * 100; // round current ALT DOWN
         }
-        m_actions.First( ).Value.Text = AltText( altHolding, hs.AltimeterSetting_std( 0 ) );
+        */
+        m_actions.First( ).Value.Text = AltText( altHolding, SV.Get<bool>( SItem.bGS_Acft_Altimeter1_mode_Std ) );
       }
 
       // trigger Once and only if AP and ALT Hold is On
-      DetectStateChange( (aps.AP_mode == FSimClientIF.APMode.On) && aps.ALThold_active );
-      if (aps.ALThold_active == false)
+      DetectStateChange( (SV.Get<APMode>( SItem.apmG_Ap_mode ) == APMode.On) && SV.Get<bool>( SItem.bGS_Ap_ALT_hold ) );
+      if (SV.Get<bool>( SItem.bGS_Ap_ALT_hold ) == false)
         m_lastTriggered = false; // RESET if no longer captured
     }
 

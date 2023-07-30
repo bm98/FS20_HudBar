@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -50,19 +50,19 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_GForce( value2Proto ) { ItemForeColor = cTxDim };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private void DI_Gforce_MM_ButtonClicked( object sender, ClickedEventArgs e )
     {
-      if ( !SC.SimConnectClient.Instance.IsConnected ) return;
+      if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      SC.SimConnectClient.Instance.HudBarModule.ResetGForceIndicator( );
+      SV.Set( SItem.bS_Acft_GForce_reset, true );
     }
 
     /// <summary>
@@ -70,9 +70,9 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.GForceMin_g;
-        _value2.Value = SC.SimConnectClient.Instance.HudBarModule.GForceMax_g;
+      if (this.Visible) {
+        _value1.Value = SV.Get<float>( SItem.fG_Acft_GForce_min_g );
+        _value2.Value = SV.Get<float>( SItem.fG_Acft_GForce_max_g );
       }
     }
 

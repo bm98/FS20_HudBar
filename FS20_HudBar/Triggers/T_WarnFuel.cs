@@ -8,6 +8,7 @@ using SC = SimConnectClient;
 
 using FS20_HudBar.Bar;
 using FS20_HudBar.Triggers.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Triggers
 {
@@ -21,14 +22,14 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SC.SimConnectClient.Instance.HudBarModule, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, OnDataArrival ); // use generic
     }
     /// <summary>
     /// Calls to un-register for dataupdates
     /// </summary>
     public override void UnRegisterObserver( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use generic
+      UnregisterObserver_low( SV ); // use generic
     }
 
     /// <summary>

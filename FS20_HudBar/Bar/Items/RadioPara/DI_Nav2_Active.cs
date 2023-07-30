@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -53,12 +53,12 @@ namespace FS20_HudBar.Bar.Items
       _value3 = new V_DmeDist( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
-      m_observerID = SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.NavModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -66,29 +66,29 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        this.Label.Text = SC.SimConnectClient.Instance.NavModule.Nav2_hasLOC ? "LOC 2" : "NAV 2";
-        if ( SC.SimConnectClient.Instance.NavModule.Nav2_Ident != "" ) {
+      if (this.Visible) {
+        this.Label.Text = SV.Get<bool>( SItem.bG_Nav_2_hasLOC ) ? "LOC 2" : "NAV 2";
+        if (SV.Get<string>( SItem.sG_Nav_2_Ident ) != "") {
           _value1.ItemForeColor = cTxNav;
           _value1.Text = Calculator.NAV2_ID;
 
-          var brg = (float)Geo.Wrap360( SC.SimConnectClient.Instance.NavModule.Nav2_Radial_degm - 180 ); // direction towards the station 
-          brg = SC.SimConnectClient.Instance.NavModule.Nav2_hasLOC ? SC.SimConnectClient.Instance.NavModule.CRS2 : brg; // for LOC use the LOC heading as direction
+          var brg = (float)Geo.Wrap360( SV.Get<float>( SItem.fG_Nav_2_Radial_degm ) - 180 ); // direction towards the station 
+          brg = SV.Get<bool>( SItem.bG_Nav_2_hasLOC ) ? SV.Get<float>( SItem.fG_Nav_2_CRS ) : brg; // for LOC use the LOC heading as direction
 
-          if ( SC.SimConnectClient.Instance.NavModule.Nav2_Signal && SC.SimConnectClient.Instance.NavModule.FromToFlag2 != 0 ) {
+          if (SV.Get<bool>( SItem.bG_Nav_2_hasSignal ) && SV.Get<FromToFlag>( SItem.ftfG_Nav_2_fromToFlag ) != FromToFlag.OFF) {
             _value2.Value = brg;
           }
           else {
             _value2.Value = null;
           }
 
-          if ( SC.SimConnectClient.Instance.NavModule.Nav2_hasDME ) {
-            var diversion = Geo.Wrap180(SC.SimConnectClient.Instance.GpsModule.GTRK - brg); // delta < +-90 -> going towards the Station, outside going away from it
-            var toFromFlag = (Math.Abs(diversion) <= 90) ? 1 : 2; // same values as the Sim ToFrom Flag (1->To, 2-> From, 0->Off)
-            toFromFlag = SC.SimConnectClient.Instance.NavModule.Nav2_Signal ? toFromFlag : 0; // no signal -> direction Off
+          if (SV.Get<bool>( SItem.bG_Nav_2_hasDME )) {
+            var diversion = Geo.Wrap180( SV.Get<float>( SItem.fG_Gps_GTRK_mag_degm ) - brg ); // delta < +-90 -> going towards the Station, outside going away from it
+            var toFromFlag = (Math.Abs( diversion ) <= 90) ? 1 : 2; // same values as the Sim ToFrom Flag (1->To, 2-> From, 0->Off)
+            toFromFlag = SV.Get<bool>( SItem.bG_Nav_2_hasSignal ) ? toFromFlag : 0; // no signal -> direction Off
 
             _value3.Value =
-                  Conversions.DmeDistance( SC.SimConnectClient.Instance.NavModule.Nav2_DMEdist_nm, toFromFlag );
+                  Conversions.DmeDistance( SV.Get<float>( SItem.fG_Nav_2_DMEdist_nm ), toFromFlag );
           }
           else {
             _value3.Value = null;
@@ -96,7 +96,7 @@ namespace FS20_HudBar.Bar.Items
         }
         else {
           _value1.ItemForeColor = cTxInfo;
-          _value1.Text = $"{SC.SimConnectClient.Instance.NavModule.Nav2_active_hz / 1_000_000f:000.00}";
+          _value1.Text = $"{SV.Get<int>( SItem.iG_Nav_2_active_hz ) / 1_000_000f:000.00}";
           _value2.Value = null;
           _value3.Value = null;
         }

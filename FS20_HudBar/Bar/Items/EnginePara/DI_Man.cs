@@ -5,14 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
-using static FS20_HudBar.GUI.GUI_Colors.ColorType;
-
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -61,12 +57,12 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
 
       this.IsEngineItem = true;
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -74,11 +70,11 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.Engine1MAN_inhg;
-        _value2.Value = SC.SimConnectClient.Instance.HudBarModule.Engine2MAN_inhg;
-        _value3.Value = SC.SimConnectClient.Instance.HudBarModule.Engine3MAN_inhg;
-        _value4.Value = SC.SimConnectClient.Instance.HudBarModule.Engine4MAN_inhg;
+      if (this.Visible) {
+        _value1.Value = SV.Get<float>( SItem.fG_Eng_E1_MAN_inhg );
+        _value2.Value = SV.Get<float>( SItem.fG_Eng_E2_MAN_inhg );
+        _value3.Value = SV.Get<float>( SItem.fG_Eng_E3_MAN_inhg );
+        _value4.Value = SV.Get<float>( SItem.fG_Eng_E4_MAN_inhg );
       }
     }
 

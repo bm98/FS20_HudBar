@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -33,7 +34,6 @@ namespace FS20_HudBar.Bar.Items
 
     private readonly B_Base _label;
     private readonly V_Base _value1;
-    private int _obs2;
 
     public DI_Ap_NavGps( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
@@ -49,23 +49,18 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      m_observerID = SC.SimConnectClient.Instance.AP_G1000Module.AddObserver( Short, OnDataArrival );
-      _obs2 = SC.SimConnectClient.Instance.NavModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.AP_G1000Module ); // use the generic one
-      if (_obs2 > 0) {
-        SC.SimConnectClient.Instance.NavModule.RemoveObserver( _obs2 );
-        _obs2 = 0;
-      }
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
-      if ( SC.SimConnectClient.Instance.IsConnected ) {
-        SC.SimConnectClient.Instance.AP_G1000Module.NAVhold_active = true; // toggles independent of the set value
+      if (SC.SimConnectClient.Instance.IsConnected) {
+        SV.Set( SItem.bGS_Ap_LNAV_hold, true ); // toggles independent of the set value
       }
     }
 
@@ -74,11 +69,11 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        this.ColorType.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.NAVhold_active ? cTxAPActive : cTxLabel;
-        _value1.Text = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? "GPS" :
-            ( SC.SimConnectClient.Instance.NavModule.NavSource_current == FSimClientIF.NavSource.NAV1 ? "NAV1" : "NAV2" );
-        _value1.ItemForeColor = SC.SimConnectClient.Instance.AP_G1000Module.GPS_active ? cTxGps : cTxNav;
+      if (this.Visible) {
+        this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_LNAV_hold ) ? cTxAPActive : cTxLabel;
+        _value1.Text = SV.Get<bool>( SItem.bG_Nav_Source_GPS ) ? "GPS" :
+            (SV.Get<NavSource>( SItem.nsG_Nav_Source_current ) == NavSource.NAV1 ? "NAV1" : "NAV2");
+        _value1.ItemForeColor = SV.Get<bool>( SItem.bG_Nav_Source_GPS ) ? cTxGps : cTxNav;
       }
     }
 

@@ -10,7 +10,7 @@ using SC = SimConnectClient;
 using static dNetBm98.Units;
 
 using FS20_HudBar.Triggers.Base;
-using FSimClientIF.Modules;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Triggers
 {
@@ -51,7 +51,7 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SC.SimConnectClient.Instance.HudBarModule, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, OnDataArrival ); // use generic
       _tdTrigger.RegisterObserver( );
     }
     /// <summary>
@@ -59,7 +59,7 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void UnRegisterObserver( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use generic
+      UnregisterObserver_low( SV ); // use generic
       _tdTrigger.UnRegisterObserver( );
     }
 
@@ -72,21 +72,19 @@ namespace FS20_HudBar.Triggers
       if (!Enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
 
-      var ds = SC.SimConnectClient.Instance.HudBarModule;
-
-      if (ds.Sim_OnGround) {
+      if (SV.Get<bool>( SItem.bG_Sim_OnGround )) {
         // on ground we disable callouts, this lasts on the way up until we are above our highest RA level
         m_lastTriggered = -1;
       }
-      else if (ds.AltAoG_ft >= c_detectionRA) {
+      else if (SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) >= c_detectionRA) {
         // in air and above our detection RA - reset callout sequence
         m_lastTriggered = c_detectionRA; // set this above the initial callout level to start callouts if we get lower later
       }
       else {
         // in air and in the callout range
-        if (ds.AltAoG_ft < m_lastTriggered) {
+        if (SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) < m_lastTriggered) {
           // detect only when the current RA is lower than the last called out one
-          DetectStateChange( ds.AltAoG_ft );
+          DetectStateChange( SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) );
         }
       }
     }
@@ -137,7 +135,7 @@ namespace FS20_HudBar.Triggers
       // logic see above calls for meters at 120, 90, 60, 30,   15, 12, 9,   6, 3 (input and detector is still feet)
 
       // VS >500
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset +(float)Ft_From_M( 120 ), 10.0f ), Callback = Say, Text = "120" } );
+      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 120 ), 10.0f ), Callback = Say, Text = "120" } );
       this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 90 ), 10.0f ), Callback = Say, Text = "90" } );
       this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 60 ), 10.0f ), Callback = Say, Text = "60" } );
       this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 30 ), 10.0f ), Callback = Say, Text = "30" } );

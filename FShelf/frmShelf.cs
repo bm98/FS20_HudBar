@@ -28,6 +28,9 @@ using FlightplanLib.MSFSFlt;
 using Point = System.Drawing.Point;
 using Route = bm98_Map.Data.Route;
 using FShelf.FPlans;
+using FSimClientIF.Modules;
+using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FShelf
 {
@@ -41,6 +44,9 @@ namespace FShelf
     // registered obs ID for the aircraft update subscription
     private int _observerID = -1;
     private const string _observerName = "SHELF_FORM";
+
+    // SimVar access
+    private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
 
     // flags a missing Facility database
     private readonly bool _dbMissing = false;
@@ -353,7 +359,7 @@ namespace FShelf
     {
       // register DataUpdates if in shared mode and if not yet done 
       if (!Standalone && SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
-        _observerID = SC.SimConnectClient.Instance.AircraftTrackingModule.AddObserver( _observerName, OnDataArrival );
+        _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
       }
       // Call SimConnect if needed and Standalone
       if (Standalone && --_simConnectTrigger <= 0) {
@@ -492,9 +498,9 @@ namespace FShelf
       _updates = 0;
       LatLon loc = new LatLon( 0, 0, 0 );
       if (SC.SimConnectClient.Instance.IsConnected) {
-        loc.Lat = SC.SimConnectClient.Instance.AircraftTrackingModule.Lat;
-        loc.Lon = SC.SimConnectClient.Instance.AircraftTrackingModule.Lon;
-        loc.Altitude = SC.SimConnectClient.Instance.AircraftTrackingModule.AltMsl_ft;
+        loc.Lat = SV.Get<double>( SItem.dG_Acft_Lat );
+        loc.Lon = SV.Get<double>( SItem.dG_Acft_Lon );
+        loc.Altitude = SV.Get<float>( SItem.fG_Acft_AltMsl_ft );
       }
 
       // create the initial 'Airport' to have something to start with
@@ -529,7 +535,7 @@ namespace FShelf
       this.timer1.Enabled = true;
       // register DataUpdates if in shared mode and if not yet done 
       if (!Standalone && SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
-        _observerID = SC.SimConnectClient.Instance.AircraftTrackingModule.AddObserver( _observerName, OnDataArrival );
+        _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
       }
     }
 
@@ -555,7 +561,7 @@ namespace FShelf
 
       // UnRegister DataUpdates
       if (SC.SimConnectClient.Instance.IsConnected && (_observerID >= 0))
-        SC.SimConnectClient.Instance.AircraftTrackingModule.RemoveObserver( _observerID );
+        SV.RemoveObserver( _observerID );
       _observerID = -1;
 
       // save last known good form location and size
@@ -787,31 +793,31 @@ namespace FShelf
       // track landing performance
       _perfTracker.Update( );
 
-      var simData = SC.SimConnectClient.Instance.AircraftTrackingModule;
       // TODO: the next two selectors will cause loosing tracking of the Acft, may be update it anyway
       if (!this.Visible) return;  // no need to update while the shelf is not visible ???? TODO decide if or if not cut reporting ????
                                   //if (!(tab.SelectedTab == tabMap)) return;  //don't update while not showing the MapTab - this causes track disruptions when in METAR etc
 
       // update pace slowed down to an acceptable CPU load - (native is 200ms)
-      if ((_updates++ % 3) == 0) { // every third.. 600ms pace - slow enough ?? performance penalty...
-        _tAircraft.OnGround = simData.Sim_OnGround;
-        _tAircraft.TrueHeading_deg = simData.HDG_true_deg;
-        _tAircraft.Heading_degm = simData.HDG_mag_degm;
-        _tAircraft.Position = new LatLon( simData.Lat, simData.Lon );
-        _tAircraft.Altitude_ft = simData.AltMsl_ft;
-        _tAircraft.RadioAlt_ft = simData.Sim_OnGround ? float.NaN
-                                  : (simData.AltAoG_ft <= 1500) ? simData.AltAoG_ft : float.NaN; // limit RA visible to 1500 ft if not on ground
-        _tAircraft.Ias_kt = simData.IAS_kt;
-        _tAircraft.Tas_kt = simData.TAS_kt;
-        _tAircraft.Gs_kt = simData.GS;
-        _tAircraft.Vs_fpm = (int)(simData.VS_ftPmin / 20) * 20; // 20 fpm steps only
-        _tAircraft.Fpa_deg = simData.FlightPathAngle_deg;
+      if ((_updates++ % 6) == 0) { // every third.. 600ms pace - slow enough ?? performance penalty...
+        _tAircraft.OnGround = SV.Get<bool>( SItem.bG_Sim_OnGround );
+        _tAircraft.TrueHeading_deg = SV.Get<float>( SItem.fG_Nav_HDG_true_deg );
+        _tAircraft.Heading_degm = SV.Get<float>( SItem.fG_Nav_HDG_mag_degm );
+        _tAircraft.Position = new LatLon( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) );
+        _tAircraft.Altitude_ft = SV.Get<float>( SItem.fG_Acft_AltMsl_ft );
+        // limit RA visible to 1500 ft if not on ground
+        _tAircraft.RadioAlt_ft = SV.Get<bool>( SItem.bG_Sim_OnGround ) ? float.NaN
+                                  : (SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) <= 1500) ? SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) : float.NaN;
+        _tAircraft.Ias_kt = SV.Get<float>( SItem.fG_Acft_IAS_kt );
+        _tAircraft.Tas_kt = SV.Get<float>( SItem.fG_Acft_TAS_kt );
+        _tAircraft.Gs_kt = SV.Get<float>( SItem.fG_Acft_GS_kt );
+        _tAircraft.Vs_fpm = (int)(SV.Get<float>( SItem.fG_Acft_VS_ftPmin ) / 20) * 20; // 20 fpm steps only
+        _tAircraft.Fpa_deg = SV.Get<float>( SItem.fG_Acft_FlightPathAngle_deg );
         // GPS does not provide meaningful track values when not moving
-        _tAircraft.Trk_degm = simData.Sim_OnGround ? float.NaN : simData.GTRK;
-        _tAircraft.TrueTrk_deg = simData.Sim_OnGround ? float.NaN : simData.GTRK_true;
+        _tAircraft.Trk_degm = SV.Get<bool>( SItem.bG_Sim_OnGround ) ? float.NaN : SV.Get<float>( SItem.fG_Gps_GTRK_mag_degm );
+        _tAircraft.TrueTrk_deg = SV.Get<bool>( SItem.bG_Sim_OnGround ) ? float.NaN : SV.Get<float>( SItem.fG_Gps_GTRK_true_deg );
 
-        _tAircraft.WindSpeed_kt = simData.WindSpeed_kt;
-        _tAircraft.WindDirection_deg = simData.WindDirection_deg;
+        _tAircraft.WindSpeed_kt = SV.Get<float>( SItem.fG_Acft_WindSpeed_kt );
+        _tAircraft.WindDirection_deg = SV.Get<float>( SItem.fG_Acft_WindDirection_deg );
 
         // update the map
         aMap.UpdateAircraft( _tAircraft );
@@ -1074,7 +1080,6 @@ namespace FShelf
         rtbPerf.Text += $"Not connected - no data available";
         return;
       }
-      var ds = SC.SimConnectClient.Instance.AircraftTrackingModule;
       bool lbs = rbKLbs.Checked;
       string unit = lbs ? "lbs x 1000" : "kg x 1000";
       float value;
@@ -1083,25 +1088,34 @@ namespace FShelf
       RTF.RBold = true;
       RTF.RColor = RTFformatter.ERColor.ERC_Blue;
       RTF.FontSize( 15 );
-      RTF.WriteLn( $"{ds.AcftID}  -  {ds.AcftConfigFile}" );
+      RTF.WriteLn( $"{SV.Get<string>( SItem.sG_Cfg_AircraftID )}  -  {SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )}" );
 
       RTF.RColor = RTFformatter.ERColor.ERC_Black;
       RTF.FontSize( 14 );
       RTF.WriteLn( );
       RTF.Write( $"Weight and Balance:" ); RTF.WriteTab( $"{unit}" ); RTF.WriteLn( );
       RTF.RBold = false;
-      value = lbs ? ds.TotalAcftWeight_lbs / 1_000f : Conversions.Kg_From_Lbs( ds.TotalAcftWeight_lbs ) / 1_000f;
+      value = lbs ? SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) / 1_000f
+                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) ) / 1_000f;
       RTF.Write( $"TOTAL Weight" ); RTF.WriteTab( $"{value:##0.000}\n" ); RTF.WriteLn( );
-      value = lbs ? ds.FuelQuantityTotal_lb / 1_000f : Conversions.Kg_From_Lbs( ds.FuelQuantityTotal_lb ) / 1_000f;
-      RTF.Write( $"FUEL Weight" ); RTF.WriteTab( $"{value:##0.000}" ); RTF.WriteTab( $"{ds.FuelQuantityTotal_gal:##0.0} gal" ); RTF.WriteLn( );
-      value = lbs ? ds.AcftPLS_weight_lbs / 1_000f : Conversions.Kg_From_Lbs( ds.AcftPLS_weight_lbs ) / 1_000f;
+      value = lbs ? SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) / 1_000f
+                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ) / 1_000f;
+      RTF.Write( $"FUEL Weight" ); RTF.WriteTab( $"{value:##0.000}" );
+      RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Fuel_Quantity_total_gal ):##0.0} gal" ); RTF.WriteLn( );
+      value = lbs ? SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ) / 1_000f
+                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ) ) / 1_000f;
       RTF.Write( $"PAYLOAD Weight" ); RTF.WriteTab( $"{value:##0.000}" ); RTF.WriteLn( );
-      value = lbs ? (ds.TotalAcftWeight_lbs - ds.FuelQuantityTotal_lb) / 1_000f : Conversions.Kg_From_Lbs( ds.TotalAcftWeight_lbs - ds.FuelQuantityTotal_lb ) / 1_000f;
+      value = lbs ? (SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb )) / 1_000f
+                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ) / 1_000f;
       RTF.Write( $"ZF Weight" ); RTF.WriteTab( $"{value:##0.000}" ); RTF.WriteLn( );
-      RTF.Write( $"CG lon/lat" ); RTF.WriteTab( $"{ds.AcftCGlong_perc * 100f:#0.00} %  /  {ds.AcftCGlat_perc * 100f:#0.00} %" ); RTF.WriteLn( );
-      value = lbs ? ds.EmptyAcftWeight_lbs / 1_000f : Conversions.Kg_From_Lbs( ds.EmptyAcftWeight_lbs ) / 1_000f;
+      RTF.Write( $"CG lon/lat" );
+      RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Acft_AcftCGlong_perc ) * 100f:#0.00} %  /  {SV.Get<float>( SItem.fG_Acft_AcftCGlat_perc ) * 100f:#0.00} %" );
+      RTF.WriteLn( );
+      value = lbs ? SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) / 1_000f
+                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) ) / 1_000f;
       RTF.Write( $"Empty Weight" ); RTF.WriteTab( $"{value:##0.000}" ); RTF.WriteLn( );
-      value = lbs ? ds.MaxAcftWeight_lbs / 1_000f : Conversions.Kg_From_Lbs( ds.MaxAcftWeight_lbs ) / 1_000f;
+      value = lbs ? SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ) / 1_000f
+                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ) ) / 1_000f;
       RTF.Write( $"MAX Weight" ); RTF.WriteTab( $"{value:##0.000}" ); RTF.WriteLn( );
 
       RTF.WriteLn( );
@@ -1116,14 +1130,14 @@ namespace FShelf
       RTF.RBold = true;
       RTF.Write( $"Design Data:" ); RTF.WriteLn( );
       RTF.RBold = false;
-      RTF.Write( $"Cruise Altitude" ); RTF.WriteTab( $"{ds.DesingCruiseAlt_ft,6:##,##0} ft" ); RTF.WriteLn( );
-      RTF.Write( $"Est. Cruise Speed" ); RTF.WriteTab( $"{ds.CruiseSpeedEst_kt,8:##,##0} kt" ); RTF.WriteLn( );
-      RTF.Write( $"Vc  Cruise Speed" ); RTF.WriteTab( $"{ds.DesingSpeedVC_kt,8:##0} kt" ); RTF.WriteLn( );
-      RTF.Write( $"Vy  Climb Speed" ); RTF.WriteTab( $"{ds.DesingSpeedClimb_kt,8:##0} kt" ); RTF.WriteLn( );
-      RTF.Write( $"Vmu Takeoff Speed" ); RTF.WriteTab( $"{ds.DesingSpeedTakeoff_kt,8:##0} kt" ); RTF.WriteLn( );
-      RTF.Write( $"Vr  Min Rotation" ); RTF.WriteTab( $"{ds.DesingSpeedMinRotation_kt,8:##0} kt" ); RTF.WriteLn( );
-      RTF.Write( $"Vs1 Stall Speed" ); RTF.WriteTab( $"{ds.DesingSpeedVS1_kt,8:##0} kt" ); RTF.WriteLn( );
-      RTF.Write( $"Vs0 Stall Speed" ); RTF.WriteTab( $"{ds.DesingSpeedVS0_kt,8:##0} kt" ); RTF.WriteLn( );
+      RTF.Write( $"Cruise Altitude" ); RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Dsg_CruiseAlt_ft ),6:##,##0} ft" ); RTF.WriteLn( );
+      RTF.Write( $"Est. Cruise Speed" ); RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Dsg_CruiseSpeedEst_kt ),8:##,##0} kt" ); RTF.WriteLn( );
+      RTF.Write( $"Vc  Cruise Speed" ); RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Dsg_SpeedVC_kt ),8:##0} kt" ); RTF.WriteLn( );
+      RTF.Write( $"Vy  Climb Speed" ); RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Dsg_SpeedClimb_kt ),8:##0} kt" ); RTF.WriteLn( );
+      RTF.Write( $"Vmu Takeoff Speed" ); RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Dsg_SpeedTakeoff_kt ),8:##0} kt" ); RTF.WriteLn( );
+      RTF.Write( $"Vr  Min Rotation" ); RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Dsg_SpeedMinRotation_kt ),8:##0} kt" ); RTF.WriteLn( );
+      RTF.Write( $"Vs1 Stall Speed" ); RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Dsg_SpeedVS1_kt ),8:##0} kt" ); RTF.WriteLn( );
+      RTF.Write( $"Vs0 Stall Speed" ); RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Dsg_SpeedVS0_kt ),8:##0} kt" ); RTF.WriteLn( );
 
       rtbPerf.Rtf = RTF.RTFtext;
     }
@@ -1355,7 +1369,7 @@ namespace FShelf
 
     // triggered when a FLT file arrives and it was requested by the user
     // else there are auto saves etc. which are of no interest here
-    private void Instance_FltSave( object sender, SC.State.FltSaveEventArgs e )
+    private void Instance_FltSave( object sender, FltSaveEventArgs e )
     {
       if (_awaitingFLTfile) {
         _awaitingFLTfile = false;
@@ -1394,7 +1408,7 @@ namespace FShelf
 
         // Unregister DataUpdates if not done 
         if (_observerID >= 0) {
-          SC.SimConnectClient.Instance.AircraftTrackingModule.RemoveObserver( _observerID );
+          SV.RemoveObserver( _observerID );
           _observerID = -1;
         }
         SC.SimConnectClient.Instance.Disconnect( );
@@ -1412,7 +1426,7 @@ namespace FShelf
         if (SC.SimConnectClient.Instance.Connect( false )) {
 
           // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
-          _ = SC.SimConnectClient.Instance.AircraftTrackingModule.SimRate_rate;
+          _ = SV.Get<float>( SItem.fG_Sim_Rate_rate );
           lblSimConnectedMap.BackColor = Color.MediumPurple;
           lblSimConnectedNotes.BackColor = lblSimConnectedMap.BackColor;
         }
@@ -1436,10 +1450,10 @@ namespace FShelf
         // Happens when HudBar is running when the Sim is starting only.
         // Sometimes the Connection is made but was not hooking up to the event handling
         // Disconnect and try to reconnect 
-        if (m_awaitingEvent || SC.SimConnectClient.Instance.AircraftTrackingModule.SimRate_rate <= 0) {
+        if (m_awaitingEvent || SV.Get<float>( SItem.fG_Sim_Rate_rate ) <= 0) {
           // No events seen so far
           // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
-          _ = SC.SimConnectClient.Instance.AircraftTrackingModule.SimRate_rate;
+          _ = SV.Get<float>( SItem.fG_Sim_Rate_rate );
 
           if (m_scGracePeriod <= 0) {
             // grace period is expired !
@@ -1453,7 +1467,7 @@ namespace FShelf
           lblSimConnectedNotes.BackColor = lblSimConnectedMap.BackColor;
           // register DataUpdates if not done 
           if (SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
-            _observerID = SC.SimConnectClient.Instance.AircraftTrackingModule.AddObserver( _observerName, OnDataArrival );
+            _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
           }
         }
       }

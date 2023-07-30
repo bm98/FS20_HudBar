@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
-using FSimClientIF.Modules;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Triggers
 {
@@ -25,14 +25,14 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SC.SimConnectClient.Instance.GpsModule, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, OnDataArrival ); // use generic
     }
     /// <summary>
     /// Calls to un-register for dataupdates
     /// </summary>
     public override void UnRegisterObserver( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.GpsModule ); // use generic
+      UnregisterObserver_low( SV ); // use generic
     }
 
     /// <summary>
@@ -43,11 +43,11 @@ namespace FS20_HudBar.Triggers
     {
       if (!m_enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
-      if (SC.SimConnectClient.Instance.HudBarModule.Sim_OnGround) return; // not while on ground
+      if (SV.Get<bool>( SItem.bG_Sim_OnGround )) return; // not while on ground
 
-      var ds = SC.SimConnectClient.Instance.GpsModule;
-      if (ds.IsGpsFlightplan_active) {
-        DetectStateChange( ds.WYP_Ete );
+      var ds = SV;
+      if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
+        DetectStateChange( (float)SV.Get<double>( SItem.dG_Gps_WYP_ete_sec ) );
       }
     }
 

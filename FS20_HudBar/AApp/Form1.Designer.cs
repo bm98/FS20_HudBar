@@ -68,6 +68,8 @@ namespace FS20_HudBar
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
+      this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+      this.mManBackup = new System.Windows.Forms.ToolStripMenuItem();
       this.cMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -133,9 +135,11 @@ namespace FS20_HudBar
             this.mUnits,
             this.mConfig,
             this.toolStripSeparator3,
+            this.mManBackup,
+            this.toolStripSeparator6,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(181, 251);
+      this.cMenu.Size = new System.Drawing.Size(181, 279);
       // 
       // mSelProfile
       // 
@@ -250,21 +254,21 @@ namespace FS20_HudBar
       // maBright
       // 
       this.maBright.Name = "maBright";
-      this.maBright.Size = new System.Drawing.Size(180, 22);
+      this.maBright.Size = new System.Drawing.Size(120, 22);
       this.maBright.Text = "Bright";
       this.maBright.Click += new System.EventHandler(this.maBright_Click);
       // 
       // maDimm
       // 
       this.maDimm.Name = "maDimm";
-      this.maDimm.Size = new System.Drawing.Size(180, 22);
+      this.maDimm.Size = new System.Drawing.Size(120, 22);
       this.maDimm.Text = "Dimmed";
       this.maDimm.Click += new System.EventHandler(this.maDimm_Click);
       // 
       // maDark
       // 
       this.maDark.Name = "maDark";
-      this.maDark.Size = new System.Drawing.Size(180, 22);
+      this.maDark.Size = new System.Drawing.Size(120, 22);
       this.maDark.Text = "Inverse";
       this.maDark.Click += new System.EventHandler(this.maDark_Click);
       // 
@@ -429,6 +433,18 @@ namespace FS20_HudBar
       this.label1.UseCompatibleTextRendering = true;
       this.label1.Visible = false;
       // 
+      // toolStripSeparator6
+      // 
+      this.toolStripSeparator6.Name = "toolStripSeparator6";
+      this.toolStripSeparator6.Size = new System.Drawing.Size(177, 6);
+      // 
+      // mManBackup
+      // 
+      this.mManBackup.Name = "mManBackup";
+      this.mManBackup.Size = new System.Drawing.Size(180, 22);
+      this.mManBackup.Text = "Save FLT";
+      this.mManBackup.Click += new System.EventHandler(this.mManBackup_Click);
+      // 
       // frmMain
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -511,6 +527,8 @@ namespace FS20_HudBar
     private System.Windows.Forms.ToolStripMenuItem mP9;
     private System.Windows.Forms.ToolStripMenuItem mP10;
     private System.Windows.Forms.ToolStripMenuItem mChecklistBox;
+    private System.Windows.Forms.ToolStripMenuItem mManBackup;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
   }
 }
 

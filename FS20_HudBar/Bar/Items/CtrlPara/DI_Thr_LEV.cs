@@ -5,14 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
-using static FS20_HudBar.GUI.GUI_Colors.ColorType;
-
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -34,6 +30,8 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _label;
     private readonly V_Base _value1;
     private readonly V_Base _value2;
+    private readonly V_Base _value3;
+    private readonly V_Base _value4;
 
     public DI_Thr_LEV( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
@@ -47,12 +45,22 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Prct( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      // add 2 more values
+      this.TwoRows = true;
+      item = VItem.E3_THR_LEV;
+      _value3 = new V_Prct( value2Proto );
+      this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
+      item = VItem.E4_THR_LEV;
+      _value4 = new V_Prct( value2Proto );
+      this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
+
+      this.IsEngineItem = true;
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -60,10 +68,11 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        _value1.Value = SC.SimConnectClient.Instance.HudBarModule.ThrottleLever1_prct;
-        _value2.Value = SC.SimConnectClient.Instance.HudBarModule.ThrottleLever2_prct;
-        _value2.Visible = ( SC.SimConnectClient.Instance.HudBarModule.NumEngines > 1 );
+      if (this.Visible) {
+        _value1.Value = SV.Get<float>( SItem.fG_Thr_Lever1_prct );
+        _value2.Value = SV.Get<float>( SItem.fG_Thr_Lever2_prct );
+        _value3.Value = SV.Get<float>( SItem.fG_Thr_Lever3_prct );
+        _value4.Value = SV.Get<float>( SItem.fG_Thr_Lever4_prct );
       }
     }
 

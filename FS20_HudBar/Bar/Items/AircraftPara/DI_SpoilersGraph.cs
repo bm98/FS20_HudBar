@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -44,21 +43,21 @@ namespace FS20_HudBar.Bar.Items
       _scale1 = new A_Scale( ) { Minimum = 0, Maximum = 100, AlertEnabled = false, ItemForeColor = cStep };
       this.AddItem( _scale1 ); vCat.AddLbl( item, _scale1 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
 
     private void _label_ButtonClicked( object sender, EventArgs e )
     {
-      if ( !SC.SimConnectClient.Instance.IsConnected ) return;
-      if ( !SC.SimConnectClient.Instance.HudBarModule.HasSpoiler ) return;
+      if (!SC.SimConnectClient.Instance.IsConnected) return;
+      if (!SV.Get<bool>( SItem.bG_Flp_HasSpoilers )) return;
 
-      SC.SimConnectClient.Instance.HudBarModule.Spoilers_Arm( FSimClientIF.CmdMode.Toggle );
+      SV.Set( SItem.cmS_Flp_Spoilers_arm, FSimClientIF.CmdMode.Toggle );
     }
 
     /// <summary>
@@ -66,12 +65,12 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        if ( SC.SimConnectClient.Instance.HudBarModule.HasSpoiler ) {
-          _label.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.HasSpoiler && SC.SimConnectClient.Instance.HudBarModule.Spoilers_armed ) ? cTxLabelArmed : cTxLabel;
+      if (this.Visible) {
+        if (SV.Get<bool>( SItem.bG_Flp_HasSpoilers )) {
+          _label.ItemForeColor = SV.Get<bool>( SItem.bG_Flp_Spoilers_armed ) ? cTxLabelArmed : cTxLabel;
 
-          _scale1.Value = SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct * 100; // 0..100
-          _scale1.ItemForeColor = ( SC.SimConnectClient.Instance.HudBarModule.SpoilerHandlePosition_prct < 0.05 ) ? cOK : cStep;
+          _scale1.Value = SV.Get<float>( SItem.fGS_Flp_SpoilerHandle_position_prct ) * 100; // 0..100
+          _scale1.ItemForeColor = (SV.Get<float>( SItem.fGS_Flp_SpoilerHandle_position_prct ) < 0.05) ? cOK : cStep;
         }
         else {
           _scale1.Value = null;

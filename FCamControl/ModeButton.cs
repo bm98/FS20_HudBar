@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,11 +17,11 @@ namespace FCamControl
   internal class ModeButton
   {
 
-    private Action<CameraSetting, uint> _switchCam;
+    private Action<CameraSetting, int> _switchCam;
 
     public Button Button { get; private set; }
     public CameraSetting Setting { get; private set; }
-    public uint ViewIndex { get; set; } = 0;
+    public int ViewIndex { get; set; } = 0;
 
     /// <summary>
     /// cTor:
@@ -28,7 +29,7 @@ namespace FCamControl
     /// <param name="setting">The Setting for this Mode</param>
     /// <param name="button">The managed button</param>
     /// <param name="switchCam">Camera Switch Method</param>
-    public ModeButton( CameraSetting setting, Button button, Action<CameraSetting, uint> switchCam )
+    public ModeButton( CameraSetting setting, Button button, Action<CameraSetting, int> switchCam )
     {
       Setting = setting;
       Button = button;

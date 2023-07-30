@@ -78,7 +78,7 @@ namespace FS20_HudBar.Bar
     }
 
     // called when the flight state changes
-    private static void Instance_FltChange( object sender, SC.State.FltChangeEventArgs e )
+    private static void Instance_FltChange( object sender, FltChangeEventArgs e )
     {
       if ( e.FlightState == _flightState ) return; // no change from known state
 

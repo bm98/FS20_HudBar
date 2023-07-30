@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,11 +12,11 @@ using FSimClientIF;
 namespace FCamControl
 {
   /// <summary>
-  /// Catalog of Slots maintaines
+  /// Catalog of Slots maintained
   /// </summary>
   internal class SlotCat
   {
-    private static SlotCat[] _slotFolders = new SlotCat[6]; // SlotFolders A..F
+    private static SlotCat[] _slotFolders = new SlotCat[8]; // SlotFolders A..H
 
     /// <summary>
     /// The current SlotFolder
@@ -31,7 +32,7 @@ namespace FCamControl
     /// <summary>
     /// Init the SlotFolders 
     /// </summary>
-    public static void InitSlotFolders( List<Button> buttons, Action<CameraSetting, uint> switchCam )
+    public static void InitSlotFolders( List<Button> buttons, Action<CameraSetting, int, Vector3, Vector3> switchCam )
     {
       for (int i = 0; i < _slotFolders.Length; i++) {
         _slotFolders[i] = new SlotCat( (uint)i );
@@ -83,7 +84,7 @@ namespace FCamControl
     /// <param name="slotNo">This SlotNo</param>
     /// <param name="button">The Managed Button of this Slot</param>
     /// <param name="switchCam">Camera Switch Method</param>
-    private void Add( uint slotNo, Button button, Action<CameraSetting, uint> switchCam )
+    private void Add( uint slotNo, Button button, Action<CameraSetting, int, Vector3, Vector3> switchCam )
     {
       var slot = new Slot( (uint)_slotFolderNo, slotNo, button, switchCam );
       slot.SlotSaved += slot_SlotSaved;
@@ -98,16 +99,17 @@ namespace FCamControl
     {
       foreach (var s in _slots) {
         s.Enabled = enabled;
+        if (enabled) { s.MaintainButtonState( ); } // visuals
       }
     }
 
     /// <summary>
     /// Trigger a SlotSave for the next Click
     /// </summary>
-    public void ExpectSlotSave( )
+    public void ExpectSlotSave( Vector3 position, Vector3 gimbal )
     {
       foreach (var s in _slots) {
-        s.ExpectSlotSave = true;
+        s.ExpectSlotSave( position, gimbal );
       }
     }
 
@@ -117,7 +119,7 @@ namespace FCamControl
     public void CancelSlotSave( )
     {
       foreach (var s in _slots) {
-        s.ExpectSlotSave = false;
+        s.CancelSlotSave( );
       }
     }
 
@@ -137,7 +139,7 @@ namespace FCamControl
       get {
         string setting = "";
         foreach (var s in _slots) {
-          setting += $"{s.AppSettingString}¦";
+          setting += $"{s.AppSettingString}";
         }
         return setting;
       }

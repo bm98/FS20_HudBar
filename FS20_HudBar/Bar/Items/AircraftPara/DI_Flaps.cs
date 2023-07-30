@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
-using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -42,47 +41,48 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Steps( signProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
     /// Returns the GUI State for the Flaps
     /// </summary>
-    private static Steps FlapsState {
+    private Steps FlapsState {
       get {
-        if ( !SC.SimConnectClient.Instance.IsConnected ) return Steps.Up; // cannot calculate anything
+        if (!SC.SimConnectClient.Instance.IsConnected) return Steps.Up; // cannot calculate anything
 
-        if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 0 ) {
+        int fi = SV.Get<int>( SItem.iGS_Flp_HandleIndex );
+        if (fi == 0) {
           return Steps.Up;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == SC.SimConnectClient.Instance.HudBarModule.NumberOfFlapsPositions ) {
+        else if (fi == SV.Get<int>( SItem.iG_Flp_FlapsPositions_num )) {
           return Steps.PEnd;
         }
 
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 1 ) {
+        else if (fi == 1) {
           return Steps.P1;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 2 ) {
+        else if (fi == 2) {
           return Steps.P2;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 3 ) {
+        else if (fi == 3) {
           return Steps.P3;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 4 ) {
+        else if (fi == 4) {
           return Steps.P4;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 5 ) {
+        else if (fi == 5) {
           return Steps.P5;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 6 ) {
+        else if (fi == 6) {
           return Steps.P6;
         }
-        else if ( SC.SimConnectClient.Instance.HudBarModule.FlapsHandleIndex == 7 ) {
+        else if (fi == 7) {
           return Steps.P7;
         }
         return Steps.Up;
@@ -94,7 +94,7 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
+      if (this.Visible) {
         _value1.Step = FlapsState;
       }
     }

@@ -5,15 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
-using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -48,12 +45,12 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Text( value2Proto ) { ItemForeColor = cTxInfo };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SC.SimConnectClient.Instance.ComModule.AddObserver( Short, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.ComModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -63,8 +60,8 @@ namespace FS20_HudBar.Bar.Items
     {
       if ( this.Visible ) {
         // seems that if no station is tuned in the reply is Type= ACTIVE, Id= COM
-        _value1.Text = SC.SimConnectClient.Instance.ComModule.COM2_type;
-        _value2.Text = ( SC.SimConnectClient.Instance.ComModule.COM2_id == "COM" ) ? "..." : SC.SimConnectClient.Instance.ComModule.COM2_id;
+        _value1.Text = SV.Get<string>( SItem.sG_Com_2_type );
+        _value2.Text = (SV.Get<string>( SItem.sG_Com_2_id ) == "COM") ? "..." : SV.Get<string>( SItem.sG_Com_2_id );
       }
     }
 

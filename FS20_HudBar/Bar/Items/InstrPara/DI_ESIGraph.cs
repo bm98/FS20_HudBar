@@ -5,14 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -47,14 +45,12 @@ namespace FS20_HudBar.Bar.Items
       _scale2 = new A_FPA( ) { MinimumVer = -6, MaximumVer = 6, MinimumHor = -6 * 2, MaximumHor = 6 * 2, ItemForeColor = cOK };
       this.AddItem( _scale2 ); vCat.AddLbl( item, _scale2 );
 
-      // using GPS but we use the HudBar Ping to update those as well
-      // if we observe GPS as well we get two calls for no better data
-      m_observerID = SC.SimConnectClient.Instance.HudBarModule.AddObserver( Short, OnDataArrival ); 
+      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
-      UnregisterObserver_low( SC.SimConnectClient.Instance.HudBarModule ); // use the generic one
+      UnregisterObserver_low( SV ); // use the generic one
     }
 
     /// <summary>
@@ -62,12 +58,14 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
-        _scale1.PitchAngle = SC.SimConnectClient.Instance.HudBarModule.Pitch_deg;
-        _scale1.BankAngle = SC.SimConnectClient.Instance.HudBarModule.Bank_deg;
+      if (this.Visible) {
+        _scale1.PitchAngle = SV.Get<float>( SItem.fG_Acft_Pitch_deg );
+        _scale1.BankAngle = SV.Get<float>( SItem.fG_Acft_Bank_deg );
 
-        _scale2.VerticalAngle = SC.SimConnectClient.Instance.HudBarModule.FlightPathAngle_deg;
-        _scale2.HorizontalAngle = (float)CoordLib.Geo.Wrap180( SC.SimConnectClient.Instance.GpsModule.GTRK_true - SC.SimConnectClient.Instance.GpsModule.GHDG_true ); // +-180°
+        _scale2.VerticalAngle = SV.Get<float>( SItem.fG_Acft_FlightPathAngle_deg );
+        _scale2.HorizontalAngle = (float)CoordLib.Geo.Wrap180(
+            SV.Get<float>( SItem.fG_Gps_GTRK_true_deg ) - SV.Get<float>( SItem.fG_Gps_GHDG_true_deg )
+        ); // +-180°
       }
     }
 
