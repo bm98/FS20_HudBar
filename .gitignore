@@ -252,3 +252,5 @@ pip-log.txt
 SCJMapper-V2.suo
 *.suo
 /.vs/SCJMapper-V2/v15/Server/sqlite3
+/FS20_FlightBag/SimConnect.dll
+/FS20_CamControl/SimConnect.dll
