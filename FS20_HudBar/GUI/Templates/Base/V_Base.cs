@@ -16,6 +16,8 @@ namespace FS20_HudBar.GUI.Templates.Base
     protected string m_default = "";
     protected string m_unit = "";
     protected bool m_showUnit = false;
+    protected bool m_scrollable = false;
+
     protected GUI_Colors.ColorType m_foreColorType = GUI_Colors.ColorType.cTxInfo;
     protected GUI_Colors.ColorType m_backColorType = GUI_Colors.ColorType.cBG;
 
@@ -113,6 +115,10 @@ namespace FS20_HudBar.GUI.Templates.Base
     /// </summary>
     virtual protected void SetDistance_Metric( ) { }
 
+    /// <summary>
+    /// True if the control captures the focus for scrolling support
+    /// </summary>
+    public bool Scrollable { get => m_scrollable; set => m_scrollable = value; }
 
     /// <summary>
     /// If true shows the unit of value fields
@@ -164,6 +170,7 @@ namespace FS20_HudBar.GUI.Templates.Base
       return ret;
     }
 
+    /* USING the improved method from dNetBm98.WinUser
     /// <summary>
     /// Activates the Main Form in order to prevent that further (Mouse) events are sent to the prev. Active Application
     /// This is used to switch to the HudBar for Mouse Wheel scrolling.
@@ -181,6 +188,7 @@ namespace FS20_HudBar.GUI.Templates.Base
       }
       (e as HandledMouseEventArgs).Handled = true; // don't bubble up the scroll wheel
     }
+    */
 
     /// <summary>
     /// cTor: Create a UserControl based on a prototype control
@@ -207,31 +215,22 @@ namespace FS20_HudBar.GUI.Templates.Base
       _width = width;
 
       GUI_Colors.Register( this );
+
+      // capture mouse entering to switch the active window
+      base.MouseEnter += Control_MouseEnter;
+      base.MouseLeave += Control_MouseLeave;
+
     }
 
-    /*
-    #region  DISPOSE 
-
-    bool _disposed = false;
-    protected override void Dispose(bool disposing )
+    private void Control_MouseEnter( object sender, EventArgs e )
     {
-      if (_disposed) {
-        return;
-      }
-
-      if (disposing) {
-        // TODO: dispose managed state (managed objects).
-
-      }
-
-      // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-      // TODO: set large fields to null.
-
-      _disposed = true;
-
-      base.Dispose( disposing );
+      if (m_scrollable) dNetBm98.WinUser.PushAndSetForeground( this );
     }
-    #endregion
-    */
+
+    private void Control_MouseLeave( object sender, EventArgs e )
+    {
+      if (m_scrollable) dNetBm98.WinUser.PopForeground( );
+    }
+
   }
 }

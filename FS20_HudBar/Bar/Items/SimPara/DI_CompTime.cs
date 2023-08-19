@@ -41,7 +41,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Clock( value2Proto ) { ItemForeColor = cTxDim };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
       // just need a ping to update - not taking data from the Module
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond / 2, OnDataArrival ); // twice per sec
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )

@@ -73,6 +73,9 @@
     <Reference Include="SimConnectClient">
       <HintPath>..\..\..\Redist\SimConnectClient.dll</HintPath>
     </Reference>
+    <Reference Include="SimConnectClientAdapter">
+      <HintPath>..\..\..\Redist\SimConnectClientAdapter.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

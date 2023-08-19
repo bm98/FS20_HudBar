@@ -31,6 +31,7 @@ using FShelf.FPlans;
 using FSimClientIF.Modules;
 using static FSimClientIF.Sim;
 using FSimClientIF;
+using SimConnectClientAdapter;
 
 namespace FShelf
 {
@@ -39,14 +40,18 @@ namespace FShelf
   /// </summary>
   public partial class frmShelf : Form
   {
+    // SimConnect Client Adapter (used only to establish the connection and handle the Online color label)
+    private SCClient SCAdapter;
+
+    // attach the property module - this does not depend on the connection established or not
+    private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
+
     // airport which was requested by the user
     private FSimFacilityIF.IAirport _airport = null;
-    // registered obs ID for the aircraft update subscription
+
+    // SimVar Observer items
     private int _observerID = -1;
     private const string _observerName = "SHELF_FORM";
-
-    // SimVar access
-    private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
 
     // flags a missing Facility database
     private readonly bool _dbMissing = false;
@@ -78,6 +83,7 @@ namespace FShelf
     private Point _lastLiveLocation;
     private Size _lastLiveSize;
 
+    // Touchdown Performance tracker
     private readonly PerfTracker _perfTracker = new PerfTracker( );
 
     // Profiles
@@ -361,15 +367,11 @@ namespace FShelf
       if (!Standalone && SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
         _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
       }
-      // Call SimConnect if needed and Standalone
-      if (Standalone && --_simConnectTrigger <= 0) {
-        SimConnectPacer( );
-      }
+
       if (tab.SelectedTab == tabPerf) {
         SetPerfContent( );
       }
     }
-
 
     #region Form
 
@@ -418,8 +420,9 @@ namespace FShelf
 
       InitRunwayCombo( comboCfgRunwayLength );
 
-      // use another WindowFrame in standalone
+      // Handle the Standalone version
       if (Standalone) {
+        // use another WindowFrame in standalone
         this.Text = "MSFS FlightBag";
         this.FormBorderStyle = FormBorderStyle.Sizable;
         this.MinimizeBox = true;
@@ -428,8 +431,13 @@ namespace FShelf
         // start FP Module disabled
         SC.SimConnectClient.Instance.FlightPlanModule.Enabled = false;
         SC.SimConnectClient.Instance.FlightPlanModule.ModuleMode = FSimClientIF.FlightPlanMode.Disabled;
-        // add datahook to receive connection updates
-        SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
+
+        // Connection to SimConnect Client
+        SCAdapter = new SCClient( );
+        SCAdapter.Connected += SCAdapter_Connected;
+        SCAdapter.Establishing += SCAdapter_Establishing;
+        SCAdapter.Disconnected += SCAdapter_Disconnected;
+        SCAdapter.SC_Label = lblSimConnectedMap;
       }
 
     }
@@ -521,6 +529,7 @@ namespace FShelf
           MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
         }
         CheckFacilityDB( );
+        SCAdapter.Connect( );
       }
 
       // Pacer interval 
@@ -600,6 +609,7 @@ namespace FShelf
       if (Standalone) {
         // don't cancel if standalone (else how to close it..)
         this.WindowState = FormWindowState.Minimized;
+        SCAdapter.Disconnect( );
       }
       else {
         if (e.CloseReason == CloseReason.UserClosing) {
@@ -1362,11 +1372,6 @@ namespace FShelf
 
     #region SimConnectClient chores
 
-    // Monitor the Sim Event Handler after Connection
-    private bool m_awaitingEvent = true; // cleared in the Sim Event Handler
-    private int m_scGracePeriod = -1;    // grace period count down
-    private int _simConnectTrigger = 0; //  count down to call the SimConnect Pacer
-
     // triggered when a FLT file arrives and it was requested by the user
     // else there are auto saves etc. which are of no interest here
     private void Instance_FltSave( object sender, FltSaveEventArgs e )
@@ -1379,108 +1384,33 @@ namespace FShelf
       }
     }
 
-    /// <summary>
-    /// fired from Sim for new Data
-    /// Callback from SimConnect client signalling data arrival
-    ///  Appart from subscriptions this is calles on a regular pace 
-    /// </summary>
-    private void Instance_DataArrived( object sender, FSimClientIF.ClientDataArrivedEventArgs e )
+    // establishing event
+    private void SCAdapter_Establishing( object sender, EventArgs e )
     {
-      m_awaitingEvent = false; // confirm we've got data events
-    }
-
-    /// <summary>
-    /// Toggle the connection
-    /// if not connected: Try to connect and setup facilities
-    /// if connected:     Disconnect facilities and shut 
-    /// </summary>
-    private void SimConnect( )
-    {
-      // only needed in a standalone environment
-      if (!Standalone) return;
-
-      //LOG.Log( $"SimConnect: Start" );
-      lblSimConnectedMap.BackColor = Color.Transparent;
       lblSimConnectedNotes.BackColor = lblSimConnectedMap.BackColor;
-      if (SC.SimConnectClient.Instance.IsConnected) {
-        // Disconnect from Input and SimConnect
-        //        SetupInGameHook( false );
-
-        // Unregister DataUpdates if not done 
-        if (_observerID >= 0) {
-          SV.RemoveObserver( _observerID );
-          _observerID = -1;
-        }
-        SC.SimConnectClient.Instance.Disconnect( );
-        lblSimConnectedMap.BackColor = Color.DarkRed;
-        lblSimConnectedNotes.BackColor = lblSimConnectedMap.BackColor;
-        //        LOG.Log( $"SimConnect: Disconnected now" );
-      }
-
-      else {
-        // setup the event monitor before connecting (will be handled in the Timer Event)
-        m_awaitingEvent = true;
-        m_scGracePeriod = 3; // about 3*5 secs to get an event
-
-        // try to connect
-        if (SC.SimConnectClient.Instance.Connect( false )) {
-
-          // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
-          _ = SV.Get<float>( SItem.fG_Sim_Rate_rate );
-          lblSimConnectedMap.BackColor = Color.MediumPurple;
-          lblSimConnectedNotes.BackColor = lblSimConnectedMap.BackColor;
-        }
-        else {
-          // connect failed - will be retried through the pacer
-          lblSimConnectedMap.BackColor = Color.DarkRed;
-          lblSimConnectedNotes.BackColor = lblSimConnectedMap.BackColor;
-        }
-      }
-
     }
 
-    /// <summary>
-    /// SimConnect chores on a timer, mostly reconnecting and monitoring the connection status
-    /// Intender to be called about every 5 seconds
-    /// </summary>
-    private void SimConnectPacer( )
+    // connect event
+    private void SCAdapter_Connected( object sender, EventArgs e )
     {
-      if (SC.SimConnectClient.Instance.IsConnected) {
-        // handle the situation where Sim is connected but could not hookup to events
-        // Happens when HudBar is running when the Sim is starting only.
-        // Sometimes the Connection is made but was not hooking up to the event handling
-        // Disconnect and try to reconnect 
-        if (m_awaitingEvent || SV.Get<float>( SItem.fG_Sim_Rate_rate ) <= 0) {
-          // No events seen so far
-          // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
-          _ = SV.Get<float>( SItem.fG_Sim_Rate_rate );
+      lblSimConnectedNotes.BackColor = lblSimConnectedMap.BackColor;
 
-          if (m_scGracePeriod <= 0) {
-            // grace period is expired !
-            //            LOG.Log( "SimConnectPacer: Did not receive an Event for 5sec - Restarting Connection" );
-            SimConnect( ); // Disconnect if we don't receive Events even the Sim is connected
-          }
-          m_scGracePeriod--;
-        }
-        else {
-          lblSimConnectedMap.BackColor = Color.DarkGreen;
-          lblSimConnectedNotes.BackColor = lblSimConnectedMap.BackColor;
-          // register DataUpdates if not done 
-          if (SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
-            _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
-          }
-        }
+      // register DataUpdates if not done 
+      if (SC.SimConnectClient.Instance.IsConnected && _observerID < 0) {
+        _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
       }
-      else {
-        // If not connected try again
-        SimConnect( );
-      }
-
-      // reset calling interval
-      _simConnectTrigger = 5000 / timer1.Interval;
     }
 
+    // disconnect event
+    private void SCAdapter_Disconnected( object sender, EventArgs e )
+    {
+      lblSimConnectedNotes.BackColor = lblSimConnectedMap.BackColor;
 
+      if (_observerID >= 0) {
+        SV.RemoveObserver( _observerID );
+        _observerID = -1;
+      }
+    }
 
     #endregion
 

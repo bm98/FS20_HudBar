@@ -45,6 +45,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Text( value2Proto ) { ItemForeColor = cTxInfo, ItemBackColor = cValBG };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
       _value1.MouseWheel += _value1_MouseWheel;
+      _value1.Scrollable=true;
       _value1.Cursor = Cursors.SizeNS;
 
       item = VItem.NAV2_ACTIVE;
@@ -63,9 +64,6 @@ namespace FS20_HudBar.Bar.Items
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
-
-      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
-      _value1.ActivateForm( e );
 
       // 2/3 - 1/3  dectection for Digits
       var whole = e.Location.X < (_value1.Width / 3 * 2);

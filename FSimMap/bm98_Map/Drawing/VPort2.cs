@@ -318,6 +318,9 @@ namespace bm98_Map.Drawing
       _view.MouseMove += _view_MouseMove;
       _view.MouseWheel += _view_MouseWheel;
 
+      _view.MouseEnter += _view_MouseEnter;
+      _view.MouseLeave += _view_MouseLeave;
+
       // create the drawing canvas for static maps and final Paint
       _canvasStatic = new Bitmap( Properties.Resources.background, _tileMatrix.MatrixSize_pixel );
       _canvas = new Bitmap( Properties.Resources.background, _tileMatrix.MatrixSize_pixel );
@@ -774,6 +777,7 @@ namespace bm98_Map.Drawing
       finally { LeaveTx( ); }
     }
 
+    /*
     /// <summary>
     /// Activates the Main Form in order to prevent that further (Mouse) events are sent to the prev. Active Application
     /// This is used to switch to the HudBar for Mouse Wheel scrolling.
@@ -791,19 +795,28 @@ namespace bm98_Map.Drawing
       }
       (e as HandledMouseEventArgs).Handled = true; // don't bubble up the scroll wheel
     }
+    */
+
 
     // Mouse Wheel capture
     private void _view_MouseWheel( object sender, MouseEventArgs e )
     {
-      // activate the form if the App is not active so at least the most scroll goes only to the App
-      ActivateForm( e );
-
       if (e.Delta < 0) {
         ZoomOut_low( e.Location );
       }
       else {
         ZoomIn_low( e.Location );
       }
+    }
+
+    private void _view_MouseLeave( object sender, EventArgs e )
+    {
+      dNetBm98.WinUser.PopForeground( );
+    }
+
+    private void _view_MouseEnter( object sender, EventArgs e )
+    {
+      dNetBm98.WinUser.PushAndSetForeground( _view );
     }
 
     #endregion
@@ -1044,6 +1057,8 @@ namespace bm98_Map.Drawing
           _view.MouseMove -= _view_MouseMove;
           _view.MouseUp -= _view_MouseUp;
           _view.MouseWheel -= _view_MouseWheel;
+          _view.MouseLeave -= _view_MouseLeave;
+          _view.MouseEnter -= _view_MouseEnter;
 
           _gProc.Drawings.Clear( );
           _gProcSprite.Drawings.Clear( );

@@ -1277,6 +1277,7 @@ namespace FCamControl
       this.btSlotFolderG.TabStop = false;
       this.btSlotFolderG.Text = "G";
       this.btSlotFolderG.UseVisualStyleBackColor = false;
+      this.btSlotFolderG.Click += new System.EventHandler(this.btSlotFolder_Click);
       // 
       // btSlotFolderH
       // 
@@ -1292,6 +1293,7 @@ namespace FCamControl
       this.btSlotFolderH.TabStop = false;
       this.btSlotFolderH.Text = "H";
       this.btSlotFolderH.UseVisualStyleBackColor = false;
+      this.btSlotFolderH.Click += new System.EventHandler(this.btSlotFolder_Click);
       // 
       // frmCamera
       // 

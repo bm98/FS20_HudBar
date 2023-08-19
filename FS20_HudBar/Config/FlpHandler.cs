@@ -100,6 +100,7 @@ namespace FS20_HudBar.Config
           AllowDrop = true,
           Enabled = i != LItem.MSFS, // Disable unckecking of MSFS Status
           Checked = m_items.CheckedFor( i ),
+          Visible = !BarItems.IsINOP( i ), // hide INOPs
           BackColor = BreakColorFromEnum( m_items.FlowBreakFor( i ) )
         };
         // Mouse Handlers
@@ -119,12 +120,14 @@ namespace FS20_HudBar.Config
 
       foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
         // we use the Enum only as position 0... max here
+
         int position = (int)i;
         // find the item to be shown at this position
         if (m_items.IsPositionUsed( position )) {
           // the item to put as next one / Add sequentially to the layout panel
           // the item is at its (int)key position in the temp list 
-          m_flpRef.Controls.Add( tmpItemList.ElementAt( (int)m_items.ItemKeyFromPos( position ) ) );
+          LItem item = m_items.ItemKeyFromPos( position );
+          m_flpRef.Controls.Add( tmpItemList.ElementAt( (int)item ) );
         }
         else {
           // no such item ????

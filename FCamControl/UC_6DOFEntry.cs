@@ -127,18 +127,25 @@ namespace FCamControl
     private void AcftView( )
     {
       // calc view back to 0/0/0 from current XYZ
-
       var hdg = (float)(Math.Acos( _z / Math.Sqrt( _x * _x + _z * _z ) ) * (_x < 0 ? -1 : 1) * 180f / Math.PI);
+      if (float.IsNaN( hdg )) {
+        // catch where ACos cannot be evaluated and gets NaN
+        hdg = 0;
+      }
       UpdateNum( numH, (hdg > 0) ? (hdg - 180f) : (hdg + 180f) );
 
-      var r = Math.Sqrt( _x * _x + _y * _y + _z * _z );
-      float pitch = (float)(Math.Acos( _y / r ) * 180f / Math.PI) - 90f; // pitch angle 0 is in plane (not north up)
+      var pitch = (float)(Math.Acos( _y / Math.Sqrt( _x * _x + _y * _y + _z * _z ) ) * 180f / Math.PI) - 90f; // pitch angle 0 is in plane (not north up)
+      if (float.IsNaN( pitch )) {
+        // catch where ACos cannot be evaluated and gets NaN
+        pitch = -90f; // pitch angle 0 is in plane (not north up)
+      }
       UpdateNum( numP, -pitch );
     }
 
     // look outside
     private void btViewOut_Click( object sender, EventArgs e )
     {
+      cbxLockAcftView.Checked = false;
       if (_x > 0) {
         // Right side
         UpdateNum( numH, 90 );
@@ -150,6 +157,12 @@ namespace FCamControl
       UpdateNum( numP, 15 );
     }
 
-
+    private void cbxLockAcftView_CheckedChanged( object sender, EventArgs e )
+    {
+      if (cbxLockAcftView.Checked) {
+        AcftView( );
+        OnValueChanged( );
+      }
+    }
   }
 }

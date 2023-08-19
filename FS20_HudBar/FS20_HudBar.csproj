@@ -103,6 +103,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\SimConnectClient.dll</HintPath>
     </Reference>
+    <Reference Include="SimConnectClientAdapter">
+      <HintPath>..\..\..\Redist\SimConnectClientAdapter.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -221,6 +224,15 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\CtrlPara\DI_ToeBrakes.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\AircraftPara\DI_HTrim.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_RRpmGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_RRpm.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\InstrPara\DI_AccelGraph.cs">

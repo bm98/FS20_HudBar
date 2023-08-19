@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using DbgLib;
 
 using SC = SimConnectClient;
+using SimConnectClientAdapter;
 using static FS20_HudBar.GUI.GUI_Colors;
 using static FSimClientIF.Sim;
 
@@ -50,6 +51,9 @@ namespace FS20_HudBar
       System.Reflection.Assembly.GetCallingAssembly( ),
       System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
     #endregion
+
+    // SimConnect Client Adapter
+    private SCClient SCAdapter;
 
     // Handle of the Primary Screen to attach bar and tile
     private readonly Screen m_mainScreen;
@@ -434,31 +438,36 @@ namespace FS20_HudBar
     #region Keyboard Hooks
 
     // Enable/Disable Keyboard interaction 
-    private void SetupKeyboardHook( bool enabled )
+    private void SetupKeyboardHook( bool install, bool enabled )
     {
-      if (enabled) {
+      if (install) {
         if (HUD == null) return; // no HUD so far - ignore this one
-
         if (_keyHook == null) {
           _keyHook = new Win.HotkeyController( Handle );
         }
-        _keyHook.KeyHandling( false ); // disable momentarily
-                                       // reload the bindings
+        // disable momentarily
+        _keyHook.KeyHandling( false );
+        // reload the bindings
         _keyHook.RemoveAllKeys( );
-        if (HUD.Hotkeys.ContainsKey( Hotkeys.Show_Hide )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Show_Hide], Hotkeys.Show_Hide.ToString( ), OnHookKey );
-        if (HUD.Hotkeys.ContainsKey( Hotkeys.FlightBag )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.FlightBag], Hotkeys.FlightBag.ToString( ), OnHookKey );
-        if (HUD.Hotkeys.ContainsKey( Hotkeys.Camera )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Camera], Hotkeys.Camera.ToString( ), OnHookKey );
-        if (HUD.Hotkeys.ContainsKey( Hotkeys.ChecklistBox )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.ChecklistBox], Hotkeys.ChecklistBox.ToString( ), OnHookKey );
-        if (HUD.Hotkeys.ContainsKey( Hotkeys.MoveBarToOtherWindow )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.MoveBarToOtherWindow], Hotkeys.MoveBarToOtherWindow.ToString( ), OnHookKey );
-        // profile switchers
-        for (int p = 0; p < CProfile.c_numProfiles; p++) {
-          if (HUD.Hotkeys.ContainsKey( (Hotkeys)p )) _keyHook.AddKey( HUD.Hotkeys[(Hotkeys)p], ((Hotkeys)p).ToString( ), OnHookKey );
+
+        if (enabled) {
+          if (HUD.Hotkeys.ContainsKey( Hotkeys.Show_Hide )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Show_Hide], Hotkeys.Show_Hide.ToString( ), OnHookKey );
+          if (HUD.Hotkeys.ContainsKey( Hotkeys.FlightBag )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.FlightBag], Hotkeys.FlightBag.ToString( ), OnHookKey );
+          if (HUD.Hotkeys.ContainsKey( Hotkeys.Camera )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.Camera], Hotkeys.Camera.ToString( ), OnHookKey );
+          if (HUD.Hotkeys.ContainsKey( Hotkeys.ChecklistBox )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.ChecklistBox], Hotkeys.ChecklistBox.ToString( ), OnHookKey );
+          // enable always
+          if (HUD.Hotkeys.ContainsKey( Hotkeys.MoveBarToOtherWindow )) _keyHook.AddKey( HUD.Hotkeys[Hotkeys.MoveBarToOtherWindow], Hotkeys.MoveBarToOtherWindow.ToString( ), OnHookKey );
+          // profile switchers
+          for (int p = 0; p < CProfile.c_numProfiles; p++) {
+            if (HUD.Hotkeys.ContainsKey( (Hotkeys)p )) _keyHook.AddKey( HUD.Hotkeys[(Hotkeys)p], ((Hotkeys)p).ToString( ), OnHookKey );
+          }
         }
 
+        // enable handling
         _keyHook.KeyHandling( true );
       }
       else {
-        // disable - we cannot unhook the RawInputLib / not currently used anyway 
+        // de-install - we cannot unhook the RawInputLib / not currently used anyway 
         _keyHook?.KeyHandling( false );
         _keyHook?.RemoveAllKeys( );
         _keyHook?.Dispose( );
@@ -623,6 +632,13 @@ namespace FS20_HudBar
       //flp.BackColor = Color.DarkGray; // show extent of the FlowPanel
 #endif
 
+      // SimConnect
+      LOG.Log( "frmMain", "Load SimConnectAdapter" );
+      SCAdapter = new SCClient( );
+      SCAdapter.Connected += SCAdapter_Connected;
+      SCAdapter.Establishing += SCAdapter_Establishing;
+      SCAdapter.Disconnected += SCAdapter_Disconnected;
+
       // Setup the Camera
       LOG.Log( "frmMain", "Load Camera" );
       m_camera = new FCamControl.frmCamera( Program.Instance );
@@ -661,7 +677,6 @@ namespace FS20_HudBar
       LOG.Log( "frmMain", "Init Form Done" );
     }
 
-
     private void frmMain_Load( object sender, EventArgs e )
     {
       LOG.Log( $"frmMain_Load", "Start" );
@@ -697,6 +712,9 @@ namespace FS20_HudBar
       InitGUI( );
       WPTracker.Reset( );
 
+      LOG.Log( $"frmMain_Load", "Connect to SimConnectAdapter" );
+      // SimConnect
+      SCAdapter.Connect( );
       // Pacer to connect and other repetitive chores
       timer1.Interval = 5000; // try to connect in 5 sec intervals
       timer1.Enabled = true;
@@ -777,7 +795,7 @@ namespace FS20_HudBar
       PingLib.Sounds.RemoveTempSounds( ); // Sounds and Loops share the same cleanup - need only one to call
 
       // Unhook Hotkeys
-      SetupKeyboardHook( false );
+      SetupKeyboardHook( false, false );
       SetupInGameHook( false );
 
       // disconnect from Sim if needed
@@ -787,7 +805,8 @@ namespace FS20_HudBar
           SC.SimConnectClient.Instance.FlightLogModule.LogMode = FSimClientIF.FlightLogMode.Off;
         }
         // closure
-        SC.SimConnectClient.Instance.Disconnect( );
+        SCAdapter.Disconnect( );// close the connection
+                                //        SC.SimConnectClient.Instance.Disconnect( );
       }
       LOG.Log( $"frmMain_FormClosing", "End" );
     }
@@ -1329,7 +1348,7 @@ namespace FS20_HudBar
 
       // reread from config (change)
       LOG.Log( $"InitGUI", "Reread Config changes" );
-      SetupKeyboardHook( AppSettingsV2.Instance.KeyboardHook );
+      SetupKeyboardHook( true, AppSettingsV2.Instance.KeyboardHook );
       SetupInGameHook( AppSettingsV2.Instance.InGameHook );
 
       // Prepare FLPanel to load controls
@@ -1446,12 +1465,59 @@ namespace FS20_HudBar
 
     #region SimConnectClient chores
 
+
     // Monitor the Sim Event Handler after Connection
     private bool m_awaitingEvent = true; // cleared in the Sim Event Handler
     private int m_scGracePeriod = -1;    // grace period count down
 
     ColorType IColorType.ItemForeColor { get => throw new NotImplementedException( ); set => throw new NotImplementedException( ); }
     ColorType IColorType.ItemBackColor { get => throw new NotImplementedException( ); set => throw new NotImplementedException( ); }
+
+
+    // establishing event
+    private void SCAdapter_Establishing( object sender, EventArgs e )
+    {
+      HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cTxInfo;
+      HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse;
+      //signalling the connection state on the topmost Bar Item
+      HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.MediumPurple;
+
+      LOG.Log( $"SCAdapter", "Establishing now" );
+    }
+
+    // connect event
+    private void SCAdapter_Connected( object sender, EventArgs e )
+    {
+      HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cTxInfo;
+      HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse;
+      //signalling the connection state on the topmost Bar Item
+      HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
+
+      FltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
+      // enable game hooks if newly connected and desired
+      SetupInGameHook( AppSettingsV2.Instance.InGameHook );
+      // Set Engines 
+      flp.SetEnginesVisible( SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num ) );
+
+      LOG.Log( $"SCAdapter", "Connected now" );
+    }
+
+    // disconnect event
+    private void SCAdapter_Disconnected( object sender, EventArgs e )
+    {
+      HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cTxInfo;
+      HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse;
+      //signalling the connection state on the topmost Bar Item
+      HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Red;
+
+      // Disconnect from Input and SimConnect
+      SetupInGameHook( false );
+      flp.SetEnginesVisible( -1 ); // reset for the next attempt
+
+      FltPlanMgr.Enabled = false; // disable when disconnecting
+      LOG.Log( $"SCAdapter", "Disconnected now" );
+    }
+
 
     /// <summary>
     /// fired from Sim for new Data
@@ -1471,6 +1537,8 @@ namespace FS20_HudBar
     /// </summary>
     private void SimConnect( )
     {
+      return;
+
       LOG.Log( $"SimConnect", "Start" );
       //signalling the connection state on the topmost Bar Item
       HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cTxInfo;
@@ -1513,33 +1581,35 @@ namespace FS20_HudBar
     private void SimConnectPacer( )
     {
       if (SC.SimConnectClient.Instance.IsConnected) {
-        // handle the situation where Sim is connected but could not yet hookup to events
-        // Happens when HudBar is running when the Sim is starting only.
-        // Sometimes the Connection is made but was not hooking up to the event handling
-        // Disconnect and try to reconnect 
-        if (m_awaitingEvent || SV.Get<float>( SItem.fG_Sim_Rate_rate ) <= 0) {
-          // landing here if Initialization is about to be confirmed - i.e. waiting for the Sim to deliver data
+        if (false) {
+          // handle the situation where Sim is connected but could not yet hookup to events
+          // Happens when HudBar is running when the Sim is starting only.
+          // Sometimes the Connection is made but was not hooking up to the event handling
+          // Disconnect and try to reconnect 
+          if (m_awaitingEvent || SV.Get<float>( SItem.fG_Sim_Rate_rate ) <= 0) {
+            // landing here if Initialization is about to be confirmed - i.e. waiting for the Sim to deliver data
 
-          // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
-          _ = SV.Get<float>( SItem.fG_Sim_Rate_rate );
-          FltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
-          // enable game hooks if newly connected and desired
-          SetupInGameHook( AppSettingsV2.Instance.InGameHook );
-          // Set Engines 
-          flp.SetEnginesVisible( SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num ) );
-          LOG.Log( $"SimConnect", "Connected now" );
+            // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
+            _ = SV.Get<float>( SItem.fG_Sim_Rate_rate );
+            FltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
+            // enable game hooks if newly connected and desired
+            SetupInGameHook( AppSettingsV2.Instance.InGameHook );
+            // Set Engines 
+            flp.SetEnginesVisible( SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num ) );
+            LOG.Log( $"SimConnect", "Connected now" );
 
-          // No events seen so far
-          if (m_scGracePeriod <= 0) {
-            // grace period is expired !
-            LOG.Log( "SimConnectPacer", "Did not receive an Event for 5sec - Restarting Connection" );
-            SimConnect( ); // Disconnect if we don't receive Events even the Sim is connected
+            // No events seen so far
+            if (m_scGracePeriod <= 0) {
+              // grace period is expired !
+              LOG.Log( "SimConnectPacer", "Did not receive an Event for 5sec - Restarting Connection" );
+              SimConnect( ); // Disconnect if we don't receive Events even the Sim is connected
+            }
+            m_scGracePeriod--;
           }
-          m_scGracePeriod--;
-        }
-        else {
-          // Confirm data arrival phase - assuming we are OK..
-          HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
+          else {
+            // Confirm data arrival phase - assuming we are OK..
+            HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
+          }
         }
         // Voice is disabled when a new HUD is created, so enable if not yet done
         // The timer is enabled after InitGUI - so this one is always 5 sec later which should avoid some of the early talking..

@@ -85,6 +85,7 @@ namespace FS20_HudBar.Bar
 
       {LItem.ETRIM, DI_ETrim.Desc },          {LItem.RTRIM, DI_RTrim.Desc },    {LItem.ATRIM, DI_ATrim.Desc },
      // {LItem.A_ETRIM, DI_A_ETrim.Desc},
+      {LItem.H_TRIM, DI_HTrim.Desc },
 
       {LItem.WBALLAST_ANI,DI_WaterBallast.Desc},
 
@@ -107,8 +108,8 @@ namespace FS20_HudBar.Bar
 
       {LItem.MAN, DI_Man.Desc },
       {LItem.TORQ, DI_Torq.Desc },            {LItem.TORQP, DI_TorqP.Desc },        {LItem.TORQP_ANI, DI_TorqPGraph.Desc },
-      {LItem.PRPM, DI_PRpm.Desc },            {LItem.ERPM, DI_ERpm.Desc },
-      {LItem.PRPM_ANI, DI_PRpmGraph.Desc },   {LItem.ERPM_ANI, DI_ERpmGraph.Desc },
+      {LItem.PRPM, DI_PRpm.Desc },            {LItem.ERPM, DI_ERpm.Desc },          {LItem.R_RPM, DI_RRpm.Desc },
+      {LItem.PRPM_ANI, DI_PRpmGraph.Desc },   {LItem.ERPM_ANI, DI_ERpmGraph.Desc }, {LItem.R_RPM_ANI, DI_RRpmGraph.Desc },
       {LItem.N1, DI_N1.Desc },                {LItem.N2, DI_N2.Desc },
       {LItem.N1_ANI, DI_N1Graph.Desc },       {LItem.N2_ANI, DI_N2Graph.Desc },
       {LItem.AFTB, DI_Afterburner.Desc },     {LItem.AFTB_ANI, DI_AfterburnerGraph.Desc },
@@ -415,6 +416,8 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_PRpmGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_ERpm( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ERpmGraph( m_valueItems, lblProto ) );
+      m_dispItems.AddDisp( new DI_RRpm( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_RRpmGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_N1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_N1Graph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_N2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -447,6 +450,7 @@ namespace FS20_HudBar.Bar
       // m_dispItems.AddDisp( new DI_A_ETrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_RTrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ATrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_HTrim( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Water Ballast
       m_dispItems.AddDisp( new DI_WaterBallast( m_valueItems, lblProto ) );
       // GPS
@@ -1003,6 +1007,10 @@ namespace FS20_HudBar.Bar
     /// <returns>The DispItem or null</returns>
     public DispItem DispItem( LItem item )
     {
+      // catch disabled items without raising an exception (to catch real issues further down)
+      // retired items should not land here anyway
+      if (BarItems.IsINOP( item )) return null;
+
       try {
         var di = m_dispItems[item];
         if ((di == null) || di.IsDisposed) return null;
@@ -1020,6 +1028,10 @@ namespace FS20_HudBar.Bar
     /// <returns>The Config Name</returns>
     public string CfgName( LItem item )
     {
+      // catch disabled items without raising an exception (to catch real issues further down)
+      // retired items should not land here anyway
+      if (BarItems.IsINOP( item)) return $"{item} is INOP";
+
       try {
         return m_cfgNames[item];
       }

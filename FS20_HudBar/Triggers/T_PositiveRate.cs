@@ -56,7 +56,7 @@ namespace FS20_HudBar.Triggers
       if (!Enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
 
-      var ds = SV;
+      if (SV.Get<float>( SItem.fG_Eng_RotorMain_rpm) > 0 ) return; // Not with HELI !!
 
       if (SV.Get<bool>( SItem.bG_Sim_OnGround)) {
         // on ground we disable callouts, this lasts on the way up until a positive rate is detected

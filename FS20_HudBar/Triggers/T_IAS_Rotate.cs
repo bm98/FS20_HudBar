@@ -38,6 +38,7 @@ namespace FS20_HudBar.Triggers
     {
       if (!m_enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
+      if (SV.Get<float>( SItem.fG_Eng_RotorMain_rpm ) > 0) return; // Not with HELI !!
 
       // Rotate is only triggered while OnGround and accelerating (else it calls on touchdown)
       if (!SV.Get<bool>( SItem.bG_Sim_OnGround )) return; // not on ground

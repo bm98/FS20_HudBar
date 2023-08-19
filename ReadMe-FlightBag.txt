@@ -1,5 +1,5 @@
 FS20_FlightBag V 0.65 - Build 65 BETA
-(c) M. Burri - 31-Aug-2023
+(c) M. Burri - 19-Aug-2023
 
 Contains files:
 
@@ -21,6 +21,7 @@ dNetBm98                    Tools for .Net and WinForms
 FSimClientIF.dll            Generic FSim Client interface definition
 FSimIF.dll                  Generic FSim interface definition
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
+SimConnectClientAdapter.dll Connection wrapper
 FSimFacilityIF.dll          MS facility database interface definition
 FSimFacilityDataLib.dll     MS facility database access library
 BM98CH_WasmClient.dll       WASM Module client to get LVars
@@ -66,6 +67,7 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.65-B65
+- Update Improve focus capture and release for scrollable items
 - Update Uses LVar Get via SimVar framework (Set of such LVars still needs the WASM module)
 - Refactoring, complete rework of the DataProvider DLLs 
 

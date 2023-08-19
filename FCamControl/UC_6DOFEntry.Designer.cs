@@ -130,7 +130,7 @@
             0,
             0});
       this.numP.Minimum = new decimal(new int[] {
-            360,
+            180,
             0,
             0,
             -2147483648});
@@ -154,7 +154,7 @@
             0,
             0});
       this.numH.Minimum = new decimal(new int[] {
-            360,
+            180,
             0,
             0,
             -2147483648});
@@ -192,6 +192,7 @@
       this.btViewOut.BackColor = System.Drawing.Color.Transparent;
       this.btViewOut.BackgroundImage = global::FCamControl.Properties.Resources.Target_Next_Tower;
       this.btViewOut.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+      this.btViewOut.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btViewOut.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btViewOut.Location = new System.Drawing.Point(373, 7);
       this.btViewOut.Name = "btViewOut";
@@ -204,6 +205,8 @@
       // 
       this.cbxLockAcftView.AutoSize = true;
       this.cbxLockAcftView.BackColor = System.Drawing.Color.Transparent;
+      this.cbxLockAcftView.Checked = true;
+      this.cbxLockAcftView.CheckState = System.Windows.Forms.CheckState.Checked;
       this.cbxLockAcftView.ForeColor = System.Drawing.Color.WhiteSmoke;
       this.cbxLockAcftView.Location = new System.Drawing.Point(284, 91);
       this.cbxLockAcftView.Name = "cbxLockAcftView";
@@ -211,6 +214,7 @@
       this.cbxLockAcftView.TabIndex = 8;
       this.cbxLockAcftView.Text = "Lock";
       this.cbxLockAcftView.UseVisualStyleBackColor = false;
+      this.cbxLockAcftView.CheckedChanged += new System.EventHandler(this.cbxLockAcftView_CheckedChanged);
       // 
       // UC_6DOFEntry
       // 

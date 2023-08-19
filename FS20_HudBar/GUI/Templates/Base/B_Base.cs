@@ -20,11 +20,13 @@ namespace FS20_HudBar.GUI.Templates.Base
     protected string m_default = "";
     protected string m_unit = "";
     protected bool m_showUnit = false;
+    protected bool m_scrollable = false;
+
     protected GUI_Colors.ColorType m_foreColorType = GUI_Colors.ColorType.cTxLabel;
     protected GUI_Colors.ColorType m_backColorType = GUI_Colors.ColorType.cBG;
 
-    private const string c_numbers="0123456789";
-    private Random random = new Random();
+    private const string c_numbers = "0123456789";
+    private Random random = new Random( );
 
     /// <summary>
     /// Set the numeric Value
@@ -72,6 +74,11 @@ namespace FS20_HudBar.GUI.Templates.Base
       base.BackColor = GUI_Colors.ItemColor( m_backColorType );
     }
 
+    /// <summary>
+    /// True if the control captures the focus for scrolling support
+    /// </summary>
+    public bool Scrollable { get => m_scrollable; set => m_scrollable = value; }
+
 
     // Implement IValue Metric IF (but it is not used)
     public bool Altitude_metric { get => false; set => _ = value; }
@@ -100,7 +107,7 @@ namespace FS20_HudBar.GUI.Templates.Base
     /// <returns>A formatted string</returns>
     protected string UnitString( string valueString )
     {
-      return valueString + ( m_showUnit ? m_unit : "" );
+      return valueString + (m_showUnit ? m_unit : "");
     }
 
     /// <summary>
@@ -114,8 +121,8 @@ namespace FS20_HudBar.GUI.Templates.Base
 #if DEBUG
       ret = "";
 
-      for ( int i = 0; i < defaultString.Length; i++ ) {
-        if ( defaultString[i] == '_' ) {
+      for (int i = 0; i < defaultString.Length; i++) {
+        if (defaultString[i] == '_') {
           ret += c_numbers[random.Next( 10 )];
         }
         else {
@@ -127,6 +134,7 @@ namespace FS20_HudBar.GUI.Templates.Base
     }
 
 
+    /* USING the improved method from dNetBm98.WinUser
     /// <summary>
     /// Activates the Main Form in order to prevent that further (Mouse) events are sent to the prev. Active Application
     /// This is used to switch to the HudBar for Mouse Wheel scrolling.
@@ -144,6 +152,7 @@ namespace FS20_HudBar.GUI.Templates.Base
       }
       (e as HandledMouseEventArgs).Handled = true; // don't bubble up the scroll wheel
     }
+    */
 
     /// <summary>
     /// cTor: Create a UserControl..
@@ -176,11 +185,27 @@ namespace FS20_HudBar.GUI.Templates.Base
 
       GUI_Colors.Register( this );
 
-      base.Click += B_Prct_Click; // capture Click Event
+      // capture Mouse Click Event
+      base.MouseClick += Control_Click;
+
+      // capture mouse entering to switch the active window
+      base.MouseEnter += Control_MouseEnter;
+      base.MouseLeave += Control_MouseLeave;
     }
 
+    private void Control_MouseEnter( object sender, EventArgs e )
+    {
+      if (m_scrollable) dNetBm98.WinUser.PushAndSetForeground( this );
+    }
+
+    private void Control_MouseLeave( object sender, EventArgs e )
+    {
+      if (m_scrollable) dNetBm98.WinUser.PopForeground( );
+    }
+
+
     // subst with our own handler that submits our ID
-    private void B_Prct_Click( object sender, EventArgs e )
+    private void Control_Click( object sender, EventArgs e )
     {
       OnButtonClicked( );
     }

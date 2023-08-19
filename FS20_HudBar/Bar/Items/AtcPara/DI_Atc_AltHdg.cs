@@ -50,7 +50,7 @@ namespace FS20_HudBar.Bar.Items
       _value3 = new V_ICAO( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
-      m_observerID = SV.AddObserver( Short, 5, OnDataArrival );// use the Location tracer
+      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond, OnDataArrival ); // once per sec
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )

@@ -57,6 +57,7 @@ namespace FS20_HudBar.Bar.Items
 
       _value1.MouseClick += _value1_MouseClick;
       _value1.MouseWheel += _value1_MouseWheel;
+      _value1.Scrollable = true;
       _value1.Cursor = Cursors.SizeNS;
 
       m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
@@ -80,9 +81,6 @@ namespace FS20_HudBar.Bar.Items
 
       // 1/2 - 1/2  dectection for Digits
       var largeChange = e.Location.X < (_value1.Width / 2);
-
-      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
-      _value1.ActivateForm( e );
 
       if (e.Delta > 0) {
         // Up

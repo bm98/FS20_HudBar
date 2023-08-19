@@ -48,6 +48,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
       _label.MouseWheel += _label_MouseWheel;
+      _label.Scrollable = true;
       _label.Cursor = Cursors.SizeNS;
 
       m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
@@ -61,9 +62,6 @@ namespace FS20_HudBar.Bar.Items
     private void _label_MouseWheel( object sender, MouseEventArgs e )
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
-
-      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
-      _label.ActivateForm( e );
 
       float current = SV.Get<float>( SItem.fGS_Trm_ElevatorTrim_prct100 );
       if (e.Delta > 0) {

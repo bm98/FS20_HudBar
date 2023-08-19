@@ -45,7 +45,7 @@ namespace FS20_HudBar.Bar.Items
       _scaleFlow = new A_Scale( ) { Minimum = 0, Maximum = 500, AlertValue = 0, ItemForeColor_Alert = cWarn, BorderStyle = BorderStyle.FixedSingle };
       this.AddItem( _scaleFlow ); vCat.AddLbl( item, _scaleFlow );
 
-      m_observerID = SV.AddObserver( Short, 5, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond, OnDataArrival ); // once per sec
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )

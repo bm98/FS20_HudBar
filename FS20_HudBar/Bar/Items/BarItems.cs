@@ -59,7 +59,7 @@ namespace FS20_HudBar.Bar.Items
     M_TIM_DIST2,  // Checkpoint 2
     M_TIM_DIST3,  // Checkpoint 3
 
-    A_ETRIM,      // Auto ETrim
+    A_ETRIM,      // Auto ETrim *** RETIRED ***
 
     MAN,          // MAN Pressure inHg
 
@@ -193,6 +193,13 @@ namespace FS20_HudBar.Bar.Items
     WBALLAST_ANI, // Glider Water Ballast Graphs
 
     TBRAKE,       // Toe Brakes [%]
+                  //    H_RBRAKE,     // Heli Rotor Brake
+                  //    H_CLUTCH,     // Heli Rotor Clutch
+                  //    H_GOVERNOR,   // Heli Rotor Governor
+    R_RPM,        // Heli RPM
+    R_RPM_ANI,    // Heli RPM Graph
+    H_TRIM,       // Heli Trims
+
     ACCEL_ANI,    // Acceleration Graph
   }
 
@@ -236,6 +243,8 @@ namespace FS20_HudBar.Bar.Items
     A_ETRIM,      // Auto ETrim, activates ETrim Module, shows ETrim % (same as the standard one)
     RTRIM,        // Rudder Trim +-N%, active: set to zero
     ATRIM,        // Aileron Trim +-N%, active: set to zero
+    HTRIM_LAT,    // Heli Trim Lateral
+    HTRIM_LON,    // Heli Trim Longitudinal
 
     // WATER BALLAST
     WBALLAST_ANI, // Glider Water Ballast Quantity Graph
@@ -270,6 +279,10 @@ namespace FS20_HudBar.Bar.Items
     E2_RPM_ANI,   // Engine RPM Graph Twin Engine
     E3_RPM_ANI,   // Engine RPM Graph 3rd Engine
     E4_RPM_ANI,   // Engine RPM Graph 4th Engine
+
+    HMAIN_RPM,    // Heli Main Rotor RPM
+    HTAIL_RPM,    // Heli Tail Rotor RPM
+    HROT_RPM_ANI, // Heli Main + Tail Rotor RPM Graph
 
     // ENGINE
     E1_MAN,       // Engine1 MAN Pressure InHg
@@ -571,6 +584,8 @@ namespace FS20_HudBar.Bar.Items
     E3_PROP_LEV,   // Propeller Lever Engine 3
     E4_PROP_LEV,   // Propeller Lever Engine 4
 
+    H_COLL_LEV,    // Heli Collective Lever
+
     TBRAKE_LEFT,   // Left Toe Brakes
     TBRAKE_RIGHT,  // Right Toe Brakes
 
@@ -581,4 +596,20 @@ namespace FS20_HudBar.Bar.Items
 
   }
 
+  /// <summary>
+  /// Helper for retired items
+  /// </summary>
+  internal static class BarItems
+  {
+    /// <summary>
+    /// Returns true when an item is retired an should no longer be shown
+    /// </summary>
+    /// <param name="item">The item to check</param>
+    /// <returns>True when INOP - no longer in use</returns>
+    public static bool IsINOP(LItem item)
+    {
+      return item == LItem.A_ETRIM;
+    }
+
+  }
 }

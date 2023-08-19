@@ -60,9 +60,9 @@ namespace FS20_HudBar.Config
       throw new IndexOutOfRangeException( $"Item {item} cannot be handled" );
 #endif
 #pragma warning disable CS0162 // Unreachable code detected
-            return 999; // Error number, actually a Programm error
+      return 999; // Error number, actually a Programm error
 #pragma warning restore CS0162 // Unreachable code detected
-        }
+    }
 
     /// <summary>
     /// True if the position is used by an item
@@ -87,9 +87,9 @@ namespace FS20_HudBar.Config
         throw new IndexOutOfRangeException( $"Item at position {pos} cannot be found" );
 #endif
 #pragma warning disable CS0162 // Unreachable code detected
-                return (LItem)999;
+        return (LItem)999;
 #pragma warning restore CS0162 // Unreachable code detected
-            }
+      }
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ namespace FS20_HudBar.Config
     public void SetChecked( LItem item, bool checkedVal )
     {
       try {
-        _profile[item] = checkedVal;
+        _profile[item] = checkedVal && !BarItems.IsINOP( item ); // force uncheck INOPs
       }
       catch {
 #if DEBUG
@@ -146,14 +146,14 @@ namespace FS20_HudBar.Config
     /// <returns>FlowBreak type</returns>
     public bool CheckedFor( LItem item )
     {
-      if (_profile.TryGetValue( item, out var checkedVal )) { return checkedVal; }
+      if (_profile.TryGetValue( item, out var checkedVal )) { return checkedVal && !BarItems.IsINOP( item ); } // force uncheck INOPs
 #if DEBUG
       throw new IndexOutOfRangeException( $"Item {item} cannot be handled" );
 #endif
 #pragma warning disable CS0162 // Unreachable code detected
-            return false;
+      return false;
 #pragma warning restore CS0162 // Unreachable code detected
-        }
+    }
 
     /// <summary>
     /// Create an empty profile with all items set to checkedVal
@@ -161,8 +161,8 @@ namespace FS20_HudBar.Config
     /// <param name="checkedVal">Set value</param>
     public void CreateEmptyProfile( bool checkedVal )
     {
-      foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
-        _profile.Add( i, checkedVal );
+      foreach (LItem item in Enum.GetValues( typeof( LItem ) )) {
+        _profile.Add( item, checkedVal && !BarItems.IsINOP( item ) );
       }
     }
 
@@ -200,9 +200,9 @@ namespace FS20_HudBar.Config
       throw new IndexOutOfRangeException( $"Item {item} cannot be handled" );
 #endif
 #pragma warning disable CS0162 // Unreachable code detected
-            return GUI.BreakType.None;
+      return GUI.BreakType.None;
 #pragma warning restore CS0162 // Unreachable code detected
-        }
+    }
 
     #endregion
 
@@ -231,12 +231,12 @@ namespace FS20_HudBar.Config
       // Get the visibility status (checked) for each item
       string[] e = profileString.Split( new char[] { Divider }, StringSplitOptions.RemoveEmptyEntries );
       _profile.Clear( );
-      foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
-        bool show = (i == LItem.MSFS) ? true : false; // default OFF except the first 20210708
-        if (e.Length > (int)i) {
-          show = e[(int)i] == "1"; // found an element in the string
+      foreach (LItem item in Enum.GetValues( typeof( LItem ) )) {
+        bool show = (item == LItem.MSFS); // default OFF except the first 20210708
+        if (e.Length > (int)item) {
+          show = (e[(int)item] == "1") && !BarItems.IsINOP( item ); // found an element in the string
         }
-        _profile.Add( i, show );
+        _profile.Add( item, show );
       }
     }
 

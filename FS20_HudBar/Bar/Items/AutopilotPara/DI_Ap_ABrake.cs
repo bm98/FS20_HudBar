@@ -52,6 +52,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
       _value1.Click += _value1_Click;
       _value1.MouseWheel += _value1_MouseWheel;
+      _value1.Scrollable = true;
       _value1.Cursor = Cursors.SizeNS;
 
       item = VItem.AP_ASKID;
@@ -79,9 +80,6 @@ namespace FS20_HudBar.Bar.Items
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
-
-      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
-      _value1.ActivateForm( e );
 
       if (e.Delta > 0 && SV.Get<AutoBrakeLevel>( SItem.ablGS_Ap_ABRK_level ) < AutoBrakeLevel.HIGH_4) {
         SV.Set( SItem.cmS_Ap_ABRK_set, CmdMode.Inc );

@@ -408,11 +408,23 @@ namespace SpeechLib
         if (disposing) {
           // dispose managed state (managed objects)
           // cleanup existing items
+          AudioGraphBatchUpdater bu = null;
+          if (_audioGraph != null) {
+            bu = _audioGraph.CreateBatchUpdater( );
+          }
           _synthesizer?.Dispose( );
           _mediaSourceInputNode?.RemoveOutgoingConnection( _deviceOutputNode );
           _mediaSourceInputNode?.Dispose( );
           _deviceOutputNode?.Dispose( );
           _audioGraph?.Dispose( );
+
+          if ( bu != null ) {
+            bu.Dispose( );
+          }
+          _audioGraph = null;
+          _synthesizer = null;
+          _mediaSourceInputNode = null;
+          _deviceOutputNode = null;
         }
 
         disposedValue = true;

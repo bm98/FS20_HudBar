@@ -56,6 +56,7 @@ namespace FS20_HudBar.Bar.Items
       _label.Cursor = Cursors.Hand;
 
       _value1.MouseWheel += _value1_MouseWheel;
+      _value1.Scrollable = true;
       _value1.Cursor = Cursors.SizeNS;
 
       m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
@@ -69,9 +70,6 @@ namespace FS20_HudBar.Bar.Items
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
-
-      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
-      _value1.ActivateForm( e );
 
       // 1/2 - 1/2  dectection for Digits
       var largeChange = e.Location.X < (_value1.Width / 2);

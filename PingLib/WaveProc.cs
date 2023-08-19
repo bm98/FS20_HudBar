@@ -12,6 +12,7 @@ using System.IO;
 
 using DbgLib;
 using Windows.Devices.Enumeration;
+using System.Linq.Expressions;
 
 namespace PingLib
 {
@@ -310,6 +311,7 @@ namespace PingLib
         if (_fileInputNode != null) {
           _audioGraph.Stop( );
 
+          _fileInputNode.Stop( );
           _fileInputNode.FileCompleted -= _fileInputNode_FileCompleted;
           _fileInputNode.RemoveOutgoingConnection( _deviceOutputNode );
           _fileInputNode.Dispose( );
@@ -371,10 +373,21 @@ namespace PingLib
     // will be called when speaking has finished
     private async void _fileInputNode_FileCompleted( AudioFileInputNode sender, object args )
     {
-      if (_fileInputNode.LoopCount > 0) return; // track the loop count down and wait until the end -murks MS will get here twice with 0  when the loopCount is used
+      if (_fileInputNode == null) {
+        LOG.Log( "_fileInputNode_FileCompleted: _fileInputNode was already disposed (==null)" );
+        return;
+      }
 
-      _fileInputNode.Stop( );
-      await EndOfSound( );
+      try {
+        // track the loop count down and wait until the end -murks MS will get here twice with 0  when the loopCount is used
+        if (_fileInputNode.LoopCount > 0) return;
+        _fileInputNode.Stop( );
+        await EndOfSound( );
+      }
+      catch (Exception e) {
+        _fileInputNode = null;
+        LOG.LogError( $"_fileInputNode_FileCompleted: caused an Exception\n{e.Message}" );
+      }
     }
 
 
@@ -449,7 +462,7 @@ namespace PingLib
       if (!_canPlay) return; // Cannot
 
       if (_deviceOutputNode == null) {
-        LOG.LogError( "Mute: Cannot Mute, DeviceOutput was null ??" );
+        LOG.LogError( "Mute: Cannot Mute, _deviceOutputNode already disposed (==null)" );
         return;
       }
       _deviceOutputNode.ConsumeInput = !muted;
@@ -469,11 +482,15 @@ namespace PingLib
     {
       if (!disposedValue) {
         if (disposing) {
+          _canPlay = false;
           // dispose managed state (managed objects)
           // cleanup existing items
           _fileInputNode?.Dispose( );
+          _fileInputNode = null;
           _deviceOutputNode?.Dispose( );
+          _deviceOutputNode = null;
           _audioGraph?.Dispose( );
+          _audioGraph = null;
         }
 
         disposedValue = true;

@@ -47,7 +47,7 @@ namespace FS20_HudBar.Triggers.Base
     private TState _state = TState.Unknown;
 
     // count down to zero 
-    private const int c_delayCount = 20; // ~ 0.2 sec per tic
+    private const int c_delayCount = 25; // ~ 0.2 sec per tic
     // trigger action when <=0
     private int _delay = 0;
 
@@ -73,6 +73,7 @@ namespace FS20_HudBar.Triggers.Base
         _state = TState.Unknown;
         return;
       }
+
       bool onGround = SV.Get<bool>( SItem.bG_Sim_OnGround );
       switch (_state) {
         case TState.Unknown:

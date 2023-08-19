@@ -13,6 +13,7 @@ using SC = SimConnectClient;
 using static FSimClientIF.Sim;
 using FSimClientIF.Modules;
 using System.Numerics;
+using SimConnectClientAdapter;
 
 namespace FCamControl
 {
@@ -21,13 +22,19 @@ namespace FCamControl
   /// </summary>
   public partial class frmCamera : Form
   {
-    private ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
+    // SimConnect Client Adapter (used only to establish the connection and handle the Online color label)
+    private SCClient SCAdapter;
 
+    // attach the property module - this does not depend on the connection established or not
+    private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
+
+    // handle the GUI elements with indexed access using the items below
     private Dictionary<CameraSetting, ModeButton> _btMode = new Dictionary<CameraSetting, ModeButton>( );
     private List<Button> _btIndex = new List<Button>( ); // Cam Index
     private List<Button> _btSlot = new List<Button>( ); // Starred Slots
     private List<Button> _btSlotFolder = new List<Button>( ); // Slot Folders
 
+    // SimVar Observer items
     private string _observerName = "CAM_FORM";
     private int _observerID = -1;// -1 triggers first update from Sim,
 
@@ -63,21 +70,27 @@ namespace FCamControl
     private int _camUpdateRequested = 0; // trigger delayed update to Sim
     private CameraSetting _camSettingRequested = CameraSetting.NONE;
     private int _camIndexRequested = 0;
-    private Vector3 _cam6dPositionRequested = new Vector3( );
+
+    // 6DOF items
+    private static readonly Vector3 c_cam6dDefaultPos = new Vector3( ) { X = 20f, Y = 20f, Z = 20f };
+    private Vector3 _cam6dPositionRequested = c_cam6dDefaultPos;
     private Vector3 _cam6dGimbalRequested = new Vector3( );
 
+    // Smart target items
     private UInt64 _smartTargetHash = 0; // triggers update of the Smart Target List if changed
     private int _prevSmartTarget = 99;
 
-    private int _maxIndexEnabled = 0; // track the enabled Index Buttons and change only when needed to avoid flicker
+    // track the enabled Index Buttons and change only when needed to avoid flicker
+    private int _maxIndexEnabled = 0; 
 
+    // flag when Slot Saving is active
     private bool _slotSaving = false;
 
     // track the last known live location in order to save the proper one
     private Point _lastLiveLocation;
 
     /// <summary>
-    /// Set true to run in standalone mode
+    /// Set true  when run in standalone mode
     /// </summary>
     public bool Standalone { get; private set; } = false;
 
@@ -205,14 +218,19 @@ namespace FCamControl
       // attach 6DOF panel
       uc6Entry.ValueChanged += Uc6Entry_ValueChanged;
 
-      // use another WindowFrame
+      // Handle the Standalone version
       if (Standalone) {
+        // use another WindowFrame
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MinimizeBox = true;
         this.MaximizeBox = false;
         this.ControlBox = true;
-
-        SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
+        // Connection to SimConnect Client
+        SCAdapter = new SCClient( );
+        SCAdapter.Connected += SCAdapter_Connected;
+        SCAdapter.Establishing += SCAdapter_Establishing;
+        SCAdapter.Disconnected += SCAdapter_Disconnected;
+        SCAdapter.SC_Label = lblSimConnected;
       }
 
       _tooltip.SetToolTip( btPilotView, "Cockpit View with previous selection" );
@@ -286,6 +304,8 @@ namespace FCamControl
           string msg = $"MyDocuments Folder Access Check Failed:\n{DbgLib.Dbg.Instance.AccessCheckResult}\n\n{DbgLib.Dbg.Instance.AccessCheckMessage}";
           MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
         }
+        // activate connection
+        SCAdapter.Connect( );
       }
 
       // Pacer interval 
@@ -333,6 +353,7 @@ namespace FCamControl
       if (Standalone) {
         // don't cancel if standalone (else how to close it..)
         this.WindowState = FormWindowState.Minimized;
+        SCAdapter.Disconnect( );
       }
       else {
         if (e.CloseReason == CloseReason.UserClosing) {
@@ -350,10 +371,12 @@ namespace FCamControl
     /// </summary>
     private void timer1_Tick( object sender, EventArgs e )
     {
+      /*
       // Call SimConnect if needed and Standalone
       if (Standalone && --_simConnectTrigger <= 0) {
         SimConnectPacer( );
       }
+      */
 
       // prevent concurrency issues with control settings
       if (_updating) return;
@@ -674,8 +697,6 @@ namespace FCamControl
       // sanity
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      var cam = SV;
-
       _btMode[setting].ViewIndex = viewIndex; // save preset default
       if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) != setting) {
         // change if not already there
@@ -696,7 +717,6 @@ namespace FCamControl
 
       // restore Drone speeds
       _droneValueUpdate = c_triggerUpdate;
-
 
       // the GUI may change once we read the effective cam setting via DataArrival
     }
@@ -771,110 +791,27 @@ namespace FCamControl
 
     #region SimConnectClient chores
 
-    // Monitor the Sim Event Handler after Connection
-    private bool m_awaitingEvent = true; // cleared in the Sim Event Handler
-    private int m_scGracePeriod = -1;    // grace period count down
-    private int _simConnectTrigger = 0; //  count down to call the SimConnect Pacer
-
-    /// <summary>
-    /// fired from Sim for new Data
-    /// Callback from SimConnect client signalling data arrival
-    ///  Appart from subscriptions this is calles on a regular pace 
-    /// </summary>
-    private void Instance_DataArrived( object sender, FSimClientIF.ClientDataArrivedEventArgs e )
+    // establishing event
+    private void SCAdapter_Establishing( object sender, EventArgs e )
     {
-      m_awaitingEvent = false; // confirm we've got data events
     }
 
-    /// <summary>
-    /// Toggle the connection
-    /// if not connected: Try to connect and setup facilities
-    /// if connected:     Disconnect facilities and shut 
-    /// </summary>
-    private void SimConnect( )
+    // connect event
+    private void SCAdapter_Connected( object sender, EventArgs e )
     {
-      // only needed in a standalone environment
-      if (!Standalone) return;
-
-      //LOG.Log( $"SimConnect: Start" );
-      lblSimConnected.BackColor = Color.Transparent;
-      if (SC.SimConnectClient.Instance.IsConnected) {
-        // Disconnect from Input and SimConnect
-        //        SetupInGameHook( false );
-
-        // Unregister DataUpdates if not done 
-        if (_observerID >= 0) {
-          SV.RemoveObserver( _observerID );
-          _observerID = -1;
-        }
-        SC.SimConnectClient.Instance.Disconnect( );
-        lblSimConnected.BackColor = Color.DarkRed;
-        //        LOG.Log( $"SimConnect: Disconnected now" );
+      // register DataUpdates if not done 
+      if (SC.SimConnectClient.Instance.IsConnected && _observerID < 0) {
+        _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
       }
-
-      else {
-        // setup the event monitor before connecting (will be handled in the Timer Event)
-        m_awaitingEvent = true;
-        m_scGracePeriod = 3; // about 3*5 secs to get an event
-
-        // try to connect
-        if (SC.SimConnectClient.Instance.Connect( )) {
-
-          //        HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
-          lblSimConnected.BackColor = Color.MediumPurple;
-          // enable game hooks if newly connected and desired
-          //          SetupInGameHook( AppSettings.Instance.InGameHook );
-          // Set Engines 
-          //          LOG.Log( $"SimConnect: Connected now" );
-        }
-        else {
-          // connect failed - will be retried through the pacer
-          //          HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Red;
-          lblSimConnected.BackColor = Color.DarkRed;
-          //          LOG.Log( $"SimConnect: Could not connect" );
-        }
-      }
-
     }
 
-    /// <summary>
-    /// SimConnect chores on a timer, mostly reconnecting and monitoring the connection status
-    /// Intender to be called about every 5 seconds
-    /// </summary>
-    private void SimConnectPacer( )
+    // disconnect event
+    private void SCAdapter_Disconnected( object sender, EventArgs e )
     {
-      if (SC.SimConnectClient.Instance.IsConnected) {
-        // handle the situation where Sim is connected but could not hookup to events
-        // Happens when HudBar is running when the Sim is starting only.
-        // Sometimes the Connection is made but was not hooking up to the event handling
-        // Disconnect and try to reconnect 
-        if (m_awaitingEvent || SV.Get<CameraState>( SItem.cstaG_Cam_State ) <= 0) {
-          // No events seen so far
-          // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
-          _ = SV.Get<CameraState>( SItem.cstaG_Cam_State );
-
-          if (m_scGracePeriod <= 0) {
-            // grace period is expired !
-            //            LOG.Log( "SimConnectPacer: Did not receive an Event for 5sec - Restarting Connection" );
-            SimConnect( ); // Disconnect if we don't receive Events even the Sim is connected
-          }
-          m_scGracePeriod--;
-        }
-        else {
-          lblSimConnected.BackColor = Color.DarkGreen;
-          // register DataUpdates if not done 
-          if (SC.SimConnectClient.Instance.IsConnected && _observerID < 0) {
-            _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
-          }
-        }
+      if (_observerID >= 0) {
+        SV.RemoveObserver( _observerID );
+        _observerID = -1;
       }
-      else {
-        // If not connected try again
-        SimConnect( );
-      }
-
-      // reset calling interval
-      _simConnectTrigger = 5000 / timer1.Interval;
     }
 
     #endregion

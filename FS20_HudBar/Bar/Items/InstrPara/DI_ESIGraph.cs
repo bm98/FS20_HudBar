@@ -11,6 +11,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
 using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -45,7 +46,7 @@ namespace FS20_HudBar.Bar.Items
       _scale2 = new A_FPA( ) { MinimumVer = -6, MaximumVer = 6, MinimumHor = -6 * 2, MaximumHor = 6 * 2, ItemForeColor = cOK };
       this.AddItem( _scale2 ); vCat.AddLbl( item, _scale2 );
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
+      m_observerID = SV.AddObserver( Short, 1, OnDataArrival ); // use max data rate
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
@@ -61,11 +62,18 @@ namespace FS20_HudBar.Bar.Items
       if (this.Visible) {
         _scale1.PitchAngle = SV.Get<float>( SItem.fG_Acft_Pitch_deg );
         _scale1.BankAngle = SV.Get<float>( SItem.fG_Acft_Bank_deg );
-
-        _scale2.VerticalAngle = SV.Get<float>( SItem.fG_Acft_FlightPathAngle_deg );
-        _scale2.HorizontalAngle = (float)CoordLib.Geo.Wrap180(
-            SV.Get<float>( SItem.fG_Gps_GTRK_true_deg ) - SV.Get<float>( SItem.fG_Gps_GHDG_true_deg )
-        ); // +-180°
+        if (SV.Get<float>( SItem.fG_Eng_RotorMain_rpm ) > 0) {
+          // Helo
+          _scale2.HorizontalAngle = SV.Get<float>( SItem.fG_Acft_LonSpeed_fps );
+          _scale2.VerticalAngle = SV.Get<float>( SItem.fG_Acft_LatSpeed_fps );
+        }
+        else {
+          // Wing Crafts
+          _scale2.VerticalAngle = SV.Get<float>( SItem.fG_Acft_FlightPathAngle_deg );
+          _scale2.HorizontalAngle = (float)CoordLib.Geo.Wrap180(
+              SV.Get<float>( SItem.fG_Gps_GTRK_true_deg ) - SV.Get<float>( SItem.fG_Gps_GHDG_true_deg )
+          ); // +-180°
+        }
       }
     }
 

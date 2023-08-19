@@ -1,5 +1,5 @@
 FS20_HudBar V 0.65 - Build 65 BETA
-(c) M. Burri - 31-Aug-2023
+(c) M. Burri - 19-Aug-2023
 
 Contains files:
 
@@ -29,6 +29,7 @@ MetarLib.dll                METAR access library
 PingLib.dll                 An audio lib using Win10 Audio facilities
 SettingsLib.dll             Application settings persistence library
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
+SimConnectClientAdapter.dll Connection wrapper
 SpeechLib.dll               Voice synth lib using Win10 TTS facilities
 
 3rd Party:
@@ -43,7 +44,7 @@ From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
 
 Simulator Extension Module (extr. to Community folder)
-  BM98CH_DataConnector_Wasm-V0.1.zip  
+  BM98CH_DataConnector_Wasm-V0.2.zip  
 
 
 dataLoader\ folder:
@@ -74,11 +75,16 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.65-B65
-- Add Engine 3+4 Levers for Throttle, Mix and Propeller
+- Add Heli Trim % (lon, lat) Item + Reset both on Click
+- Add Heli Rotor RPM + Graph (Main, Tail) Item
 - Add Toe Brake % item
+- Add Engine 3+4 Levers for Throttle, Mix and Propeller
 - Add Manual FLT Save in the context menu
 - Add 6DOF Camera
+- Update ESI FPA Graph to show XY Movement with Heli instead of FPA
+- Update Improve focus capture and release for scrollable items
 - Update Uses LVar Get via SimVar framework (Set of such LVars still needs the WASM module)
+- Update Review and adjust update interval for each item
 - Refactoring, complete rework of the DataProvider DLLs 
 
 V 0.64-B64 (not published)

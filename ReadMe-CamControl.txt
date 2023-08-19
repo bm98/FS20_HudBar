@@ -1,5 +1,5 @@
 FS20_CamControl V 0.65 - Build 65 BETA
-(c) M. Burri - 31-Aug-2023
+(c) M. Burri - 19-Aug-2023
 
 Contains files:
 
@@ -16,6 +16,7 @@ FSimClientIF.dll            Generic FSim Client interface definition
 SettingsLib.dll             Application settings persistence library
 FSimIF.dll                  Generic FSim interface definition
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
+SimConnectClientAdapter.dll Connection wrapper
 BM98CH_WasmClient.dll       WASM Module client to get LVars
 
 From MSFS2020 Developer Kit for convenience included:
