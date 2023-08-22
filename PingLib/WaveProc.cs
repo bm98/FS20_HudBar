@@ -347,7 +347,7 @@ namespace PingLib
       // we capture problems through Exceptions here - the settings and restrictions seem not complete in the Docs
       try {
         // Play it
-        LOG.Log( $"Play {_fileInputNode.ConsumeInput}" );
+        // LOG.Log( $"Play {_fileInputNode.ConsumeInput}" ); // extensive logging when enabled (play silence...)
 
         // cannot start after prev end - so set it null and seek to start of file
         _fileInputNode.StartTime = null;

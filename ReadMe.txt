@@ -1,5 +1,5 @@
-FS20_HudBar V 0.65 - Build 65 BETA
-(c) M. Burri - 19-Aug-2023
+FS20_HudBar V 0.65 - Build 66 BETA
+(c) M. Burri - 22-Aug-2023
 
 Contains files:
 
@@ -74,13 +74,14 @@ github@mail.burri-web.org
 
 Changelog:
 
-V 0.65-B65
+V 0.65-B66
 - Add Heli Trim % (lon, lat) Item + Reset both on Click
 - Add Heli Rotor RPM + Graph (Main, Tail) Item
 - Add Toe Brake % item
 - Add Engine 3+4 Levers for Throttle, Mix and Propeller
 - Add Manual FLT Save in the context menu
 - Add 6DOF Camera
+- Update Camera Control added 20 slots (folder G,H)
 - Update ESI FPA Graph to show XY Movement with Heli instead of FPA
 - Update Improve focus capture and release for scrollable items
 - Update Uses LVar Get via SimVar framework (Set of such LVars still needs the WASM module)
