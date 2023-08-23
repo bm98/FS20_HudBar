@@ -143,10 +143,10 @@ namespace PingLib
           this.ReportProgress( ++_progressCount );
         }
         else {
-          // run into a play time out - either the tune was tool long or something else prevented
+          // run into a play time out - either the tune was too long or something else prevented
           // the Player to signal end of play
           // anyway try to recover and continue
-          Console.WriteLine( "SoundWorker Timeout" );
+          //Console.WriteLine( "SoundWorker Timeout" );
           _player.Reset( );
         }
 
