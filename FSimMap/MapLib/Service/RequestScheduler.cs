@@ -35,7 +35,7 @@ namespace MapLib.Service
     // Worker threads
     // Mem Cache retrieval has a severe penalty for Queued times and processing when more threads are involved (reason unknown)
     // ?? ConcurrentDictionary access ?? 
-    private const int NUM_OF_THREAD_TILE = 8;
+    private const int NUM_OF_THREAD_TILE = 2;  // 20230824  Limit to 2 concurrent loading threads (OSM asks for not more than 2..)
     private const int NUM_OF_THREAD_CACHE = 4;  // Disk Caching may use more..
 
     // the dispatcher

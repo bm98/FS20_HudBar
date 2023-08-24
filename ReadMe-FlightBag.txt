@@ -70,6 +70,8 @@ V 0.65-B66
 - Update Improve focus capture and release for scrollable items
 - Update Uses LVar Get via SimVar framework (Set of such LVars still needs the WASM module)
 - Refactoring, complete rework of the DataProvider DLLs 
+- Update MapLib to comply with OSM tile policy (2 concurrent DL only)
+- Update QuickGuide
 
 V 0.64-B64 (not published)
 - Refactoring, complete rework of the DataProvider DLLs 

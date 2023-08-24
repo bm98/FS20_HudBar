@@ -87,6 +87,8 @@ V 0.65-B66
 - Update Uses LVar Get via SimVar framework (Set of such LVars still needs the WASM module)
 - Update Review and adjust update interval for each item
 - Refactoring, complete rework of the DataProvider DLLs 
+- Update MapLib to comply with OSM tile policy (2 concurrent DL only)
+- Update QuickGuide
 
 V 0.64-B64 (not published)
 - Refactoring, complete rework of the DataProvider DLLs 

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -109,10 +110,10 @@ namespace MapLib.Sources.Providers
     static MapProviderBase( )
     {
       WebProxy = BypassWebProxy.Instance;
-      Random = new Random( (int)DateTime.Now.Ticks );
-      UserAgent = string.Format(
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:{0}.0) Gecko/20100101 Firefox/{0}.0",
-            Random.Next( (DateTime.Today.Year - 2012) * 10 - 10, (DateTime.Today.Year - 2012) * 10 ) );
+      // OSM asks for a legit UserAgent ID - so provide one
+      FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo( Assembly.GetAssembly( typeof( MapProviderBase ) ).Location );
+      // will evaluate into "MapLib/m.n.o.p" e.g "MapLib/0.2.0.10" as of writing.
+      UserAgent = string.Format( $"{fileVersion.ProductName}/{fileVersion.FileVersion}" );
 
       _client.DefaultRequestHeaders.Add( "User-Agent", UserAgent );
       _client.DefaultRequestHeaders.Add( "Accept", requestAccept );
@@ -397,11 +398,18 @@ namespace MapLib.Sources.Providers
           var status = ((HttpWebResponse)(ex as WebException).Response).StatusCode;
           Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: HttpWebResponse Status: {status} ({(int)status})" );
           if ((status == HttpStatusCode.GatewayTimeout) || (status == HttpStatusCode.RequestTimeout)) {
-            retry = true; // can retry on timeout
+            retry = true;
           }
+        }
+        else if ((ex is WebException) && ((int)((HttpWebResponse)(ex as WebException).Response).StatusCode == 418)) {
+          // seems OSM responds with the teapot code when blocking...
+          var status = ((HttpWebResponse)(ex as WebException).Response).StatusCode;
+          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: HttpWebResponse Status: {status} ({(int)status})" );
+          retry = false; // never retry
         }
         else {
           Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: Response Exception:\n{ex}\nURL:${url}" );
+          retry = false; // never retry
         }
       }
 
