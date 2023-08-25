@@ -241,9 +241,7 @@
     <Compile Include="Bar\Items\InstrPara\DI_VarioMCS_mps.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\InstrPara\DI_VarioMCS_kt.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Bar\Items\InstrPara\DI_VarioMCS_kt.cs" />
     <Compile Include="Bar\Items\InstrPara\DI_VarioNettoGraph.cs">
       <SubType>Component</SubType>
     </Compile>
