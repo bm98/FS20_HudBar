@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using dNetBm98;
+
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
@@ -52,7 +54,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = Conversions.Round( SV.Get<float>( SItem.fG_Acft_VS_ftPmin ), 20 ); // steps 20
+        _value1.Value = XMath.AsRoundInt( SV.Get<float>( SItem.fG_Acft_VS_ftPmin ), 20 ); // steps 20
       }
     }
 

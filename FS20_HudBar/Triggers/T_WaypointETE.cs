@@ -12,7 +12,7 @@ using static FSimClientIF.Sim;
 namespace FS20_HudBar.Triggers
 {
   /// <summary>
-  /// Waypoint ETE Trigger: a float trigger where 60,30,10 seconds to go
+  /// WaypointID ETE Trigger: a float trigger where 60,30,10 seconds to go
   /// 
   ///  triggers one event each time it changed
   ///  
@@ -51,7 +51,7 @@ namespace FS20_HudBar.Triggers
       }
     }
 
-    // Implements the means to speak out the Waypoint ETE in seconds
+    // Implements the means to speak out the WaypointID ETE in seconds
 
     /// <summary>
     /// cTor: 

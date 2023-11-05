@@ -55,7 +55,7 @@ namespace bm98_Map.Drawing
 
         if (g.VisibleClipBounds.Contains( mp ) || g.VisibleClipBounds.Contains( omp )) {
           var rect = new Rectangle( new Point( 0, 0 ), _imageRef.Size );
-          var textRect = new Rectangle( mp, new Size( 96, 64 ) );
+          var textRect = new Rectangle( mp, new Size( 300, 64 ) );//96
 
           // draw to if possible
           if (!OutboundLatLon.IsEmpty) {

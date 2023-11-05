@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,9 +8,9 @@ using System.Xml.Serialization;
 namespace FlightplanLib.MSFSPln.PLNDEC
 {
   /// <summary>
-  /// An MSFS PLN ICAO Element
+  /// An MSFS GPX ICAO Element
   /// </summary>
-  [XmlRootAttribute( "ICAO", Namespace = "", IsNullable = false )]
+  [XmlRoot( "ICAO", Namespace = "", IsNullable = false )]
   public class X_Icao
   {
     // Elements

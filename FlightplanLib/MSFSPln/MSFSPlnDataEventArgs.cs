@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace FlightplanLib.MSFSPln
 {
   /// <summary>
-  /// Event fired when new MSFS PLN data arrives
+  /// Event fired when new MSFS GPX data arrives
   /// 
   /// </summary>
   public class MSFSPlnDataEventArgs
   {
     /// <summary>
-    /// MSFS PLN Data as string
+    /// MSFS GPX Data as string
     /// </summary>
     public string MSFSPlnData { get; set; }
 

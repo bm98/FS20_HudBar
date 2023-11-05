@@ -32,6 +32,7 @@
       this.picMinus = new System.Windows.Forms.PictureBox();
       this.picShelf = new System.Windows.Forms.PictureBox();
       this.flp = new System.Windows.Forms.FlowLayoutPanel();
+      this.pdfV = new PdfiumViewer.PdfViewer();
       ((System.ComponentModel.ISupportInitialize)(this.picPlus)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.picMinus)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.picShelf)).BeginInit();
@@ -42,7 +43,7 @@
       this.picPlus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.picPlus.Cursor = System.Windows.Forms.Cursors.Hand;
       this.picPlus.Image = global::bm98_Album.Properties.Resources.Plus;
-      this.picPlus.Location = new System.Drawing.Point(223, 113);
+      this.picPlus.Location = new System.Drawing.Point(203, 113);
       this.picPlus.Margin = new System.Windows.Forms.Padding(4);
       this.picPlus.Name = "picPlus";
       this.picPlus.Size = new System.Drawing.Size(40, 40);
@@ -56,7 +57,7 @@
       this.picMinus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.picMinus.Cursor = System.Windows.Forms.Cursors.Hand;
       this.picMinus.Image = global::bm98_Album.Properties.Resources.Minus;
-      this.picMinus.Location = new System.Drawing.Point(175, 113);
+      this.picMinus.Location = new System.Drawing.Point(155, 113);
       this.picMinus.Margin = new System.Windows.Forms.Padding(4);
       this.picMinus.Name = "picMinus";
       this.picMinus.Size = new System.Drawing.Size(40, 40);
@@ -90,9 +91,18 @@
       this.flp.TabIndex = 3;
       this.flp.WrapContents = false;
       // 
+      // pdfV
+      // 
+      this.pdfV.Location = new System.Drawing.Point(51, 90);
+      this.pdfV.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+      this.pdfV.Name = "pdfV";
+      this.pdfV.Size = new System.Drawing.Size(71, 51);
+      this.pdfV.TabIndex = 4;
+      // 
       // UC_Album
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+      this.Controls.Add(this.pdfV);
       this.Controls.Add(this.flp);
       this.Controls.Add(this.picShelf);
       this.Controls.Add(this.picMinus);
@@ -126,5 +136,6 @@
     private System.Windows.Forms.PictureBox picMinus;
     private System.Windows.Forms.PictureBox picShelf;
     private System.Windows.Forms.FlowLayoutPanel flp;
+    private PdfiumViewer.PdfViewer pdfV;
   }
 }

@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 namespace FlightplanLib.MSFSPln.PLNDEC
 {
   /// <summary>
-  /// A MSFS PLN Document Decoder
+  /// A LNM GPX Document Decoder
   /// </summary>
   public static class PlnDecoder
   {
     /// <summary>
-    /// Decode a JSON Flight Plan string 
+    /// Decode a XML Flight Plan string 
     /// returns a filled OFP or an empty one if something failed
     /// </summary>
-    /// <param name="jsonString">The flight plan as JSON string</param>
+    /// <param name="xmlString">The flight plan as XML string</param>
     /// <returns>An OFP</returns>
-    public static PLN FromString( string jsonString )
+    public static PLN FromString( string xmlString )
     {
-      var ofp = Formatter.FromXmlString<PLN>( jsonString );
+      var ofp = Formatter.FromXmlString<PLN>( xmlString );
       if (ofp != null) {
         return ofp;
       }
@@ -28,10 +28,10 @@ namespace FlightplanLib.MSFSPln.PLNDEC
     }
 
     /// <summary>
-    /// Decode a JSON Flight Plan from a File 
+    /// Decode a XML Flight Plan from a File 
     /// returns a filled OFP or an empty one if something failed
     /// </summary>
-    /// <param name="jsonFile">The flight plan as JSON filename</param>
+    /// <param name="jsonFile">The flight plan as XML filename</param>
     /// <returns>An OFP</returns>
     public static PLN FromFile( string jsonFile )
     {

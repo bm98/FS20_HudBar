@@ -13,21 +13,22 @@ namespace bm98_Album
   internal class ViewportZ
   {
 
-    private Size _imageSize = new Size(0,0);
-    private PointF _imageCenter_src = new PointF(0,0); // source Origin (Source Coords)
+    private Size _imageSize = new Size( 0, 0 );
+    private PointF _imageCenter_src = new PointF( 0, 0 ); // source Origin (Source Coords)
 
-    private Size _viewport = new Size(0,0);
+    private Size _viewport = new Size( 0, 0 );
 
     // the supported Zoom Magnification factors
-    private float[] _zoomLadder = new float[]{0.125f, 0.25f, 0.333f, 0.5f, 0.667f, 1f, 1.5f, 2, 3, 4, 8};
-    private const int _zoomNorm = 5; // index to 1.0 in the Array above
+    private float[] _zoomLadder = new float[] { 0.144f, 0.180f, 0.225f, 0.281f, 0.352f, 0.440f, 0.550f, 0.687f, 0.859f, 
+                                                1.0f, 1.15f, 1.342f, 1.678f, 2.097f, 2.621f, 3.277f, 4.096f, 5.120f, 6.400f, 8.000f };
+    private const int _zoomNorm = 9; // index to 1.0 in the Array above
     private int _zoom_index = _zoomNorm; // we use and Index into the Zoom Ladder to zoom in and out
 
-    private SizeF _srcSize = new SizeF(0,0);  // current Image Size in Zoomed Units
-    private RectangleF _srcRect = new RectangleF(0,0,0,0); // The full Src Rectangle used for DrawImage Ops outside this code
+    private SizeF _srcSize = new SizeF( 0, 0 );  // current Image Size in Zoomed Units
+    private RectangleF _srcRect = new RectangleF( 0, 0, 0, 0 ); // The full Src Rectangle used for DrawImage Ops outside this code
 
-    private Point _dragStart_vp = new Point(0,0); // last DragStarting Point (VP Coords)
-    private SizeF _drag_vp = new Size(0,0);    // current Drag Displacement while Draging (VP Coords)
+    private Point _dragStart_vp = new Point( 0, 0 ); // last DragStarting Point (VP Coords)
+    private SizeF _drag_vp = new Size( 0, 0 );    // current Drag Displacement while Draging (VP Coords)
 
 
     /// <summary>
@@ -92,7 +93,7 @@ namespace bm98_Album
     public void ZoomOut( )
     {
       _zoom_index++;
-      _zoom_index = ( _zoom_index < _zoomLadder.Length ) ? _zoom_index : ( _zoomLadder.Length - 1 ); // limit to available levels
+      _zoom_index = (_zoom_index < _zoomLadder.Length) ? _zoom_index : (_zoomLadder.Length - 1); // limit to available levels
 
       _srcSize = Scale( _viewport, ZoomLevel ); // scale the display area based on the Zoom magnificaion
       RecalcSrcRect( );
@@ -103,7 +104,7 @@ namespace bm98_Album
     public void ZoomIn( )
     {
       _zoom_index--;
-      _zoom_index = ( _zoom_index < 0 ) ? 0 : _zoom_index; // limit to available levels
+      _zoom_index = (_zoom_index < 0) ? 0 : _zoom_index; // limit to available levels
 
       _srcSize = Scale( _viewport, ZoomLevel ); // scale the display area based on the Zoom magnificaion
       RecalcSrcRect( );
@@ -129,7 +130,7 @@ namespace bm98_Album
     public void DragStart( Point vpStartPoint )
     {
       // save start loc to calc drag offsets while draging the image around
-      _dragStart_vp = vpStartPoint; 
+      _dragStart_vp = vpStartPoint;
     }
     /// <summary>
     /// A new Point while Draging
@@ -142,9 +143,9 @@ namespace bm98_Album
 
       // calc new image center as displacement from old center and current drag offset (at ZoomLevel in Src Coords)
       //   by subtracting the DragOffset AND the viewport Center Offset
-      var srcLoc =  _imageCenter_src - Scale( _drag_vp, ZoomLevel ) - Scale( _viewport, 0.5f * ZoomLevel );
+      var srcLoc = _imageCenter_src - Scale( _drag_vp, ZoomLevel ) - Scale( _viewport, 0.5f * ZoomLevel );
       // modify the Src Location while draging
-      _srcRect.Location = srcLoc; 
+      _srcRect.Location = srcLoc;
     }
     /// <summary>
     /// Endpoint of a Drag operation 
@@ -155,11 +156,11 @@ namespace bm98_Album
       // recalc the new image center point with the final drag offset
       _imageCenter_src -= Scale( _drag_vp, ZoomLevel );
       // And reset the Offset
-      _drag_vp = new Size( 0, 0 ); 
+      _drag_vp = new Size( 0, 0 );
       // Both ops above should cancel each other out and leave the SrcLocation as is (no need to recalc the SrcRect here)
 
       // set end as new start (sanity only - will be set to newly used location on DragStart)
-      _dragStart_vp = vpEndPoint; 
+      _dragStart_vp = vpEndPoint;
     }
 
     // Helpers

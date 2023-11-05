@@ -16,10 +16,10 @@ namespace FlightplanLib.MSFSFlt.Provider
     public static string ResponseRaw { get; set; } = "";
 
     /// <summary>
-    /// Async Retrieve a PLN XML record
+    /// Async Retrieve a FLT file
     /// </summary>
     /// <param name="fileName">The fully qualified filename</param>
-    /// <returns>An XML Document</returns>
+    /// <returns>An FLT Document as string</returns>
     public static async Task<string> GetDocument( string fileName )
     {
       //GET

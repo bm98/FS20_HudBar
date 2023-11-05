@@ -4,14 +4,18 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 using DbgLib;
+
 using FlightplanLib;
 using FlightplanLib.SimBrief;
-using Windows.UI.Xaml.Controls.Primitives;
+
+using PdfSharp;
+using PdfSharp.Pdf;
+
+using TheArtOfDev.HtmlRenderer.PdfSharp;
 
 namespace FShelf.FPlans
 {
@@ -61,7 +65,8 @@ namespace FShelf.FPlans
     /// </summary>
     /// <param name="plan">A valid FlihtPlan</param>
     /// <param name="targetFolder">A valid destination directory</param>
-    public bool LoadDocuments( FlightPlan plan, string targetFolder )
+    /// <param name="asPDF">True to save as PDF else as Image</param>
+    public bool LoadDocuments( FlightPlan plan, string targetFolder, bool asPDF )
     {
       // Sanity
       if (plan == null) return false;
@@ -79,22 +84,55 @@ namespace FShelf.FPlans
       }
 
       // create the OFP text from the included HTML
-      var limitedPlan = LimitOfpHtml(plan.HTMLdocument );
-      // protect from inadvertend crashes of the unknown Library...
-      Image image;
-      try {
-        image = TheArtOfDev.HtmlRenderer.WinForms.HtmlRender.RenderToImage( limitedPlan );
-      }
-      catch (Exception ex) {
-        LOG.LogError( "LoadDocuments", $"Converting to HTML failed:\n{ex}" );
-        return false;
-      }
+      var limitedPlan = LimitOfpHtml( plan.HTMLdocument );
+
       // dest may be locked when viewing
       try {
-        image.Save( Path.Combine( targetFolder, "@.FlightPlan.png" ), ImageFormat.Png );
+
+        // selected Doc type
+        if (asPDF) {
+          // render as PDF
+          PdfDocument pdf;
+          PdfGenerateConfig config = new PdfGenerateConfig( ) {
+            PageSize = PageSize.B4, // fits the SimBrief HTML doc width
+            PageOrientation = PageOrientation.Portrait,
+            MarginLeft = 30,
+            MarginRight = 10,
+            MarginBottom = 10,
+            MarginTop = 10,
+          };
+
+          // protect from inadvertend crashes of the unknown Library...
+          try {
+            pdf = PdfGenerator.GeneratePdf( limitedPlan, config );
+          }
+          catch (Exception ex) {
+            LOG.LogException( "AptReportTable.SaveDocument", ex, "Rendering to PDF failed" );
+            return false;
+          }
+
+          pdf.Save( Path.Combine( targetFolder, "@.FlightPlan.pdf" ) );
+
+          pdf.Dispose( );
+        }
+
+        else {
+          // render as PNG image
+          // protect from inadvertend crashes of the unknown Library...
+          Image image;
+          try {
+            image = TheArtOfDev.HtmlRenderer.WinForms.HtmlRender.RenderToImage( limitedPlan );
+          }
+          catch (Exception ex) {
+            LOG.LogException( "LoadDocuments", ex, $"Converting to HTML failed" );
+            return false;
+          }
+
+          image.Save( Path.Combine( targetFolder, "@.FlightPlan.png" ), ImageFormat.Png );
+        }
       }
       catch (Exception ex) {
-        Console.WriteLine( $"LoadDocuments: Saving to file failed:\n{ex}" );
+        LOG.LogException( $"LoadDocuments", ex, "Saving to file failed" );
         return false;
       }
       return true;

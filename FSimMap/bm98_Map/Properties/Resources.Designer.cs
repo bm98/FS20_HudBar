@@ -223,6 +223,16 @@ namespace bm98_Map.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap hold {
+            get {
+                object obj = ResourceManager.GetObject("hold", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap loc {
             get {
                 object obj = ResourceManager.GetObject("loc", resourceCulture);
@@ -396,6 +406,16 @@ namespace bm98_Map.Properties {
         internal static System.Drawing.Bitmap wyp_faf {
             get {
                 object obj = ResourceManager.GetObject("wyp_faf", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap wyp_mapr {
+            get {
+                object obj = ResourceManager.GetObject("wyp_mapr", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

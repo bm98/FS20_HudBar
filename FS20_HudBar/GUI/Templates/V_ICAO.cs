@@ -10,12 +10,12 @@ using FS20_HudBar.GUI.Templates.Base;
 namespace FS20_HudBar.GUI.Templates
 {
   /// <summary>
-  /// An ICAO label (up to 6 chars padded, RIGHT aligned)
+  /// An IlsID label (up to 6 chars padded, RIGHT aligned)
   /// </summary>
   class V_ICAO : V_Base
   {
     /// <summary>
-    /// Max Length of an ICAO ID (Waypoints etc.)
+    /// Max Length of an IlsID ID (Waypoints etc.)
     /// </summary>
     protected const int MaxLen = 6;
 

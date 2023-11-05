@@ -244,6 +244,10 @@
     <None Include="Resources\alt_ladder.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DbgLib\DbgLib.csproj">
+      <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
+      <Name>DbgLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\FlightplanLib\FlightplanLib.csproj">
       <Project>{4766e323-833c-42b5-88ed-dafb25e934ef}</Project>
       <Name>FlightplanLib</Name>
@@ -258,6 +262,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\airport_selected.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hold.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wyp_mapr.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

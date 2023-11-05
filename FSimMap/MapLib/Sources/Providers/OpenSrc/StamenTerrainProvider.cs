@@ -11,9 +11,12 @@ namespace MapLib.Sources.Providers
 {
 
   /// <summary>
-  /// Stamen Terrain by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.
+  /// By Stadia Maps, Stamen Terrain by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.
   /// 
   /// https://stamen.com/
+  /// 
+  /// As of Mid 2023
+  ///  served by  Stadia Maps (https://docs.stadiamaps.com/)
   /// </summary>
   internal sealed class StamenTerrainProvider : MapProviderBase
   {
@@ -23,26 +26,24 @@ namespace MapLib.Sources.Providers
     private StamenTerrainProvider( )
       : base( MapProvider.Stamen_Terrain )
     {
-      RefererUrl = DefaultUrl;
-      Copyright = string.Format( "Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.", DateTime.Today.Year );
+
+      RefererUrl = DefaultUrl + $"?api_key={StadiaStamenKey}"; // add key;
+      Copyright = string.Format( "By Stadia Maps, Stamen Design, OpenMapTiles contributors under CC BY 3.0. Data by OpenStreetMap, under ODbL.", DateTime.Today.Year );
       // check for Overrides
       if (!string.IsNullOrWhiteSpace( ProviderIni.ProviderHttp( MapProvider ) )) {
         RefererUrl = ProviderIni.ProviderHttp( MapProvider );
       }
       Name = ProviderIni.ProviderName( MapProvider );
     }
+    // the key
+    private static readonly string StadiaStamenKey = MapProviderBase.ProviderIni.StadiaStamenKey;
 
     /*
-      Many applications and libraries understand the notion of map URL templates. These are ours:
-          https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png
-          https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg
-          https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg
-      Multiple subdomains can be also be used: https://stamen-tiles-{S}.a.ssl.fastly.net
-      JavaScript can be loaded from https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js.
-      If you need protocol-agnostic URLs, use //stamen-tiles-{s}.a.ssl.fastly.net/, as that endpoint will work for both SSL and non-SSL connections.     
+     Stadia Maps:
+       terrain 	https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png?api_key=YOUR-API-KEY 	
      */
     // default URL
-    private const string DefaultUrl = "https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg";
+    private const string DefaultUrl = "https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}.png";
 
     #region ProviderBase Members
 
@@ -55,8 +56,7 @@ namespace MapLib.Sources.Providers
       if (!this.ProviderEnabled) return null;
 
       // supports server in the URL
-      char letter = "abcd"[Tools.GetServerNum( mapImageID.TileXY, 4 )];
-      string url = MakeTileImageUrl( mapImageID.TileXY, mapImageID.ZoomLevel, Convert.ToString( letter ), "" );
+      string url = MakeTileImageUrl( mapImageID.TileXY, mapImageID.ZoomLevel, "", "" );
       return base.GetTileImageUsingHttp( url, mapImageID );
     }
 

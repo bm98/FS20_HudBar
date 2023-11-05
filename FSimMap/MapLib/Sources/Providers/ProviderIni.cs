@@ -16,6 +16,9 @@ namespace MapLib.Sources.Providers
   /// ;
   /// DefaultProvider= PROVIDER
   /// BingKey=KEY
+  /// StadiaStamenKey=KEY
+  /// 
+  /// DiskCacheGB=128
   /// 
   /// [PROVIDER]
   /// Enabled=true / false
@@ -40,7 +43,7 @@ namespace MapLib.Sources.Providers
       {
         Provider = provider;
         UrlOverride = url; // wether or not it will apply is decided in the Provider Class
-        Name= name;
+        Name = name;
       }
     }
 
@@ -61,6 +64,16 @@ namespace MapLib.Sources.Providers
     /// The Bing Key (may apply or not)
     /// </summary>
     public string BingKey { get; private set; } = "";
+
+    /// <summary>
+    /// The Stadia Key (may apply or not)
+    /// </summary>
+    public string StadiaStamenKey { get; private set; } = "";
+
+    /// <summary>
+    /// The Disk Cache Size in MB (default 128)
+    /// </summary>
+    public int DiskCacheMB { get; private set; } = 128;
 
     /// <summary>
     /// A Provider URL template override or empty if there is no such entry
@@ -111,7 +124,7 @@ namespace MapLib.Sources.Providers
         string name = iniFile.ItemValue( sect.Name, "Name" );
 
         if (enabled) {
-          var entry = new ProviderIniEntry( provider, urlOverride, name.Trim() );
+          var entry = new ProviderIniEntry( provider, urlOverride, name.Trim( ) );
           _enabledProviders.Add( provider, entry );
         }
       }
@@ -130,6 +143,15 @@ namespace MapLib.Sources.Providers
       // Try Bing Key
       var bingKey = iniFile.ItemValue( "", "BingKey" );
       BingKey = (bingKey.Length < 40) ? "" : bingKey; // bing keys are long..
+      // Try Stadia Key
+      var stadiaKey = iniFile.ItemValue( "", "StadiaStamenKey" );
+      StadiaStamenKey = (stadiaKey.Length < 30) ? "" : stadiaKey; // seems 36 (GUID)
+
+      // Try DiskCache
+      var diskCache = iniFile.ItemValue( "", "DiskCacheMB" );
+      if (!string.IsNullOrEmpty( diskCache ) && int.TryParse( diskCache, out var cacheMB )) {
+        DiskCacheMB = dNetBm98.XMath.Clip( cacheMB, 32, 1024 ); // valid limits
+      }
     }
 
 

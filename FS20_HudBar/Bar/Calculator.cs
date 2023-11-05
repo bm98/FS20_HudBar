@@ -5,11 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SC = SimConnectClient;
-using FS20_HudBar.GUI;
-using static FS20_HudBar.Conversions;
-using static FS20_HudBar.GUI.GUI_Colors;
 using PingLib;
-using FS20_HudBar.GUI.Templates;
 using static FSimClientIF.Sim;
 using FSimClientIF.Modules;
 using FSimClientIF;

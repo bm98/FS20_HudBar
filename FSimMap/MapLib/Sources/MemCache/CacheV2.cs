@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbgLib;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,6 +21,12 @@ namespace MapLib.Sources.MemCache
   /// </summary>
   internal class CacheV2
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
+
     // the cache
     private const int c_MaxNumberEntries = 800; // about 12 Matrices a 8*8 tiles  (about 25kB per Tile => 20MB)
     private readonly int c_WaterMark = (int)(c_MaxNumberEntries * 0.8); // watermark is 80%
@@ -222,7 +229,7 @@ namespace MapLib.Sources.MemCache
             // get below watermark
             int itemsToRemove = _cache.Count - c_WaterMark;
             var rItems = _cache.OrderBy( x => x.Value.TimeStamp );
-            Debug.WriteLine( $"MemCacheItemCat.MaintainCacheSize: must remove {itemsToRemove} items" );
+            LOG.Log( "MemCacheItemCat.MaintainCacheSize",$"Must remove {itemsToRemove} items" );
             if (rItems.Count( ) > 0) {
               rwl.EnterWriteLock( );
               try {

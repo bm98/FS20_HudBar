@@ -6,21 +6,18 @@ using System.Threading.Tasks;
 
 using System.IO;
 
-namespace FShelf
+namespace bm98_hbFolders
 {
   /// <summary>
   /// HudBar Apps - Folders Used
   ///  TODO - change the setting filename below
   ///  TODO - may be change the namespace
   /// </summary>
-  internal static class Folders
+  public static class Folders
   {
     #region HUDBAR FILE LOCATIONS
 #pragma warning disable CS0168 // Variable is declared but never used
     // settings
-    // @@@@@@ TODO - change to proper name
-    private const string c_settingFile = "FShelfAppSettings.json";
-    // @@@@@@
 
     // HudBar file locations in MyDocuments
     private const string c_HudBarFolder = @"MSFS_HudBarSave";
@@ -33,7 +30,7 @@ namespace FShelf
     // Path to MyDocuments\ ...
     private static string _hudBarDocs = "";
     // database
-    private const string c_GenAptDBNameDblite = @"fs2020genApt.dblite";
+    private const string c_GenAptDBNameDblite = @"fs2020genAptV2.dblite"; // new use V2
     private static string _genAptDBPath = ""; // will hold the final path
     private static string _genAptDBFile = ""; // complete path and file
 
@@ -43,11 +40,13 @@ namespace FShelf
     // cache
     private static string _cachePath = ""; // will hold the final path
 
+    // Shelf
+    private static string c_AptReportSubfolder = "Airport Reports"; // where the Airport reports will go
+
     /// <summary>
-    /// Initialize all HudBar files and locations
-    /// Call in cTor:
+    /// Initialize all HudBar files and locations 
     /// </summary>
-    private static void InitStorage( )
+    public static void InitStorage(string appSettingsFilename )
     {
       // main 
       _hudBarDocs = Path.Combine( c_MyDocuments, c_HudBarFolder );
@@ -84,7 +83,7 @@ namespace FShelf
       catch (Exception ex) {
         _settingsPath = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
       }
-      _settingsFile = Path.Combine( _settingsPath, c_settingFile );
+      _settingsFile = Path.Combine( _settingsPath, appSettingsFilename );
 
       // caches 
       _cachePath = Path.Combine( _hudBarDocs, c_HudBarCacheFolder );
@@ -103,16 +102,11 @@ namespace FShelf
     #endregion
 
 
-    static Folders( )
-    {
-      InitStorage( );
-    }
-
     /// <summary>
     /// Returns the Path to save files for the User
     /// </summary>
     /// <returns>A path</returns>
-    public static string UserFilePath=> _hudBarDocs;
+    public static string UserFilePath => _hudBarDocs;
     /// <summary>
     /// Path to DB files
     /// </summary>
@@ -136,6 +130,10 @@ namespace FShelf
     /// </summary>
     public static string SettingsFile => _settingsFile;
 
+    /// <summary>
+    /// Airport Reports Shelf Subfolder
+    /// </summary>
+    public static string AptReportSubfolder => c_AptReportSubfolder;
 
   }
 }

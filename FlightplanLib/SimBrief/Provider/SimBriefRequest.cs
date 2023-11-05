@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using DbgLib;
+
 namespace FlightplanLib.SimBrief.Provider
 {
   /// <summary>
@@ -16,6 +18,12 @@ namespace FlightplanLib.SimBrief.Provider
   /// </summary>
   internal class SimBriefRequest
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
+
     /*
       To download the XML data for a SimBrief user’s latest flight plan, please use the following endpoint:
 
@@ -66,7 +74,7 @@ namespace FlightplanLib.SimBrief.Provider
       httpClient.Timeout = new TimeSpan( 0, 0, 20 );
     }
 
-    // 6 digit number string allow 4..7 as there is no spec about it (read also '5 or 6'...)
+    // 6 digit number string allow 2..7 as there is no spec about it (read also '5 or 6'...)
     private static Regex _sbUid = new Regex( @"^([0-9]{2,7})$", RegexOptions.Compiled );
 
     // true for a valid userID
@@ -125,12 +133,40 @@ namespace FlightplanLib.SimBrief.Provider
       }
       catch (Exception ex) {
         // dest may be locked when viewing
-        Console.WriteLine( $"DownloadFile: Saving to file failed:\n{ex}" );
+        LOG.LogException( "DownloadFile", ex, "Saving to file failed" );
         ; // DEBUG STOP
       }
 
       return success;
     }
 
+
+#if DEBUG
+
+    // Provide File Loading for Debug
+
+    /// <summary>
+    /// Async Retrieve a SB Json record as File
+    /// </summary>
+    /// <param name="fileName">The fully qualified filename</param>
+    /// <returns>An JSon Document</returns>
+    public static async Task<string> GetDocument( string fileName )
+    {
+      //GET
+      try {
+        using (var sr = new StreamReader( fileName )) {
+          ResponseRaw = await sr.ReadToEndAsync( );
+        }
+      }
+#pragma warning disable CS0168 // Variable is declared but never used
+      catch (Exception ex) {
+#pragma warning restore CS0168 // Variable is declared but never used
+        ResponseRaw = "";
+      }
+
+      return ResponseRaw;
+    }
+
+#endif
   }
 }

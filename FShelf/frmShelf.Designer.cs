@@ -86,19 +86,37 @@ namespace FShelf
       this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
       this.panel2 = new System.Windows.Forms.Panel();
       this.label19 = new System.Windows.Forms.Label();
-      this.lblVS = new System.Windows.Forms.Label();
-      this.lblGS = new System.Windows.Forms.Label();
+      this.lblVS_P = new System.Windows.Forms.Label();
+      this.lblGS_P = new System.Windows.Forms.Label();
       this.label18 = new System.Windows.Forms.Label();
       this.panel3 = new System.Windows.Forms.Panel();
       this.label20 = new System.Windows.Forms.Label();
-      this.lblAlt = new System.Windows.Forms.Label();
+      this.lblAlt_P = new System.Windows.Forms.Label();
       this.panel4 = new System.Windows.Forms.Panel();
-      this.lblFPA = new System.Windows.Forms.Label();
+      this.lblFPA_P = new System.Windows.Forms.Label();
       this.label24 = new System.Windows.Forms.Label();
-      this.lblTAS = new System.Windows.Forms.Label();
+      this.lblTAS_P = new System.Windows.Forms.Label();
       this.label23 = new System.Windows.Forms.Label();
-      this.lblIAS = new System.Windows.Forms.Label();
+      this.lblIAS_P = new System.Windows.Forms.Label();
       this.label21 = new System.Windows.Forms.Label();
+      this.tabEnergy = new System.Windows.Forms.TabPage();
+      this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+      this.uC_ETable1 = new FShelf.Energy.UC_ETable();
+      this.panel5 = new System.Windows.Forms.Panel();
+      this.rb30sec = new System.Windows.Forms.RadioButton();
+      this.rb6sec = new System.Windows.Forms.RadioButton();
+      this.label37 = new System.Windows.Forms.Label();
+      this.lblAlt_E = new System.Windows.Forms.Label();
+      this.label33 = new System.Windows.Forms.Label();
+      this.lblVS_E = new System.Windows.Forms.Label();
+      this.lblGS_E = new System.Windows.Forms.Label();
+      this.label36 = new System.Windows.Forms.Label();
+      this.lblFPA_E = new System.Windows.Forms.Label();
+      this.label27 = new System.Windows.Forms.Label();
+      this.lblTAS_E = new System.Windows.Forms.Label();
+      this.label30 = new System.Windows.Forms.Label();
+      this.lblIAS_E = new System.Windows.Forms.Label();
+      this.label32 = new System.Windows.Forms.Label();
       this.tabNotes = new System.Windows.Forms.TabPage();
       this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
       this.rtbNotes = new System.Windows.Forms.RichTextBox();
@@ -156,6 +174,9 @@ namespace FShelf
       this.panel2.SuspendLayout();
       this.panel3.SuspendLayout();
       this.panel4.SuspendLayout();
+      this.tabEnergy.SuspendLayout();
+      this.tableLayoutPanel5.SuspendLayout();
+      this.panel5.SuspendLayout();
       this.tabNotes.SuspendLayout();
       this.tableLayoutPanel2.SuspendLayout();
       this.tabConfig.SuspendLayout();
@@ -168,6 +189,7 @@ namespace FShelf
       this.tab.Controls.Add(this.tabMetar);
       this.tab.Controls.Add(this.tabPerf);
       this.tab.Controls.Add(this.tabProfile);
+      this.tab.Controls.Add(this.tabEnergy);
       this.tab.Controls.Add(this.tabNotes);
       this.tab.Controls.Add(this.tabConfig);
       this.tab.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -850,8 +872,8 @@ namespace FShelf
       // 
       this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(54)))), ((int)(((byte)(77)))));
       this.panel2.Controls.Add(this.label19);
-      this.panel2.Controls.Add(this.lblVS);
-      this.panel2.Controls.Add(this.lblGS);
+      this.panel2.Controls.Add(this.lblVS_P);
+      this.panel2.Controls.Add(this.lblGS_P);
       this.panel2.Controls.Add(this.label18);
       this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
       this.panel2.Location = new System.Drawing.Point(220, 0);
@@ -871,27 +893,27 @@ namespace FShelf
       this.label19.Text = "VS:";
       this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
-      // lblVS
+      // lblVS_P
       // 
-      this.lblVS.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblVS.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.lblVS.Location = new System.Drawing.Point(79, 30);
-      this.lblVS.Name = "lblVS";
-      this.lblVS.Size = new System.Drawing.Size(62, 21);
-      this.lblVS.TabIndex = 0;
-      this.lblVS.Text = "0,000";
-      this.lblVS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      this.lblVS_P.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblVS_P.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblVS_P.Location = new System.Drawing.Point(79, 30);
+      this.lblVS_P.Name = "lblVS_P";
+      this.lblVS_P.Size = new System.Drawing.Size(62, 21);
+      this.lblVS_P.TabIndex = 0;
+      this.lblVS_P.Text = "0,000";
+      this.lblVS_P.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
       // 
-      // lblGS
+      // lblGS_P
       // 
-      this.lblGS.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblGS.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.lblGS.Location = new System.Drawing.Point(14, 30);
-      this.lblGS.Name = "lblGS";
-      this.lblGS.Size = new System.Drawing.Size(48, 21);
-      this.lblGS.TabIndex = 0;
-      this.lblGS.Text = "000";
-      this.lblGS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      this.lblGS_P.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblGS_P.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblGS_P.Location = new System.Drawing.Point(14, 30);
+      this.lblGS_P.Name = "lblGS_P";
+      this.lblGS_P.Size = new System.Drawing.Size(48, 21);
+      this.lblGS_P.TabIndex = 0;
+      this.lblGS_P.Text = "000";
+      this.lblGS_P.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
       // 
       // label18
       // 
@@ -908,7 +930,7 @@ namespace FShelf
       // 
       this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(54)))), ((int)(((byte)(77)))));
       this.panel3.Controls.Add(this.label20);
-      this.panel3.Controls.Add(this.lblAlt);
+      this.panel3.Controls.Add(this.lblAlt_P);
       this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
       this.panel3.Location = new System.Drawing.Point(370, 0);
       this.panel3.Margin = new System.Windows.Forms.Padding(0);
@@ -927,25 +949,25 @@ namespace FShelf
       this.label20.Text = "Altitude:";
       this.label20.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
-      // lblAlt
+      // lblAlt_P
       // 
-      this.lblAlt.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblAlt.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.lblAlt.Location = new System.Drawing.Point(22, 30);
-      this.lblAlt.Name = "lblAlt";
-      this.lblAlt.Size = new System.Drawing.Size(72, 21);
-      this.lblAlt.TabIndex = 0;
-      this.lblAlt.Text = "00,000";
-      this.lblAlt.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      this.lblAlt_P.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblAlt_P.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblAlt_P.Location = new System.Drawing.Point(22, 30);
+      this.lblAlt_P.Name = "lblAlt_P";
+      this.lblAlt_P.Size = new System.Drawing.Size(72, 21);
+      this.lblAlt_P.TabIndex = 0;
+      this.lblAlt_P.Text = "00,000";
+      this.lblAlt_P.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
       // 
       // panel4
       // 
       this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(54)))), ((int)(((byte)(77)))));
-      this.panel4.Controls.Add(this.lblFPA);
+      this.panel4.Controls.Add(this.lblFPA_P);
       this.panel4.Controls.Add(this.label24);
-      this.panel4.Controls.Add(this.lblTAS);
+      this.panel4.Controls.Add(this.lblTAS_P);
       this.panel4.Controls.Add(this.label23);
-      this.panel4.Controls.Add(this.lblIAS);
+      this.panel4.Controls.Add(this.lblIAS_P);
       this.panel4.Controls.Add(this.label21);
       this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
       this.panel4.Location = new System.Drawing.Point(0, 0);
@@ -954,16 +976,16 @@ namespace FShelf
       this.panel4.Size = new System.Drawing.Size(220, 60);
       this.panel4.TabIndex = 6;
       // 
-      // lblFPA
+      // lblFPA_P
       // 
-      this.lblFPA.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblFPA.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.lblFPA.Location = new System.Drawing.Point(25, 30);
-      this.lblFPA.Name = "lblFPA";
-      this.lblFPA.Size = new System.Drawing.Size(42, 21);
-      this.lblFPA.TabIndex = 1;
-      this.lblFPA.Text = "0.0";
-      this.lblFPA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      this.lblFPA_P.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblFPA_P.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblFPA_P.Location = new System.Drawing.Point(25, 30);
+      this.lblFPA_P.Name = "lblFPA_P";
+      this.lblFPA_P.Size = new System.Drawing.Size(42, 21);
+      this.lblFPA_P.TabIndex = 1;
+      this.lblFPA_P.Text = "0.0";
+      this.lblFPA_P.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
       // 
       // label24
       // 
@@ -976,16 +998,16 @@ namespace FShelf
       this.label24.Text = "FPA:";
       this.label24.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
-      // lblTAS
+      // lblTAS_P
       // 
-      this.lblTAS.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblTAS.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.lblTAS.Location = new System.Drawing.Point(169, 30);
-      this.lblTAS.Name = "lblTAS";
-      this.lblTAS.Size = new System.Drawing.Size(42, 21);
-      this.lblTAS.TabIndex = 0;
-      this.lblTAS.Text = "000";
-      this.lblTAS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      this.lblTAS_P.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblTAS_P.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblTAS_P.Location = new System.Drawing.Point(169, 30);
+      this.lblTAS_P.Name = "lblTAS_P";
+      this.lblTAS_P.Size = new System.Drawing.Size(42, 21);
+      this.lblTAS_P.TabIndex = 0;
+      this.lblTAS_P.Text = "000";
+      this.lblTAS_P.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
       // 
       // label23
       // 
@@ -998,16 +1020,16 @@ namespace FShelf
       this.label23.Text = "TAS:";
       this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
-      // lblIAS
+      // lblIAS_P
       // 
-      this.lblIAS.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblIAS.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.lblIAS.Location = new System.Drawing.Point(90, 30);
-      this.lblIAS.Name = "lblIAS";
-      this.lblIAS.Size = new System.Drawing.Size(42, 21);
-      this.lblIAS.TabIndex = 0;
-      this.lblIAS.Text = "000";
-      this.lblIAS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      this.lblIAS_P.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblIAS_P.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblIAS_P.Location = new System.Drawing.Point(90, 30);
+      this.lblIAS_P.Name = "lblIAS_P";
+      this.lblIAS_P.Size = new System.Drawing.Size(42, 21);
+      this.lblIAS_P.TabIndex = 0;
+      this.lblIAS_P.Text = "000";
+      this.lblIAS_P.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
       // 
       // label21
       // 
@@ -1019,6 +1041,227 @@ namespace FShelf
       this.label21.TabIndex = 0;
       this.label21.Text = "IAS:";
       this.label21.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // tabEnergy
+      // 
+      this.tabEnergy.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(44)))), ((int)(((byte)(67)))));
+      this.tabEnergy.Controls.Add(this.tableLayoutPanel5);
+      this.tabEnergy.ForeColor = System.Drawing.Color.FloralWhite;
+      this.tabEnergy.Location = new System.Drawing.Point(4, 34);
+      this.tabEnergy.Name = "tabEnergy";
+      this.tabEnergy.Padding = new System.Windows.Forms.Padding(3);
+      this.tabEnergy.Size = new System.Drawing.Size(611, 698);
+      this.tabEnergy.TabIndex = 7;
+      this.tabEnergy.Text = "E.Tab";
+      // 
+      // tableLayoutPanel5
+      // 
+      this.tableLayoutPanel5.ColumnCount = 1;
+      this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 90.7438F));
+      this.tableLayoutPanel5.Controls.Add(this.uC_ETable1, 0, 1);
+      this.tableLayoutPanel5.Controls.Add(this.panel5, 0, 0);
+      this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 3);
+      this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+      this.tableLayoutPanel5.RowCount = 2;
+      this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+      this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.tableLayoutPanel5.Size = new System.Drawing.Size(605, 692);
+      this.tableLayoutPanel5.TabIndex = 0;
+      // 
+      // uC_ETable1
+      // 
+      this.uC_ETable1.ALTmsl_ft = 0F;
+      this.uC_ETable1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+      this.uC_ETable1.CausesValidation = false;
+      this.uC_ETable1.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.uC_ETable1.Est_Time_s = 10F;
+      this.uC_ETable1.GroundElevation_ft = 0F;
+      this.uC_ETable1.Location = new System.Drawing.Point(3, 63);
+      this.uC_ETable1.Name = "uC_ETable1";
+      this.uC_ETable1.Size = new System.Drawing.Size(599, 626);
+      this.uC_ETable1.StallSpeed_kt = 0F;
+      this.uC_ETable1.TabIndex = 0;
+      this.uC_ETable1.TAS_kt = 0F;
+      // 
+      // panel5
+      // 
+      this.panel5.Controls.Add(this.rb30sec);
+      this.panel5.Controls.Add(this.rb6sec);
+      this.panel5.Controls.Add(this.label37);
+      this.panel5.Controls.Add(this.lblAlt_E);
+      this.panel5.Controls.Add(this.label33);
+      this.panel5.Controls.Add(this.lblVS_E);
+      this.panel5.Controls.Add(this.lblGS_E);
+      this.panel5.Controls.Add(this.label36);
+      this.panel5.Controls.Add(this.lblFPA_E);
+      this.panel5.Controls.Add(this.label27);
+      this.panel5.Controls.Add(this.lblTAS_E);
+      this.panel5.Controls.Add(this.label30);
+      this.panel5.Controls.Add(this.lblIAS_E);
+      this.panel5.Controls.Add(this.label32);
+      this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.panel5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.panel5.Location = new System.Drawing.Point(3, 3);
+      this.panel5.Name = "panel5";
+      this.panel5.Size = new System.Drawing.Size(599, 54);
+      this.panel5.TabIndex = 1;
+      // 
+      // rb30sec
+      // 
+      this.rb30sec.AutoSize = true;
+      this.rb30sec.Location = new System.Drawing.Point(516, 29);
+      this.rb30sec.Name = "rb30sec";
+      this.rb30sec.Size = new System.Drawing.Size(62, 19);
+      this.rb30sec.TabIndex = 16;
+      this.rb30sec.Text = "30 Sec";
+      this.rb30sec.UseVisualStyleBackColor = true;
+      this.rb30sec.CheckedChanged += new System.EventHandler(this.rb30sec_CheckedChanged);
+      // 
+      // rb6sec
+      // 
+      this.rb6sec.AutoSize = true;
+      this.rb6sec.Checked = true;
+      this.rb6sec.Location = new System.Drawing.Point(516, 4);
+      this.rb6sec.Name = "rb6sec";
+      this.rb6sec.Size = new System.Drawing.Size(55, 19);
+      this.rb6sec.TabIndex = 15;
+      this.rb6sec.TabStop = true;
+      this.rb6sec.Text = "6 Sec";
+      this.rb6sec.UseVisualStyleBackColor = true;
+      this.rb6sec.CheckedChanged += new System.EventHandler(this.rb6sec_CheckedChanged);
+      // 
+      // label37
+      // 
+      this.label37.AutoSize = true;
+      this.label37.ForeColor = System.Drawing.Color.PaleGreen;
+      this.label37.Location = new System.Drawing.Point(410, 6);
+      this.label37.Name = "label37";
+      this.label37.Size = new System.Drawing.Size(55, 15);
+      this.label37.TabIndex = 13;
+      this.label37.Text = "Altitude:";
+      this.label37.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lblAlt_E
+      // 
+      this.lblAlt_E.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblAlt_E.ForeColor = System.Drawing.Color.PaleGreen;
+      this.lblAlt_E.Location = new System.Drawing.Point(400, 29);
+      this.lblAlt_E.Name = "lblAlt_E";
+      this.lblAlt_E.Size = new System.Drawing.Size(72, 21);
+      this.lblAlt_E.TabIndex = 14;
+      this.lblAlt_E.Text = "00,000";
+      this.lblAlt_E.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // label33
+      // 
+      this.label33.AutoSize = true;
+      this.label33.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label33.Location = new System.Drawing.Point(314, 6);
+      this.label33.Name = "label33";
+      this.label33.Size = new System.Drawing.Size(25, 15);
+      this.label33.TabIndex = 9;
+      this.label33.Text = "VS:";
+      this.label33.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lblVS_E
+      // 
+      this.lblVS_E.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblVS_E.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblVS_E.Location = new System.Drawing.Point(309, 29);
+      this.lblVS_E.Name = "lblVS_E";
+      this.lblVS_E.Size = new System.Drawing.Size(62, 21);
+      this.lblVS_E.TabIndex = 10;
+      this.lblVS_E.Text = "0,000";
+      this.lblVS_E.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // lblGS_E
+      // 
+      this.lblGS_E.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblGS_E.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblGS_E.Location = new System.Drawing.Point(221, 29);
+      this.lblGS_E.Name = "lblGS_E";
+      this.lblGS_E.Size = new System.Drawing.Size(48, 21);
+      this.lblGS_E.TabIndex = 11;
+      this.lblGS_E.Text = "000";
+      this.lblGS_E.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // label36
+      // 
+      this.label36.AutoSize = true;
+      this.label36.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label36.Location = new System.Drawing.Point(230, 6);
+      this.label36.Name = "label36";
+      this.label36.Size = new System.Drawing.Size(26, 15);
+      this.label36.TabIndex = 12;
+      this.label36.Text = "GS:";
+      this.label36.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lblFPA_E
+      // 
+      this.lblFPA_E.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblFPA_E.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblFPA_E.Location = new System.Drawing.Point(8, 29);
+      this.lblFPA_E.Name = "lblFPA_E";
+      this.lblFPA_E.Size = new System.Drawing.Size(42, 21);
+      this.lblFPA_E.TabIndex = 7;
+      this.lblFPA_E.Text = "0.0";
+      this.lblFPA_E.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // label27
+      // 
+      this.label27.AutoSize = true;
+      this.label27.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label27.Location = new System.Drawing.Point(13, 6);
+      this.label27.Name = "label27";
+      this.label27.Size = new System.Drawing.Size(30, 15);
+      this.label27.TabIndex = 8;
+      this.label27.Text = "FPA:";
+      this.label27.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lblTAS_E
+      // 
+      this.lblTAS_E.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblTAS_E.ForeColor = System.Drawing.Color.PaleGreen;
+      this.lblTAS_E.Location = new System.Drawing.Point(152, 29);
+      this.lblTAS_E.Name = "lblTAS_E";
+      this.lblTAS_E.Size = new System.Drawing.Size(42, 21);
+      this.lblTAS_E.TabIndex = 3;
+      this.lblTAS_E.Text = "000";
+      this.lblTAS_E.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // label30
+      // 
+      this.label30.AutoSize = true;
+      this.label30.ForeColor = System.Drawing.Color.PaleGreen;
+      this.label30.Location = new System.Drawing.Point(158, 6);
+      this.label30.Name = "label30";
+      this.label30.Size = new System.Drawing.Size(31, 15);
+      this.label30.TabIndex = 4;
+      this.label30.Text = "TAS:";
+      this.label30.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lblIAS_E
+      // 
+      this.lblIAS_E.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblIAS_E.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblIAS_E.Location = new System.Drawing.Point(73, 29);
+      this.lblIAS_E.Name = "lblIAS_E";
+      this.lblIAS_E.Size = new System.Drawing.Size(42, 21);
+      this.lblIAS_E.TabIndex = 5;
+      this.lblIAS_E.Text = "000";
+      this.lblIAS_E.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // label32
+      // 
+      this.label32.AutoSize = true;
+      this.label32.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label32.Location = new System.Drawing.Point(78, 6);
+      this.label32.Name = "label32";
+      this.label32.Size = new System.Drawing.Size(29, 15);
+      this.label32.TabIndex = 6;
+      this.label32.Text = "IAS:";
+      this.label32.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // tabNotes
       // 
@@ -1461,7 +1704,8 @@ namespace FShelf
       // 
       this.OFD.DefaultExt = "pln";
       this.OFD.FileName = "CustomFlight.pln";
-      this.OFD.Filter = "MSFS Flightplans|*.pln;*.flt|All files|*.*";
+      this.OFD.Filter = "MSFS Flightplans|*.pln;*.flt|LittleNavMap GPX|*.gpx|Route String|*.rte|All files|" +
+    "*.*";
       this.OFD.SupportMultiDottedExtensions = true;
       // 
       // frmShelf
@@ -1508,6 +1752,10 @@ namespace FShelf
       this.panel3.PerformLayout();
       this.panel4.ResumeLayout(false);
       this.panel4.PerformLayout();
+      this.tabEnergy.ResumeLayout(false);
+      this.tableLayoutPanel5.ResumeLayout(false);
+      this.panel5.ResumeLayout(false);
+      this.panel5.PerformLayout();
       this.tabNotes.ResumeLayout(false);
       this.tableLayoutPanel2.ResumeLayout(false);
       this.tabConfig.ResumeLayout(false);
@@ -1595,18 +1843,18 @@ namespace FShelf
     private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
     private System.Windows.Forms.Panel panel2;
     private System.Windows.Forms.Label label19;
-    private System.Windows.Forms.Label lblVS;
-    private System.Windows.Forms.Label lblGS;
+    private System.Windows.Forms.Label lblVS_P;
+    private System.Windows.Forms.Label lblGS_P;
     private System.Windows.Forms.Label label18;
     private System.Windows.Forms.Panel panel3;
     private System.Windows.Forms.Label label20;
-    private System.Windows.Forms.Label lblAlt;
+    private System.Windows.Forms.Label lblAlt_P;
     private System.Windows.Forms.Panel panel4;
-    private System.Windows.Forms.Label lblFPA;
+    private System.Windows.Forms.Label lblFPA_P;
     private System.Windows.Forms.Label label24;
-    private System.Windows.Forms.Label lblTAS;
+    private System.Windows.Forms.Label lblTAS_P;
     private System.Windows.Forms.Label label23;
-    private System.Windows.Forms.Label lblIAS;
+    private System.Windows.Forms.Label lblIAS_P;
     private System.Windows.Forms.Label label21;
     private System.Windows.Forms.DataGridViewTextBoxColumn Deg;
     private System.Windows.Forms.DataGridViewTextBoxColumn Prct;
@@ -1623,5 +1871,23 @@ namespace FShelf
     private System.Windows.Forms.OpenFileDialog OFD;
     private System.Windows.Forms.Button btCfgRequestFLT;
     private System.Windows.Forms.CheckBox cbxCfgAcftWind;
+    private System.Windows.Forms.TabPage tabEnergy;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+    private Energy.UC_ETable uC_ETable1;
+    private System.Windows.Forms.Panel panel5;
+    private System.Windows.Forms.Label label37;
+    private System.Windows.Forms.Label lblAlt_E;
+    private System.Windows.Forms.Label label33;
+    private System.Windows.Forms.Label lblVS_E;
+    private System.Windows.Forms.Label lblGS_E;
+    private System.Windows.Forms.Label label36;
+    private System.Windows.Forms.Label lblFPA_E;
+    private System.Windows.Forms.Label label27;
+    private System.Windows.Forms.Label lblTAS_E;
+    private System.Windows.Forms.Label label30;
+    private System.Windows.Forms.Label lblIAS_E;
+    private System.Windows.Forms.Label label32;
+    private System.Windows.Forms.RadioButton rb30sec;
+    private System.Windows.Forms.RadioButton rb6sec;
   }
 }

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
+using PdfiumViewer;
+
 namespace bm98_Album
 {
   /// <summary>
@@ -34,7 +36,8 @@ namespace bm98_Album
     private List<string> _shelfList = new List<string>( ); // current list of avialable Images in the Shelf
 
     private readonly Color c_BackBwDark = Color.FromArgb( 46, 69, 97 );
-    private readonly Color c_BackBwMid = Color.FromArgb( 48, 48, 48 );
+    //private readonly Color c_BackBwMid = Color.FromArgb( 48, 48, 48 ); // d-grey
+    private readonly Color c_BackBwMid = Color.DarkSlateBlue;
     //    private readonly Color c_BackBwBright = Color.FromArgb(64,64,64);
     private readonly Color c_BackBwBright = Color.FromArgb( 64, 81, 102 );
     // Image Frame
@@ -43,6 +46,11 @@ namespace bm98_Album
     // fallback brush
     private Brush _backBrush;
 
+    // PDF Viewer size and placement
+    private int _pdvTopBorder = 4; // how much to shift down
+    private int _pdvLeftBorder = 5; // how much to shift left
+    private int _pdvHeightMargin = 0; // how much to subtract from Height
+    private int _pdvWidthMargin = 0; // how much to subtract from Width
 
     /// <summary>
     /// Event triggered when the Shelf button was clicked
@@ -65,11 +73,11 @@ namespace bm98_Album
     public string ImageFilename => _shelfFilename;
 
     /// <summary>
-    /// Load and display the image
+    /// Load and display the document
     /// NOTE: this will never fail, but ignore the offending file
     /// </summary>
     /// <param name="filename">Filename of the Image to display</param>
-    public void SetImage( string filename )
+    public void SetDocument( string filename )
     {
       // this shall never fail - could be an invalid image..
       try {
@@ -77,16 +85,27 @@ namespace bm98_Album
           _pic.Dispose( );
           _pic = null;
         }
+        if (pdfV.Document != null) {
+          pdfV.Document.Dispose( );
+        }
         // remove temps here, else a file might be locked while viewing it
-        CleanShelf();
+        CleanShelf( );
 
         // make a copy to be able to replace it while shown
         var tmpName = Path.GetFileName( filename );
         tmpName = Path.Combine( Path.GetDirectoryName( filename ), c_tmpMark + tmpName );
         File.Copy( filename, tmpName, true );
-        _pic = Image.FromFile( tmpName );
-        var gu = GraphicsUnit.Pixel;
-        _VPC.SetImageSize( _pic.GetBounds( ref gu ).Size );
+
+        if (Path.GetExtension( tmpName ).ToLowerInvariant( ) == ".pdf") {
+          pdfV.Visible = true;
+          pdfV.Document = PdfDocument.Load( tmpName );
+        }
+        else {
+          pdfV.Visible = false;
+          _pic = Image.FromFile( tmpName );
+          var gu = GraphicsUnit.Pixel;
+          _VPC.SetImageSize( _pic.GetBounds( ref gu ).Size );
+        }
         _shelfFilename = filename;
       }
       catch {
@@ -108,7 +127,7 @@ namespace bm98_Album
 
       // changed the folder while the shelf is visible..
       if (ShelfVisible) {
-        LoadShelf( _shelfFolder ); // reload
+        LoadShelf( _shelfFolder, true ); // reload
       }
     }
 
@@ -118,7 +137,7 @@ namespace bm98_Album
     public void CleanShelf( )
     {
       // get the tmp file list
-      var files = Directory.EnumerateFiles( _shelfFolder, $"{c_tmpMark}*.*", SearchOption.TopDirectoryOnly );
+      var files = Directory.EnumerateFiles( _shelfFolder, $"{c_tmpMark}*.*", SearchOption.AllDirectories );
       foreach (var file in files) {
         // shall never fail
         try { File.Delete( file ); } catch { }
@@ -141,8 +160,24 @@ namespace bm98_Album
       flp.Visible = false;
       flp.AutoSize = true;
 
+      _pdvTopBorder = picShelf.Height + 8;
+      _pdvHeightMargin = picShelf.Height + 8 + 5; // top + bottom margin
+      _pdvLeftBorder = 5;
+      _pdvWidthMargin = 2 * _pdvLeftBorder; // left + right margin
+      pdfV.Visible = false;
+      pdfV.ShowBookmarks = false;
+      pdfV.ShowToolbar = false;
+      pdfV.Top = _pdvTopBorder;
+      pdfV.ZoomMode = PdfViewerZoomMode.FitWidth;
+      pdfV.Renderer.BackColor = this.BackColor;
+      pdfV.Left = 5;
+
       _frame = this.ClientRectangle;
       _frame.Inflate( -2, -2 );
+
+      // get the Zoom buttons in front
+      picPlus.BringToFront( );
+      picMinus.BringToFront( );
 
       _backBrush = new SolidBrush( this.BackColor );
     }
@@ -221,16 +256,49 @@ namespace bm98_Album
     // Capture Mouse Wheel for Zoom
     private void UC_Album_MouseWheel( object sender, MouseEventArgs e )
     {
-      if (_pic == null) return;
-
-      if (e.Delta < 0) {
-        _VPC.ZoomOut( );
+      if (pdfV.Visible) {
+        if (e.Delta < 0) {
+          pdfV.Renderer.ZoomOut( );
+        }
+        else {
+          pdfV.Renderer.ZoomIn( );
+        }
       }
-      else {
-        _VPC.ZoomIn( );
+      else if (_pic != null) {
+        if (e.Delta < 0) {
+          _VPC.ZoomOut( );
+        }
+        else {
+          _VPC.ZoomIn( );
+        }
+        this.Invalidate( this.ClientRectangle );
       }
-      this.Invalidate( this.ClientRectangle );
     }
+
+    // Capture Zoom + Icon
+    private void picPlus_Click( object sender, EventArgs e )
+    {
+      if (pdfV.Visible) {
+        pdfV.Renderer.ZoomIn( );
+      }
+      else if (_pic != null) {
+        _VPC.ZoomIn( );
+        this.Invalidate( this.ClientRectangle );
+      }
+    }
+
+    // Capture Zoom - Icon
+    private void picMinus_Click( object sender, EventArgs e )
+    {
+      if (pdfV.Visible) {
+        pdfV.Renderer.ZoomOut( );
+      }
+      else if (_pic != null) {
+        _VPC.ZoomOut( );
+        this.Invalidate( this.ClientRectangle );
+      }
+    }
+
 
     private void UC_Album_MouseEnter( object sender, EventArgs e )
     {
@@ -254,6 +322,9 @@ namespace bm98_Album
       // VPC needs to know the new viewport
       _VPC.SetViewport( this.ClientSize );
       // update the view
+
+      pdfV.Width = this.ClientSize.Width - _pdvWidthMargin;
+      pdfV.Height = this.ClientSize.Height - _pdvHeightMargin;
       this.Invalidate( this.ClientRectangle );
     }
 
@@ -278,20 +349,6 @@ namespace bm98_Album
       e.Graphics.Restore( save );
     }
 
-    // Capture Zoom + Icon
-    private void picPlus_Click( object sender, EventArgs e )
-    {
-      _VPC.ZoomIn( );
-      this.Invalidate( this.ClientRectangle );
-    }
-
-    // Capture Zoom - Icon
-    private void picMinus_Click( object sender, EventArgs e )
-    {
-      _VPC.ZoomOut( );
-      this.Invalidate( this.ClientRectangle );
-    }
-
     // Capture Shelf Icon
     private void picShelf_Click( object sender, EventArgs e )
     {
@@ -300,7 +357,7 @@ namespace bm98_Album
       }
       else {
         // reload the shelf from scratch 
-        LoadShelf( _shelfFolder );
+        LoadShelf( _shelfFolder, true );
         flp.Visible = true;
       }
       // Callback if someone needs to know
@@ -309,7 +366,7 @@ namespace bm98_Album
 
 
     // Load the file list for selection
-    private void LoadShelf( string foldername )
+    private void LoadShelf( string foldername, bool isMainFolder )
     {
       _shelfList.Clear( );
       flp.Controls.Clear( );
@@ -328,12 +385,18 @@ namespace bm98_Album
         );
         return; // sanity bail out
       }
+      // get level 1 folders in the shelf dir
+      var folders = Directory.EnumerateDirectories( foldername, "*", SearchOption.TopDirectoryOnly );
+      foreach (var folder in folders) {
+        _shelfList.Add( $"./{folder}" );
+      }
       // get the display file list (JPG and PNG anf GIF are supported)
       var files = Directory.EnumerateFiles( foldername, "*.*", SearchOption.TopDirectoryOnly );
       foreach (var file in files) {
         // cannot use a pattern to completely resolve the supported files
         if (file.ToLowerInvariant( ).EndsWith( ".jpg" )
           || file.ToLowerInvariant( ).EndsWith( ".png" )
+          || file.ToLowerInvariant( ).EndsWith( ".pdf" )
           || file.ToLowerInvariant( ).EndsWith( ".gif" )) {
           // exclude our temp files
           if (!Path.GetFileName( file ).StartsWith( c_tmpMark )) {
@@ -341,13 +404,18 @@ namespace bm98_Album
           }
         }
       }
+
       // process file list
       bool pingpong = true; // zebra toggle
-      foreach (var file in _shelfList) {
+      flp.SuspendLayout( );
+      flp.AutoSize = false;
+
+      if (!isMainFolder) {
+        // add upper dir
         var l = new Label( ) {
-          Text = Path.GetFileNameWithoutExtension( file ),
-          Tag = Path.GetFullPath( file ),
-          BackColor = pingpong ? c_BackBwBright : c_BackBwDark, // Zebra coloring
+          Text = @"..\  Leave Subfolder",
+          Tag = Path.GetFullPath( Path.GetDirectoryName( foldername ) ),
+          BackColor = c_BackBwMid,
           AutoSize = true,
           UseCompatibleTextRendering = true, // some chars don't show up for some fonts
           AutoEllipsis = true,
@@ -358,8 +426,48 @@ namespace bm98_Album
         };
         l.Click += L_Click; // add Click handler as File Selector
         flp.Controls.Add( l );
-        pingpong = !pingpong;
       }
+
+      foreach (var file in _shelfList) {
+        if (file.StartsWith( "./" )) {
+          // a folder
+          string dirName = file.Substring( 2 );
+          var l = new Label( ) {
+            Text = @".\" + Path.GetFileNameWithoutExtension( dirName ),
+            Tag = Path.GetFullPath( dirName ),
+            BackColor = c_BackBwMid,
+            AutoSize = true,
+            UseCompatibleTextRendering = true, // some chars don't show up for some fonts
+            AutoEllipsis = true,
+            Padding = new Padding( 5 ),
+            Cursor = Cursors.Hand,
+            Dock = DockStyle.Top,
+            TextAlign = ContentAlignment.MiddleLeft,
+          };
+          l.Click += L_Click; // add Click handler as File Selector
+          flp.Controls.Add( l );
+        }
+        else {
+          var l = new Label( ) {
+            Text = Path.GetFileNameWithoutExtension( file ),
+            Tag = Path.GetFullPath( file ),
+            BackColor = pingpong ? c_BackBwBright : c_BackBwDark, // Zebra coloring
+            AutoSize = true,
+            UseCompatibleTextRendering = true, // some chars don't show up for some fonts
+            AutoEllipsis = true,
+            Padding = new Padding( 5 ),
+            Cursor = Cursors.Hand,
+            Dock = DockStyle.Top,
+            TextAlign = ContentAlignment.MiddleLeft,
+          };
+          l.Click += L_Click; // add Click handler as File Selector
+          flp.Controls.Add( l );
+          pingpong = !pingpong;
+        }
+      }
+      flp.AutoSize = true;
+      flp.BringToFront( );
+      flp.ResumeLayout( );
 
     }
 
@@ -369,8 +477,16 @@ namespace bm98_Album
     {
       if (sender is Label) {
         var fname = (string)(sender as Label).Tag;
-        SetImage( fname );
-        flp.Visible = false; // hide shelf
+        if (Directory.Exists( fname )) {
+          flp.Visible = false; // hide shelf
+          bool isShelfFolder = fname.ToLowerInvariant( ) == _shelfFolder.ToLowerInvariant( );
+          LoadShelf( fname, isShelfFolder );
+          flp.Visible = true;
+        }
+        else {
+          SetDocument( fname );
+          flp.Visible = false; // hide shelf
+        }
       }
     }
 

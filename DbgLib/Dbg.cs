@@ -7,9 +7,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
-using Windows.Media.Audio;
-using Windows.Media.Core;
 using Windows.Media.SpeechSynthesis;
+
+using NLog;
 
 namespace DbgLib
 {
@@ -99,6 +99,8 @@ namespace DbgLib
   /// </summary>
   public sealed class Dbg
   {
+    private static readonly Logger LOG = LogManager.GetCurrentClassLogger( );
+
     // Singleton Pattern
     /// <summary>
     /// Library Instance
@@ -108,6 +110,7 @@ namespace DbgLib
     private Dbg( )
     {
       _canWrite = false;
+
     }
 
     // the debug file in the current directory
@@ -122,24 +125,27 @@ namespace DbgLib
       if (!_canWrite) return;
 
       try {
-        using (var sw = new StreamWriter( c_logFileName, false )) {
-          sw.WriteLine( TagLine( "DGBLog - Init" ) );
-        }
+        LogManager.ThrowExceptions = true;
+        using (ScopeContext.PushNestedState( "InitLog" ))
+          LOG.Info( "InitLogging" );
       }
-      catch (Exception e) {
-        Console.WriteLine( $"ERROR: DBGLib-InitLog Cannot write logfile\n{e.Message}" );
+      catch (Exception ex) {
+        using (ScopeContext.PushNestedState( "InitLog" ))
+          LOG.Error( ex, "Cannot write logfile" );
         _canWrite = false;
         return;
       }
-
-      using (var sw = new StreamWriter( c_logFileName, false )) {
-        sw.WriteLine( TagLine( "DGBLog - Init" ) );
-        sw.WriteLine( $"Debug:       {System.Reflection.Assembly.GetCallingAssembly( ).GetName( )}" );
-        sw.WriteLine( $"Application: {System.Reflection.Assembly.GetEntryAssembly( ).GetName( )}" );
-
-        CollectEnvironmentInformation( sw );
-        sw.Flush( );
+      finally {
+        LogManager.ThrowExceptions = false;
       }
+
+      using (ScopeContext.PushNestedState( "InitLog" )) {
+        LOG.Info( TagLine( "DGBLog - Init" ) );
+        LOG.Info( $"Debug:       {System.Reflection.Assembly.GetCallingAssembly( ).GetName( )}" );
+        LOG.Info( $"Application: {System.Reflection.Assembly.GetEntryAssembly( ).GetName( )}" );
+      }
+
+      CollectEnvironmentInformation( );
 
       ListCurDir( );
     }
@@ -344,26 +350,8 @@ namespace DbgLib
     {
       if (!_canWrite) return;
 
-      var tries = 5;
-
-      do {
-        try {
-          using (var sw = new StreamWriter( c_logFileName, true )) {
-            sw.WriteLine( TagLine( text ) );
-            sw.Flush( );
-          }
-          break; // done
-        }
-        catch (IOException ex) {
-          Console.WriteLine( $"Debug Logger cannot log (will try again): \n" + ex.Message );
-          // possibly locked by a concurrent thread.., try again
-        }
-        catch (Exception ex) {
-          Console.WriteLine( $"Debug Logger fatal, cannot log: \n" + ex.Message );
-          break;  // other ones ??
-        }
-      } while (tries-- > 0);
-
+      using (ScopeContext.PushNestedState( "Logging" ))
+        LOG.Info( text );
     }
 
     /// <summary>
@@ -372,7 +360,19 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void LogError( string text )
     {
-      Log( "ERROR: " + text );
+      using (ScopeContext.PushNestedState( "Logging" ))
+        LOG.Error( text );
+    }
+
+    /// <summary>
+    /// Log a Text Item as Error with Exception
+    /// </summary>
+    /// <param name="ex">Exception</param>
+    /// <param name="text">Log Text</param>
+    public void LogException( Exception ex, string text )
+    {
+      using (ScopeContext.PushNestedState( "Logging" ))
+        LOG.Error( ex, text );
     }
 
     /// <summary>
@@ -382,7 +382,8 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void Log( string module, string text )
     {
-      Log( $"{module}-{text}" );
+      using (ScopeContext.PushNestedState( module ))
+        LOG.Info( text );
     }
 
     /// <summary>
@@ -392,8 +393,22 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void LogError( string module, string text )
     {
-      LogError( $"{module}-{text}" );
+      using (ScopeContext.PushNestedState( module ))
+        LOG.Error( text );
     }
+
+    /// <summary>
+    /// Log a Text Item as Error with Exception
+    /// </summary>
+    /// <param name="module">The related sw part</param>
+    /// <param name="ex">Exception</param>
+    /// <param name="text">Log Text</param>
+    public void LogException( string module, Exception ex, string text )
+    {
+      using (ScopeContext.PushNestedState( module ))
+        LOG.Error( ex, text );
+    }
+
 
     /// <summary>
     /// Log a text and dump the stacktrace from the calling process
@@ -402,7 +417,10 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void LogStackTrace( string module, string text )
     {
-      Log( $"Stack Trace: {module}-{text}\n{Environment.StackTrace}" );
+      using (ScopeContext.PushNestedState( module )) {
+        LOG.Debug( "StackTrace called with: " + text );
+        LOG.Trace( $"{Environment.StackTrace}" );
+      }
     }
 
     #endregion
@@ -411,29 +429,31 @@ namespace DbgLib
 
     // Collect some helpful information about the running environment
     // Note - no sensitive information shall be collected here !!
-    private void CollectEnvironmentInformation( StreamWriter sw )
+    private void CollectEnvironmentInformation( )
     {
-      sw.WriteLine( "OS Information:" );
-      sw.WriteLine( $"    {WinVersion.WindowsVersion( )}" );
-
-      sw.WriteLine( $"Locale:" );
-      sw.WriteLine( $"    {CultureInfo.CurrentCulture.Name}    {CultureInfo.CurrentCulture.EnglishName}" );
+      using (ScopeContext.PushNestedState( "InitLog" )) {
+        LOG.Info( "OS Information:" );
+        LOG.Info( $"    {WinVersion.WindowsVersion( )}" );
+        LOG.Info( $"Locale:" );
+        LOG.Info( $"    {CultureInfo.CurrentCulture.Name}    {CultureInfo.CurrentCulture.EnglishName}" );
+      }
     }
 
     // Get the current directory and files in it
     private void ListCurDir( )
     {
       if (!_canWrite) return;
-
-      using (var sw = new StreamWriter( c_logFileName, true )) {
-        sw.WriteLine( $"Current Directory:\n    {Environment.CurrentDirectory}\nFiles:" );
+      using (ScopeContext.PushNestedState( "InitLog" )) {
+        LOG.Info( $"Current Directory:" );
+        LOG.Info( $"    {Environment.CurrentDirectory}" );
+        LOG.Info( $"Files:" );
         try {
           foreach (var file in Directory.EnumerateFiles( Environment.CurrentDirectory, "*", SearchOption.AllDirectories )) {
-            sw.WriteLine( $"    {file}" );
+            LOG.Info( $"    {file}" );
           }
         }
-        catch (Exception e) {
-          sw.WriteLine( $"    ERROR enumerating files\n{e.Message}" );
+        catch (Exception ex) {
+          using (ScopeContext.PushNestedState( "ListCurDir" )) LOG.Error( ex, "Enumerating files failed with Exception" );
         }
       }
     }
@@ -458,10 +478,10 @@ namespace DbgLib
       if (!_canWrite) return;
 
       var voices = SpeechSynthesizer.AllVoices;
-      using (var sw = new StreamWriter( c_logFileName, true )) {
-        sw.WriteLine( $"Installed Voices:" );
+      using (ScopeContext.PushNestedState( "InitLog" )) {
+        LOG.Info( "Installed Voices:" );
         foreach (var v in voices) {
-          sw.WriteLine( $" - {v.DisplayName} - {v.Language} - {v.Gender}" );
+          LOG.Info( $" - {v.DisplayName} - {v.Language} - {v.Gender}" );
         }
       }
     }
@@ -480,21 +500,19 @@ namespace DbgLib
       var ret = DeviceInformation.FindAllAsync( DeviceClass.AudioRender ).AsTask( );
       ret.Wait( );
       if (ret.Status == TaskStatus.RanToCompletion) {
-        using (var sw = new StreamWriter( c_logFileName, true )) {
-          sw.WriteLine( "Device Information:" );
-
+        using (ScopeContext.PushNestedState( "InitLog" )) {
+          LOG.Info( "Device Information:" );
           foreach (DeviceInformation deviceInterface in ret.Result) {
-
-            sw.WriteLine( $" - {deviceInterface.Name}" );
+            LOG.Info( $" - {deviceInterface.Name}" );
             foreach (var p in deviceInterface.Properties) {
-              sw.WriteLine( $"     {p.Key} - {p.Value}" );
+              LOG.Info( $"     {p.Key} - {p.Value}" );
             }
           }
-          sw.Flush( );
         }
       }
       else {
-        LogError( $"DBGLib - ListDeviceInformation Status {ret.Status}" );
+        using (ScopeContext.PushNestedState( "ListDeviceInformation" ))
+          LOG.Error( $"DBGLib - ListDeviceInformation Status {ret.Status}" );
       }
     }
 

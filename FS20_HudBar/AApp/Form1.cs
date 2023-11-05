@@ -23,6 +23,7 @@ using FS20_HudBar.Config;
 using System.IO;
 using FS20_HudBar.GUI;
 using FSimClientIF.Modules;
+using bm98_hbFolders;
 
 namespace FS20_HudBar
 {
@@ -403,15 +404,15 @@ namespace FS20_HudBar
       if (_fsInputCat.Count <= 0) return;
 
       // _fsInputCat should be valid when this event fires..
-      if (e.ActionName == _fsInputCat[Hotkeys.Show_Hide].Inputname) SynchGUIVisible( !this.Visible );
-      else if (e.ActionName == _fsInputCat[Hotkeys.FlightBag].Inputname) mShelf_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Camera].Inputname) mCamera_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.ChecklistBox].Inputname) mChecklistBox_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_1].Inputname) mP1_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_2].Inputname) mP2_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_3].Inputname) mP3_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_4].Inputname) mP4_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_5].Inputname) mP5_Click( null, new EventArgs( ) );
+      if (e.ActionName == _fsInputCat[Hotkeys.Show_Hide].InputName) SynchGUIVisible( !this.Visible );
+      else if (e.ActionName == _fsInputCat[Hotkeys.FlightBag].InputName) mShelf_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Camera].InputName) mCamera_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.ChecklistBox].InputName) mChecklistBox_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_1].InputName) mP1_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_2].InputName) mP2_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_3].InputName) mP3_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_4].InputName) mP4_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_5].InputName) mP5_Click( null, new EventArgs( ) );
     }
 
     /// <summary>
@@ -422,7 +423,7 @@ namespace FS20_HudBar
     {
       string ret = "";
       foreach (var hi in _fsInputCat) {
-        ret += $"{hi.Key} -> {hi.Value.InputActionString}\n";
+        ret += $"{hi.Key} -> {hi.Value.SimEventName}\n";
       }
       if (string.IsNullOrEmpty( ret )) {
         ret = "There are no InGame Hooks active";
@@ -809,6 +810,7 @@ namespace FS20_HudBar
                                 //        SC.SimConnectClient.Instance.Disconnect( );
       }
       LOG.Log( $"frmMain_FormClosing", "End" );
+
     }
 
     // Menu Exit event
@@ -1465,11 +1467,6 @@ namespace FS20_HudBar
 
     #region SimConnectClient chores
 
-
-    // Monitor the Sim Event Handler after Connection
-    private bool m_awaitingEvent = true; // cleared in the Sim Event Handler
-    private int m_scGracePeriod = -1;    // grace period count down
-
     ColorType IColorType.ItemForeColor { get => throw new NotImplementedException( ); set => throw new NotImplementedException( ); }
     ColorType IColorType.ItemBackColor { get => throw new NotImplementedException( ); set => throw new NotImplementedException( ); }
 
@@ -1526,52 +1523,7 @@ namespace FS20_HudBar
     /// </summary>
     private void Instance_DataArrived( object sender, FSimClientIF.ClientDataArrivedEventArgs e )
     {
-      m_awaitingEvent = false; // confirm we've got data events
       UpdateGUI( e.DataRefName );
-    }
-
-    /// <summary>
-    /// Toggle the connection
-    /// if not connected: Try to connect and setup facilities
-    /// if connected:     Disconnect facilities and shut 
-    /// </summary>
-    private void SimConnect( )
-    {
-      return;
-
-      LOG.Log( $"SimConnect", "Start" );
-      //signalling the connection state on the topmost Bar Item
-      HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cTxInfo;
-      HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse;
-
-      if (SC.SimConnectClient.Instance.IsConnected) {
-        // Disconnect from Input and SimConnect
-        SetupInGameHook( false );
-        flp.SetEnginesVisible( -1 ); // reset for the next attempt
-
-        FltPlanMgr.Enabled = false; // disable when disconnecting
-        SC.SimConnectClient.Instance.Disconnect( );
-        LOG.Log( $"SimConnect", "Disconnected now" );
-      }
-
-      else {
-        // setup the event monitor before connecting (will be handled in the Timer Event)
-        m_awaitingEvent = true;
-        m_scGracePeriod = 3; // about 3*5 secs to get an event
-
-        // try to connect
-        if (SC.SimConnectClient.Instance.Connect( )) {
-          HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.MediumPurple;
-          // Wait a moment with calling the SimClient else it might not be completed
-          // it is done in the Timer Event now
-        }
-        else {
-          // connect failed - will be retried through the pacer
-          HUD.DispItem( LItem.MSFS ).Label.BackColor = Color.Red;
-          LOG.Log( $"SimConnect", "Could not connect" );
-        }
-      }
-
     }
 
     /// <summary>
@@ -1581,36 +1533,6 @@ namespace FS20_HudBar
     private void SimConnectPacer( )
     {
       if (SC.SimConnectClient.Instance.IsConnected) {
-        if (false) {
-          // handle the situation where Sim is connected but could not yet hookup to events
-          // Happens when HudBar is running when the Sim is starting only.
-          // Sometimes the Connection is made but was not hooking up to the event handling
-          // Disconnect and try to reconnect 
-          if (m_awaitingEvent || SV.Get<float>( SItem.fG_Sim_Rate_rate ) <= 0) {
-            // landing here if Initialization is about to be confirmed - i.e. waiting for the Sim to deliver data
-
-            // init the SimClient by pulling one item, so it registers the module, else the callback is not initiated
-            _ = SV.Get<float>( SItem.fG_Sim_Rate_rate );
-            FltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
-            // enable game hooks if newly connected and desired
-            SetupInGameHook( AppSettingsV2.Instance.InGameHook );
-            // Set Engines 
-            flp.SetEnginesVisible( SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num ) );
-            LOG.Log( $"SimConnect", "Connected now" );
-
-            // No events seen so far
-            if (m_scGracePeriod <= 0) {
-              // grace period is expired !
-              LOG.Log( "SimConnectPacer", "Did not receive an Event for 5sec - Restarting Connection" );
-              SimConnect( ); // Disconnect if we don't receive Events even the Sim is connected
-            }
-            m_scGracePeriod--;
-          }
-          else {
-            // Confirm data arrival phase - assuming we are OK..
-            HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
-          }
-        }
         // Voice is disabled when a new HUD is created, so enable if not yet done
         // The timer is enabled after InitGUI - so this one is always 5 sec later which should avoid some of the early talking..
         HUD.VoiceEnabled = true;
@@ -1618,14 +1540,7 @@ namespace FS20_HudBar
         // this is due to long texts or changes in the visibility of items coming in by the SimConnect Data processing in the DI items
         SynchGUISize( );
       }
-      else {
-        // If not connected try again
-        SimConnect( );
-      }
     }
-
-
-
 
     #endregion
 

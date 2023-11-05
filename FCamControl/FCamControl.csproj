@@ -51,6 +51,10 @@
     <DocumentationFile>bin\x64\Release\FCamControl.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dNetBm98, Version=1.4.0.6, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Redist\dNetBm98.dll</HintPath>
+    </Reference>
     <Reference Include="FSimClientIF, Version=0.34.0.40, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\FSimClientIF.dll</HintPath>
@@ -58,10 +62,6 @@
     <Reference Include="FSimIF, Version=1.1.0.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\FSimIF.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.FlightSimulator.SimConnect, Version=11.0.62651.3, Culture=neutral, PublicKeyToken=baf445ffb3a06b5c, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Redist\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
     <Reference Include="SimConnectClient, Version=0.35.0.41, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -84,7 +84,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
-    <Compile Include="Folders.cs" />
     <Compile Include="frmCamera.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,6 +124,10 @@
     <None Include="background.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\bm98_hbFolders\bm98_hbFolders.csproj">
+      <Project>{6c729d4d-fe93-4794-8320-af00c90d016d}</Project>
+      <Name>bm98_hbFolders</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DbgLib\DbgLib.csproj">
       <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
       <Name>DbgLib</Name>

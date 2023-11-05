@@ -37,6 +37,15 @@
     <Reference Include="CoordLib">
       <HintPath>..\..\..\Redist\CoordLib.dll</HintPath>
     </Reference>
+    <Reference Include="dNetBm98">
+      <HintPath>..\..\..\..\Redist\dNetBm98.dll</HintPath>
+    </Reference>
+    <Reference Include="FSFDataLib">
+      <HintPath>..\..\..\Redist\FSFDataLib.dll</HintPath>
+    </Reference>
+    <Reference Include="FSimFacilityIF">
+      <HintPath>..\..\..\Redist\FSimFacilityIF.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,11 +58,31 @@
   <ItemGroup>
     <Compile Include="FileLink.cs" />
     <Compile Include="FlightPlan.cs" />
+    <Compile Include="GPX\GPXpln.cs" />
+    <Compile Include="GPX\GPXplnDataEventArgs.cs" />
+    <Compile Include="Formatter.cs" />
+    <Compile Include="GPX\GPXDEC\GPX.cs" />
+    <Compile Include="LNM\LNMDEC\LNM.cs" />
+    <Compile Include="LNM\LNMDEC\LnmPlnDecoder.cs" />
+    <Compile Include="LNM\LNMDEC\X_Flightplan.cs" />
+    <Compile Include="LNM\LNMDEC\X_Departure.cs" />
+    <Compile Include="LNM\LNMDEC\X_Coord.cs" />
+    <Compile Include="LNM\LNMDEC\X_Waypoint.cs" />
+    <Compile Include="LNM\LNMDEC\X_Procedures.cs" />
+    <Compile Include="LNM\LNMDEC\X_SimNavData.cs" />
+    <Compile Include="LNM\LNMDEC\X_Header.cs" />
+    <Compile Include="LNM\LNMpln.cs" />
+    <Compile Include="LNM\LNMplnDataEventArgs.cs" />
+    <Compile Include="LNM\Provider\LNMplnRequest.cs" />
+    <Compile Include="MSFSPln\PLNDEC\PlnDecoder.cs" />
+    <Compile Include="GPX\GPXDEC\X_Rte.cs" />
+    <Compile Include="GPX\GPXDEC\X_RtePt.cs" />
+    <Compile Include="GPX\Provider\GPXplnRequest.cs" />
     <Compile Include="IcaoRec.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="MSFSFlt\FLTDEC\FLT.cs" />
     <Compile Include="MSFSFlt\FLTDEC\FltDecoder.cs" />
-    <Compile Include="MSFSFlt\FLTDEC\Formatter.cs" />
+    <Compile Include="MSFSFlt\FLTDEC\Ini_Formatter.cs" />
     <Compile Include="MSFSFlt\FLTDEC\Ini_ATC_ActiveFlightPlan.cs" />
     <Compile Include="MSFSFlt\FLTDEC\Ini_ATC_Aircraft.cs" />
     <Compile Include="MSFSFlt\FLTDEC\Ini_DepArr.cs" />
@@ -70,9 +99,8 @@
     <Compile Include="MS\IniSerializer.cs" />
     <Compile Include="MS\ItemCat.cs" />
     <Compile Include="MS\MsFolders.cs" />
-    <Compile Include="MSFSPln\PLNDEC\Formatter.cs" />
     <Compile Include="MSFSPln\PLNDEC\PLN.cs" />
-    <Compile Include="MSFSPln\PLNDEC\PlnDecoder.cs" />
+    <Compile Include="GPX\GPXDEC\GpxDecoder.cs" />
     <Compile Include="MSFSPln\PLNDEC\X_AppVersion.cs" />
     <Compile Include="MSFSPln\PLNDEC\X_ATCWaypoint.cs" />
     <Compile Include="MSFSPln\PLNDEC\X_FlightPlan.cs" />
@@ -81,9 +109,23 @@
     <Compile Include="MS\MSiniFile.cs" />
     <Compile Include="MS\SectionCat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Routes\RDEC\R_Coord.cs" />
+    <Compile Include="Routes\RDEC\R_SpeedAlt.cs" />
+    <Compile Include="Routes\RDEC\R_UserWyp.cs" />
+    <Compile Include="Routes\RDEC\Word.cs" />
+    <Compile Include="Routes\RouteCapture.cs" />
+    <Compile Include="Routes\RouteWaypointCapture.cs" />
+    <Compile Include="Routes\SpeedAltRemark.cs" />
+    <Compile Include="Routes\GenRoute.cs" />
+    <Compile Include="Routes\GenRouteWaypoint.cs" />
+    <Compile Include="Routes\RouteDecoder.cs" />
+    <Compile Include="RTE\RTEDEC\PlnDecoder.cs" />
+    <Compile Include="RTE\Provider\RTEplnRequest.cs" />
+    <Compile Include="RTE\RTEpln.cs" />
+    <Compile Include="RTE\RTEplnDataEventArgs.cs" />
     <Compile Include="SimBrief\Provider\SimBriefRequest.cs" />
-    <Compile Include="SimBrief\SBDEC\Formatter.cs" />
     <Compile Include="SimBrief\SBDEC\JsonDecoder.cs" />
+    <Compile Include="SimBrief\SBDEC\Json_Atc.cs" />
     <Compile Include="SimBrief\SBDEC\Json_DptDst.cs" />
     <Compile Include="SimBrief\SBDEC\Json_Fetch.cs" />
     <Compile Include="SimBrief\SBDEC\Json_Files.cs" />
@@ -98,8 +140,13 @@
     <Compile Include="SimBrief\SimBrief.cs" />
     <Compile Include="SimBrief\SimBriefDataEventArgs.cs" />
     <Compile Include="Waypoint.cs" />
+    <Compile Include="WaypointList.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\bm98_hbFolders\bm98_hbFolders.csproj">
+      <Project>{6c729d4d-fe93-4794-8320-af00c90d016d}</Project>
+      <Name>bm98_hbFolders</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DbgLib\DbgLib.csproj">
       <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
       <Name>DbgLib</Name>

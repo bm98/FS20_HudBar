@@ -38,10 +38,10 @@ namespace bm98_Map
     public static string VorNdbString( this INavaid navaid )
     {
       if (navaid.IsVOR) {
-        return $"{navaid.NavaidType.ToString( ).Replace( "_", " " ),-8}    {navaid.ICAO,-4} {navaid.Frequ_Hz / 1_000_000f,7:##0.00} MHz ({navaid.Range_nm,3:##0} nm)";
+        return $"{navaid.NavaidType.ToString( ).Replace( "_", " " ),-8}    {navaid.Ident,-4} {navaid.Frequ_Hz / 1_000_000f,7:##0.00} MHz ({navaid.Range_nm,3:##0} nm)";
       }
       else if (navaid.IsNDB) {
-        return $"{navaid.NavaidType.ToString( ).Replace( "_", " " ),-8}    {navaid.ICAO,-4} {navaid.Frequ_Hz / 1000f,6:###0.0}  kHz ({navaid.Range_nm,3:##0} nm)";
+        return $"{navaid.NavaidType.ToString( ).Replace( "_", " " ),-8}    {navaid.Ident,-4} {navaid.Frequ_Hz / 1000f,6:###0.0}  kHz ({navaid.Range_nm,3:##0} nm)";
       }
       return "";
     }
@@ -50,15 +50,20 @@ namespace bm98_Map
     /// Returns a string for a VOR or NDB else empty
     /// </summary>
     /// <param name="navaid">A navaid</param>
+    /// <param name="direction">Direction to the Navaid (1 or 2chars)</param>
+    /// <param name="dist_nm">Distance to </param>
+    /// <param name="rsi">RSI letter</param>
     /// <returns>A string</returns>
-    public static string VorNdbNameString( this INavaid navaid )
+    public static string VorNdbNameString( this INavaid navaid, string direction, double dist_nm, string rsi )
     {
+      string nt = navaid.NavaidType.ToString( ).Replace( "_", " " );
       if (navaid.IsVOR) {
-        return $"{navaid.NavaidType.ToString( ).Replace( "_", " " ),-8}    {navaid.ICAO,-4} {navaid.Frequ_Hz / 1_000_000f,7:##0.00} MHz ({navaid.Range_nm,3:##0} nm) {navaid.Name}";
+        return $"{nt,-8} {navaid.Ident,-4} {navaid.Frequ_Hz / 1_000_000f,7:##0.00} MHz ({direction.PadRight( 2 )} {dist_nm,5:##0.0} nm {rsi}) {navaid.Name}";
       }
       else if (navaid.IsNDB) {
-        return $"{navaid.NavaidType.ToString( ).Replace( "_", " " ),-8}    {navaid.ICAO,-4} {navaid.Frequ_Hz / 1000f,6:###0.0}  kHz ({navaid.Range_nm,3:##0} nm) {navaid.Name}";
+        return $"{nt,-8} {navaid.Ident,-4} {navaid.Frequ_Hz / 1000f,6:###0.0} kHz  ({direction.PadRight( 2 )} {dist_nm,5:##0.0} nm {rsi}) {navaid.Name}";
       }
+      // len is:41+NameLen
       return "";
     }
 
@@ -66,8 +71,9 @@ namespace bm98_Map
     /// Returns a Text Line for the Runway
     /// </summary>
     /// <param name="runway">An IRunway obj</param>
+    /// <param name="navaids">List of current Navaids</param>
     /// <returns>A string</returns>
-    public static string RunwayString( this IRunway runway )
+    public static string RunwayString( this IRunway runway, IList<INavaid> navaids )
     {
       if (runway.Surface == "WATER") {
         // "COMPASSDIR (hhh°) lenxwidth material"
@@ -75,7 +81,7 @@ namespace bm98_Map
       }
       else {
         // "RRR (hhh°) ILS  lenxwidth material"
-        return $"{runway.Ident,-3} ({runway.Bearing_degm:000}°)  {RunwayIlsString( runway )} {runway.Length_m,4:###0}x{runway.Width_m,-3:##0} m  - {runway.Surface}";
+        return $"{runway.Ident,-3} ({runway.Bearing_degm:000}°)  {RunwayIlsString( runway, navaids )} {runway.Length_m,4:###0}x{runway.Width_m,-3:##0} m  - {runway.Surface}";
       }
     }
 
@@ -83,20 +89,20 @@ namespace bm98_Map
     /// Returns a Text Line for the Runway ILS
     /// </summary>
     /// <param name="runway">An IRunway obj</param>
+    /// <param name="navaids">List of current Navaids</param>
     /// <returns>A string</returns>
-    public static string RunwayIlsString( this IRunway runway )
+    public static string RunwayIlsString( this IRunway runway, IList<INavaid> navaids )
     {
       // "ICAO fff.ff GS(s.s° rr nm)"  (the ID, Frequ and GS Slope+Range)
       string id = "    ", freq = "      ", slope = "    ", range = "     ";// placeholder spacing
-
-      foreach (var nav in runway.Navaids) {
-        if (nav.IsILS) {
-          id = nav.ICAO;
+      if (runway.HasNAVs) {
+        foreach (var nav in runway.NAV_FKEYs.SelectMany( fk => navaids.Where( nav => nav.KEY == fk && nav.IsILS ) )) {
+          id = nav.Ident;
           freq = $"{nav.Frequ_Hz / 1_000_000f:000.00}";
-        }
-        if (nav.HasGS) {
-          slope = $"{nav.GsSlope_deg:0.0}°";
-          range = $"{nav.GsRange_nm:00} nm";
+          if (nav.HasGS) {
+            slope = $"{nav.GsSlope_deg:0.0}°";
+            range = $"{nav.GsRange_nm:00} nm";
+          }
         }
       }
       var gsString = $"{slope} {range}";

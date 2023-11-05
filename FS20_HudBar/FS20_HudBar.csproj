@@ -24,8 +24,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>66</ApplicationRevision>
-    <ApplicationVersion>0.65.0.66</ApplicationVersion>
+    <ApplicationRevision>67</ApplicationRevision>
+    <ApplicationVersion>0.66.0.67</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -83,13 +83,12 @@
     <Reference Include="dNetBm98">
       <HintPath>..\..\..\..\Redist\dNetBm98.dll</HintPath>
     </Reference>
+    <Reference Include="FSFDataLib">
+      <HintPath>..\..\..\Redist\FSFDataLib.dll</HintPath>
+    </Reference>
     <Reference Include="FSimClientIF, Version=0.34.0.40, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\FSimClientIF.dll</HintPath>
-    </Reference>
-    <Reference Include="FSimFacilityDataLib, Version=0.10.0.11, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Redist\FSimFacilityDataLib.dll</HintPath>
     </Reference>
     <Reference Include="FSimFacilityIF, Version=1.1.0.11, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -229,6 +228,9 @@
     <Compile Include="Bar\Items\AircraftPara\DI_HTrim.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\EnginePara\DI_EPR.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\EnginePara\DI_RRpmGraph.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -241,7 +243,9 @@
     <Compile Include="Bar\Items\InstrPara\DI_VarioMCS_mps.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\InstrPara\DI_VarioMCS_kt.cs" />
+    <Compile Include="Bar\Items\InstrPara\DI_VarioMCS_kt.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\InstrPara\DI_VarioNettoGraph.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -772,6 +776,9 @@
     <Compile Include="GUI\Templates\V_RAaudio.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GUI\Templates\V_Ratio2.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\Templates\V_Temp_F.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -877,7 +884,6 @@
     <Compile Include="Triggers\T_Spoilers.cs" />
     <Compile Include="Triggers\T_WarnFuel.cs" />
     <Compile Include="Triggers\T_WaypointETE.cs" />
-    <Compile Include="AApp\Folders.cs" />
     <Compile Include="Win\GlobalKbdHook.cs" />
     <Compile Include="Win\GlobalKbdHookEventArgs.cs" />
     <Compile Include="Win\HotkeyController.cs" />
@@ -925,6 +931,9 @@
     <EmbeddedResource Include="Fonts\ShareTechMono-Regular.ttf" />
     <EmbeddedResource Include="Config\EngineMerge.csv" />
     <EmbeddedResource Include="Config\DefaultProfiles.csv" />
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -942,9 +951,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SimConnect.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="Resources\Inop.png" />
     <None Include="AApp\3x3dot.png" />
     <None Include="AApp\3x3void.png" />
@@ -973,6 +979,10 @@
     <ProjectReference Include="..\bm98_hbControls\bm98_hbControls.csproj">
       <Project>{d843beaf-7f22-408d-821f-514f622552ae}</Project>
       <Name>bm98_hbControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\bm98_hbFolders\bm98_hbFolders.csproj">
+      <Project>{6c729d4d-fe93-4794-8320-af00c90d016d}</Project>
+      <Name>bm98_hbFolders</Name>
     </ProjectReference>
     <ProjectReference Include="..\DbgLib\DbgLib.csproj">
       <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
@@ -1009,8 +1019,14 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LiteDB">
-      <Version>5.0.15</Version>
+      <Version>5.0.17</Version>
+    </PackageReference>
+    <PackageReference Include="NLog">
+      <Version>5.2.5</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(SolutionDir)..\..\Redist\SimConnect.dll" "." /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

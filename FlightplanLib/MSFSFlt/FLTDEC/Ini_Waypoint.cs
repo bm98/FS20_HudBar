@@ -1,11 +1,15 @@
-﻿using CoordLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Permissions;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+
+using CoordLib;
+
+using FSimFacilityIF;
+
+using static FSimFacilityIF.Extensions;
 
 namespace FlightplanLib.MSFSFlt.FLTDEC
 {
@@ -20,22 +24,49 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     public bool IsValid { get; internal set; } = false;
 
     /// <summary>
-    /// Native ID of the Wyp (can have decorations - use Wyp_Ident instead)
+    /// The Type of the Waypoint 
     /// </summary>
-    public string ID { get; internal set; } = "";
+    public WaypointTyp WaypointType { get; internal set; } = WaypointTyp.Unknown;
+
     /// <summary>
-    /// The Waypoint name, can be an official one or an MSFS internal one
+    /// Waypoint Usage derived from content
     /// </summary>
-    public string Ident { get; internal set; } = "";
+    public UsageTyp UsageType {
+      get {
+        if (IsSID) return UsageTyp.SID;
+        if (IsSTAR) return UsageTyp.STAR;
+        if (HasAPR) return UsageTyp.APR;
+        return UsageTyp.Unknown;
+      }
+    }
+
     /// <summary>
-    /// The Waypoint name, can be an official one or an MSFS internal one
+    /// Native Ident of the Wyp (can have decorations or is Empty - use Ident instead)
+    /// </summary>
+    public string SourceIdent { get; internal set; } = "";
+    /// <summary>
+    /// Cleaned Ident of the Waypoint - removed all known decorations
+    /// If the Ident is not provided by the FLT file it returns the Name7 Field as Ident
+    /// </summary>
+    public string Ident => string.IsNullOrEmpty( SourceIdent ) ? Name7 : Formatter.CleanB21SoaringName( SourceIdent ).ToUpperInvariant( );
+    /// <summary>
+    /// Get the Decoration for soaring waypoints
+    /// </summary>
+    public string Decoration => Formatter.GetB21SoaringDecoration( SourceIdent );
+    /// <summary>
+    /// True if the Wyp as DECO information
+    /// </summary>
+    public bool IsDecorated => !string.IsNullOrWhiteSpace( Decoration );
+
+    /// <summary>
+    /// The Waypoint desctriptive name, can be an official one or an MSFS internal one
     /// </summary>
     public string Name { get; internal set; } = "";
+
     /// <summary>
-    /// The Waypoint name (max 8 chars), can be an official one or an MSFS internal one
+    /// The Waypoint name (max 7 chars UCase), can be an official one or an MSFS internal one
     /// </summary>
-    public string Name7 =>
-      Name.Length > 7 ? Name.Substring( 0, 7 ) : Name;
+    public string Name7 => Name.Length > 7 ? Name.Substring( 0, 7 ).ToUpperInvariant( ) : Name.ToUpperInvariant( );
 
     /// <summary>
     /// The ICAO Region (where given, else it is an empty string)
@@ -63,84 +94,49 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// A rounded Altitude to 100ft except for Airports and Runways
     /// </summary>
     public float AltitudeRounded_ft =>
-      (WaypointType == TypeOfWaypoint.Airport || WaypointType == TypeOfWaypoint.Runway)
+      (WaypointType == WaypointTyp.APT || WaypointType == WaypointTyp.RWY)
         ? Altitude_ft
         : (float)(Math.Round( Altitude_ft / 100.0 ) * 100.0);
 
     /// <summary>
-    /// The Type of the Waypoint 
-    /// </summary>
-    public TypeOfWaypoint WaypointType { get; internal set; } = TypeOfWaypoint.Other;
-
-    /// <summary>
-    /// The Waypoint Index starting at 0
-    /// </summary>
-    public int Index { get; internal set; } = -1;
-    /// <summary>
-    /// The leg distance to the next WP
-    /// (sum of leg distances)
-    /// </summary>
-    public float LegDist_nm { get; internal set; } = 0;
-    /// <summary>
-    /// Heading to the next WP
-    /// </summary>
-    public float HeadingTo_deg { get; internal set; } = 0;
-    /// <summary>
-    /// The remaining distance to the destination
-    /// (sum of leg distances)
-    /// </summary>
-    public float RemainingDist_nm { get; internal set; } = 0;
-    /// <summary>
-    /// The given Airway ID
+    /// The given Enroute ID
     /// </summary>
     public string Airway_Ident { get; internal set; } = "";
-
     /// <summary>
     /// The given Departure ID
     /// </summary>
     public string SID_Ident { get; internal set; } = "";
-
     /// <summary>
     /// The given ArrivalID
     /// </summary>
     public string STAR_Ident { get; internal set; } = "";
 
     /// <summary>
-    /// The given Approach
+    /// The given Approach ProcRef
+    /// </summary>
+    public string ApproachProcRef => string.IsNullOrWhiteSpace( ApproachType ) ? "" : AsProcRef( ApproachType, ApproachSuffix ); // from approach ILS Y ..
+    /// <summary>
+    /// The given Approach Type (nav type ILS, RNAV,..)
     /// </summary>
     public string ApproachType { get; internal set; } = "";
-    /// <summary>
-    /// The given Approach Suffix
+    /// <summary> 
+    /// The given Approach Suffix (X,Y or empty)
     /// </summary>
-    public string Approach_Suffix { get; internal set; } = ""; // empty or X,Y,Z etc. from approach ILS Y 22
+    public string ApproachSuffix { get; internal set; } = ""; // empty or X,Y,Z etc. from approach ILS Y 22
 
     /// <summary>
-    /// True if the Wyp as DECO information
+    /// Returns a Runway Ident like RW22 or RW12R etc.
     /// </summary>
-    public bool IsDecorated => !string.IsNullOrWhiteSpace( Wyp_Deco );
-
-    /// <summary>
-    /// Clean ID of the Waypoint - removed all known decorations
-    /// </summary>
-    public string Wyp_Ident => Formatter.CleanB21SoaringName( ID );
-    /// <summary>
-    /// Get the Decoration for soaring waypoints
-    /// </summary>
-    public string Wyp_Deco => Formatter.GetB21SoaringDecoration( ID );
-
+    public string RwIdent => AsRwIdent( RwNumber_S, RwDesignation );
     /// <summary>
     /// The given Runway
     /// </summary>
-    public string RunwayNumber_S { get; internal set; } = "";
+    public string RwNumber_S { get; internal set; } = "";
     /// <summary>
     /// runway designation RIGHT, LEFT, CENTER, ?? others ??
     /// </summary>
-    public string RunwayDesignation { get; set; } = "";
+    public string RwDesignation { get; set; } = "";
 
-    /// <summary>
-    /// Returns a Runway ident like 22 or 12R etc.
-    /// </summary>
-    public string Runway_Ident => ToRunwayID( RunwayNumber_S, RunwayDesignation );
 
     /// <summary>
     /// The given Airport for the Runway
@@ -165,15 +161,14 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// </summary>
     public int AltLimit2_ft { get; internal set; } = 0;
 
-
     /// <summary>
-    /// True if the Wyp is part of an Airway
+    /// True if the Wyp is part of an Enroute
     /// </summary>
     public bool IsAirway => !string.IsNullOrWhiteSpace( Airway_Ident );
     /// <summary>
     /// True if the Wyp as APR information
     /// </summary>
-    public bool IsAPR => !string.IsNullOrWhiteSpace( ApproachType );
+    public bool HasAPR => !string.IsNullOrWhiteSpace( ApproachType );
     /// <summary>
     /// True if the Wyp is part of SID
     /// </summary>
@@ -186,8 +181,10 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// True if the Wyp is part of SID or STAR
     /// </summary>
     public bool IsSidOrStar => IsSID || IsSTAR;
-
-
+    /// <summary>
+    /// True if the Wyp is part of SID or STAR or APR
+    /// </summary>
+    public bool IsProc => IsSID || IsSTAR || HasAPR;
 
 
     /// <summary>
@@ -201,20 +198,11 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// <param name="wypString"></param>
     public static Ini_Waypoint GetWaypoint( string wypString )
     {
-      return Formatter.DecodeWaypoint( wypString );
+      return Ini_Formatter.DecodeWaypoint( wypString );
 
     }
 
     // tools
-    private static string ToRunwayID( string rNum, string rDes )
-    {
-      if (string.IsNullOrWhiteSpace( rDes )) {
-        return rNum;
-      }
-      else {
-        return rNum + rDes.Substring( 0, 1 ); // convert from 11 LEFT to 11L
-      }
-    }
 
   }
 }

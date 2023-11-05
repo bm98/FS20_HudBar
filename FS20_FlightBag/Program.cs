@@ -25,6 +25,10 @@ namespace FS20_FlightBag
       Application.EnableVisualStyles( );
       Application.SetCompatibleTextRenderingDefault( false );
       Application.Run( new FShelf.frmShelf(Instance, true ) );
+
+      //
+      NLog.LogManager.Shutdown( );
+
     }
   }
 }

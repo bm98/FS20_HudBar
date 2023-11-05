@@ -31,8 +31,10 @@ namespace bm98_Map.Drawing
     public readonly static Color ColTRange = Color.Lime; // Target Range color
     public readonly static Color ColScale = Color.Orchid;//Color.Magenta; //
     public readonly static Color ColRoute = Color.Magenta;
+    public readonly static Color ColRouteAwy = Color.OrangeRed;  // Airways
     public readonly static Color ColRouteSid = Color.BlueViolet; // and SID & STAR
-    public readonly static Color ColRouteApr = Color.DeepPink;
+    public readonly static Color ColRouteApr = Color.DeepPink; // Approach
+    public readonly static Color ColRouteMApr = Color.BlueViolet; // missed Apr
 
     public readonly static Color ColRwBorder = Color.FromArgb( 0, 166, 81 );    // green
     public readonly static Color ColRwPavement = Color.FromArgb( 45, 44, 44 );  // dark grey
@@ -57,12 +59,14 @@ namespace bm98_Map.Drawing
     public readonly static Pen PenInfo4 = new Pen( ColInfo, 4f );
 
     public readonly static Pen PenRoute = new Pen( ColRoute, 3f );
+    public readonly static Pen PenRouteAwy = new Pen( ColRouteAwy, 3f );
     public readonly static Pen PenRouteSid = new Pen( ColRouteSid, 3f );
     public readonly static Pen PenRouteApt = new Pen( ColRoute ) { Width = 2, DashPattern = new float[] { 5.0F, 10.0F, 2.0F, 10.0F } }; // to rwy/apt
 
     public readonly static Pen PenRouteApr = new Pen( ColRouteApr, 3f );
+    public readonly static Pen PenRouteMApr = new Pen( ColRouteMApr){ Width = 3, DashPattern = new float[] { 5.0F, 10.0F, 5.0F, 10.0F } }; // missed apr
 
-    public readonly static Pen PenRange3 = new Pen( ColRange, 3f );
+  public readonly static Pen PenRange3 = new Pen( ColRange, 3f );
     public readonly static Pen PenRange5 = new Pen( ColRangeTrue, 5f );
     public readonly static Pen PenTRange3 = new Pen( ColTRange, 3f );
     public readonly static Pen PenScale1 = new Pen( ColScale, 1f );

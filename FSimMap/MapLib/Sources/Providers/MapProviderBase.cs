@@ -11,8 +11,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-using CoordLib;
 using CoordLib.MercatorTiles;
+using DbgLib;
 using MapLib.Service;
 
 namespace MapLib.Sources.Providers
@@ -22,11 +22,14 @@ namespace MapLib.Sources.Providers
   /// </summary>
   internal abstract class MapProviderBase : IImgSource
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
 
     #region STATIC Service Parts
 
-
-    private static Random Random;
     private static bool _serviceStatus = false;
     private static bool _initStatus = false;
 
@@ -391,12 +394,12 @@ namespace MapLib.Sources.Providers
       }
       catch (Exception ex) {
         if ((ex is WebException) && (ex as WebException).Status == WebExceptionStatus.Timeout) {
-          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: WebExceptionStatus Timeout" );
+          LOG.Log( "MapProviderBase.GetTileImageUsingHttp", "WebExceptionStatus Timeout" );
           retry = true; // can retry on timeout
         }
         else if ((ex is WebException) && (ex as WebException).Status == WebExceptionStatus.ProtocolError) {
           var status = ((HttpWebResponse)(ex as WebException).Response).StatusCode;
-          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: HttpWebResponse Status: {status} ({(int)status})" );
+          LOG.Log( "MapProviderBase.GetTileImageUsingHttp", "HttpWebResponse Status: {status} ({(int)status})" );
           if ((status == HttpStatusCode.GatewayTimeout) || (status == HttpStatusCode.RequestTimeout)) {
             retry = true;
           }
@@ -404,11 +407,11 @@ namespace MapLib.Sources.Providers
         else if ((ex is WebException) && ((int)((HttpWebResponse)(ex as WebException).Response).StatusCode == 418)) {
           // seems OSM responds with the teapot code when blocking...
           var status = ((HttpWebResponse)(ex as WebException).Response).StatusCode;
-          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: HttpWebResponse Status: {status} ({(int)status})" );
+          LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", "HttpWebResponse Status: {status} ({(int)status})" );
           retry = false; // never retry
         }
         else {
-          Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttp: Response Exception:\n{ex}\nURL:${url}" );
+          LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", "Response Exception:\n{ex}\nURL:${url}" );
           retry = false; // never retry
         }
       }

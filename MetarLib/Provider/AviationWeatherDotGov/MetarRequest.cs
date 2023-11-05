@@ -16,17 +16,41 @@ namespace MetarLib.Provider.AviationWeatherDotGov
   /// </summary>
   internal class MetarRequest : RequestBaseMetar
   {
+    /*
+    Original pre Oct 2023
     // https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&hoursBeforeNow=3&mostRecent=true&stationString=LSZH
+
+     Update Oct 2023 for new API..
+    Compatibility API CSV  currently in use
+     * https://aviationweather.gov/api/data/dataserver?requestType=retrieve&dataSource=metars&stationString=KORD&hoursBeforeNow=3&format=csv&mostRecent=true
+      
+    may convert to JSON or XML later... TODO
+      Query for metar KMCI 3hours back
+        https://aviationweather.gov/api/data/metar?ids=KMCI&format=xml&hours=3
+      Query for metar KMCI 3hours back =date as of now XML
+        https://aviationweather.gov/api/data/metar?ids=KMCI&format=xml&hours=3&date=2023-10-27T07%3A20%3A16Z
+      Query for metar KMCI 3hours back =date as of now JSON     
+        https://aviationweather.gov/api/data/metar?ids=KMCI&format=json&hours=3
+
+      Query for metar KORD with bounding box (40,-90,45,-85) 3hours back =date as of now JSON     
+        https://aviationweather.gov/api/data/metar?ids=KORD&format=json&taf=false&hours=3&bbox=40%2C-90%2C45%2C-85
+
+
+      Query for metar LSZH + TAF 3hours back =date as of now JSON     
+        https://aviationweather.gov/api/data/metar?ids=LSZH&format=json&taf=true&hours=3
+     */
 
     private static readonly HttpClient httpClient = new HttpClient();
 
     private static readonly string HoursBefore = "3";   // reach of past data
     private static readonly string DataFormat = "csv"; // can be xml too
-   // private static readonly string DataFields = "raw_text,latitude,longitude,elevation_m"; // CANNOT USE limited fields - the reply header and datalined don't match
+   // private static readonly string DataFields = "raw_text,latitude,longitude,elevation_m"; 
+   // CANNOT USE limited fields - the reply header and datalined don't match
     public static string ResponseRaw { get; set; } = "";
     public static DateTime ResponseTime { get; set; } = DateTime.Now;
 
-    private const string c_serverURL = "https://aviationweather.gov/adds/dataserver_current/httpparam";
+   // private const string c_serverURL = "https://aviationweather.gov/adds/dataserver_current/httpparam";
+    private const string c_serverURL = "https://aviationweather.gov/api/data/dataserver?requestType=retrieve&";
 
     /// <summary>
     /// cTor: Init request
@@ -45,7 +69,7 @@ namespace MetarLib.Provider.AviationWeatherDotGov
     new public static async Task<MetarTafDataList> GetMetar( string station )
     {
       // this should retrieve one most recent record dating back max 3 hours
-      Uri uri = new Uri( $"{c_serverURL}?"+
+      Uri uri = new Uri( $"{c_serverURL}"+
                           $"dataSource=metars&"+
                           $"requestType=retrieve&"+
                           $"format={DataFormat}&"+
@@ -79,7 +103,7 @@ namespace MetarLib.Provider.AviationWeatherDotGov
       // https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&radialDistance=20;-104.65,39.83&hoursBeforeNow=3
 
       // this should retrieve one most recent record dating back max 3 hours
-      Uri uri = new Uri( $"{c_serverURL}?"+
+      Uri uri = new Uri( $"{c_serverURL}"+
                           $"dataSource=metars&"+
                           $"requestType=retrieve&"+
                           $"format={DataFormat}&"+
@@ -116,7 +140,7 @@ namespace MetarLib.Provider.AviationWeatherDotGov
       int degDist = range_StM / 10; // retrieve at 1/10 range scale
       degDist = ( degDist < 1 ) ? 1 : ( degDist > 89 ) ? 89 : degDist; // 0<d<90
       // this should retrieve one most recent record dating back max 3 hours
-      Uri uri = new Uri( $"{c_serverURL}?"+
+      Uri uri = new Uri( $"{c_serverURL}"+
                           $"dataSource=metars&"+
                           $"requestType=retrieve&"+
                           $"format={DataFormat}&"+
@@ -156,7 +180,7 @@ namespace MetarLib.Provider.AviationWeatherDotGov
       int degDist = range_StM / 10; // retrieve at 1/10 range scale
       degDist = ( degDist < 1 ) ? 1 : ( degDist > 89 ) ? 89 : degDist; // 0<d<90
       // this should retrieve one most recent record dating back max N hours
-      Uri uri = new Uri( $"{c_serverURL}?"+
+      Uri uri = new Uri( $"{c_serverURL}"+
                           $"dataSource=metars&"+
                           $"requestType=retrieve&"+
                           $"format={DataFormat}&"+

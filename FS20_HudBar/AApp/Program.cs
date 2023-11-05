@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using bm98_hbFolders;
 using DbgLib;
 
 namespace FS20_HudBar
@@ -36,6 +36,9 @@ namespace FS20_HudBar
 
       LOG.Log( $"Program Start with Instance ({Instance})" );
 
+      // Init the Folders Utility with our AppSettings File
+      Folders.InitStorage( "HudBarAppSettings.json" );
+
       // init the V2 AppSettings instance based on the command line argument
       AppSettingsV2.InitInstance( Folders.SettingsFile, Instance );
       var v2Used = AppSettingsV2.Instance.V2InUse;
@@ -62,6 +65,10 @@ namespace FS20_HudBar
       Application.EnableVisualStyles( );
       Application.SetCompatibleTextRenderingDefault( false );
       Application.Run( new frmMain( ) );
+
+      //
+      NLog.LogManager.Shutdown( );
+
     }
   }
 }

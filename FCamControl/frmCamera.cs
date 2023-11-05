@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using bm98_hbFolders;
 using FSimClientIF;
 using SC = SimConnectClient;
 using static FSimClientIF.Sim;
@@ -81,7 +82,7 @@ namespace FCamControl
     private int _prevSmartTarget = 99;
 
     // track the enabled Index Buttons and change only when needed to avoid flicker
-    private int _maxIndexEnabled = 0; 
+    private int _maxIndexEnabled = 0;
 
     // flag when Slot Saving is active
     private bool _slotSaving = false;
@@ -180,6 +181,10 @@ namespace FCamControl
     {
       // the first thing to do
       Standalone = standalone;
+
+      // Init the Folders Utility with our AppSettings File
+      Folders.InitStorage( "FCamAppSettings.json" );
+
       AppSettings.InitInstance( Folders.SettingsFile, instance );
       // ---------------
 

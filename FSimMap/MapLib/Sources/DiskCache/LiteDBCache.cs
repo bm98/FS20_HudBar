@@ -8,7 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CoordLib.MercatorTiles;
+using DbgLib;
 using LiteDB;
+
+using MapLib.Sources.Providers;
 
 namespace MapLib.Sources.DiskCache
 {
@@ -40,6 +43,11 @@ namespace MapLib.Sources.DiskCache
   /// </summary>
   internal class LiteDBCache
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     /// <summary>
     /// The Record to store in the Database
     /// using the DBLite Object Mapper
@@ -99,7 +107,9 @@ namespace MapLib.Sources.DiskCache
 
     }
 
-    private const long c_initialSize = 128 * 1024 * 1024; // 64MB the initial Size for each DB file
+    private static readonly int DiskCacheMB = MapProviderBase.ProviderIni.DiskCacheMB;
+
+    private readonly long c_initialSize = DiskCacheMB * 1024 * 1024; // 32..1024MB the initial Size for each DB file
     private const string c_access = "shared"; // The DBLite access prop (use this for shared access, MapLib uses threads to load tiles)
     private const string c_dbfTemplate = "MapLibCache_{$1}.dblite"; // e.g. MapLibCache_{Provider}.dblite
 
@@ -153,7 +163,7 @@ namespace MapLib.Sources.DiskCache
     public bool PutImageToCache( byte[] cacheData, MapProvider mapProvider, TileXY tileXY, ushort zoom )
     {
       if (cacheData == null) {
-        Debug.WriteLine( "DBLite-PutImageToCache: Tile with Null Data received - ignored" );
+        LOG.Log( "DBLite-PutImageToCache", $"Tile with Null Data received - ignored" );
         return false;
       }
       // using the string representation within the LiteDB 
@@ -174,7 +184,7 @@ namespace MapLib.Sources.DiskCache
         return true;
       }
       catch (Exception ex) {
-        Debug.WriteLine( $"DBLite-PutImageToCache: Exception while caching ({Tools.ToFullKey( mapProvider, tileXY, zoom )})\n{ex}" );
+        LOG.LogException( "DBLite-PutImageToCache", ex, $"Exception while caching ({Tools.ToFullKey( mapProvider, tileXY, zoom )})" );
       }
       return false;
     }
@@ -214,13 +224,13 @@ namespace MapLib.Sources.DiskCache
           // get the first (or none), there should not be >1 with the same GID anyway
           var result = col.FindOne( x => x.GridID == GID( tileXY, zoom ) );
           if (result != null) {
-            MapImageID mapImageID = new MapImageID( new TileXY( result.X, result.Y ), (ushort)result.Z,  mapProvider);
+            MapImageID mapImageID = new MapImageID( new TileXY( result.X, result.Y ), (ushort)result.Z, mapProvider );
             mapImage = MapImage.FromArray( result.TileData, mapImageID ); // retrieve the Tile as MapImage
           }
         }
       }
       catch (Exception ex) {
-        Debug.WriteLine( $"DBLite-PutImageToCache: Exception while retrieving ({Tools.ToFullKey( mapProvider, tileXY, zoom )})\n{ex}" );
+        LOG.LogException( "DBLite-PutImageToCache", ex, $"Exception while retrieving ({Tools.ToFullKey( mapProvider, tileXY, zoom )})" );
         mapImage = null;
       }
       return mapImage;
@@ -246,10 +256,10 @@ namespace MapLib.Sources.DiskCache
           var col = db.GetCollection<CacheTileDbRecord>( CacheTileDbRecord.CollectionName );
           result = col.DeleteMany( x => x.StoreTime < date );
         }
-        Debug.WriteLine( $"DBLite-DeleteOlderThan: deleted {result} records" );
+        LOG.Log( "DBLite-DeleteOlderThan", $"Deleted {result} records" );
       }
       catch (Exception ex) {
-        Debug.WriteLine( "DBLite-DeleteOlderThan: " + ex.ToString( ) );
+        LOG.LogException( "DBLite-DeleteOlderThan", ex, "Failed" );
         result = 0;
       }
       return result;
@@ -261,7 +271,7 @@ namespace MapLib.Sources.DiskCache
     /// <param name="maxRecNumber">Max number of records in DB</param>
     /// <param name="mapProvider">provider name</param>
     /// <returns>The number of deleted tiles.</returns>
-    public int DeleteByMaxRecNumber(long maxRecNumber, MapProvider mapProvider )
+    public int DeleteByMaxRecNumber( long maxRecNumber, MapProvider mapProvider )
     {
       if (mapProvider == MapProvider.DummyProvider) return 0;
 
@@ -274,14 +284,14 @@ namespace MapLib.Sources.DiskCache
           var col = db.GetCollection<CacheTileDbRecord>( CacheTileDbRecord.CollectionName );
           int recToDelete = (int)(col.LongCount( ) - maxRecNumber);
           if (recToDelete > 0) {
-            var q = col.Query( ).OrderBy( x => x.StoreTime, Query.Ascending ).Limit( recToDelete ).ToEnumerable();
-            result = col.DeleteMany( x=> q.Contains(x));
+            var q = col.Query( ).OrderBy( x => x.StoreTime, Query.Ascending ).Limit( recToDelete ).ToEnumerable( );
+            result = col.DeleteMany( x => q.Contains( x ) );
           }
         }
-        Debug.WriteLine( $"DBLite-DeleteByMaxRecNumber: deleted {result} records" );
+        LOG.Log( "DBLite-DeleteByMaxRecNumber", $"Deleted {result} records" );
       }
       catch (Exception ex) {
-        Debug.WriteLine( "DBLite-DeleteByMaxRecNumber: " + ex.ToString( ) );
+        LOG.LogException( "DBLite-DeleteByMaxRecNumber", ex, "Failed" );
         result = 0;
       }
       return result;

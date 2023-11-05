@@ -1,5 +1,5 @@
-FS20_HudBar V 0.65 - Build 66 BETA
-(c) M. Burri - 22-Aug-2023
+FS20_HudBar V 0.67 - Build 67 BETA
+(c) M. Burri - 10-Nov-2023
 
 Contains files:
 
@@ -20,7 +20,7 @@ FChecklistBox.dll           ChecklistBox WinForms library
 FShelf.dll                  Shelf WinForms library
 dNetBm98                    Tools for .Net and WinForms
 FSimClientIF.dll            Generic FSim Client interface definition
-FSimFacilityDataLib.dll     MS facility database access library
+FSFData.dll                 MS facility database access library
 FSimFacilityIF.dll          MS facility database interface definition
 FSimIF.dll                  Generic FSim interface definition
 MapLib.dll                  Mapping library
@@ -31,10 +31,18 @@ SettingsLib.dll             Application settings persistence library
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
 SimConnectClientAdapter.dll Connection wrapper
 SpeechLib.dll               Voice synth lib using Win10 TTS facilities
+NLog.config.OFF             Logging config file / remove .OFF to enable logging
 
 3rd Party:
 BingMapsRESTToolkit.dll     Microsoft provided library for accessing Bing Map data
 LiteDB.dll                  3rd party data management library
+NLog.dll                    3rd party logging library
+HtmlRenderer.dll            3rd party HTML formatting library
+HtmlRenderer.WinForms.dll   3rd party HTML formatting library
+HtmlRenderer.PdfSharp.dll   3rd party PDF formatting wrapper
+PdfSharp.dll				3rd party PDF formatting library
+PdfiumViewer.dll			3rd party PDF renderer library
+
 From Google Fonts Library embedded:
   Share_Tech_Mono			(Used as condensed font)
 
@@ -52,7 +60,9 @@ FacilityDataLoader.exe      MSFS Facility conversion tool
 BGLlib.dll                  BGL and LLM decoder
 CoordLib.dll                A coord. handling library
 FSimFacilityIF.dll          MS facility database interface definition
-FSimFacilityDataLib.dll     MS facility database access library
+FSFData.dll     MS facility database access library
+NLog.config                 Logging config file
+NLog.dll                    3rd party logging library
 LiteDB.dll                  3rd party data management library
 System.Data.SQLite.dll      3rd party data management library
 x64\SQLite.Interop.dll      3rd party data management library 64bit C-library
@@ -73,6 +83,22 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.67-B67
+- Add Missed Approach Legs to Map Approach
+- Add Decoding and display of LNM Plan (LNM native format); load from file
+- Add Decoding and display of GPX Plan; load from file
+- Add PDF as supported Shelf Format
+- Add Subfolders in FlightBag - Shelf
+- Add Airport Overview to FlightBag - Shelf (in folder Airport Reports)
+- Update SimBrief Flightplan is now stored PDF document (@.FlightPlan)
+- Update FlightTable (@.FlightTable) more details added when available in plan
+- Update Display of Routes with procedures and limits
+- Update MapLib for Stamen Maps (now served by Stadia Maps - needs a Key, default OFF)
+- Update METAR collection (new URL from provider)
+- Update MSFS Connection procedure reviewed and improved
+- Update Using NLog for logging now
+- Update QuickGuides
 
 V 0.65-B66
 - Add Heli Trim % (lon, lat) Item + Reset both on Click

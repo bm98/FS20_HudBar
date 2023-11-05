@@ -25,6 +25,10 @@ namespace FS20_ChecklistBox
       Application.EnableVisualStyles( );
       Application.SetCompatibleTextRenderingDefault( true );
       Application.Run( new FChecklistBox.frmChecklistBox( Instance, true ) ); // standalone
+
+      //
+      NLog.LogManager.Shutdown( );
+
     }
   }
 }

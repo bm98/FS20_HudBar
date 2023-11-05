@@ -4,28 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 using CoordLib;
 using CoordLib.Extensions;
 
+using FSimFacilityIF;
+
+using static FSimFacilityIF.Extensions;
+
 namespace FlightplanLib
 {
-  /// <summary>
-  /// The Type of the Waypoint
-  /// </summary>
-  public enum TypeOfWaypoint
-  {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    Airport = 0,
-    Waypoint,
-    VOR,
-    NDB,
-    User,
-    ATC,
-    Runway,
-    Other,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-  }
 
   /// <summary>
   /// Altitude Limits for a Waypoint
@@ -49,231 +38,237 @@ namespace FlightplanLib
   ///   Assigning data is limited to class internal methods
   ///   
   /// </summary>
-  public class Waypoint
+  public class Waypoint : IEquatable<Waypoint>
   {
     /// <summary>
-    /// Original Waypoint ID from source
+    /// Get;Set: Type of this Waypoint
     /// </summary>
-    public string ID { get; internal set; } = "";
+    public WaypointTyp WaypointType { get; internal set; } = WaypointTyp.Unknown;
 
     /// <summary>
-    /// Clean ID of the Waypoint - removed all known decorations
+    /// Get;Set: Usage of this Waypoint
     /// </summary>
-    public string Wyp_Ident => CleanB21SoaringName( ID );
+    public UsageTyp WaypointUsage { get; internal set; } = UsageTyp.Unknown;
+
     /// <summary>
-    /// Clean ID of the Waypoint - removed all known decorations
-    /// shortened to 7 chars
+    /// Get;Set: Original Waypoint Ident from source
     /// </summary>
-    public string Wyp_Ident7 {
+    public string SourceIdent { get; internal set; } = "";
+
+    /// <summary>
+    /// Get: Clean ID of the Waypoint - removed all known decorations
+    /// </summary>
+    public string Ident => Formatter.CleanB21SoaringName( SourceIdent );
+    /// <summary>
+    /// Get: Clean ID of the Waypoint - removed all known decorations
+    /// shortened to 7 chars max
+    /// </summary>
+    public string Ident7 {
       get {
-        var w = Wyp_Ident;
+        var w = Ident;
         if (w.Length > 7) return w.Substring( 0, 7 );
         return w;
       }
     }
     /// <summary>
-    /// Get the Decoration for soaring waypoints
+    /// Get: The Decoration for soaring waypoints
     /// </summary>
-    public string Wyp_Deco => GetB21SoaringDecoration( ID );
+    public string IdentDecoration => Formatter.GetB21SoaringDecoration( SourceIdent );
     /// <summary>
-    /// True if the Wyp as DECO information e.g. soaring Wyp 
+    /// Get: True if the Wyp as DECO information e.g. soaring Wyp 
     /// </summary>
-    public bool IsDecorated => !string.IsNullOrWhiteSpace( Wyp_Deco );
-
+    public bool IsDecorated => !string.IsNullOrWhiteSpace( IdentDecoration );
 
     /// <summary>
-    /// Optional:
-    /// The ICAO ident of this Waypoint
+    /// Optional: Get;Set: The ICAO ident of this Waypoint
     /// </summary>
     public IcaoRec Icao_Ident { get; internal set; } = new IcaoRec( );
 
     /// <summary>
-    /// Optional:
-    /// The common name of this Waypoint
+    /// Optional: Get;Set: The common name of this Waypoint
     /// </summary>
     public string Name { get; internal set; } = "";
 
     /// <summary>
-    /// Type of this Waypoint
+    /// The Lat, Lon, Target Altitude [ft] of this Waypoint
     /// </summary>
-    public TypeOfWaypoint WaypointType { get; internal set; } = TypeOfWaypoint.Other;
-
+    public LatLon LatLonAlt_ft { get => _LatLonAlt_ft; internal set => _LatLonAlt_ft = value; }
+    private LatLon _LatLonAlt_ft = LatLon.Empty;
     /// <summary>
-    /// The Lat, Lon, Elevation [ft] of this location
+    /// Returns a Coordinate Name for this item
     /// </summary>
-    public LatLon LatLonAlt_ft { get; internal set; } = LatLon.Empty;
-
+    public string CoordName => Dms.ToRouteCoord( LatLonAlt_ft, "d" );
     /// <summary>
-    /// A rounded Altitude to 100ft except for Airports and Runways
-    /// </summary>
-    public float AltitudeRounded_ft =>
-      (WaypointType == TypeOfWaypoint.Airport || WaypointType == TypeOfWaypoint.Runway)
-        ? (float)LatLonAlt_ft.Altitude
-        : (float)(Math.Round( LatLonAlt_ft.Altitude / 100.0 ) * 100.0);
-
-    /// <summary>
-    /// The Magnetic Variation at this location
+    /// Get: The Magnetic Variation at this location
     /// </summary>
     public double MagVar_deg => LatLonAlt_ft.MagVarLookup_deg( );
 
     /// <summary>
-    /// Distance to this Waypoint
+    /// Set a new Target Altitude for this Waypoint
     /// </summary>
-    public double Distance_nm { get; internal set; } = -1;
+    /// <param name="feet">Alt in feet</param>
+    public void SetAltitude_ft( double feet ) => _LatLonAlt_ft.SetAltitude( feet );
+
     /// <summary>
-    /// Optional:
-    /// An Airway id this Wyp belongs to
+    /// A rounded Altitude to 100ft except for Airports and Runways
+    /// </summary>
+    public int AltitudeRounded_ft =>
+      (WaypointType == WaypointTyp.APT || WaypointType == WaypointTyp.RWY)
+        ? dNetBm98.XMath.AsRoundInt( LatLonAlt_ft.Altitude, 1 )
+        : dNetBm98.XMath.AsRoundInt( LatLonAlt_ft.Altitude, 100 );
+
+    /// <summary>
+    /// Get;Set: Lo Altitude Limit for Wyps 
+    /// Use negative or 0 to omit 
+    /// </summary>
+    public int AltitudeLo_ft { get; internal set; } = 0;
+    /// <summary>
+    /// Get;Set: Hi Altitude Limit for Wyps 
+    /// Use negative or 0 to omit 
+    /// </summary>
+    public int AltitudeHi_ft { get; internal set; } = 0;
+    /// <summary>
+    /// Speed Limit for Procedures
+    /// </summary>
+    public int SpeedLimit_kt { get; set; } = 0;
+
+    /// <summary>
+    /// Optional: Get;Set: An Airway ident this Wyp belongs to
+    /// Empty when not set
     /// </summary>
     public string Airway_Ident { get; internal set; } = "";
     /// <summary>
-    /// Optional:
-    /// An SID id this Wyp belongs to
+    /// Optional: Get;Set: A SID ident this Wyp belongs to
+    /// Empty when not set
     /// </summary>
     public string SID_Ident { get; internal set; } = "";
     /// <summary>
-    /// Optional:
-    /// An STAR id this Wyp belongs to
+    /// Optional: Get;Set: A STAR ident this Wyp belongs to
+    /// Empty when not set
     /// </summary>
     public string STAR_Ident { get; internal set; } = "";
-
     /// <summary>
-    /// Optional:
-    /// An Approach Type
+    /// Optional: Get;Set: An Approach Type String (RNAV, ILS etc as derived from the source)
+    /// Empty when not set
     /// </summary>
-    public string ApproachType { get; internal set; } = ""; // RNAV, ILS, LOCALIZER, ?? others ??
+    public string ApproachTypeS { get; internal set; } = ""; // RNAV, ILS, LOCALIZER, ?? others ??
     /// <summary>
-    /// Optional:
-    /// An Approach Suffix
+    /// Optional: Get;Set: An Approach Suffix
+    /// Empty when not set
     /// </summary>
     public string ApproachSuffix { get; internal set; } = ""; // empty or X,Y,Z etc. from approach ILS 22 Y
     /// <summary>
-    /// Full Approach   ILS X RWY 22C  RNAV X RWY 22C
+    /// Approach Reference 'ILS X'  'RNAV X' 'VOR'
     /// </summary>
-    public string Approach_Ident => $"{ApproachType} {ApproachSuffix} RWY {Runway_Ident}";
+    public string ApproachProcRef => AsProcRef( ApproachTypeS, ApproachSuffix );
+    /// <summary>
+    /// Approach full name  'ILS X RWY 22C'  'RNAV X RW22C' 'VOR RW01'
+    /// </summary>
+    public string ApproachName => $"{ApproachProcRef} {RunwayIdent}";
+    /// <summary>
+    /// The Waypoint Number of the Approach 
+    /// Starts with 1...
+    /// </summary>
+    public int ApproachSequence { get; internal set; } = 0;
 
 
     /// <summary>
-    /// Optional:
-    /// The Runway number as string
+    /// Optional: Get;Set: The Runway number as string
     /// </summary>
     internal string RunwayNumber_S { get; set; } = ""; // leave it as string - don't know what could be in here...
     /// <summary>
-    /// Optional:
-    /// The Runway designation as string as provided by the plan
+    /// Optional: Get;Set: The Runway designation as string as provided by the plan
+    /// e.g. R, L, C, RIGHT, LEFT, BOTH??
     /// </summary>
     internal string RunwayDesignation { get; set; } = ""; // RIGHT, LEFT, CENTER, ?? others ??
-
     /// <summary>
-    /// Returns a Runway ident like 22 or 12R etc.
+    /// Get: Returns a Runway ident like RW22 or RW12R etc.
     /// </summary>
-    public string Runway_Ident => FlightPlan.ToRunwayID( RunwayNumber_S, RunwayDesignation );
+    public string RunwayIdent => AsRwIdent( RunwayNumber_S, RunwayDesignation );
 
 
     /// <summary>
-    /// True if the Wyp is part of SID
-    /// </summary>
-    public bool IsSID => !string.IsNullOrWhiteSpace( SID_Ident );
-    /// <summary>
-    /// True if the Wyp is part of an Airway
+    /// Get: True if the Wyp is part of an Enroute
     /// </summary>
     public bool IsAirway => !string.IsNullOrWhiteSpace( Airway_Ident ) && !IsSIDorSTAR;
     /// <summary>
-    /// True if the Wyp is part of STAR
+    /// Get: True if the Wyp is part of SID
+    /// </summary>
+    public bool IsSID => !string.IsNullOrWhiteSpace( SID_Ident );
+    /// <summary>
+    /// Get: True if the Wyp is part of STAR
     /// </summary>
     public bool IsSTAR => !string.IsNullOrWhiteSpace( STAR_Ident );
     /// <summary>
-    /// True is this Wyp belongs to a SID OR to a STAR
+    /// Get: True is this Wyp belongs to a SID OR to a STAR
     /// </summary>
     public bool IsSIDorSTAR => IsSID || IsSTAR;
-
     /// <summary>
-    /// True if there is an Approach
+    /// Get: True if there is an Approach
     /// </summary>
-    public bool IsAPR => !string.IsNullOrEmpty( ApproachType );
-
-
+    public bool IsAPR => !string.IsNullOrEmpty( ApproachTypeS );
+    /// <summary>
+    /// Get: True is this Wyp belongs to a SID OR to a STAR OR to an Approach
+    /// </summary>
+    public bool IsProc => IsSID || IsSTAR || IsAPR;
 
     /// <summary>
-    /// Inbound True Track [deg] from last Wyp
+    /// Get;Set: Distance TO this Waypoint
+    /// Use negative when not known
+    /// </summary>
+    public double Distance_nm { get; internal set; } = -1;
+
+    /// <summary>
+    /// Get;Set: Inbound True Track [deg] from last Wyp (-1 if not set)
     /// </summary>
     public int InboundTrueTrk { get; internal set; } = -1;
     /// <summary>
-    /// Inbound Mag Track [degm] from last Wyp
+    /// Get: Inbound Mag Track [degm] from last Wyp
     /// </summary>
-    public int InboundMagTrk => (int)CoordLib.WMM.MagVarEx.MagFromTrueBearing( InboundTrueTrk, LatLonAlt_ft, true );
+    public int InboundMagTrk => (InboundTrueTrk < 0) ? -1
+                              : (int)CoordLib.WMM.MagVarEx.MagFromTrueBearing( InboundTrueTrk, LatLonAlt_ft, true );
 
     /// <summary>
-    /// Outbound True Track [deg] from last Wyp
+    /// Get; Set: Outbound True Track [deg] from last Wyp (-1 if not set)
     /// </summary>
     public int OutboundTrueTrk { get; internal set; } = -1;
     /// <summary>
-    /// Outbound Mag Track [degm] from last Wyp
+    /// Get: Outbound Mag Track [degm] from last Wyp
     /// </summary>
-    public int OutboundMagTrk => (int)CoordLib.WMM.MagVarEx.MagFromTrueBearing( OutboundTrueTrk, LatLonAlt_ft, true );
+    public int OutboundMagTrk => (OutboundTrueTrk < 0) ? -1
+                              : (int)CoordLib.WMM.MagVarEx.MagFromTrueBearing( OutboundTrueTrk, LatLonAlt_ft, true );
 
     /// <summary>
-    /// Optional:
-    /// An associated frequency
+    /// Optional: Get;Set: An associated frequency as string
     /// </summary>
     public string Frequency { get; internal set; } = "";
 
     /// <summary>
-    /// Optional:
-    /// A stage string (source dependent e.g. CLB, CRZ ...)
+    /// Optional: Get;Set: A stage string (source dependent e.g. CLB, CRZ ...)
     /// </summary>
     public string Stage { get; internal set; } = "";
 
 
-    // Tools
     /// <summary>
-    /// The B21 Soaring engine uses tagged names for the Task Management
-    ///  [*]Name+Elev[|MaxAlt[/MinAlt]][xRadius]
-    ///  1st * - Start of Task
-    ///  2nd * - End of Task
-    ///  Name  - the WP name
-    ///  +     - Separator
-    ///  Elev  - Waypoint Elevation  [ft}
-    ///  |MaxAlt - Max alt of the gate [ft}
-    ///  /MinAlt - Min alt of the gate [ft}
-    ///  xRadius - Radius of the gate [meters]
+    /// Equatable Implementation
     /// </summary>
-    /// <param name="b21name">Possibly a B21 Task Waypoint name</param>
-    /// <returns>A string</returns>
-    private static string CleanB21SoaringName( string b21name )
-    {
-      Match match = c_wpB21.Match( b21name );
-      if (match.Success) {
-        if (match.Groups["name"].Success) {
-          return match.Groups["name"].Value;
-        }
-      }
-      // seems a regular name
-      return b21name;
-    }
-    private readonly static Regex c_wpB21 =
-      new Regex( @"^(?<start_end>\*)?(?<name>([^\+])*)(?<elevation>(\+|-)\d{1,5})(?<maxAlt>\|\d{1,5})?(?<minAlt>\/\d{1,5})?(?<radius>x\d{1,5})?" );
+    public bool Equals( Waypoint other ) => Equals( this, other );
 
     /// <summary>
-    /// Get the decorations from the Waypoint ID
+    /// Returns true when equal
     /// </summary>
-    /// <param name="b21name">Possibly a B21 Task Waypoint name</param>
-    /// <returns>A string</returns>
-    private static string GetB21SoaringDecoration( string b21name )
+    public static bool Equals( Waypoint x, Waypoint y )
     {
-      // decoration see above
-      Match match = c_wpB21.Match( b21name );
-      if (match.Success) {
-        var deco = "";
-        if (match.Groups["start_end"].Success) { deco += "* "; }
-        if (match.Groups["elevation"].Success) { deco += $"{match.Groups["elevation"].Value} ft "; }
-        if (match.Groups["minAlt"].Success) { deco += $"(min {match.Groups["minAlt"].Value}) "; }
-        if (match.Groups["maxAlt"].Success) { deco += $"(max {match.Groups["maxAlt"].Value}) "; }
-        if (match.Groups["radius"].Success) { deco += $"(rad {match.Groups["radius"].Value} m)"; }
-        return deco;
-      }
-      // seems a regular name
-      return "";
+      //Check whether the compared objects reference the same data.
+      if (Object.ReferenceEquals( x, y )) return true;
+      //Check whether any of the compared objects is null.
+      if (x is null || y is null) return false;
+
+      return
+        x.Ident.Equals( y.Ident )
+        && x.WaypointType.Equals( y.WaypointType );
     }
+
 
   }
 }

@@ -106,7 +106,7 @@ namespace MapLib.Sources.Providers
     // ************ STATIC CLASS IMPLEMENTATION
 
     // Key from Ini File
-    private static string BingMapsKey = MapProviderBase.ProviderIni.BingKey;
+    private static readonly string BingMapsKey = MapProviderBase.ProviderIni.BingKey;
     // dict of Tile URLs etc.
     private static ConcurrentDictionary<ImageryType, ImMetadata> _metaCache = new ConcurrentDictionary<ImageryType, ImMetadata>( );
     // a default one until we get the MetaData

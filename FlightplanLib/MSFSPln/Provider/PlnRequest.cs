@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,7 +16,7 @@ namespace FlightplanLib.MSFSPln.Provider
     public static string ResponseRaw { get; set; } = "";
 
     /// <summary>
-    /// Async Retrieve a PLN XML record
+    /// Async Retrieve a GPX XML record
     /// </summary>
     /// <param name="fileName">The fully qualified filename</param>
     /// <returns>An XML Document</returns>

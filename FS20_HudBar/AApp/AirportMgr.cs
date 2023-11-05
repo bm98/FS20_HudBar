@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using FSimFacilityIF;
 using System.IO;
+
+using bm98_hbFolders;
+using FSimFacilityIF;
 
 namespace FS20_HudBar
 {
@@ -21,7 +22,7 @@ namespace FS20_HudBar
     public const string AirportNA_Icao = "n.a.";
 
     /// <summary>
-    /// The Arrival Airport ICAO Code
+    /// The Arrival Airport IlsID Code
     /// </summary>
     public static string ArrAirportICAO { get; private set; } = AirportNA_Icao;
 
@@ -41,7 +42,7 @@ namespace FS20_HudBar
     public static bool IsArrAvailable => ArrAirportICAO != AirportNA_Icao;
 
     /// <summary>
-    /// The Departure Airport ICAO Code
+    /// The Departure Airport IlsID Code
     /// </summary>
     public static string DepAirportICAO { get; private set; } = AirportNA_Icao;
 
@@ -67,10 +68,10 @@ namespace FS20_HudBar
 
     /// <summary>
     /// Update from Sim Data Event
-    /// Maintain the current Departure Airport - if the ICAO cannot be found it will get N.A.
+    /// Maintain the current Departure Airport - if the IlsID cannot be found it will get N.A.
     /// 
     /// </summary>
-    /// <param name="icao">The airport ICAO code or an empty string</param>
+    /// <param name="icao">The airport IlsID code or an empty string</param>
     public static void UpdateDep( string icao )
     {
       icao = icao.ToUpperInvariant( );
@@ -87,7 +88,7 @@ namespace FS20_HudBar
         var apt = GetAirport( icao ); //  Airports.FindAirport( icao );
         if (apt != null) {
           // Apt found in DB
-          DepLocation = new LatLon( apt.Lat, apt.Lon, apt.Elevation_m );
+          DepLocation = apt.Coordinate;
           DepAirportName = apt.Name;
           DepAirportICAO = icao;
         }
@@ -98,10 +99,10 @@ namespace FS20_HudBar
 
     /// <summary>
     /// Update from Sim Data Event
-    /// Maintain the current Arrival Airport - if the ICAO cannot be found it will get N.A.
+    /// Maintain the current Arrival Airport - if the IlsID cannot be found it will get N.A.
     /// 
     /// </summary>
-    /// <param name="icao">The airport ICAO code or an empty string</param>
+    /// <param name="icao">The airport IlsID code or an empty string</param>
     public static void UpdateArr( string icao )
     {
       icao = icao.ToUpperInvariant( );
@@ -118,7 +119,7 @@ namespace FS20_HudBar
         var apt = GetAirport( icao ); // Airports.FindAirport( icao );
         if (apt != null) {
           // Apt found in DB
-          ArrLocation = new LatLon( apt.Lat, apt.Lon, apt.Elevation_m );
+          ArrLocation = apt.Coordinate;
           ArrAirportName = apt.Name;
           ArrAirportICAO = icao;
         }
@@ -129,11 +130,11 @@ namespace FS20_HudBar
 
     /// <summary>
     /// Update from Sim Data Event
-    /// Maintain the current Departure and Arrival Airport - if the ICAO cannot be found it will get N.A.
+    /// Maintain the current Departure and Arrival Airport - if the IlsID cannot be found it will get N.A.
     /// 
     /// </summary>
-    /// <param name="depIcao">The departure airport ICAO code or an empty string</param>
-    /// <param name="arrIcao">The arrival airport ICAO code or an empty string</param>
+    /// <param name="depIcao">The departure airport IlsID code or an empty string</param>
+    /// <param name="arrIcao">The arrival airport IlsID code or an empty string</param>
     public static void Update( string depIcao, string arrIcao )
     {
       UpdateDep( depIcao );
@@ -181,7 +182,7 @@ namespace FS20_HudBar
       // sanity
       if (!File.Exists( Folders.GenAptDBFile )) return null; // cannot get facilities
 
-      using (var _db = new FSimFacilityDataLib.AirportDB.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
+      using (var _db = new FSFData.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
         if (!_db.Open( Folders.GenAptDBFile )) {
           return null; // no db available
         }

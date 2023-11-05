@@ -14,7 +14,7 @@ namespace bm98_Map.UI
   /// <summary>
   /// A FlowLayoutPanel supporting Label Strips and handling thereof
   ///   The panel left position must be set by the owner using the Y Property
-  ///   The panel gets the min. width from the max width argument (fixed widht)
+  ///   The panel gets the min. width from the max width argument (fixed width)
   ///   Height is set according to items and starts to scroll when the max height is reached
   ///   The panel is stacked on the bottom Y coord when commited
   ///   A single strip item is selectable if set when adding and will get a frame when selected

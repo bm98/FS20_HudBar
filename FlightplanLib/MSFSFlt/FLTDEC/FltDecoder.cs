@@ -19,7 +19,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// <returns>An OFP</returns>
     public static FLT FromString( string fltIniString )
     {
-      var ofp = Formatter.FromIniString<FLT>( fltIniString );
+      var ofp = Ini_Formatter.FromIniString<FLT>( fltIniString );
       if (ofp != null) {
         return ofp;
       }
@@ -34,7 +34,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// <returns>An OFP</returns>
     public static FLT FromFile( string fltIniFile )
     {
-      var ofp = Formatter.FromIniFile<FLT>( fltIniFile );
+      var ofp = Ini_Formatter.FromIniFile<FLT>( fltIniFile );
       if (ofp != null) {
         return ofp;
       }

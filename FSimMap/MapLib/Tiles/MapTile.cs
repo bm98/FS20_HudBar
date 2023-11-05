@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using CoordLib;
 using CoordLib.MercatorTiles;
 using CoordLib.LLShapes;
+using DbgLib;
 
 namespace MapLib.Tiles
 {
@@ -18,6 +19,11 @@ namespace MapLib.Tiles
   /// </summary>
   internal class MapTile : IDisposable
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // To lock the Img Use
     private readonly object _imageLockObj = new object( );
 
@@ -40,7 +46,7 @@ namespace MapLib.Tiles
     {
       //  Debug.WriteLine( $"{DateTime.Now.Ticks} MapTile.OnLoadComplete- Key: <{FullKey}> Failed: {failed}" );
       if (LoadComplete == null)
-        Debug.WriteLine( $"MapTile.OnLoadComplete: NO EVENT RECEIVERS HAVE REGISTERED" );
+        LOG.LogError( "MapTile.OnLoadComplete", "NO EVENT RECEIVERS HAVE REGISTERED" );
 
       LoadComplete?.Invoke( this, new LoadCompleteEventArgs( tileKey, trackKey, failed, false ) ); // Tile cannot make the Matrix complete
     }
@@ -244,7 +250,7 @@ namespace MapLib.Tiles
     public void Configure( ushort zoomLevel, MapProvider provider, int version, EventHandler<LoadCompleteEventArgs> loadCompleteHandler )
     {
       if (provider == MapProvider.DummyProvider) {
-        Debug.WriteLine( $"MapTile.Configure: ERROR Invalid MapProvider" );
+        LOG.LogError( "MapTile.Configure", "ERROR Invalid MapProvider" );
         throw new ArgumentException( "Invalid MapProvider" ); // cannot
       }
 
@@ -266,7 +272,7 @@ namespace MapLib.Tiles
       if (LoadingStatus == ImageLoadingStatus.Loading) {
         // the Tile is currently loading from a prev call
         // wait until this one has finished before loading a new one
-        Debug.WriteLine( $"MapTile.LoadTile: Busy Tile {TrackKey}" );
+        LOG.Log( "MapTile.LoadTile", $"Busy Tile {TrackKey}" );
         return false;// cannot load when loading
       }
       _providerInstance = Sources.Providers.MapProviderBase.GetProviderInstance( MapProvider );
@@ -291,10 +297,10 @@ namespace MapLib.Tiles
         LoadingStatus = ImageLoadingStatus.LoadFailed;
         // could not add tracking ??
         if (trackingList.ContainsKey( TrackKey )) {
-          Debug.WriteLine( $"MapTile.LoadTile: ERROR _trackingList.TryAdd FAILED for {TrackKey} - Key exists" );
+          LOG.LogError( "MapTile.LoadTile", $"_trackingList.TryAdd FAILED for {TrackKey} - Key exists" );
         }
         else {
-          Debug.WriteLine( $"MapTile.LoadTile: ERROR _trackingList.TryAdd FAILED for {TrackKey} - Locked ??" );
+          LOG.LogError( "MapTile.LoadTile", $"_trackingList.TryAdd FAILED for {TrackKey} - Locked ??" );
         }
 
       }
@@ -343,7 +349,7 @@ namespace MapLib.Tiles
     internal void OnDone( )
     {
       // sanity
-      if (MapProvider == MapProvider.DummyProvider) return; 
+      if (MapProvider == MapProvider.DummyProvider) return;
 
       //   Debug.WriteLine( $"{DateTime.Now.Ticks} MapTile.OnDone: Called for: {FullKey}" );
       if (Service.RequestScheduler.Instance.TileWorkflowCatalog.ContainsKey( FullKey )) {
@@ -371,7 +377,7 @@ namespace MapLib.Tiles
       }
 
       // failed case
-      Debug.WriteLine( $"{DateTime.Now.Ticks} MapTile.OnDone: Error - could not get the image: {TrackKey}" );
+      LOG.LogError( "MapTile.OnDone", $"Could not get the image: {TrackKey}" );
       LoadingStatus = ImageLoadingStatus.LoadFailed;
       OnLoadComplete( MapImageID.FullKey, Tools.ToTrackKey( MapImage.MapImageID, _version ), true );
     }
@@ -385,7 +391,7 @@ namespace MapLib.Tiles
       MapProvider = MapProvider.DummyProvider;
       MapImageID = new MapImageID( TileXY.Empty, 0, MapProvider.DummyProvider );
       _version = 0;
-      _obsolete= false;
+      _obsolete = false;
       _providerInstance = null;
       this.LoadComplete -= _handler;
       // Clear allocated resources

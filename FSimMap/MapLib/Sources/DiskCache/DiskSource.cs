@@ -5,7 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DbgLib;
+
 using MapLib.Service;
+using MapLib.Sources.Providers;
 
 namespace MapLib.Sources.DiskCache
 {
@@ -14,9 +17,16 @@ namespace MapLib.Sources.DiskCache
   /// </summary>
   internal class DiskSource : IImgSource
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
+    private static readonly int DiskCacheMB = MapProviderBase.ProviderIni.DiskCacheMB;
+
     // max #tiles to retain in cache (about 25kB per Tile - depends on the source image format)
-    private const int c_maxRecNumber = 128_000 / 25; // ~128MB -> 5120 tiles per Provider
-    // #days to retain cached records
+    private readonly int c_maxRecNumber = DiskCacheMB * 1024 / 25; // ~128MB -> 5120 tiles per Provider
+        // #days to retain cached records
     private const int c_retentionDays = 100;
 
     private LiteDBCache _cache = new LiteDBCache( );
@@ -42,7 +52,7 @@ namespace MapLib.Sources.DiskCache
         mapImage = _cache.GetImageFromCache( imageSought.MapProvider, imageSought.TileXY, imageSought.ZoomLevel );
       }
       if (mapImage != null) {
-//        Debug.WriteLine( $"DiskSource.GetTileImage: Served from DISK CACHE - {imageSought.FullKey}" );
+        //        Debug.WriteLine( $"DiskSource.GetTileImage: Served from DISK CACHE - {imageSought.FullKey}" );
         return mapImage;
       }
       else {
@@ -81,15 +91,15 @@ namespace MapLib.Sources.DiskCache
     public void MaintainCacheSize( )
     {
       DateTime oldDate = DateTime.Now - new TimeSpan( c_retentionDays, 0, 0, 0 );
-      Debug.WriteLine( $"DiskSource.MaintainCacheSize: started, {c_retentionDays} days retention " );
+      LOG.Log( "DiskSource.MaintainCacheSize", $"Started, {c_retentionDays} days retention " );
 
       foreach (MapProvider provider in Enum.GetValues( typeof( MapProvider ) )) {
         int deletedRecords = _cache.DeleteOlderThan( oldDate, provider );
-        Debug.WriteLine( $"DiskSource.MaintainCacheSize: deleted {deletedRecords} records from {provider}" );
+        LOG.Log( "DiskSource.MaintainCacheSize", $"Deleted {deletedRecords} records from {provider}" );
       }
       foreach (MapProvider provider in Enum.GetValues( typeof( MapProvider ) )) {
         int deletedRecords = _cache.DeleteByMaxRecNumber( c_maxRecNumber, provider );
-        Debug.WriteLine( $"DiskSource.MaintainCacheSize: deleted {deletedRecords} records from {provider}" );
+        LOG.Log( "DiskSource.MaintainCacheSize", $"Deleted {deletedRecords} records from {provider}" );
       }
     }
 

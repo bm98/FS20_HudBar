@@ -6,14 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CoordLib;
-using CoordLib.MercatorTiles;
 using CoordLib.Extensions;
+using static dNetBm98.Units;
+using bm98_hbFolders;
 
-using FSimFacilityIF;
 using SC = SimConnectClient;
 using static FSimClientIF.Sim;
 
-using bm98_Map;
 using FSimClientIF.Modules;
 
 namespace FShelf
@@ -45,7 +44,7 @@ namespace FShelf
     /// <summary>
     /// The TD rate in feet per min
     /// </summary>
-    public float Rate_fpm => Conversions.Fpm_From_Fps( _tdRate_fps );
+    public float Rate_fpm => (float)Fpm_From_Fps( _tdRate_fps );
     /// <summary>
     /// Pitch Angle
     /// </summary>
@@ -162,11 +161,11 @@ namespace FShelf
     // get the airport by LatLon - the Sim one is from ATC and not always the one we land on...
     private string GetAirport( LatLon pos )
     {
-      using (var _db = new FSimFacilityDataLib.AirportDB.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
+      using (var _db = new FSFData.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
         if (!_db.Open( Folders.GenAptDBFile )) return "n.a."; // no db available
 
-        var aptList = _db.DbReader.AirportDescs_ByQuad( pos.AsQuad( 11 ) ).ToList( ); // 11=> 20km^2 field
-        if (aptList.Count > 0) return aptList[0].ICAO;
+        var aptList = _db.DbReader.AirportDescList_ByQuad( pos.AsQuad( 11 ) ).ToList( ); // 11=> 20km^2 field
+        if (aptList.Count > 0) return aptList[0].Ident;
         else return "n.a."; // no Apt found
       }
 

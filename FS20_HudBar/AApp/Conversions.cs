@@ -11,33 +11,6 @@ namespace FS20_HudBar
   /// </summary>
   class Conversions
   {
-    /// <summary>
-    /// Derives Apt from an ATC Translatable Apt string
-    /// </summary>
-    /// <param name="atcApt">The ATC Apt string</param>
-    /// <returns>The ICAO Apt part</returns>
-    public static string AptFromATCApt( string atcApt )
-    {
-      if (string.IsNullOrEmpty( atcApt )) return AirportMgr.AirportNA_Icao; // seen a null here...
-
-      // arrives as TT:AIRPORTLR.ICAO.name
-      string[] e = atcApt.Split( new char[] { '.' } );
-      if (e.Length > 1)
-        return e[1];
-
-      return AirportMgr.AirportNA_Icao;
-    }
-
-    /// <summary>
-    /// Round the number in Quants given
-    /// </summary>
-    /// <param name="number">The number</param>
-    /// <param name="quant">Quantities to round to</param>
-    /// <returns>The rounded number</returns>
-    public static float Round( float number, int quant )
-    {
-      return (float)(Math.Round( number / quant ) * quant);
-    }
 
     #region STATIC DME Dist Sign
 

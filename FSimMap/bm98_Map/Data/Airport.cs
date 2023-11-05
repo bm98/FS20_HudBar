@@ -6,8 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 using FSimFacilityIF;
+using static FSimFacilityIF.Extensions;
 using static dNetBm98.Units;
 using CoordLib;
+using dNetBm98;
 
 namespace bm98_Map.Data
 {
@@ -18,11 +20,14 @@ namespace bm98_Map.Data
   /// </summary>
   internal class Airport : AirportCls
   {
-
     /// <summary>
-    /// Get: The Airport Elevation in Feet
+    /// The Airport Elevation in [m]
     /// </summary>
-    public double Elevation_ft => Ft_From_M( Elevation_m );
+    public int Elevation_m => (int)Units.M_From_Ft( Coordinate.Altitude );
+    /// <summary>
+    /// The Airport Elevation in [ft]
+    /// </summary>
+    public int Elevation_ft => (int)Coordinate.Altitude;
 
     /// <summary>
     /// Create a dummy Airport if none is available
@@ -32,17 +37,11 @@ namespace bm98_Map.Data
     public static Airport DummyAirport( LatLon latLon )
     {
       Airport apt = new Airport {
-        ICAO = "@@@@",
+        Ident = "@@@@",
+        Region = "XX",
         IATA = "",
         Name = "Placeholder Airport",
-        Lat = latLon.Lat,
-        Lon = latLon.Lon,
-        Elevation_m = (float)latLon.Altitude,
-
-
-        HasRunwaysRelation = false,
-        HasNavaidsRelation = false,
-        HasCommsRelation = false,
+        Coordinate = latLon,
       };
 
       return apt;

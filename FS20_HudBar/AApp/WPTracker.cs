@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace FS20_HudBar
 {
   /// <summary>
-  /// Waypoint Tracker (static module)
+  /// WaypointID Tracker (static module)
   /// </summary>
   static class WPTracker
   {
@@ -55,7 +55,7 @@ namespace FS20_HudBar
     }
 
     /// <summary>
-    /// True if the Waypoint has changed 
+    /// True if the WaypointID has changed 
     /// (Use Read() to commit)
     /// </summary>
     public static bool HasChanged { get; private set; } = false;
@@ -69,9 +69,9 @@ namespace FS20_HudBar
     }
 
     /// <summary>
-    /// Commit reading the new Waypoint (NEXT)
+    /// Commit reading the new WaypointID (NEXT)
     /// </summary>
-    /// <returns>The current NEXT Waypoint</returns>
+    /// <returns>The current NEXT WaypointID</returns>
     public static string Read( )
     {
       HasChanged = false;

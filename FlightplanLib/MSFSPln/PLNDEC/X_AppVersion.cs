@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,9 +8,9 @@ using System.Xml.Serialization;
 namespace FlightplanLib.MSFSPln.PLNDEC
 {
   /// <summary>
-  /// An MSFS PLN AppVersion Element
+  /// An MSFS GPX AppVersion Element
   /// </summary>
-  [XmlRootAttribute( "AppVersion", Namespace = "", IsNullable = false )]
+  [XmlRoot( "AppVersion", Namespace = "", IsNullable = false )]
   public class X_AppVersion
   {
     // Elements

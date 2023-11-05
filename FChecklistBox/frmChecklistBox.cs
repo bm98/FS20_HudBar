@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using bm98_hbFolders;
+
 namespace FChecklistBox
 {
   /// <summary>
@@ -24,23 +26,6 @@ namespace FChecklistBox
     /// </summary>
     public bool Standalone { get; private set; } = false;
 
-    /// <summary>
-    /// Checks if a Point is visible on any screen
-    /// </summary>
-    /// <param name="point">The Location to check</param>
-    /// <returns>True if visible</returns>
-    private static bool IsOnScreen( Point point )
-    {
-      Screen[] screens = Screen.AllScreens;
-      foreach (Screen screen in screens) {
-        if (screen.WorkingArea.Contains( point )) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-
     // FORM
     /// <summary>
     /// cTor:
@@ -51,6 +36,11 @@ namespace FChecklistBox
     {
       // the first thing to do
       Standalone = standalone;
+
+      // Init the Folders Utility with our AppSettings File
+      Folders.InitStorage( "FCBoxAppSettings.json" );
+
+
       AppSettings.InitInstance( Folders.SettingsFile, instance );
       // ---------------
 
@@ -74,7 +64,7 @@ namespace FChecklistBox
     {
       // Init GUI
       Location = AppSettings.Instance.ChecklistBoxLocation;
-      if (!IsOnScreen( Location )) {
+      if (!dNetBm98.Utilities.IsOnScreen( Location )) {
         Location = new Point( 20, 20 );
       }
       _lastLiveLocation = Location;

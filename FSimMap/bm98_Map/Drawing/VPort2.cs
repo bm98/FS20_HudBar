@@ -19,6 +19,7 @@ using System.Threading;
 using System.Security.Cryptography;
 using System.Drawing.Imaging;
 using System.Collections.Concurrent;
+using DbgLib;
 
 namespace bm98_Map.Drawing
 {
@@ -40,6 +41,11 @@ namespace bm98_Map.Drawing
   /// </summary>
   internal class VPort2 : IDisposable
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // Relative Scale Factor per step (and it's inverse)
     // scaleMult provides a sensible 3 step scaling between the tilesets (*2 scaled)
     private const float c_scaleInMult = 1.202f;// 1.202^1=1.202; 1.202^2=1.444804; 1.202^3=1.736654408; 1.202^4=2.087458598416 
@@ -130,7 +136,7 @@ namespace bm98_Map.Drawing
     private void OnLoadComplete( LoadCompleteEventArgs eventArgs )
     {
       if (LoadComplete == null)
-        Debug.WriteLine( $"VPort2.OnLoadComplete: NO EVENT RECEIVERS HAVE REGISTERED" );
+        LOG.LogError( "VPort2.OnLoadComplete", "NO EVENT RECEIVERS HAVE REGISTERED" );
       LoadComplete?.Invoke( this, eventArgs );
     }
 
@@ -360,7 +366,7 @@ namespace bm98_Map.Drawing
       if (e.MatrixComplete) {
         // complete but may have failed tiles
         if (_tileMatrix.HasFailedTiles) {
-          Debug.WriteLine( $"VPort2._tileMatrix_LoadComplete:  HasFaileTiles - about to reload failed ones" );
+         LOG.Log( "VPort2._tileMatrix_LoadComplete","HasFaileTiles - about to reload failed ones" );
           _tileMatrix.LoadFailedTiles( );
         }
         // need to render the map with new content
@@ -371,7 +377,7 @@ namespace bm98_Map.Drawing
         // not yet complete
         if (e.LoadFailed) {
           // Single tile load failed
-          Debug.WriteLine( $"VPort2._tileMatrix_LoadComplete:  LoadFailed" );
+          LOG.Log( "VPort2._tileMatrix_LoadComplete","LoadFailed" );
           OnLoadComplete( e ); // is reported
         }
         else {

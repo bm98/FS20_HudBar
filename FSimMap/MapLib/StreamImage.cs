@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DbgLib;
+
 namespace MapLib
 {
   /// <summary>
@@ -18,6 +20,11 @@ namespace MapLib
   /// </summary>
   internal class StreamImage : IDisposable
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     #region StreamImage Factory
 
     /// <summary>
@@ -110,7 +117,7 @@ namespace MapLib
         }
       }
       catch (Exception ex) {
-        Debug.WriteLine( "MapImage.FromStream: \n" + ex );
+        LOG.LogException( "StreamImage", ex, "MapImage.FromStream" );
         _image = null;
         _dataStream = null;
       }

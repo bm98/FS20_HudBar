@@ -4,9 +4,9 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 using CoordLib;
+using static FSimFacilityIF.Extensions;
 
 namespace FlightplanLib.SimBrief.SBDEC
 {
@@ -44,18 +44,18 @@ namespace FlightplanLib.SimBrief.SBDEC
     /// The pos_lat field
     /// </summary>
     [DataMember( Name = "pos_lat", IsRequired = true )]
-    public string Latitude { get; set; } = ""; // dec degree e.g. 35.786228
+    public string LatitudeS { get; set; } = ""; // dec degree e.g. 35.786228
     /// <summary>
     /// The pos_long field
     /// </summary>
     [DataMember( Name = "pos_long", IsRequired = true )]
-    public string Longitude { get; set; } = ""; // dec degree e.g. 14.503772
+    public string LongitudeS { get; set; } = ""; // dec degree e.g. 14.503772
 
     /// <summary>
     /// The elevation field
     /// </summary>
     [DataMember( Name = "elevation", IsRequired = false )]
-    public string Elevation { get; set; } = ""; // a number ft
+    public string ElevationS_ft { get; set; } = ""; // a number ft
 
     // Non JSON
 
@@ -67,15 +67,34 @@ namespace FlightplanLib.SimBrief.SBDEC
     /// <summary>
     /// Latitude (derived field)
     /// </summary>
-    public double Lat => Formatter.GetValue( Latitude );
+    public double Lat => Formatter.GetValue( LatitudeS );
     /// <summary>
     /// Longitude (derived field)
     /// </summary>
-    public double Lon => Formatter.GetValue( Longitude );
+    public double Lon => Formatter.GetValue( LongitudeS );
     /// <summary>
     /// Elevation ft (derived field)
     /// </summary>
-    public float Elevation_ft => (float)Formatter.GetValue( Elevation );
+    public float Elevation_ft => (float)Formatter.GetValue( ElevationS_ft );
+
+    /// <summary>
+    /// True if a Runway is available
+    /// </summary>
+    public bool HasRunway => !string.IsNullOrEmpty( PlannedRunway );
+
+    /// <summary>
+    /// Returns the Planned Runway as Ident (RW02C...) or empty
+    /// </summary>
+    public string RunwayIdent => string.IsNullOrWhiteSpace( PlannedRunway ) ? "" : AsRwIdent( PlannedRunway );
+    /// <summary>
+    /// Returns the Planned Runway Number as string (or empty)
+    /// </summary>
+    public string RunwayNumberS => string.IsNullOrWhiteSpace( PlannedRunway ) ? "" : PlannedRunway.RwNumberOf( );
+
+    /// <summary>
+    /// Returns the Planned Runway Designation as string (or empty)
+    /// </summary>
+    public string RunwayDesignation => string.IsNullOrWhiteSpace( PlannedRunway ) ? "" : PlannedRunway.RwDesignationOf( );
 
   }
 }

@@ -34,22 +34,34 @@ namespace FlightplanLib.SimBrief.SBDEC
     public Json_General General { get; set; } = new Json_General( );
 
     /// <summary>
-    /// The origin field
+    /// Departure Airport Info - The origin field
     /// </summary>
     [DataMember( Name = "origin", IsRequired = true )]
     public Json_DptDst Departure { get; set; } = new Json_DptDst( );
 
     /// <summary>
-    /// The destination field
+    /// Arrival Airport Info - The destination field
     /// </summary>
     [DataMember( Name = "destination", IsRequired = true )]
-    public Json_DptDst Destination { get; set; } = new Json_DptDst( );
+    public Json_DptDst Arrival { get; set; } = new Json_DptDst( );
+
+    /// <summary>
+    /// Alternate Airport Info - The alternate field
+    /// </summary>
+    [DataMember( Name = "alternate", IsRequired = true )]
+    public Json_DptDst Alternate { get; set; } = new Json_DptDst( );
 
     /// <summary>
     /// The navlog field
     /// </summary>
     [DataMember( Name = "navlog", IsRequired = true )]
     public Json_Navlog NavLog { get; set; } = new Json_Navlog( );
+
+    /// <summary>
+    /// The atc field
+    /// </summary>
+    [DataMember( Name = "atc", IsRequired = true )]
+    public Json_Atc Atc { get; set; } = new Json_Atc( );
 
     /// <summary>
     /// The text field
@@ -76,5 +88,17 @@ namespace FlightplanLib.SimBrief.SBDEC
     /// </summary>
     public bool IsValid => Fetch.IsSuccess;
 
+    /// <summary>
+    /// True if there is a Departure Airport
+    /// </summary>
+    public bool HasDeparture => !string.IsNullOrWhiteSpace( Departure.AptICAO );
+    /// <summary>
+    /// True if there is an Arrival Airport
+    /// </summary>
+    public bool HasArrival => !string.IsNullOrWhiteSpace( Arrival.AptICAO );
+    /// <summary>
+    /// True if there is a Alternate Airport
+    /// </summary>
+    public bool HasAlternate => !string.IsNullOrWhiteSpace( Alternate.AptICAO );
   }
 }

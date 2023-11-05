@@ -25,11 +25,11 @@ namespace FS20_HudBar.Config
     }
 
     /// <summary>
-    /// Departure Apt ICAO
+    /// Departure Apt IlsID
     /// </summary>
     public string DepAptICAO { get; set; } = "";
     /// <summary>
-    /// Destination Apt ICAO
+    /// Destination Apt IlsID
     /// </summary>
     public string ArrAptICAO { get; set; } = "";
 

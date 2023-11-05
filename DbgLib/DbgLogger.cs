@@ -79,6 +79,16 @@ namespace DbgLib
       Dbg.Instance.LogError( $"({_modName})", text );
     }
 
+    /// <summary>
+    /// Log a Text Item as Error
+    /// </summary>
+    /// <param name="ex">Exception</param>
+    /// <param name="text">Log Text</param>
+    public void LogException( Exception ex, string text )
+    {
+      Dbg.Instance.LogException( $"({_modName})", ex, text );
+    }
+
 
     /// <summary>
     /// Log a text and dump the stacktrace from the calling process
@@ -107,6 +117,17 @@ namespace DbgLib
     public void LogError( string context, string text )
     {
       Dbg.Instance.LogError( $"({_modName}.{context})", text );
+    }
+
+    /// <summary>
+    /// Log a Text Item as Error
+    /// </summary>
+    /// <param name="context">A context</param>
+    /// <param name="ex">Exception</param>
+    /// <param name="text">Log Text</param>
+    public void LogException( string context, Exception ex, string text )
+    {
+      Dbg.Instance.LogException( $"({_modName}.{context})", ex, text );
     }
 
 

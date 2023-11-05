@@ -10,8 +10,8 @@ using System.Windows.Forms;
 using System.Diagnostics;
 
 using FSimFacilityIF;
+using static FSimFacilityIF.Extensions;
 using static dNetBm98.Units;
-using static dNetBm98.XColor;
 using CoordLib;
 using CoordLib.Extensions;
 using MapLib;
@@ -19,7 +19,6 @@ using MapLib;
 using bm98_Map.Drawing;
 using bm98_Map.Data;
 using bm98_Map.UI;
-using System.Threading;
 
 namespace bm98_Map
 {
@@ -48,6 +47,11 @@ namespace bm98_Map
 
     // Holding a ref to the commited airport here
     private Airport _airportRef;
+    // Holding a ref to the current Navaids
+    private IList<INavaid> _navaidRef;
+    // Holding a ref to the current Fixes
+    private IList<IFix> _fixesRef;
+
     // maintains all the visuals of the Airport
     private readonly DisplayListMgr _airportDisplayMgr;
 
@@ -204,10 +208,14 @@ namespace bm98_Map
     /// Overwrites the existing list
     /// </summary>
     /// <param name="navaids">List of navaids to show</param>
-    public void SetNavaidList( List<FSimFacilityIF.INavaid> navaids )
+    /// <param name="fixes">List of Fixes to show</param>
+    public void SetNavaidList( List<INavaid> navaids, List<IFix> fixes )
     {
-      PopulateNavaids( navaids );
-      _airportDisplayMgr.SetNavaidList( navaids );
+      _navaidRef = navaids;
+      _fixesRef = fixes;
+
+      PopulateNavaids( _navaidRef );
+      _airportDisplayMgr.SetNavaidList( _navaidRef, _fixesRef );
       // Trigger Update the View
       _renderStaticNeeded = true;
     }
@@ -217,7 +225,7 @@ namespace bm98_Map
     /// Overwrites the existing list
     /// </summary>
     /// <param name="airports">List of airports to show</param>
-    public void SetAltAirportList( List<FSimFacilityIF.IAirportDesc> airports )
+    public void SetAltAirportList( List<IAirportDesc> airports )
     {
       _airportDisplayMgr.SetAltAirportList( airports );
       // Trigger Update the View
@@ -362,7 +370,7 @@ namespace bm98_Map
     {
       var iata = $"({airport.IATA})";
       lblAirport.Text = $"{airport.ICAO,-4} {iata,-6}   {airport.Name}\n"
-        + $"{Dms.ToLat( airport.Lat, "dm", 0 )} {Dms.ToLon( airport.Lon, "dm", 0 )}   {airport.Elevation_ft:####0} ft ({airport.Elevation_m:###0} m)";
+        + $"{Dms.ToLat( airport.Coordinate.Lat, "dm", 0 )} {Dms.ToLon( airport.Coordinate.Lon, "dm", 0 )}   {airport.Elevation_ft:####0} ft ({airport.Elevation_m:###0} m)";
     }
 
     #region Tower Panel
@@ -373,10 +381,8 @@ namespace bm98_Map
       _pnlTower.InitUpdate( );
       _pnlTower.ClearItems( );
 
-      if (airport.HasCommsRelation) {
-        foreach (var frq in airport.Comms) {
-          _pnlTower.AddItem( frq.CommString( ).PadRight( 63 ), null, false );
-        }
+      foreach (var frq in airport.Comms) {
+        _pnlTower.AddItem( frq.CommString( ).PadRight( 63 ), null, false );
       }
       _pnlTower.CommitUpdate( -1, this.ClientRectangle.Bottom - lblCopyright.Height );
     }
@@ -399,16 +405,18 @@ namespace bm98_Map
       if (runway != null) {
         // Airport Runways
         _pnlApproaches.Title = $"Runway {runway.Ident} - Approaches";
-        var rwyWyps = _airportRef.Navaids.Where( x => x.IsApproach && x.Runway_Ident == $"RW{runway.Ident}" );
+        var rwyWyps = _fixesRef.Where( x => x.IsApproach && x.RwyIdent == runway.Ident );
         // all runway-Approaches (ILS, RNAV etc)
-        var rwyApproaches = rwyWyps.Select( y => y.ApproachName ).Distinct( ).OrderBy( x => x );
+        var rwyApproaches = rwyWyps.Select( y => y.ProcRef ).Distinct( ).OrderBy( x => x );
         foreach (var appName in rwyApproaches) {
-          var fix = _airportRef.Navaids.Where(
+          var fix = _fixesRef.Where(
           x => x.IsApproach
-          && x.Runway_Ident == $"RW{runway.Ident}"
-          && x.ApproachName == appName ).FirstOrDefault( );
-          string ngTag = ((fix.Fix != null) && fix.Fix.EndsWith( "NG" )) ? "'" : " ";
-          _pnlApproaches.AddItem( $"{appName,-7} {$"({fix.ICAO})",-8} RWY {runway.Ident}  {ngTag}".PadRight( 30 ), appName, true );
+          && x.RwyIdent == runway.Ident
+          && x.ProcRef == appName ).FirstOrDefault( );
+          if (fix != null) {
+            string ngTag = ((fix.FixInfo != null) && fix.WYP.IsNG) ? "'" : " ";
+            _pnlApproaches.AddItem( $"{appName,-7} {$"({fix.WYP.Ident})",-8} {runway.Ident}  {ngTag}".PadRight( 30 ), appName, true );
+          }
         }
       }
       _pnlApproaches.CommitUpdate( -1, _pnlRunways.Top );
@@ -422,23 +430,26 @@ namespace bm98_Map
       _pnlRunways.ClearItems( );
 
       // all runways
-      if (airport.HasRunwaysRelation) {
-        foreach (var rwy in airport.Runways) {
-          _pnlRunways.AddItem( rwy.RunwayString( ).PadRight( padLen ), rwy, true ); // make is selectable
+      foreach (var rwy in airport.Runways) {
+        // RW00 without Approaches is omitted
+        if (rwy.HasAPRs || (rwy.Ident != RwALLIdent)) {
+          _pnlRunways.AddItem( rwy.RunwayString( _navaidRef ).PadRight( padLen ), rwy, true ); // make is selectable
         }
       }
 
       // Airport Navaids - if there are any
       var aptNavaids = new List<INavaid>( );
-      if (airport.HasNavaidsRelation) {
-        aptNavaids = airport.Navaids.Where( x => x.IsVOR || x.IsNDB ).ToList( );
-      }
+      aptNavaids = airport.NAV_FKEYs( ).SelectMany( fk => _navaidRef.Where( nav => nav.KEY == fk && (nav.IsVOR || nav.IsNDB) ) ).ToList( );
       // if there are any apt navaids, list them
       if (aptNavaids.Count( ) > 0) {
         _pnlRunways.AddSubTitle( "Airport - Navaids" );
         var itemList = new List<string>( ); // manage doubles
         foreach (var nav in aptNavaids) {
-          var item = nav.VorNdbNameString( );
+          double distance_nm = _airportRef.Coordinate.DistanceTo( nav.Coordinate, ConvConsts.EarthRadiusNm );
+          if (distance_nm > (nav.Range_nm * 1.1)) continue; // range + 10% else cannot be received at the airport
+          string rsiS = dNetBm98.Utilities.RSI( distance_nm, nav.Range_nm );
+          string dir = Dms.CompassPoint( _airportRef.Coordinate.BearingTo( nav.Coordinate ), 2 );
+          var item = nav.VorNdbNameString( dir, distance_nm, rsiS );
           if (!itemList.Contains( item )) {
             _pnlRunways.AddItem( item.PadRight( padLen ), null, false );
             itemList.Add( item );
@@ -516,16 +527,22 @@ namespace bm98_Map
     #region Navaids Panel 
 
     // load Navaids Panel
-    private void PopulateNavaids( List<FSimFacilityIF.INavaid> navaids )
+    private void PopulateNavaids( IList<INavaid> navaids )
     {
       _pnlNavaids.InitUpdate( );
       _pnlNavaids.ClearItems( );
 
-      navaids.Sort( );
-      foreach (var nav in navaids) {
-        if (nav.IsWaypoint)
-          continue; // skip waypoints
-        _pnlNavaids.AddItem( nav.VorNdbNameString( ).PadRight( 63 ), null, false );
+      var navaidsSorted = navaids.Distinct( ).OrderBy( x => x.Ident ).ToList( );
+      foreach (var nav in navaidsSorted) {
+        if (nav.IsILS) continue; // skip
+        if (string.IsNullOrEmpty( nav.Ident )) continue;  // seen some??
+
+        double distance_nm = _aircraftTrack.Position.DistanceTo( nav.Coordinate, ConvConsts.EarthRadiusNm );
+        if (distance_nm > (nav.Range_nm * 1.1)) continue; // range + 10% else cannot be received at the airport
+        string rsiS = dNetBm98.Utilities.RSI( distance_nm, nav.Range_nm );
+        string dir = Dms.CompassPoint( _aircraftTrack.Position.BearingTo( nav.Coordinate ), 2 );
+
+        _pnlNavaids.AddItem( nav.VorNdbNameString( dir, distance_nm, rsiS ).PadRight( 63 ), null, false );
       }
       _pnlNavaids.CommitUpdate( -1, this.ClientRectangle.Bottom - lblCopyright.Height );
     }
@@ -748,7 +765,7 @@ namespace bm98_Map
       _pnlRunways.EmptyClicked += _pnlRunways_EmptyClicked;
       this.Controls.Add( _pnlRunways );
 
-      _pnlApproaches = new StripPanel( new Size( 290, 150 ), "Runway - Approaches" ) { Location = new Point( 5, 50 ) }; // only X matters
+      _pnlApproaches = new StripPanel( new Size( 290, 200 ), "Runway - Approaches" ) { Location = new Point( 5, 50 ) }; // only X matters
       _pnlApproaches.ItemClicked += ApproachLabel_Click;
       _pnlApproaches.EmptyClicked += _pnlApproaches_EmptyClicked;
       this.Controls.Add( _pnlApproaches );
@@ -757,7 +774,7 @@ namespace bm98_Map
       _pnlTower.EmptyClicked += _pnlTower_EmptyClicked;
       this.Controls.Add( _pnlTower );
 
-      _pnlNavaids = new StripPanel( new Size( 550, 500 ), "Area - Navaids" ) { Location = new Point( 5, 50 ) };
+      _pnlNavaids = new StripPanel( new Size( 550, 500 ), "Navaids in Range" ) { Location = new Point( 5, 50 ) };
       _pnlNavaids.EmptyClicked += _pnlNavaids_EmptyClicked;
       this.Controls.Add( _pnlNavaids );
 
@@ -866,6 +883,10 @@ namespace bm98_Map
       _pnlRunways.Visible = false;
       _pnlApproaches.Visible = false;
       _pnlTower.Visible = false;
+      if (_pnlNavaids.Visible == false) {
+        // will get visible below
+        PopulateNavaids( _navaidRef ); // recalc shown Navaids
+      }
       _pnlNavaids.Visible = !_pnlNavaids.Visible; // toggle
     }
 

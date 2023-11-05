@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace FlightplanLib.SimBrief.SBDEC
 {
@@ -25,6 +24,19 @@ namespace FlightplanLib.SimBrief.SBDEC
     /// </summary>
     [DataMember( Name = "stepclimb_string", IsRequired = true )]
     public string StepProfile { get; set; } = "";
+    /// <summary>
+    /// The route field
+    /// Route without SpeedAlt, Apts/RW and Ozeanic Wyps 
+    /// </summary>
+    [DataMember( Name = "route", IsRequired = true )]
+    public string RouteS { get; set; } = "";
+
+    /// <summary>
+    /// The route_navigraph field
+    /// Route with Ozeanic Wyps (56N020W) without SpeedAlt, Apts/RW
+    /// </summary>
+    [DataMember( Name = "route_navigraph", IsRequired = true )]
+    public string RouteNGS { get; set; } = "";
 
     // non JSON
 

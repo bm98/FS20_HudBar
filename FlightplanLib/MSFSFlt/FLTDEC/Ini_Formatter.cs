@@ -6,9 +6,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 using CoordLib;
+using FSimFacilityIF;
+using DbgLib;
 using FlightplanLib.MS;
 
 namespace FlightplanLib.MSFSFlt.FLTDEC
@@ -16,87 +17,14 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
   /// <summary>
   /// Generic De-Serializer helpers
   /// </summary>
-  internal class Formatter
+  internal class Ini_Formatter
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     #region STATIC TOOLS
-
-    /// <summary>
-    /// Returns the value in the string or NaN
-    /// </summary>
-    /// <param name="valueS">A value String</param>
-    /// <returns>The value or NaN</returns>
-    internal static double GetValue( string valueS )
-    {
-      if (double.TryParse( valueS, out double result )) return result;
-      return double.NaN;
-    }
-
-    /// <summary>
-    /// Convert a WorldPosition (LLA) to a LatLon
-    /// </summary>
-    /// <param name="worldPosition">An LLA string</param>
-    /// <returns>A LatLon which might be Empty of the LLA is not valid</returns>
-    internal static LatLon ToLatLon( string worldPosition )
-    {
-      LatLon ll = LatLon.Empty;
-      if (LLA.TryParseLLA( worldPosition, out var lat, out var lon, out var alt )) {
-        ll = new LatLon( lat, lon, alt );
-      }
-      else {
-        Console.WriteLine( $"Ini_File ERROR ToLatLon failed - pattern does not match\n{worldPosition}" );
-      }
-      return ll;
-    }
-
-    /// <summary>
-    /// The B21 Soaring engine uses tagged names for the Task Management
-    ///  [*]Name+Elev[|MaxAlt[/MinAlt]][xRadius]
-    ///  1st * - Start of Task
-    ///  2nd * - End of Task
-    ///  Name  - the WP name
-    ///  +     - Separator
-    ///  Elev  - Waypoint Elevation  [ft}
-    ///  |MaxAlt - Max alt of the gate [ft}
-    ///  /MinAlt - Min alt of the gate [ft}
-    ///  xRadius - Radius of the gate [meters]
-    /// </summary>
-    /// <param name="b21name">Possibly a B21 Task Waypoint name</param>
-    /// <returns>A string</returns>
-    internal static string CleanB21SoaringName( string b21name )
-    {
-      Match match = c_wpB21.Match( b21name );
-      if (match.Success) {
-        if (match.Groups["name"].Success) {
-          return match.Groups["name"].Value;
-        }
-      }
-      // seems a regular name
-      return b21name;
-    }
-    private readonly static Regex c_wpB21 =
-      new Regex( @"^(?<start_end>\*)?(?<name>([^\+])*)(?<elevation>(\+|-)\d{1,5})(?<maxAlt>\|\d{1,5})?(?<minAlt>\/\d{1,5})?(?<radius>x\d{1,5})?" );
-
-    /// <summary>
-    /// Get the decorations from the Waypoint ID
-    /// </summary>
-    /// <param name="b21name">Possibly a B21 Task Waypoint name</param>
-    /// <returns>A string</returns>
-    internal static string GetB21SoaringDecoration( string b21name )
-    {
-      // decoration see above
-      Match match = c_wpB21.Match( b21name );
-      if (match.Success) {
-        var deco = "";
-        if (match.Groups["start_end"].Success) { deco += "* "; }
-        if (match.Groups["elevation"].Success) { deco += $"{match.Groups["elevation"].Value} ft "; }
-        if (match.Groups["minAlt"].Success) { deco += $"(min {match.Groups["minAlt"].Value}) "; }
-        if (match.Groups["maxAlt"].Success) { deco += $"(max {match.Groups["maxAlt"].Value}) "; }
-        if (match.Groups["radius"].Success) { deco += $"(rad {match.Groups["radius"].Value} m)"; }
-        return deco;
-      }
-      // seems a regular name
-      return "";
-    }
 
 
     private static readonly Regex c_latRE = new Regex( @"^(?<ns>N|S)(?<deg>\d{1,2}).\s(?<part>\d{1,2}\.\d{2})'" );
@@ -179,7 +107,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     05: Lat S33° 45.79' (non unicode chars ° ' )
     06: Lon E18° 33.52' (non unicode chars ° ' )
     07: Altitude  +003000.00  likely -000100.00 ??
-    08: Airway ID	 (default = empty) The airway ID, such as J5
+    08: Enroute ID	 (default = empty) The airway ID, such as J5
     09: Departure ID  (default = empty) ID
     10: Arrival ID (default = empty) ID
     11: Approach Type (default = empty) RNAV, ILS, VOR ..
@@ -197,7 +125,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     private readonly static Regex c_wpRE =
   new Regex( @"^(?<reg>(\!\w|\w{2}))?,\s*(?<ident>\w{2,5})?,\s*(?<apt>\w{2,4})?,\s*(?<name>([^,])*),\s*(?<typ>[A-Z]),\s*(?<lat>(N|S)\d{1,2}.\s\d{1,2}\.\d{2}'),\s*(?<lon>(E|W)\d{1,3}.\s\d{1,2}\.\d{2}'),\s*(?<alt>(\+|-)\d{6}\.\d{2}),\s*(?<awy>\w*)?,\s*(?<depId>\w*)?,\s*(?<arrId>\w*)?,\s*(?<aprT>\w*)?,\s*(?<rwy>\w*)?,\s*(?<rwyD>\w*)?,\s*(?<aprV>-?\w*),\s*(?<u6>-?\w*),\s*(?<speedL>-?\d*),\s*(?<altL1>-?\d*),\s*(?<altL2>-?\d*),\s*(?<altLT>.*)?" );
 
-    // Waypoints to ignore while decoding
+    // WaypointCat to ignore while decoding
     private readonly static List<string> c_ignoreWP = new List<string>( ){
       "TIMECLIMB", "TIMECRUIS", "TIMEDSCNT", "TIMEAPPROACH", "TIMEVERT",
       /*"Apprch", "ClrApprch",*/ "EnRt",
@@ -222,37 +150,30 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
       Match match = c_wpRE.Match( wpLine );
       if (match.Success) {
         ret.Region = match.Groups["reg"].Success ? match.Groups["reg"].Value.Trim( ) : "";
-        ret.ID = match.Groups["name"].Value.Trim( );
-        ret.Name = CleanB21SoaringName( ret.ID ); // get a native name if it is decorated with B21 stuff
+        ret.SourceIdent = match.Groups["name"].Value.Trim( );
+        ret.Name = Formatter.CleanB21SoaringName( ret.SourceIdent ); // get a native name if it is decorated with B21 stuff
 
         // exclude MSFS ones that are not to be reported
         if (c_ignoreWP.Contains( ret.Name )) return null; // we don't collect this one
 
-        if (string.IsNullOrEmpty( ret.Ident )) ret.Ident = ret.Name7; // fix missing Idents with the Name (cut)
-        ret.Ident = ret.Ident.Trim( ).ToUpperInvariant( ); // case issues ..
-
         // waypoint type
         string t = match.Groups["typ"].Value.Trim( );
         switch (t) {
-          case "A": ret.WaypointType = TypeOfWaypoint.Airport; break;
-          case "I": ret.WaypointType = TypeOfWaypoint.Waypoint; break;
-          case "V": ret.WaypointType = TypeOfWaypoint.VOR; break;
-          case "N": ret.WaypointType = TypeOfWaypoint.NDB; break;
-          case "U": ret.WaypointType = TypeOfWaypoint.User; break;
-          case "T": ret.WaypointType = TypeOfWaypoint.ATC; break;
-          default: ret.WaypointType = TypeOfWaypoint.Other; break;
-        }
-        // assign Runway an own type (is T from the file)
-        if (ret.Name == "Runway") {
-          ret.WaypointType = TypeOfWaypoint.Runway;
+          case "A": ret.WaypointType = WaypointTyp.APT; break;
+          case "I": ret.WaypointType = WaypointTyp.WYP; break;
+          case "V": ret.WaypointType = WaypointTyp.VOR; break;
+          case "N": ret.WaypointType = WaypointTyp.NDB; break;
+          case "U": ret.WaypointType =  WaypointTyp.USR; break;
+          case "T": ret.WaypointType = (ret.Name.ToUpperInvariant( ) == "RUNWAY") ? WaypointTyp.RWY :WaypointTyp.ATC; break;
+          default: ret.WaypointType = WaypointTyp.OTH; break;
         }
         // Lat Lon, Alt etc.
         ret.LatLon = new LatLon( ToLat( match.Groups["lat"].Value ), ToLon( match.Groups["lon"].Value ), ToAlt( match.Groups["alt"].Value ) );
         ret.Airport = match.Groups["apt"].Value.Trim( );
         ret.Airway_Ident = match.Groups["awy"].Value.Trim( );
         // Eval the Runway ID as NNx (complete later to RWNNx) usually given in the Dest Airport - but not when the FP changed ?? MS BUG
-        ret.RunwayNumber_S = $"{match.Groups["rwy"].Value}".Trim( );
-        ret.RunwayDesignation += (match.Groups["rwyD"].Value.Trim( ) != "NONE") ? $"{match.Groups["rwyD"].Value.Trim( )}" : ""; // seems to be NONE if not used...
+        ret.RwNumber_S = $"{match.Groups["rwy"].Value}".Trim( );
+        ret.RwDesignation += (match.Groups["rwyD"].Value.Trim( ) != "NONE") ? $"{match.Groups["rwyD"].Value.Trim( )}" : ""; // seems to be NONE if not used...
 
         ret.SID_Ident = match.Groups["depId"].Value.Trim( ); // and ID
         //if (!string.IsNullOrEmpty( ret.Departure )) ret.Departure += $"-{ret.Runway_Ident}";
@@ -261,7 +182,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
         //if (!string.IsNullOrEmpty( ret.Arrival )) ret.Arrival += $"-{ret.Runway_Ident}";
 
         ret.ApproachType = match.Groups["aprT"].Value.Trim( ); // RNAV, ILS ..
-        ret.Approach_Suffix = (match.Groups["aprV"].Value.Trim( ) == "0") ? "" : match.Groups["aprV"].Value.Trim( ); // X Y Z ..  default is 0
+        ret.ApproachSuffix = (match.Groups["aprV"].Value.Trim( ) == "0") ? "" : match.Groups["aprV"].Value.Trim( ); // X Y Z ..  default is 0
 
         // Limits
         ret.SpeedLimit_kt = int.Parse( match.Groups["speedL"].Value ); // default -1
@@ -278,12 +199,12 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
 
         // There are 'unknown' which derive from Navaids not in the MS database (outdated ones)
         // also they are set to N90 W180 (but alt remains..)
-        ret.IsValid =  !(ret.ID == "unknown" || (ret.LatLon.Lat == 90.0 && ret.LatLon.Lon == -180.0));
-;
+        ret.IsValid = !(ret.SourceIdent == "unknown" || (ret.LatLon.Lat == 90.0 && ret.LatLon.Lon == -180.0));
+        ;
         return ret;
       }
       // ERROR cannot decode
-      Console.WriteLine( $"FLT-WYP Decoder - cannot decode:\n{wpLine}" );
+      LOG.LogError( "DecodeWaypoint", $"Cannot decode:\n{wpLine}" );
       return null;
     }
 

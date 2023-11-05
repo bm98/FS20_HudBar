@@ -11,7 +11,7 @@ using System.Diagnostics;
 using MapLib.Tiles;
 using MapLib.Sources.MemCache;
 using MapLib.Sources.DiskCache;
-
+using DbgLib;
 
 namespace MapLib.Service
 {
@@ -28,6 +28,11 @@ namespace MapLib.Service
   /// </summary>
   internal sealed class RequestScheduler
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // Singleton Pattern
     public static RequestScheduler Instance => lazy.Value;
     private static readonly Lazy<RequestScheduler> lazy = new Lazy<RequestScheduler>( ( ) => new RequestScheduler( ) );
@@ -229,10 +234,10 @@ namespace MapLib.Service
 
       }
       catch (Exception ex) {
-        Debug.WriteLine( $"RequestScheduler.StartDispatcher: Error - task loop run into an Exception:\n{ex}" );
+        LOG.LogException( "RequestScheduler.StartDispatcher", ex, "Error - task loop run into an Exception" );
       }
 
-      Debug.WriteLine( $"RequestScheduler.StartDispatcher: Aborted on command" );
+      LOG.Log( "RequestScheduler.StartDispatcher", $"Aborted on command" );
       // Stop client requests handling
       loaderService.Stop( );
       cacheService.Stop( );
@@ -302,7 +307,7 @@ namespace MapLib.Service
           success = false;
 
           if (_jobQueue.TryDequeue( out job )) {
-           // Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: Job started ({job.MapImageID.FullKey}) - {job.TileLoaderJob.MapImageID}" );
+            // Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: Job started ({job.MapImageID.FullKey}) - {job.TileLoaderJob.MapImageID}" );
 
             _threadTasks[taskID].IsBackground = false;
             job.TileLoaderJob.StartExec( ); // signal job started execution
@@ -314,17 +319,17 @@ namespace MapLib.Service
               if (img != null) {
                 // Push the Image into the Workflow
                 success = _tileWorkflowCatalog.TryAdd( job.MapImageID.FullKey, img );
-             //   Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: Add image ({job.MapImageID.FullKey}) Success? {success}" );
+                //   Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: Add image ({job.MapImageID.FullKey}) Success? {success}" );
                 if (success) {
                   // MUST be visible in order to further process the image
                   while (!_tileWorkflowCatalog.ContainsKey( job.MapImageID.FullKey )) {
                     Thread.SpinWait( 10 );
-           //         Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: SpinWaited ..." );
+                    //         Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: SpinWaited ..." );
                   }
                 }
               }
               else {
-         //       Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: Error - image could not be retrieved ({job.MapImageID.ZxyKey})" );
+                //       Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: Error - image could not be retrieved ({job.MapImageID.ZxyKey})" );
               }
             }
             // process the job in the next loop
@@ -425,11 +430,11 @@ namespace MapLib.Service
             _threadTasks[taskID].IsBackground = false;
             try {
               if (!job.CacheProvider.PutImageToCache( job.Data, job.MapImageID.MapProvider, job.MapImageID.TileXY, job.MapImageID.ZoomLevel )) {
-                Debug.WriteLine( $"DiskCacheService.DiskCache_Process: Error - could not Cache ({job.MapImageID.ZxyKey})" );
+                LOG.LogError( "DiskCacheService.DiskCache_Process", $"Could not Cache ({job.MapImageID.ZxyKey})" );
               }
             }
             catch (Exception ex) {
-              Debug.WriteLine( $"DiskCacheService.DiskCache_Process: Exception in chache Job ({job.MapImageID.ZxyKey})\n{ex}" );
+              LOG.LogException( "DiskCacheService.DiskCache_Process", ex, $"Exception in chache Job ({job.MapImageID.ZxyKey})" );
             }
             // pace as Busy
             timeout_ms = c_TimeoutBusy;

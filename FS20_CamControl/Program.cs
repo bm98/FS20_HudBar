@@ -25,6 +25,10 @@ namespace FS20_CamControl
       Application.EnableVisualStyles( );
       Application.SetCompatibleTextRenderingDefault( false );
       Application.Run( new FCamControl.frmCamera( Instance, true ) );
+
+      //
+      NLog.LogManager.Shutdown( );
+
     }
   }
 }

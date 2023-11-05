@@ -112,6 +112,7 @@ namespace FS20_HudBar.Bar
       {LItem.PRPM_ANI, DI_PRpmGraph.Desc },   {LItem.ERPM_ANI, DI_ERpmGraph.Desc }, {LItem.R_RPM_ANI, DI_RRpmGraph.Desc },
       {LItem.N1, DI_N1.Desc },                {LItem.N2, DI_N2.Desc },
       {LItem.N1_ANI, DI_N1Graph.Desc },       {LItem.N2_ANI, DI_N2Graph.Desc },
+      {LItem.EPR, DI_EPR.Desc },
       {LItem.AFTB, DI_Afterburner.Desc },     {LItem.AFTB_ANI, DI_AfterburnerGraph.Desc },
       {LItem.ITT, DI_Itt_C.Desc },
       {LItem.EGT_C, DI_Egt_C.Desc },          {LItem.EGT_F, DI_Egt_F.Desc },
@@ -422,6 +423,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_N1Graph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_N2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_N2Graph( m_valueItems, lblProto ) );
+      m_dispItems.AddDisp( new DI_EPR( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Afterburner( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_AfterburnerGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_Itt_C( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -665,7 +667,7 @@ namespace FS20_HudBar.Bar
 
       // ATC Airport - maintain APTs (we should always have a Destination here)
       AirportMgr.Update( AtcFlightPlan.Departure, AtcFlightPlan.Destination );
-      // Maintain the Waypoint Tracker to support the GPS Flightplan 
+      // Maintain the WaypointID Tracker to support the GPS Flightplan 
       if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
         // WP Enroute Tracker
         WPTracker.Track(

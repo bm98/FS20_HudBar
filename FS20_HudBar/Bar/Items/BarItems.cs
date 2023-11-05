@@ -35,8 +35,8 @@ namespace FS20_HudBar.Bar.Items
     FFlow_pph,    // pounds ph
     FFlow_gph,    // gallons ph
     GPS_WYP,    // prev-next WYP
-    GPS_WP_DIST,  // GPS Distance to next Waypoint
-    GPS_WP_ETE,   // GPS Time to next Waypoint
+    GPS_WP_DIST,  // GPS Distance to next WaypointID
+    GPS_WP_ETE,   // GPS Time to next WaypointID
     GPS_TRK,
     GPS_GS,
     GPS_ALT,    // Next WYP Alt
@@ -63,8 +63,8 @@ namespace FS20_HudBar.Bar.Items
 
     MAN,          // MAN Pressure inHg
 
-    GPS_BRGm,     // GPS BRG to Waypoint 000°
-    GPS_DTRK,     // GPS Desired Track to Waypoint 000°
+    GPS_BRGm,     // GPS BRG to WaypointID 000°
+    GPS_DTRK,     // GPS Desired Track to WaypointID 000°
     GPS_XTK,      // GPS CrossTrack Error nm
 
     AOA,          // Angle of attack deg
@@ -88,7 +88,7 @@ namespace FS20_HudBar.Bar.Items
     AP_LVL,       // Wing Leveler
 
     ENROUTE,      // Enroute Times
-    ATC_APT,      // ATC assigned Apt arrives as TT.AIRPORTLR.ICAO.name
+    ATC_APT,      // ATC assigned Apt arrives as TT.AIRPORTLR.IlsID.name
     ATC_RWY,      // ATC assigned RWY displacement
     GPS_ETE,      // GPS Time to Destination
 
@@ -201,6 +201,8 @@ namespace FS20_HudBar.Bar.Items
     H_TRIM,       // Heli Trims
 
     ACCEL_ANI,    // Acceleration Graph
+
+    EPR,          // Turbine EPR
   }
 
 
@@ -355,6 +357,11 @@ namespace FS20_HudBar.Bar.Items
     E3_N2_ANI,   // Engine N2 Graph 3rd Engine
     E4_N2_ANI,   // Engine N2 Graph 4th Engine
 
+    E1_EPR,      // Engine1 EPR
+    E2_EPR,      // Engine2 EPR
+    E3_EPR,      // Engine3 EPR
+    E4_EPR,      // Engine4 EPR
+
     E1_AFTB,      // Engine1 Afterburner %
     E2_AFTB,      // Engine2 Afterburner %
     E3_AFTB,      // Engine3 Afterburner %
@@ -408,18 +415,18 @@ namespace FS20_HudBar.Bar.Items
     FUEL_ANI_C,     // Fuel Graph Center
 
     // GPS
-    GPS_PWYP,     // GPS Prev Waypoint
-    GPS_NWYP,     // GPS Next Waypoint
+    GPS_PWYP,     // GPS Prev WaypointID
+    GPS_NWYP,     // GPS Next WaypointID
     GPS_DST,      // GPS or Calc Distance to Destination
     GPS_ETE,      // GPS Time to Destination
-    GPS_WP_DIST,  // GPS Distance to next Waypoint
-    GPS_WP_ETE,   // GPS Time to next Waypoint
+    GPS_WP_DIST,  // GPS Distance to next WaypointID
+    GPS_WP_ETE,   // GPS Time to next WaypointID
     GPS_TRK,      // GPS Track 000°
     GPS_GS,       // GPS Groundspeed 000kt
-    GPS_BRGm,     // GPS Mag BRG to Waypoint 000°
-    GPS_DTRK,     // GPS Desired Track to Waypoint 000°
+    GPS_BRGm,     // GPS Mag BRG to WaypointID 000°
+    GPS_DTRK,     // GPS Desired Track to WaypointID 000°
     GPS_XTK,      // GPS CrossTrack Error nm
-    GPS_ALT,      // GPS next Waypoint Altitude
+    GPS_ALT,      // GPS next WaypointID Altitude
     GPS_TOD,      // GPS distance to TOD 
     GPS_LAT,      // Latitude
     GPS_LON,      // Longitude

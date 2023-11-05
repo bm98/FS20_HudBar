@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using FlightplanLib.MSFSFlt.FLTDEC;
-using CoordLib;
 using System.IO;
+
+using CoordLib;
+using FlightplanLib.MSFSFlt.FLTDEC;
+using static FSimFacilityIF.Extensions;
+using FSimFacilityIF;
+using bm98_hbFolders;
+using FSFData;
 
 namespace FlightplanLib.MSFSFlt
 {
@@ -16,6 +20,9 @@ namespace FlightplanLib.MSFSFlt
   /// </summary>
   public class MSFSFlt
   {
+    // not the smartest way to carry the filename into the FlightPlan....
+    private static string LastFileRequest = "";
+
     /// <summary>
     /// Returns the generic FlighPlan from a FLT File
     /// </summary>
@@ -27,6 +34,7 @@ namespace FlightplanLib.MSFSFlt
 
       // create gen doc items
       var plan = new FlightPlan {
+        FlightPlanFile = LastFileRequest,
         Source = SourceOfFlightPlan.MS_Pln,
         Title = msfsPlan.Main.Title,
         CruisingAlt_ft = msfsPlan.Used_ATC_FlightPlan.CruisingAltitude_ft,
@@ -35,56 +43,93 @@ namespace FlightplanLib.MSFSFlt
         StepProfile = "" // dont have one or need to calculate it
       };
 
+
       // create Origin (for the runway assuming the First Waypoint is the Airport)
-      // Optional (seen missing origins)
-      var loc = new Location {
-        Icao_Ident = new IcaoRec { ICAO = msfsPlan.Used_ATC_FlightPlan.DepartureICAO },
-        Iata_Ident = "", // not available
-        Name = msfsPlan.Used_ATC_FlightPlan.DepartureName,
-        LatLonAlt_ft = msfsPlan.Used_ATC_FlightPlan.DEP_LatLon,
-        RunwayNumber_S = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.First( ).Key ).RunwayNumber_S,
-        RunwayDesignation = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.First( ).Key ).RunwayDesignation,
-      };
+      string rwy = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.First( ).Key ).RwNumber_S
+                  + msfsPlan.Waypoint( msfsPlan.Used_Waypoints.First( ).Key ).RwDesignation;
+
+      rwy = AsRwIdent( rwy ); // fix as Ident
+      var loc = Formatter.ExpandAirport( msfsPlan.Used_ATC_FlightPlan.DepartureICAO, rwy, LocationTyp.Origin );
       plan.Origin = loc;
 
       // create Destination (for the runway assuming the Last Waypoint is the Airport)
-      // Optional (seen missing destinations)
-      loc = new Location( ) {
-        Icao_Ident = new IcaoRec { ICAO = msfsPlan.Used_ATC_FlightPlan.DestinationICAO },
-        Iata_Ident = "", // not available
-        Name = msfsPlan.Used_ATC_FlightPlan.DestinationName,
-        LatLonAlt_ft = msfsPlan.Used_ATC_FlightPlan.DST_LatLon,
-        RunwayNumber_S = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.Last( ).Key ).RunwayNumber_S,
-        RunwayDesignation = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.Last( ).Key ).RunwayDesignation,
-      };
+      rwy = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.Last( ).Key ).RwNumber_S
+                  + msfsPlan.Waypoint( msfsPlan.Used_Waypoints.Last( ).Key ).RwDesignation;
+
+      rwy = AsRwIdent( rwy ); // fix as Ident
+      loc = Formatter.ExpandAirport( msfsPlan.Used_ATC_FlightPlan.DestinationICAO, rwy, LocationTyp.Destination );
       plan.Destination = loc;
 
       // create waypoints
+      Waypoint prevWyp = new Waypoint( );
+
       var wypList = new List<Waypoint>( );
       foreach (var fixKey in msfsPlan.Used_Waypoints.Keys) {
         var fix = msfsPlan.Waypoint( fixKey );
         // create Waypoint, omit invalid ones
-        if (!fix.IsValid) continue; // there are FLT Waypoints inserted by MS which are not decoded and return an empty Wyp
-        var wyp = new Waypoint( ) {
-          WaypointType = fix.WaypointType,
-          ID = fix.ID,
-          Name = fix.Ident,
-          LatLonAlt_ft = new LatLon( fix.Lat, fix.Lon, fix.Altitude_ft ),
-          Airway_Ident = fix.Airway_Ident,
-          Frequency = "", // PLN has no Frequ
-          Icao_Ident = new IcaoRec( ) { ICAO = fix.Ident, Region = fix.Region, AirportRef = fix.Airport, },
-          InboundTrueTrk = -1, // need to calculate this
-          OutboundTrueTrk = -1, // need to calculate this
-          Distance_nm = -1, // need to calculate this
-          SID_Ident = fix.SID_Ident,
-          STAR_Ident = fix.STAR_Ident,
-          ApproachType = fix.ApproachType,
-          ApproachSuffix = fix.Approach_Suffix,
-          RunwayNumber_S = fix.RunwayNumber_S,
-          RunwayDesignation = fix.RunwayDesignation,
-          Stage = "", // TODO not avail, need to calculate this
-        };
-        wypList.Add( wyp );
+        if (!fix.IsValid) continue; // there are FLT WaypointCat inserted by MS which are not decoded and return an empty Wyp
+        if (fix.WaypointType == WaypointTyp.RWY) continue; // RUNWAY has no valuable information
+
+        var altLo = 0;
+        var altHi = 0;
+        if (fix.AltLimit == AltLimitType.At) {
+          altLo = fix.AltLimit1_ft;
+          altHi = fix.AltLimit1_ft;
+        }
+        else if (fix.AltLimit == AltLimitType.Above) {
+          altLo = fix.AltLimit1_ft;
+        }
+        else if (fix.AltLimit == AltLimitType.Below) {
+          altHi = fix.AltLimit1_ft;
+        }
+        else if (fix.AltLimit == AltLimitType.Between) {
+          altLo = fix.AltLimit1_ft;
+          altHi = fix.AltLimit2_ft;
+        }
+
+        // add an end runway Wyp before the Airport
+        // add a start runway Wyp
+        if (fix.WaypointType == WaypointTyp.APT && fix.Ident == plan.Origin.Icao_Ident.ICAO) {
+          wypList.AddRange( Formatter.ExpandLocationAptRw( plan.Origin, true ) );
+        }
+        else if (fix.WaypointType == WaypointTyp.APT && fix.Ident == plan.Destination.Icao_Ident.ICAO) {
+          wypList.AddRange( Formatter.ExpandLocationRwApt( plan.Destination, true, fix.ApproachProcRef ) );
+        }
+        else {
+          bool addWyp = true;
+          if (fix.Ident == prevWyp.Ident) {
+            // same as before... 
+            if (fix.AltitudeRounded_ft > 0) {
+              // prefer the one with Altitude Information
+              wypList.Remove( prevWyp ); // remove the previous one
+            }
+            else {
+              addWyp = false; // omit this one
+            }
+          }
+          if (addWyp) {
+            // add regular Wyp
+            var wyp = new Waypoint( ) {
+              WaypointType = fix.WaypointType,
+              SourceIdent = fix.SourceIdent,
+              Name = fix.Ident,
+              LatLonAlt_ft = new LatLon( fix.Lat, fix.Lon, fix.Altitude_ft ),
+              AltitudeLo_ft = altLo,
+              AltitudeHi_ft = altHi,
+              Icao_Ident = new IcaoRec( ) { ICAO = fix.Ident, Region = fix.Region, AirportRef = fix.Airport, },
+              Airway_Ident = fix.Airway_Ident,
+              SID_Ident = fix.SID_Ident,
+              STAR_Ident = fix.STAR_Ident,
+              ApproachTypeS = fix.ApproachType,
+              ApproachSuffix = fix.ApproachSuffix,
+              RunwayNumber_S = fix.RwNumber_S,
+              RunwayDesignation = fix.RwDesignation,
+            };
+            wypList.Add( wyp );
+            // carry on
+            prevWyp = wyp;
+          }
+        }
       }
       plan.Waypoints = wypList;
       // create Plan Doc HTML
@@ -95,29 +140,28 @@ namespace FlightplanLib.MSFSFlt
       //  NA
 
       // calculate missing items
-      plan.RecalcWaypoints( );
+      plan.PostProcess( );
       return plan;
 
     }
 
+    #region Request Handling
 
     /// <summary>
-    /// Event Handler for MSFS PLN data arrival
+    /// Event Handler for MSFS GPX data arrival
     /// </summary>
     /// <param name="sender">The sender object</param>
     /// <param name="e">Event Arguments</param>
     public delegate void MSFSFltDataEventHandler( object sender, MSFSFltDataEventArgs e );
 
     /// <summary>
-    /// Event triggered on MSFS PLN data arrival
+    /// Event triggered on MSFS GPX data arrival
     /// </summary>
     public event MSFSFltDataEventHandler MSFSFltDataEvent;
 
     // Signal the user that and what data has arrived
-    private void OnMSFSFltDataEvent( string data )
-    {
-      MSFSFltDataEvent?.Invoke( this, new MSFSFltDataEventArgs( data ) );
-    }
+    private void OnMSFSFltDataEvent( string data ) => MSFSFltDataEvent?.Invoke( this, new MSFSFltDataEventArgs( data ) );
+
 
     /// <summary>
     /// Returns the path for the CustomFlight.pln file in the current installation
@@ -141,6 +185,8 @@ namespace FlightplanLib.MSFSFlt
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
     }
 
+    #endregion
+
     #region Asynch Request methods
 
     // Retrieve most current data
@@ -149,6 +195,8 @@ namespace FlightplanLib.MSFSFlt
       string response = await Provider.FltRequest.GetDocument( fileName );
       if (!string.IsNullOrWhiteSpace( response )) {
         // signal response
+        LastFileRequest = Path.GetFileName( fileName );
+
         OnMSFSFltDataEvent( response );
       }
     }

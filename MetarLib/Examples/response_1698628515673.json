@@ -1,0 +1,148 @@
+[
+  {
+    "metar_id": 439556943,
+    "icaoId": "KORD",
+    "receiptTime": "2023-10-30 00:56:18",
+    "obsTime": 1698627060,
+    "reportTime": "2023-10-30 01:00:00",
+    "temp": 5.6,
+    "dewp": 2.2,
+    "wdir": 330,
+    "wspd": 11,
+    "wgst": 18,
+    "visib": "10+",
+    "altim": 1020.4,
+    "slp": 1020.6,
+    "qcField": 12,
+    "wxString": "-RA",
+    "presTend": null,
+    "maxT": null,
+    "minT": null,
+    "maxT24": null,
+    "minT24": null,
+    "precip": 0.005,
+    "pcp3hr": null,
+    "pcp6hr": null,
+    "pcp24hr": null,
+    "snow": null,
+    "vertVis": null,
+    "metarType": "METAR",
+    "rawOb": "KORD 300051Z 33011G18KT 10SM -RA BKN055 OVC085 06/02 A3013 RMK AO2 RAB2352E21B42 SLP206 P0000 T00560022 $",
+    "mostRecent": 1,
+    "lat": 41.9602,
+    "lon": -87.9316,
+    "elev": 202,
+    "prior": 0,
+    "name": "Chicago/O'Hare Intl, IL, US",
+    "clouds": [
+      {
+        "cover": "BKN",
+        "base": 5500
+      },
+      {
+        "cover": "OVC",
+        "base": 8500
+      }
+    ]
+  },
+  {
+    "metar_id": 439534457,
+    "icaoId": "KORD",
+    "receiptTime": "2023-10-29 23:56:10",
+    "obsTime": 1698623460,
+    "reportTime": "2023-10-30 00:00:00",
+    "temp": 6.7,
+    "dewp": 2.2,
+    "wdir": 340,
+    "wspd": 11,
+    "wgst": null,
+    "visib": "10+",
+    "altim": 1020.4,
+    "slp": 1020.7,
+    "qcField": 12,
+    "wxString": null,
+    "presTend": 1.7,
+    "maxT": 8.3,
+    "minT": 6.7,
+    "maxT24": null,
+    "minT24": null,
+    "precip": 0.005,
+    "pcp3hr": null,
+    "pcp6hr": 0.005,
+    "pcp24hr": null,
+    "snow": null,
+    "vertVis": null,
+    "metarType": "METAR",
+    "rawOb": "KORD 292351Z 34011KT 10SM FEW020 BKN045 OVC055 07/02 A3013 RMK AO2 RAE39 SLP207 P0000 60000 T00670022 10083 20067 51017 $",
+    "mostRecent": 0,
+    "lat": 41.9602,
+    "lon": -87.9316,
+    "elev": 202,
+    "prior": 0,
+    "name": "Chicago/O'Hare Intl, IL, US",
+    "clouds": [
+      {
+        "cover": "FEW",
+        "base": 2000
+      },
+      {
+        "cover": "BKN",
+        "base": 4500
+      },
+      {
+        "cover": "OVC",
+        "base": 5500
+      }
+    ]
+  },
+  {
+    "metar_id": 439512767,
+    "icaoId": "KORD",
+    "receiptTime": "2023-10-29 22:56:14",
+    "obsTime": 1698619860,
+    "reportTime": "2023-10-29 23:00:00",
+    "temp": 7.2,
+    "dewp": 2.2,
+    "wdir": 330,
+    "wspd": 10,
+    "wgst": null,
+    "visib": "10+",
+    "altim": 1020.4,
+    "slp": 1020.6,
+    "qcField": 12,
+    "wxString": "-RA",
+    "presTend": null,
+    "maxT": null,
+    "minT": null,
+    "maxT24": null,
+    "minT24": null,
+    "precip": 0.005,
+    "pcp3hr": null,
+    "pcp6hr": null,
+    "pcp24hr": null,
+    "snow": null,
+    "vertVis": null,
+    "metarType": "METAR",
+    "rawOb": "KORD 292251Z 33010KT 10SM -RA FEW020 BKN043 OVC055 07/02 A3013 RMK AO2 RAB49 SLP206 P0000 T00720022 $",
+    "mostRecent": 0,
+    "lat": 41.9602,
+    "lon": -87.9316,
+    "elev": 202,
+    "prior": 0,
+    "name": "Chicago/O'Hare Intl, IL, US",
+    "clouds": [
+      {
+        "cover": "FEW",
+        "base": 2000
+      },
+      {
+        "cover": "BKN",
+        "base": 4300
+      },
+      {
+        "cover": "OVC",
+        "base": 5500
+      }
+    ]
+  }
+]

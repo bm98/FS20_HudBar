@@ -121,4 +121,13 @@
   <data name="airport_facility" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\airport_facility.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="e_table_00" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\e_table_00.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="e_table_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\e_table_01.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="e_table_02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\e_table_02.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

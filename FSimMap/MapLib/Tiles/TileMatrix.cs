@@ -13,6 +13,7 @@ using CoordLib.MercatorTiles;
 using CoordLib.LLShapes;
 using System.ComponentModel;
 using System.Threading;
+using DbgLib;
 
 namespace MapLib.Tiles
 {
@@ -24,6 +25,11 @@ namespace MapLib.Tiles
   /// </summary>
   public class TileMatrix : IDisposable
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // 2d Array of MapTiles [X]|[Y] Root = Left/Top orientation
     private MapTile[,] _mapTiles;
     // track scheduled Tiles
@@ -53,7 +59,7 @@ namespace MapLib.Tiles
       //     Debug.WriteLine( $"{DateTime.Now.Ticks} TileMatrix.OnLoadComplete- Key: <{key}> LoadFailed: {failed} MatComplete: {string.IsNullOrEmpty( key )}" );
 
       if (LoadComplete == null) {
-        Debug.WriteLine( $"TileMatrix.OnLoadComplete: NO EVENT RECEIVERS HAVE REGISTERED" );
+        LOG.LogError( "TileMatrix.OnLoadComplete", $"NO EVENT RECEIVERS HAVE REGISTERED" );
       }
       LoadComplete?.Invoke( this, new LoadCompleteEventArgs( key, "dummy", failed, string.IsNullOrEmpty( key ) ) );
     }
@@ -486,7 +492,7 @@ namespace MapLib.Tiles
       }
       // sanity check
       if ((tlTileXY.X < 0) || (tlTileXY.Y < 0)) {
-        Debug.WriteLine( $"LoadMatrix: Error - invalid start TileXY ({tlTileXY})" );
+        LOG.LogError( "LoadMatrix", $"Invalid start TileXY ({tlTileXY})" );
         throw new ArgumentOutOfRangeException( $"Input creates invalid start TileXY ({tlTileXY})" );
       }
       // Start Loading
@@ -623,7 +629,7 @@ namespace MapLib.Tiles
     /// </summary>
     public void LoadFailedTiles( )
     {
-      Debug.WriteLine( $"TileMatrix.LoadFailedTiles: LoadingStatus= {LoadingStatus}" );
+      LOG.Log( $"TileMatrix.LoadFailedTiles", $"LoadingStatus= {LoadingStatus}" );
       // sanity
       if (LoadingStatus == ImageLoadingStatus.Loading) return;
 
@@ -633,7 +639,7 @@ namespace MapLib.Tiles
           for (int y = 0; y < Height; y++) {
             if (_mapTiles[x, y].LoadingStatus != ImageLoadingStatus.LoadComplete) {
               if (_mapTiles[x, y].MapImage.ShouldRetry) {
-                Debug.WriteLine( $"TileMatrix.LoadFailedTiles: Reloading {_mapTiles[x, y].FullKey}" );
+                LOG.Log( "TileMatrix.LoadFailedTiles", $"Reloading {_mapTiles[x, y].FullKey}" );
                 _mapTiles[x, y].TileXYUpdate = _mapTiles[x, y].TileXY; // re-schedule the key
                 if (_mapTiles[x, y].UpdateTile( _tileTrackingList )) {
                   LoadingStatus = ImageLoadingStatus.Loading;
@@ -652,7 +658,7 @@ namespace MapLib.Tiles
 
         // signal only for tracked tiles
         if (e.LoadFailed) {
-          Debug.WriteLine( $"TileMatrix_LoadComplete: ERROR - LoadFailed for Tile {e.TrackKey}" );
+          LOG.LogError( "TileMatrix_LoadComplete", $"LoadFailed for Tile {e.TrackKey}" );
           LoadingStatus = ImageLoadingStatus.LoadFailed;
           OnLoadComplete( e.TileKey, true ); // report about a failed Tile
         }

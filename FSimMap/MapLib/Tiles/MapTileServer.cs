@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbgLib;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing.Printing;
@@ -13,6 +14,11 @@ namespace MapLib.Tiles
   /// </summary>
   internal sealed class MapTileServer : IDisposable
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // expected number of tiles to handle
     private uint _numTiles = 0;
 
@@ -55,7 +61,7 @@ namespace MapLib.Tiles
         if (_tiles.Count > _numTiles) {
 #if DEBUG
           // many consumed - track the behavior on Slow Providers (Stamen...)
-          Console.WriteLine( $"Tiles in circulation: {_tiles.Count} (mark is {_numTiles})" );
+          LOG.Log( "GetTile", $"Tiles in circulation: {_tiles.Count} (mark is {_numTiles})" );
 #endif
         }
         return tile;
@@ -87,6 +93,7 @@ namespace MapLib.Tiles
       }
       else {
         // we did not serve this returned tile... (Programm Error)
+        LOG.LogError( "ReturnTile( MapTile mapTile )\r\n    {", $"Returned unsolicited MapTile {mapTile.TrackKey}" );
         throw new ApplicationException( $"Returned unsolicited MapTile {mapTile.TrackKey}" );
       }
     }

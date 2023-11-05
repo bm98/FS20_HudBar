@@ -24,6 +24,13 @@ namespace DbgLib
     void LogError( string text );
 
     /// <summary>
+    /// Log a Text Item as Error with Exception
+    /// </summary>
+    /// <param name="ex">Exception</param>
+    /// <param name="text">Log Text</param>
+    void LogException(Exception ex, string text );
+
+    /// <summary>
     /// Log a text and dump the stacktrace from the calling process
     /// </summary>
     /// <param name="text">Log Text</param>
@@ -42,6 +49,14 @@ namespace DbgLib
     /// <param name="context">A context</param>
     /// <param name="text">Log Text</param>
     void LogError( string context, string text );
+
+    /// <summary>
+    /// Log a Text Item as Error with Exception
+    /// </summary>
+    /// <param name="context">A context</param>
+    /// <param name="ex">Exception</param>
+    /// <param name="text">Log Text</param>
+    void LogException( string context, Exception ex, string text );
 
     /// <summary>
     /// Log a text and dump the stacktrace from the calling process

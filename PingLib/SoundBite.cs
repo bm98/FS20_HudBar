@@ -19,7 +19,7 @@ namespace PingLib
     // A logger
     private static readonly IDbg LOG = Dbg.Instance.GetLogger(
       System.Reflection.Assembly.GetCallingAssembly( ),
-      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType);
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
 
     #endregion
 
@@ -66,18 +66,18 @@ namespace PingLib
     public SoundBite( Melody melody, uint note, uint loops, float volume = 1.0f, float speed = 1.0f )
     {
       Melody = melody;
-      var tune = WaveProc.GetInstalledSounds().Where(x=>x.Melody==melody).FirstOrDefault();
-      if ( tune == null ) {
+      var tune = WaveProc.GetInstalledSounds( ).Where( x => x.Melody == melody ).FirstOrDefault( );
+      if (tune == null) {
         // sould not happen .....
-        LOG.LogError( $"SoundBite: Cannot find the Melody: {melody}" );
+        LOG.LogError( "SoundBite", $"Cannot find the Melody: {melody}" );
         Melody = Melody.Silence;
         return;
       }
 
-      Tone = ( note < tune.NumTones ) ? note : note % tune.NumTones; // safeguard Note
-      Volume = ( volume >= 0 ) ? volume : 0; // must be >= 0.0
-      Loops = ( loops <= 5 ) ? loops : 5; // must be <= 5 
-      SpeedFact = ( speed > 0 ) ? speed : 1; // must be > 0.0
+      Tone = (note < tune.NumTones) ? note : note % tune.NumTones; // safeguard Note
+      Volume = (volume >= 0) ? volume : 0; // must be >= 0.0
+      Loops = (loops <= 5) ? loops : 5; // must be <= 5 
+      SpeedFact = (speed > 0) ? speed : 1; // must be > 0.0
     }
     /// <summary>
     /// cTor: create from a number of values
@@ -91,19 +91,19 @@ namespace PingLib
     public SoundBite( Melody melody, uint note, float duration_sec, uint loops, float volume = 1.0f, float speed = 1.0f )
     {
       Melody = melody;
-      var tune = WaveProc.GetInstalledSounds().Where(x=>x.Melody==melody).FirstOrDefault();
-      if ( tune == null ) {
+      var tune = WaveProc.GetInstalledSounds( ).Where( x => x.Melody == melody ).FirstOrDefault( );
+      if (tune == null) {
         // sould not happen .....
-        LOG.LogError( $"SoundBite: Cannot find the Melody: {melody}" );
+        LOG.LogError( "SoundBite", $"Cannot find the Melody: {melody}" );
         Melody = Melody.Silence;
         return;
       }
 
-      Tone = ( note < tune.NumTones ) ? note : note % tune.NumTones; // safeguard Note
-      Volume = ( volume >= 0 ) ? volume : 0; // must be >= 0.0
-      Duration = ( duration_sec < tune.ToneDuration_sec ) ? duration_sec : -1; // must be < default of Tune
-      Loops = ( loops <= 5 ) ? loops : 5; // must be <= 5 
-      SpeedFact = ( speed > 0 ) ? speed : 1; // must be > 0.0
+      Tone = (note < tune.NumTones) ? note : note % tune.NumTones; // safeguard Note
+      Volume = (volume >= 0) ? volume : 0; // must be >= 0.0
+      Duration = (duration_sec < tune.ToneDuration_sec) ? duration_sec : -1; // must be < default of Tune
+      Loops = (loops <= 5) ? loops : 5; // must be <= 5 
+      SpeedFact = (speed > 0) ? speed : 1; // must be > 0.0
     }
 
 
@@ -111,7 +111,7 @@ namespace PingLib
     /// cTor: Copy constructor
     /// </summary>
     /// <param name="other"></param>
-    public SoundBite ( SoundBite other )
+    public SoundBite( SoundBite other )
     {
       this.Melody = other.Melody;
       this.Tone = other.Tone;

@@ -115,12 +115,24 @@ namespace FS20_HudBar.Bar
     static FltPlanMgr( )
     {
       // receive FLT updates
-      SC.SimConnectClient.Instance.FltSave += Instance_FltSave;
+//      SC.SimConnectClient.Instance.FltSave += Instance_FltSave;
+      SC.SimConnectClient.Instance.FlightPlanModule.NewDataAvailable += FlightPlanModule_NewDataAvailable;
     }
 
-    // Handle new FLT files comming in
+    // Reports on valid and changed FPs only (module must be enabled, and mode is capture ATC or Backup)
+    private static void FlightPlanModule_NewDataAvailable( object sender, EventArgs e )
+    {
+      OnNewFlightPlan( ); // inform the Bar
+    }
+
+
+    // Handle new FLT files comming in, this will essentially capture all files reported from SimConnect
     private static void Instance_FltSave( object sender, FltSaveEventArgs e )
     {
+      // sanity
+      if (!e.FileValid) return; // invalid file
+      if (!e.FlightPlanAvailable) return; // no (new or old) FP was stored
+
       lock (m_lock) {
         m_FP = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Copy( ); // we have a copy
         HasChanged = (m_currentHash != m_FP.Hash);

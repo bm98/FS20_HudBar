@@ -23,6 +23,7 @@ namespace bm98_Map.Drawing
     // text location
     public bool IsNdbType = false;
     public bool IsWypType = false;
+    public bool IsHoldType = false;
 
     /// <summary>
     /// The RunwayIdent  'nnd' (if any)
@@ -56,7 +57,10 @@ namespace bm98_Map.Drawing
     /// </summary>
     public NavaidItem( Bitmap spriteRef )
     {
-      _imageRef = new Bitmap( spriteRef );
+      if (spriteRef == null)
+        _imageRef = null;
+      else
+        _imageRef = new Bitmap( spriteRef );
     }
 
     /// <summary>
@@ -77,46 +81,53 @@ namespace bm98_Map.Drawing
         var omp = MapToPixel( OutboundLatLon );
 
         if (g.VisibleClipBounds.Contains( mp ) || g.VisibleClipBounds.Contains( omp )) {
-          var boxRect = new Rectangle( mp, _imageRef.Size );
-          var spriteRect = new Rectangle( mp, _imageRef.Size.Multiply( 0.7f ) ); // make the sprites a bit smaller
-          var textRect = new Rectangle( mp, new Size( 108, 64 ) );
 
           // draw to if possible and requested
           if (!OutboundLatLon.IsEmpty && ShowOutboundTrack) {
             g.DrawLine( Pen, mp, omp );
           }
 
-          g.TranslateTransform( -spriteRect.Width / 2, -spriteRect.Height / 2 );
-          g.DrawImage( _imageRef, spriteRect );
-          g.TranslateTransform( spriteRect.Width / 2, spriteRect.Height / 2, MatrixOrder.Append );
-          // Navaid Location = 0/0
-          if (IsNdbType) {
-            g.TranslateTransform( -textRect.Width / 2, -boxRect.Height * 1.3f, MatrixOrder.Append );// above
-          }
-          else if (IsWypType) {
-            // use the outbound leg CompasPoint to place the Wyp label
-            switch (CompassPoint) {
-              case "N":
-                g.TranslateTransform( -textRect.Width * 1.3f, -boxRect.Height / 2, MatrixOrder.Append );//  left
-                break;
-              case "E":
-                g.TranslateTransform( -textRect.Width / 2, -boxRect.Height * 1.3f, MatrixOrder.Append );//  above
-                break;
-              case "S":
-                g.TranslateTransform( textRect.Width / 2 * 0.3f, -boxRect.Height / 2, MatrixOrder.Append );//  right
-                break;
-              case "W":
-                g.TranslateTransform( -textRect.Width / 2, boxRect.Height / 2, MatrixOrder.Append );// below
-                break;
-              default:
-                g.TranslateTransform( -textRect.Width / 2, -boxRect.Height * 1.3f, MatrixOrder.Append );//  above
-                break;
+          // draw image and deco only if set
+          if (_imageRef != null) {
+            var boxRect = new Rectangle( mp, _imageRef.Size );
+            var spriteRect = new Rectangle( mp, _imageRef.Size.Multiply( 0.7f ) ); // make the sprites a bit smaller
+            var textRect = new Rectangle( mp, new Size( 108, 64 ) );
+
+            g.TranslateTransform( -spriteRect.Width / 2, -spriteRect.Height / 2 );
+            g.DrawImage( _imageRef, spriteRect );
+            g.TranslateTransform( spriteRect.Width / 2, spriteRect.Height / 2, MatrixOrder.Append );
+            // Navaid Location = 0/0
+            if (IsHoldType) {
+              g.TranslateTransform( textRect.Width / 2 * 0.3f, -boxRect.Height * 0.6f, MatrixOrder.Append );// above/ right
             }
+            else if (IsNdbType) {
+              g.TranslateTransform( -textRect.Width / 2, -boxRect.Height * 1.3f, MatrixOrder.Append );// above
+            }
+            else if (IsWypType) {
+              // use the outbound leg CompasPoint to place the Wyp label
+              switch (CompassPoint) {
+                case "N":
+                  g.TranslateTransform( -textRect.Width * 1.3f, -boxRect.Height / 2, MatrixOrder.Append );//  left
+                  break;
+                case "E":
+                  g.TranslateTransform( -textRect.Width / 2, -boxRect.Height * 1.3f, MatrixOrder.Append );//  above
+                  break;
+                case "S":
+                  g.TranslateTransform( textRect.Width / 2 * 0.3f, -boxRect.Height / 2, MatrixOrder.Append );//  right
+                  break;
+                case "W":
+                  g.TranslateTransform( -textRect.Width / 2, boxRect.Height / 2, MatrixOrder.Append );// below
+                  break;
+                default:
+                  g.TranslateTransform( -textRect.Width / 2, -boxRect.Height * 1.3f, MatrixOrder.Append );//  above
+                  break;
+              }
+            }
+            else {
+              g.TranslateTransform( -textRect.Width / 2, boxRect.Height / 2, MatrixOrder.Append );// below
+            }
+            g.DrawString( String, Font, TextBrush, textRect, StringFormat );
           }
-          else {
-            g.TranslateTransform( -textRect.Width / 2, boxRect.Height / 2, MatrixOrder.Append );// below
-          }
-          g.DrawString( String, Font, TextBrush, textRect, StringFormat );
         }
       }
       g.EndContainer( save );

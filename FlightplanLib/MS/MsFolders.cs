@@ -15,7 +15,12 @@ namespace FlightplanLib.MS
   /// </summary>
   public static class MsFolders
   {
-    private static DbgLogger DBG = new DbgLogger( typeof( MsFolders ) );
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
+
 
     /// <summary>
     /// The Packages base path (i.e. where Community and Official folders are)
@@ -45,12 +50,12 @@ namespace FlightplanLib.MS
             return true;
           }
           else {
-            DBG.LogError( $"OverrideInstalledPackagesPath: Official\\OneStore or Official\\Steam cannot be found in ({ipkPath})" );
+            LOG.LogError( "OverrideInstalledPackagesPath", $"Official\\OneStore or Official\\Steam cannot be found in ({ipkPath})" );
           }
         }
       }
       else {
-        DBG.LogError( $"OverrideInstalledPackagesPath: Given path does not exist ({ipkPath})" );
+        LOG.LogError( "OverrideInstalledPackagesPath", $"Given path does not exist ({ipkPath})" );
       }
       return false;
     }
@@ -60,7 +65,7 @@ namespace FlightplanLib.MS
     /// </summary>
     public static void ResetInstalledPackagesPath( )
     {
-      DBG.Log( $"ResetInstalledPackagesPath: Initialize/Reset package path " );
+      LOG.Log( $"ResetInstalledPackagesPath: Initialize/Reset package path " );
       _packageBasePath = GetInstalledPackagesPath_Int( );// init with internal logic
     }
 
@@ -87,7 +92,7 @@ namespace FlightplanLib.MS
       pPath = Path.Combine( pPath, "Packages", "Microsoft.FlightSimulator_8wekyb3d8bbwe" );
 
       if (Directory.Exists( pPath )) {
-        DBG.Log( $"GetStoreMSFSInstallPath_Int: Install Path is STORE ({pPath})" );
+        LOG.Log( "GetStoreMSFSInstallPath_Int", $"Install Path is STORE ({pPath})" );
         return pPath;
       }
 
@@ -107,7 +112,7 @@ namespace FlightplanLib.MS
       pPath = Path.Combine( pPath, "Microsoft Flight Simulator" );
 
       if (Directory.Exists( pPath )) {
-        DBG.Log( $"GetSteamMSFSInstallPath_Int: Install Path is STEAM ({pPath})" );
+        LOG.Log( "GetSteamMSFSInstallPath_Int", $"Install Path is STEAM ({pPath})" );
         return pPath;
       }
 
@@ -125,7 +130,7 @@ namespace FlightplanLib.MS
     {
       var instPath = GetStoreMSFSInstallPath_Int( );
       if (string.IsNullOrEmpty( instPath )) {
-        DBG.Log( $"GetStoreInstalledPackagesPath_Int: Cannot find STORE InstallPath" );
+        LOG.Log( "GetStoreInstalledPackagesPath_Int", "Cannot find STORE InstallPath" );
         return "";
       }
 
@@ -144,7 +149,7 @@ namespace FlightplanLib.MS
         }
       }
       else {
-        DBG.LogError( $"GetStoreInstalledPackagesPath_Int: Cannot find UserCfg.opt ({optFile})" );
+        LOG.LogError( "GetStoreInstalledPackagesPath_Int", $"Cannot find UserCfg.opt ({optFile})" );
       }
 
       return ipPath;
@@ -161,7 +166,7 @@ namespace FlightplanLib.MS
     {
       var instPath = GetSteamMSFSInstallPath_Int( );
       if (string.IsNullOrEmpty( instPath )) {
-        DBG.Log( $"GetSteamInstalledPackagesPath_Int: Cannot find STEAM InstallPath" );
+        LOG.Log( "GetSteamInstalledPackagesPath_Int", "Cannot find STEAM InstallPath" );
         return "";
       }
 
@@ -179,7 +184,7 @@ namespace FlightplanLib.MS
         }
       }
       else {
-        DBG.LogError( $"GetSteamInstalledPackagesPath_Int: Cannot find UserCfg.opt ({optFile})" );
+        LOG.LogError( "GetSteamInstalledPackagesPath_Int", $"Cannot find UserCfg.opt ({optFile})" );
       }
 
       return ipPath;
@@ -194,16 +199,16 @@ namespace FlightplanLib.MS
       // try STORE
       var ipkPath = GetStoreInstalledPackagesPath_Int( );
       if (string.IsNullOrEmpty( ipkPath )) {
-        DBG.Log( $"GetInstalledPackagesPath_Int: Not found for STORE -- try STEAM" );
+        LOG.Log( "GetInstalledPackagesPath_Int", "Not found for STORE -- try STEAM" );
         // try STEAM
         ipkPath = GetSteamInstalledPackagesPath_Int( );
       }
 
       if (string.IsNullOrEmpty( ipkPath )) {
-        DBG.LogError( $"GetInstalledPackagesPath_Int: Cannot find any InstalledPackagesPath" );
+        LOG.LogError( "GetInstalledPackagesPath_Int", "Cannot find any InstalledPackagesPath" );
       }
       else {
-        DBG.Log( $"GetInstalledPackagesPath_Int: USING ({ipkPath})" );
+        LOG.Log( "GetInstalledPackagesPath_Int", $"USING ({ipkPath})" );
       }
 
       return ipkPath;
@@ -232,7 +237,7 @@ namespace FlightplanLib.MS
       pPath = Path.Combine( pPath, "Packages", "Microsoft.FlightSimulator_8wekyb3d8bbwe", "LocalState" );
 
       if (Directory.Exists( pPath )) {
-        DBG.Log( $"GetStoreMSFSDataPath_Int: Data Path is STORE ({pPath})" );
+        LOG.Log( "GetStoreMSFSDataPath_Int", $"Data Path is STORE ({pPath})" );
         return pPath;
       }
 
@@ -252,7 +257,7 @@ namespace FlightplanLib.MS
       pPath = Path.Combine( pPath, "Microsoft Flight Simulator" );
 
       if (Directory.Exists( pPath )) {
-        DBG.Log( $"GetSteamMSFSDataPath_Int: Data Path is STEAM ({pPath})" );
+        LOG.Log( "GetSteamMSFSDataPath_Int", $"Data Path is STEAM ({pPath})" );
         return pPath;
       }
 
@@ -268,16 +273,16 @@ namespace FlightplanLib.MS
       // try STORE
       var ipkPath = GetStoreMSFSDataPath_Int( );
       if (string.IsNullOrEmpty( ipkPath )) {
-        DBG.Log( $"GetDataPath_Int: Not found for STORE -- try STEAM" );
+        LOG.Log( "GetDataPath_Int", "Not found for STORE -- try STEAM" );
         // try STEAM
         ipkPath = GetSteamMSFSDataPath_Int( );
       }
 
       if (string.IsNullOrEmpty( ipkPath )) {
-        DBG.LogError( $"GetDataPath_Int: Cannot find any InstalledPackagesPath" );
+        LOG.LogError( "GetDataPath_Int", "Cannot find any InstalledPackagesPath" );
       }
       else {
-        DBG.Log( $"GetDataPath_Int: USING ({ipkPath})" );
+        LOG.Log( "GetDataPath_Int", $"USING ({ipkPath})" );
       }
 
       return ipkPath;
@@ -319,7 +324,7 @@ namespace FlightplanLib.MS
       string ipkPath = GetInstalledPackagesPath( );
       // if the path is empty - we could not find a source
       if (string.IsNullOrEmpty( ipkPath )) {
-        DBG.LogError( $"GetMSStorePath: Cannot find any InstalledPackagesPath" );
+        LOG.LogError( "GetMSStorePath", "Cannot find any InstalledPackagesPath" );
         return ""; // nope..
       }
 
@@ -330,11 +335,11 @@ namespace FlightplanLib.MS
         osPath = Path.Combine( ipkPath, "Official", "Steam" ); // Steam MS files root
 
         if (!Directory.Exists( osPath )) {
-          DBG.LogError( $"GetMSStorePath: Cannot find any MS content path (neither OneStore nor Steam)" );
+          LOG.LogError( "GetMSStorePath", "Cannot find any MS content path (neither OneStore nor Steam)" );
           return ""; // nope
         }
       }
-      DBG.Log( $"GetMSStorePath: MS content path is ({osPath})" );
+      LOG.Log( $"GetMSStorePath", $"MS content path is ({osPath})" );
 
       return osPath;
     }
@@ -348,13 +353,13 @@ namespace FlightplanLib.MS
     {
       string osPath = GetMSStorePath( );
       if (string.IsNullOrEmpty( osPath )) {
-        DBG.LogError( $"GetFsBasePath: No MS content path found" );
+        LOG.LogError( "GetFsBasePath", "No MS content path found" );
         return ""; // nope..
       }
 
       string scPath = Path.Combine( osPath, @"fs-base" );
       if (!Directory.Exists( scPath )) {
-        DBG.LogError( $"GetFsBasePath: MS content \\fs-base does not exist" );
+        LOG.LogError( "GetFsBasePath", "MS content \\fs-base does not exist" );
         return ""; // nope
       }
 
@@ -369,13 +374,13 @@ namespace FlightplanLib.MS
     {
       string osPath = GetMSStorePath( );
       if (string.IsNullOrEmpty( osPath )) {
-        DBG.LogError( $"GetNavBasePath: No MS content path found" );
+        LOG.LogError( "GetNavBasePath", "No MS content path found" );
         return ""; // nope..
       }
 
       string scPath = Path.Combine( osPath, @"fs-base-nav" );
       if (!Directory.Exists( scPath )) {
-        DBG.LogError( $"GetNavBasePath: MS content \\fs-base-nav does not exist" );
+        LOG.LogError( "GetNavBasePath", "MS content \\fs-base-nav does not exist" );
         return ""; // nope
       }
 
@@ -390,13 +395,13 @@ namespace FlightplanLib.MS
     {
       string osPath = GetMSStorePath( );
       if (string.IsNullOrEmpty( osPath )) {
-        DBG.LogError( $"GetGenAptBasePath: No MS content path found" );
+        LOG.LogError( "GetGenAptBasePath", "No MS content path found" );
         return ""; // nope..
       }
 
       string scPath = Path.Combine( osPath, @"fs-base-genericairports" );
       if (!Directory.Exists( scPath )) {
-        DBG.LogError( $"GetGenAptBasePath: MS content \\fs-base-genericairports does not exist" );
+        LOG.LogError( "GetGenAptBasePath", "MS content \\fs-base-genericairports does not exist" );
         return ""; // nope
       }
 
@@ -411,13 +416,13 @@ namespace FlightplanLib.MS
     {
       string osPath = GetMSStorePath( );
       if (string.IsNullOrEmpty( osPath )) {
-        DBG.LogError( $"GetSceneryBasePath: No MS content path found" );
+        LOG.LogError( "GetSceneryBasePath", "No MS content path found" );
         return ""; // nope..
       }
 
       string scPath = Path.Combine( osPath, "fs-base", "scenery" );
       if (!Directory.Exists( scPath )) {
-        DBG.LogError( $"GetSceneryBasePath: MS content \\fs-base\\scenery does not exist" );
+        LOG.LogError( "GetSceneryBasePath", "MS content \\fs-base\\scenery does not exist" );
         return ""; // nope
       }
 
@@ -450,13 +455,13 @@ namespace FlightplanLib.MS
       string ipkPath = GetInstalledPackagesPath( );
       // if the path is empty - we could not find a source
       if (string.IsNullOrEmpty( ipkPath )) {
-        DBG.LogError( $"GetCommunityPath: Cannot find any InstalledPackagesPath" );
+        LOG.LogError( "GetCommunityPath", "Cannot find any InstalledPackagesPath" );
         return ""; // nope..
       }
 
       string coPath = Path.Combine( ipkPath, @"Community" ); // Community files root
       if (!Directory.Exists( coPath )) {
-        DBG.LogError( $"GetCommunityPath: \\Community path does not exist" );
+        LOG.LogError( "GetCommunityPath", "\\Community path does not exist" );
         return ""; // nope
       }
 
@@ -481,13 +486,13 @@ namespace FlightplanLib.MS
       string coPath = GetCommunityPath( );
       // if the path is empty - we could not find a source
       if (string.IsNullOrEmpty( coPath )) {
-        DBG.LogError( $"GetNavBasePathNaviGraph: No Community path found" );
+        LOG.LogError( "GetNavBasePathNaviGraph", "No Community path found" );
         return ""; // nope..
       }
 
       string naPath = Path.Combine( coPath, "navigraph-navdata-base", "scenery" );
       if (!Directory.Exists( naPath )) {
-        DBG.Log( $"GetNavBasePathNaviGraph: Community \\navigraph-navdata-base\\scenery does not exist" );
+        LOG.Log( "GetNavBasePathNaviGraph", "Community \\navigraph-navdata-base\\scenery does not exist" );
         return ""; // nope
       }
 
@@ -503,13 +508,13 @@ namespace FlightplanLib.MS
       string coPath = GetCommunityPath( );
       // if the path is empty - we could not find a source
       if (string.IsNullOrEmpty( coPath )) {
-        DBG.LogError( $"GetSceneryBasePathNaviGraph: No Community path found" );
+        LOG.LogError( "GetSceneryBasePathNaviGraph", "No Community path found" );
         return ""; // nope..
       }
 
       string naPath = Path.Combine( coPath, "navigraph-navdata", "scenery" );
       if (!Directory.Exists( naPath )) {
-        DBG.Log( "GetSceneryBasePathNaviGraph: Community \\navigraph-navdata\\scenery does not exist" );
+        LOG.Log( "GetSceneryBasePathNaviGraph", "Community \\navigraph-navdata\\scenery does not exist" );
         return ""; // nope
       }
 
@@ -529,7 +534,7 @@ namespace FlightplanLib.MS
       // <DataPath>\MISSIONS
       string daPath = GetDataPath_Int( );
       if (string.IsNullOrEmpty( daPath )) {
-        DBG.LogError( $"GetMissionFolder: Cannot find any DataPath" );
+        LOG.LogError( "GetMissionFolder", "Cannot find any DataPath" );
         return "";
       }
 
@@ -538,7 +543,7 @@ namespace FlightplanLib.MS
         return miPath;
       }
       else {
-        DBG.LogError( $"GetMissionFolder: Cannot find MISSIONS path" );
+        LOG.LogError( "GetMissionFolder", "Cannot find MISSIONS path" );
         return "";
       }
     }
@@ -552,7 +557,7 @@ namespace FlightplanLib.MS
       // <MissionsPath>\Custom\CustomFlight
       string miPath = GetMissionFolder( );
       if (string.IsNullOrEmpty( miPath )) {
-        DBG.LogError( $"GetCustomFlightFolder: Cannot find any NISSIONS path" );
+        LOG.LogError( "GetCustomFlightFolder", "Cannot find any NISSIONS path" );
         return "";
       }
 
@@ -561,7 +566,7 @@ namespace FlightplanLib.MS
         return cfPath;
       }
       else {
-        DBG.LogError( $"GetCustomFlightFolder: Cannot find CustomFlight path" );
+        LOG.LogError( "GetCustomFlightFolder", "Cannot find CustomFlight path" );
         return "";
       }
     }
@@ -580,7 +585,7 @@ namespace FlightplanLib.MS
     {
       var cfPath = GetCustomFlightFolder( );
       if (string.IsNullOrEmpty( cfPath )) {
-        DBG.LogError( $"GetCustomFlight_Plan: Cannot find any CustomFlight path" );
+        LOG.LogError( "GetCustomFlight_Plan", "Cannot find any CustomFlight path" );
         return "";
       }
 
@@ -589,7 +594,7 @@ namespace FlightplanLib.MS
         return cfFile;
       }
       else {
-        DBG.LogError( $"GetCustomFlight_Plan: Cannot find any {CustomFlightPlan} file" );
+        LOG.LogError( "GetCustomFlight_Plan", $"Cannot find any {CustomFlightPlan} file" );
         return "";
       }
     }

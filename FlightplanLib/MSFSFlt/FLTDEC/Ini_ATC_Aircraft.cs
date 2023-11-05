@@ -1,9 +1,10 @@
-﻿using FlightplanLib.MS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using FlightplanLib.MS;
 
 namespace FlightplanLib.MSFSFlt.FLTDEC
 {
@@ -45,12 +46,12 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// True if ActiveFlightPlan is true
     /// </summary>
     [IniFileIgnore]
-    public bool HasActiveFlightPlan => Formatter.ToBool( ActiveFlightPlan_S );
+    public bool HasActiveFlightPlan => Ini_Formatter.ToBool( ActiveFlightPlan_S );
     /// <summary>
     /// True if RequestedFlightPlan is true
     /// </summary>
     [IniFileIgnore]
-    public bool HasRequestedFlightPlan => Formatter.ToBool( RequestedFlightPlan_S );
+    public bool HasRequestedFlightPlan => Ini_Formatter.ToBool( RequestedFlightPlan_S );
 
   }
 }

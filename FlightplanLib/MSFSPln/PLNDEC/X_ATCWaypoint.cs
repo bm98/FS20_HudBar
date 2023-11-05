@@ -1,18 +1,21 @@
-﻿using CoordLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using Windows.UI.Xaml.Documents;
+
+using CoordLib;
+
+using FSimFacilityIF;
+
+using static FSimFacilityIF.Extensions;
 
 namespace FlightplanLib.MSFSPln.PLNDEC
 {
   /// <summary>
-  /// An MSFS PLN ATCWaypoint Element
+  /// An MSFS GPX ATCWaypoint Element
   /// </summary>
   [XmlRootAttribute( "ATCWaypoint", Namespace = "", IsNullable = false )]
   public class X_ATCWaypoint
@@ -78,7 +81,7 @@ namespace FlightplanLib.MSFSPln.PLNDEC
     /// The ApproachTypeFP element
     /// </summary>
     [XmlElement( ElementName = "ApproachTypeFP", IsNullable = false )]
-    public string ApproachType { get; set; } = ""; // RNAV, ILS, LOCALIZER, ?? others ??
+    public string ApproachTypeS { get; set; } = ""; // RNAV, ILS, LOCALIZER, ?? others ??
 
     /// <summary>
     /// The SpeedMaxFP element
@@ -99,105 +102,176 @@ namespace FlightplanLib.MSFSPln.PLNDEC
     /// There are 'unknown' which derive from Navaids not in the MS database (outdated ones)
     /// also they are set to N90 W180 (but alt remains..)
     /// </summary>
-    public bool IsValid => !(ID == "unknown" || (LatLon.Lat == 90.0 && LatLon.Lon == -180.0));
+    [XmlIgnore]
+    public bool IsValid => !(ID == "unknown" || (LatLonElev_ft.Lat == 90.0 && LatLonElev_ft.Lon == -180.0));
+
+    // true when a proc must be reported (proc appears in Runway and User Wyps as well, where it may cause issues...)
+    [XmlIgnore]
+    private bool ReportProc => !(WaypointType == WaypointTyp.RWY || WaypointType == WaypointTyp.USR);
+
     /// <summary>
-    /// True if the Wyp is part of an Airway
+    /// True if the Wyp is part of an Enroute
     /// </summary>
-    public bool IsAirway => !string.IsNullOrWhiteSpace( Airway_Ident );
+    [XmlIgnore]
+    public bool IsAirway => ReportProc && !string.IsNullOrWhiteSpace( Airway_Ident );
     /// <summary>
     /// True if the Wyp as APR information
     /// </summary>
-    public bool IsAPR => !string.IsNullOrWhiteSpace( ApproachType );
+    [XmlIgnore]
+    public bool IsAPR => ReportProc && !string.IsNullOrWhiteSpace( ApproachTypeS );
     /// <summary>
     /// True if the Wyp is part of SID
     /// </summary>
-    public bool IsSID => !string.IsNullOrWhiteSpace( SID_Ident );
+    [XmlIgnore]
+    public bool IsSID => ReportProc && !string.IsNullOrWhiteSpace( SID_Ident );
     /// <summary>
     /// True if the Wyp is part of STAR
     /// </summary>
-    public bool IsSTAR => !string.IsNullOrWhiteSpace( STAR_Ident );
+    [XmlIgnore]
+    public bool IsSTAR => ReportProc && !string.IsNullOrWhiteSpace( STAR_Ident );
     /// <summary>
     /// True if the Wyp is part of SID or STAR
     /// </summary>
+    [XmlIgnore]
     public bool IsSidOrStar => IsSID || IsSTAR;
 
     /// <summary>
     /// True if the Wyp as DECO information
     /// </summary>
+    [XmlIgnore]
     public bool IsDecorated => !string.IsNullOrWhiteSpace( Wyp_Deco );
 
     /// <summary>
     /// Clean ID of the Waypoint - removed all known decorations
     /// </summary>
+    [XmlIgnore]
     public string Wyp_Ident => Formatter.CleanB21SoaringName( ID );
     /// <summary>
     /// Get the Decoration for soaring waypoints
     /// </summary>
+    [XmlIgnore]
     public string Wyp_Deco => Formatter.GetB21SoaringDecoration( ID );
 
     /// <summary>
-    /// Returns a Runway ident like 22 or 12R etc.
+    /// Returns a Runway ident like RW22 or RW12R etc. RW00 if not provided from the source
     /// </summary>
-    public string Runway_Ident => ToRunwayID( RunwayNumber_S, RunwayDesignation );
+    [XmlIgnore]
+    public string RunwayIdent => AsRwIdent( RunwayNumber_S, RunwayDesignation );
+
 
     /// <summary>
-    /// Full Approach   ILS X RWY 22C  RNAV X RWY 22C
+    /// APPROACH Proc Type if it applies
     /// </summary>
-    public string Approach_Ident => $"{ApproachType} {Approach_Suffix} RWY {Runway_Ident}";
+    [XmlIgnore]
+    public string ApproachProcRef { get; set; } = "";
+    /// <summary>
+    /// APPROACH Proc Type if it applies
+    /// </summary>
+    [XmlIgnore]
+    public string ApproachProc => ApproachProcRef.ProcOf( );
+    /// <summary>
+    /// APPROACH Suffix if it applies
+    /// </summary>
+    [XmlIgnore]
+    public string ApproachSuffix => ApproachProcRef.SuffixOf( );
+
+    /// <summary>
+    /// Approach Waypoint Sequence (1..)
+    /// </summary>
+    [XmlIgnore]
+    public int ApproachSequ { get; set; } = 0;
+
+
     /// <summary>
     /// The LatLonAlt coordinate of the Wyp (Alt in ft)
     /// </summary>
-    public LatLon LatLon => Formatter.ToLatLon( CoordLLA );
+    [XmlIgnore]
+    public LatLon LatLonElev_ft => Formatter.ToLatLon( CoordLLA );
+    /// <summary>
+    /// Returns a Coordinate Name for this item
+    /// </summary>
+    [XmlIgnore]
+    public string CoordName => Dms.ToRouteCoord( LatLonElev_ft, "d" );
+
     /// <summary>
     /// The Latitude of the Wyp
     /// </summary>
-    public double Lat => LatLon.Lat;
+    [XmlIgnore]
+    public double Lat => LatLonElev_ft.Lat;
     /// <summary>
     /// The Longitude of the Wyp
     /// </summary>
-    public double Lon => LatLon.Lon;
+    [XmlIgnore]
+    public double Lon => LatLonElev_ft.Lon;
     /// <summary>
     /// The Altitude ft of the Wyp
     /// </summary>
-    public float Altitude_ft => (float)LatLon.Altitude;
+    [XmlIgnore]
+    public float Altitude_ft => (float)LatLonElev_ft.Altitude;
 
     /// <summary>
     /// A rounded Altitude to 100ft except for Airports and Runways
     /// </summary>
+    [XmlIgnore]
     public float AltitudeRounded_ft =>
-      (WaypointType == TypeOfWaypoint.Airport || WaypointType == TypeOfWaypoint.Runway)
+      (WaypointType == WaypointTyp.APT || WaypointType == WaypointTyp.RWY)
         ? Altitude_ft
         : (float)(Math.Round( Altitude_ft / 100.0 ) * 100.0);
+
+
+    /// <summary>
+    /// Alt Lo Limit for Procedures
+    /// </summary>
+    [XmlIgnore]
+    public int AltLo_ft { get; set; } = 0;
+    /// <summary>
+    /// Alt Hi Limit for Procedures
+    /// </summary>
+    [XmlIgnore]
+    public int AltHi_ft { get; set; } = 0;
+    /// <summary>
+    /// Speed Limit for Procedures
+    /// </summary>
+    [XmlIgnore]
+    public int SpeedLimit_kt { get; set; } = 0;
+
+    /// <summary>
+    /// Waypoint Usage derived from content
+    /// </summary>
+    [XmlIgnore]
+    public UsageTyp UsageType {
+      get {
+        if (IsSID) return UsageTyp.SID;
+        if (IsSTAR) return UsageTyp.STAR;
+        if (IsAPR) return UsageTyp.APR;
+        return UsageTyp.Unknown;
+      }
+    }
 
     /// <summary>
     /// The type of the Waypoint as enum
     /// </summary>
-    public TypeOfWaypoint WaypointType => IsValid ? ToTypeOfWP( WypType_S ) : TypeOfWaypoint.Other;
+    [XmlIgnore]
+    public WaypointTyp WaypointType => IsValid ? ToWaypointTyp( WypType_S ) : WaypointTyp.Unknown;
 
 
     // local only
-    private static TypeOfWaypoint ToTypeOfWP( string fpType )
+    private WaypointTyp ToWaypointTyp( string fpType )
     {
       switch (fpType.ToUpperInvariant( )) {
-        case "AIRPORT": return TypeOfWaypoint.Airport;
-        case "ATC": return TypeOfWaypoint.ATC;
-        case "INTERSECTION": return TypeOfWaypoint.Waypoint;
-        case "NDB": return TypeOfWaypoint.NDB;
-        case "RUNWAY": return TypeOfWaypoint.Runway;
-        case "USER": return TypeOfWaypoint.User;
-        case "VOR": return TypeOfWaypoint.VOR;
-        default: return TypeOfWaypoint.Other;
+        case "AIRPORT": return WaypointTyp.APT;
+        case "ATC": return WaypointTyp.ATC;
+        case "INTERSECTION": return WaypointTyp.WYP;
+        case "RUNWAY": return WaypointTyp.RWY;
+        case "USER":
+          if (Wyp_Ident.StartsWith( "RW" ) && !string.IsNullOrEmpty( RunwayNumber_S )) return WaypointTyp.RWY; // RWxy is tagged as User Waypoint ??!!
+          return WaypointTyp.USR;
+        case "VOR": return WaypointTyp.VOR;
+        case "NDB": return WaypointTyp.NDB;
+        default: return WaypointTyp.OTH;
       }
     }
 
-    private static string ToRunwayID( string rNum, string rDes )
-    {
-      if (string.IsNullOrWhiteSpace( rDes )) {
-        return rNum;
-      }
-      else {
-        return rNum + rDes.Substring( 0, 1 ); // convert from 11 LEFT to 11L
-      }
-    }
+   
   }
 }

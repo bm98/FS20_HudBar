@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <response xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.3" xsi:noNamespaceSchemaLocation="https://aviationweather.gov/data/schema/metar1_3.xsd">
+    <request_index>1698625602</request_index>
+    <data_source name="metars" />
+    <request type="retrieve" />
+    <errors />
+    <warnings />
+    <data num_results="3">
+      <METAR>
+        <raw_text>KMCI 270653Z 19013G21KT 10SM BKN018 19/18 A2989 RMK AO2 SLP115 T01940178</raw_text>
+        <station_id>KMCI</station_id>
+        <observation_time>2023-10-27T06:53:00Z</observation_time>
+        <latitude>39.2975</latitude>
+        <longitude>-94.7309</longitude>
+        <temp_c>19.4</temp_c>
+        <dewpoint_c>17.8</dewpoint_c>
+        <wind_dir_degrees>190</wind_dir_degrees>
+        <wind_speed_kt>13</wind_speed_kt>
+        <wind_gust_kt>21</wind_gust_kt>
+        <visibility_statute_mi>10+</visibility_statute_mi>
+        <altim_in_hg>29.89</altim_in_hg>
+        <sea_level_pressure_mb>1011.5</sea_level_pressure_mb>
+        <quality_control_flags>
+          <auto_station>TRUE</auto_station>
+        </quality_control_flags>
+        <sky_condition sky_cover="BKN" cloud_base_ft_agl="1800" />
+        <flight_category>MVFR</flight_category>
+        <metar_type>METAR</metar_type>
+        <elevation_m>308</elevation_m>
+      </METAR>
+      <METAR>
+        <raw_text>KMCI 270553Z 19011KT 10SM CLR 19/18 A2989 RMK AO2 SLP114 T01940178 10211 20194 402500189 51009</raw_text>
+        <station_id>KMCI</station_id>
+        <observation_time>2023-10-27T05:53:00Z</observation_time>
+        <latitude>39.2975</latitude>
+        <longitude>-94.7309</longitude>
+        <temp_c>19.4</temp_c>
+        <dewpoint_c>17.8</dewpoint_c>
+        <wind_dir_degrees>190</wind_dir_degrees>
+        <wind_speed_kt>11</wind_speed_kt>
+        <visibility_statute_mi>10+</visibility_statute_mi>
+        <altim_in_hg>29.89</altim_in_hg>
+        <sea_level_pressure_mb>1011.4</sea_level_pressure_mb>
+        <quality_control_flags>
+          <auto_station>TRUE</auto_station>
+        </quality_control_flags>
+        <sky_condition sky_cover="CLR"/>
+        <flight_category>VFR</flight_category>
+        <three_hr_pressure_tendency_mb>0.9</three_hr_pressure_tendency_mb>
+        <maxT_c>21.1</maxT_c>
+        <minT_c>19.4</minT_c>
+        <metar_type>METAR</metar_type>
+        <elevation_m>308</elevation_m>
+      </METAR>
+      <METAR>
+        <raw_text>KMCI 270453Z 19013KT 10SM CLR 20/18 A2988 RMK AO2 SLP111 T02000178</raw_text>
+        <station_id>KMCI</station_id>
+        <observation_time>2023-10-27T04:53:00Z</observation_time>
+        <latitude>39.2975</latitude>
+        <longitude>-94.7309</longitude>
+        <temp_c>20</temp_c>
+        <dewpoint_c>17.8</dewpoint_c>
+        <wind_dir_degrees>190</wind_dir_degrees>
+        <wind_speed_kt>13</wind_speed_kt>
+        <visibility_statute_mi>10+</visibility_statute_mi>
+        <altim_in_hg>29.88</altim_in_hg>
+        <sea_level_pressure_mb>1011.1</sea_level_pressure_mb>
+        <quality_control_flags>
+          <auto_station>TRUE</auto_station>
+        </quality_control_flags>
+        <sky_condition sky_cover="CLR"/>
+        <flight_category>VFR</flight_category>
+        <metar_type>METAR</metar_type>
+        <elevation_m>308</elevation_m>
+      </METAR>
+    </data>
+  </response>

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.Sql;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -15,6 +13,7 @@ using CoordLib.MercatorTiles;
 using CoordLib.Extensions;
 
 using SC = SimConnectClient;
+using bm98_hbFolders;
 using bm98_Map;
 using bm98_Map.Data;
 using FSimFacilityIF;
@@ -24,6 +23,9 @@ using FlightplanLib;
 using FlightplanLib.SimBrief;
 using FlightplanLib.MSFSPln;
 using FlightplanLib.MSFSFlt;
+using FlightplanLib.GPX;
+using FlightplanLib.RTE;
+using FlightplanLib.LNM;
 
 using Point = System.Drawing.Point;
 using Route = bm98_Map.Data.Route;
@@ -32,6 +34,10 @@ using FSimClientIF.Modules;
 using static FSimClientIF.Sim;
 using FSimClientIF;
 using SimConnectClientAdapter;
+using dNetBm98;
+using static dNetBm98.Units;
+using DbgLib;
+using FSFData;
 
 namespace FShelf
 {
@@ -40,6 +46,12 @@ namespace FShelf
   /// </summary>
   public partial class frmShelf : Form
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
+
     // SimConnect Client Adapter (used only to establish the connection and handle the Online color label)
     private SCClient SCAdapter;
 
@@ -47,7 +59,9 @@ namespace FShelf
     private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
 
     // airport which was requested by the user
-    private FSimFacilityIF.IAirport _airport = null;
+    private IAirport _airport = null;
+    private List<INavaid> _navaidList = null;
+    private List<IFix> _fixList = null;
 
     // SimVar Observer items
     private int _observerID = -1;
@@ -76,6 +90,10 @@ namespace FShelf
     // MSFS Pln Provider
     private readonly MSFSPln _msfsPln;
     private readonly MSFSFlt _msfsFlt;
+    private readonly GPXpln _lnmGpx;
+    private readonly RTEpln _lnmRte;
+    private readonly LNMpln _lnmPln;
+
     private string _selectedPlanFile = "";
     private bool _awaitingFLTfile = false; // true when FLT is requested
 
@@ -102,7 +120,7 @@ namespace FShelf
     public bool Standalone { get; private set; } = false;
 
     /// <summary>
-    /// Departure Airport ICAO
+    /// Departure Airport IlsID
     /// </summary>
     public string DEP_Airport {
       get => _dep_Airport;
@@ -114,7 +132,7 @@ namespace FShelf
     }
     private string _dep_Airport = "n.a.";
     /// <summary>
-    /// Arrival Airport ICAO
+    /// Arrival Airport IlsID
     /// </summary>
     public string ARR_Airport {
       get => _arr_Airport;
@@ -150,37 +168,40 @@ namespace FShelf
     {
       try {
         aShelf.SetShelfFolder( folderName );
+        // add our Airport Report folder if it does not exist
+        string aptFolder = Path.Combine( AppSettings.Instance.ShelfFolder, Folders.AptReportSubfolder );
+        if (!Directory.Exists( aptFolder )) {
+          try {
+            Directory.CreateDirectory( aptFolder );
+            LOG.Log( "frmShelf.SetShelfFolder", "created AirportReport folder" );
+          }
+          catch (Exception ex) {
+            LOG.LogException( "frmShelf.SetShelfFolder", ex, "Create AirportReport folder failed" );
+          }
+        }
+        // we may get along even if the Airport folder could not be created...
         return true;
       }
-      catch (Exception) {
+      catch (Exception ex) {
+        LOG.LogException( "frmShelf.SetShelfFolder", ex, $"Failed for <{folderName}> with" );
         return false;
       }
     }
 
-    /// <summary>
-    /// Checks if a Point is visible on any screen
-    /// </summary>
-    /// <param name="point">The Location to check</param>
-    /// <returns>True if visible</returns>
-    private static bool IsOnScreen( Point point )
-    {
-      Screen[] screens = Screen.AllScreens;
-      foreach (Screen screen in screens) {
-        if (screen.WorkingArea.Contains( point )) {
-          return true;
-        }
-      }
-      return false;
-    }
 
-    // translate the SimBrief OFP to a Route obj for Map Use
+    // translate the FlightPlan to a Route obj for Map Use
     private static Route GetRouteFromPlan( FlightPlan plan )
     {
       var route = new Route( );
       if (!plan.IsValid) return route;
 
       foreach (var fix in plan.Waypoints) {
-        route.AddRoutePoint( new RoutePoint( fix.Wyp_Ident7, fix.LatLonAlt_ft, fix.WaypointType, fix.InboundTrueTrk, fix.OutboundTrueTrk, fix.IsSIDorSTAR ) );
+        if (fix.HideInMap( )) continue; // not to be shown
+
+        route.AddRoutePoint(
+          new RoutePoint( fix.Ident7, fix.LatLonAlt_ft, fix.WaypointType, fix.InboundTrueTrk, fix.OutboundTrueTrk,
+                          fix.IsSID, fix.IsSTAR, fix.IsAirway, fix.AltLimitS( ) )
+         );
       }
       route.RecalcTrack( ); // as we have no Out Tracks
       return route;
@@ -236,6 +257,8 @@ namespace FShelf
       cx.Items.Add( new RwyLenItem( "3 000 m (10 000 ft)", 3000f ) );
       cx.Items.Add( new RwyLenItem( "4 000 m (13 000 ft)", 4000f ) );
     }
+
+    #region Profile Handling 
 
     // setup the profile tab's data grids
     private void InitProfileData( )
@@ -347,6 +370,7 @@ namespace FShelf
       }
     }
 
+    #endregion
 
 
     // facility check & message
@@ -385,6 +409,10 @@ namespace FShelf
     {
       // the first thing to do
       Standalone = standalone;
+
+      // Init the Folders Utility with our AppSettings File
+      Folders.InitStorage( "FShelfAppSettings.json" );
+
       AppSettings.InitInstance( Folders.SettingsFile, instance );
       _dbMissing = !File.Exists( Folders.GenAptDBFile ); // facilities DB missing
       MapLib.MapManager.Instance.InitMapLib( Folders.UserFilePath ); // Init before anything else
@@ -402,6 +430,7 @@ namespace FShelf
       _metar = new MetarLib.Metar( );
       _metar.MetarDataEvent += _metar_MetarDataEvent;
 
+      // Flightplan decoders
       _simBrief = new SimBrief( );
       _simBrief.SimBriefDataEvent += _simBrief_SimBriefDataEvent;
       _simBrief.SimBriefDownloadEvent += _simBrief_SimBriefDownloadEvent;
@@ -410,6 +439,12 @@ namespace FShelf
       _msfsPln.MSFSPlnDataEvent += _msfsPln_MSFSPlnDataEvent;
       _msfsFlt = new MSFSFlt( );
       _msfsFlt.MSFSFltDataEvent += _msfsFlt_MSFSFltDataEvent;
+      _lnmGpx = new GPXpln( );
+      _lnmGpx.GPXplnDataEvent += _lnmGpx_GPXplnDataEvent;
+      _lnmRte = new RTEpln( );
+      _lnmRte.RTEplnDataEvent += _lnmRte_RTEplnDataEvent;
+      _lnmPln = new LNMpln( );
+      _lnmPln.LNMplnDataEvent += _lnmPln_LNMplnDataEvent;
 
       // handle some Map Events
       aMap.MapCenterChanged += AMap_MapCenterChanged;
@@ -446,9 +481,14 @@ namespace FShelf
     private void frmShelf_Load( object sender, EventArgs e )
     {
       // Init GUI
+#if DEBUG
+#else
+      tab.TabPages.Remove( tabEnergy ); // not yet productive
+#endif
+
       this.Size = AppSettings.Instance.ShelfSize;
       this.Location = AppSettings.Instance.ShelfLocation;
-      if (!IsOnScreen( Location )) {
+      if (!dNetBm98.Utilities.IsOnScreen( Location )) {
         Location = new Point( 20, 20 );
       }
       _lastLiveSize = Size;
@@ -521,11 +561,15 @@ namespace FShelf
       // profiles
       InitProfileData( );
 
+      // energy
+      rb6sec.Checked = true;
+
+
       // standalone handling
       if (Standalone) {
         // File Access Check
-        if (DbgLib.Dbg.Instance.AccessCheck( Folders.UserFilePath ) != DbgLib.AccessCheckResult.Success) {
-          string msg = $"MyDocuments Folder Access Check Failed:\n{DbgLib.Dbg.Instance.AccessCheckResult}\n\n{DbgLib.Dbg.Instance.AccessCheckMessage}";
+        if (Dbg.Instance.AccessCheck( Folders.UserFilePath ) != DbgLib.AccessCheckResult.Success) {
+          string msg = $"MyDocuments Folder Access Check Failed:\n{Dbg.Instance.AccessCheckResult}\n\n{Dbg.Instance.AccessCheckMessage}";
           MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
         }
         CheckFacilityDB( );
@@ -639,7 +683,9 @@ namespace FShelf
           ; // cannot get facilities
         }
         else {
-          aMap.SetNavaidList( NavaidList( aMap.MapCenter( ) ) );
+          _navaidList = NavaidList( aMap.MapCenter( ) );
+          _fixList = FixList( );
+          aMap.SetNavaidList( _navaidList, _fixList );
           aMap.SetAltAirportList( AltAirportList( aMap.MapCenter( ), rwLen.Length_m ) );
         }
         aMap.RenderItems( ); // will update if there is a need for it
@@ -658,18 +704,35 @@ namespace FShelf
     {
       var nList = new List<INavaid>( );
       // VOR / NDB
-      using (var _db = new FSimFacilityDataLib.AirportDB.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
+      using (var _db = new FSFData.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
         if (!_db.Open( Folders.GenAptDBFile ))
           return nList;
 
         // get the the Quads around
         var qs = Quad.Around49EX( latLon.AsQuadMax( ).AtZoom( (int)MapRange.FarFar ) ); // FF level
-        nList = _db.DbReader.Navaids_ByQuadList( qs ).ToList( );
+        nList = _db.DbReader.NavaidList_ByQuadList( qs ).ToList( );
       }
 
-      // APT Approach Waypoints, VORs and NDBs if set in Config
-      if (_airport != null /* && cbxCfgIFRwaypoints.Checked */) {
+      /*
+      // APT Approach WaypointCat, VORs and NDBs if set in Config
+      if (_airport != null / * && cbxCfgIFRwaypoints.Checked * /) {
         nList.AddRange( _airport.Navaids.Where( x => x.IsApproach ) );
+      }
+      */
+      return nList;
+    }
+
+    // loads a list of Approach Fixes which are related to the Airport
+    private List<IFix> FixList( )
+    {
+      var nList = new List<IFix>( );
+      // APT Approach WaypointCat, VORs and NDBs if set in Config
+      if (_airport != null) {
+        var aprFixes = _airport.APRs( ).SelectMany( proc => proc.CommonFixes ).Distinct( ).ToList( );
+        foreach (var apr in _airport.APRs( )) {
+          nList.AddRange( DbLookup.ExpandAPRFixes( apr, Folders.GenAptDBFile ) );
+        }
+        var unresolved = nList.FirstOrDefault( fix => fix.WYP == null );
       }
 
       return nList;
@@ -679,7 +742,7 @@ namespace FShelf
     private List<IAirportDesc> AltAirportList( LatLon latLon, float minRwyLength )
     {
       var aList = new List<IAirportDesc>( );
-      using (var _db = new FSimFacilityDataLib.AirportDB.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
+      using (var _db = new FSFData.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
         if (!_db.Open( Folders.GenAptDBFile ))
           return aList; // no db available
 
@@ -687,10 +750,10 @@ namespace FShelf
         var qs = Quad.Around49EX( latLon.AsQuadMax( ).AtZoom( (int)MapRange.FarFar ) ); // FF level
         if (minRwyLength <= 1) {
           // short if no length is selected
-          aList = _db.DbReader.AirportDescs_ByQuadList( qs ).ToList( );
+          aList = _db.DbReader.AirportDescList_ByQuadList( qs ).ToList( );
         }
         else {
-          aList = _db.DbReader.AirportDescs_ByQuadList( qs ).ToList( );
+          aList = _db.DbReader.AirportDescList_ByQuadList( qs ).ToList( );
           // select the ones asked for in Config (min length)
           aList = aList.Where( x => x.LongestRwyLength_m >= minRwyLength ).ToList( );
         }
@@ -706,8 +769,9 @@ namespace FShelf
 
       // sanity
       if (_dbMissing) return; // cannot get facilities
-
-      aMap.SetNavaidList( NavaidList( e.CenterCoordinate ) );
+      _fixList = FixList( );
+      _navaidList = NavaidList( e.CenterCoordinate );
+      aMap.SetNavaidList( _navaidList, _fixList );
       var rwLen = comboCfgRunwayLength.SelectedItem as RwyLenItem;
       aMap.SetAltAirportList( AltAirportList( e.CenterCoordinate, rwLen.Length_m ) );
 
@@ -728,7 +792,7 @@ namespace FShelf
       if (_dbMissing) return null;
 
       IAirport airport = null;
-      using (var _db = new FSimFacilityDataLib.AirportDB.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
+      using (var _db = new DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
         if (_db.Open( Folders.GenAptDBFile )) {
           airport = _db.DbReader.GetAirport( aptICAO ); ;
         }
@@ -779,6 +843,11 @@ namespace FShelf
         txEntry.ForeColor = _txForeColorDefault; // clear the one not available
         _airport = apt;
         LoadAirport( );
+
+        var aptReport = new AptReport.AptReportTable( );
+        aptReport.SaveDocument( _airport, _navaidList, _fixList,
+                            Path.Combine( AppSettings.Instance.ShelfFolder, Folders.AptReportSubfolder ),
+                            true );
       }
     }
 
@@ -807,8 +876,8 @@ namespace FShelf
       if (!this.Visible) return;  // no need to update while the shelf is not visible ???? TODO decide if or if not cut reporting ????
                                   //if (!(tab.SelectedTab == tabMap)) return;  //don't update while not showing the MapTab - this causes track disruptions when in METAR etc
 
-      // update pace slowed down to an acceptable CPU load - (native is 200ms)
-      if ((_updates++ % 6) == 0) { // every third.. 600ms pace - slow enough ?? performance penalty...
+      // Map update pace slowed down to an acceptable CPU load - (native is 100ms)
+      if ((_updates++ % 5) == 0) { // 500ms pace - slow enough ?? performance penalty...
         _tAircraft.OnGround = SV.Get<bool>( SItem.bG_Sim_OnGround );
         _tAircraft.TrueHeading_deg = SV.Get<float>( SItem.fG_Nav_HDG_true_deg );
         _tAircraft.Heading_degm = SV.Get<float>( SItem.fG_Nav_HDG_mag_degm );
@@ -833,6 +902,8 @@ namespace FShelf
         aMap.UpdateAircraft( _tAircraft );
         // Update Profile page
         UpdateProfileData( );
+        // Update Energy page
+        UpdateEnergyData( );
       }
     }
 
@@ -947,7 +1018,7 @@ namespace FShelf
         // Set Map Route
         aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
         // Load Shelf Docs
-        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, true ); // as PDF
         if (!string.IsNullOrWhiteSpace( err )) lblCfgSbPlanData.Text = err;
 
       }
@@ -1014,7 +1085,7 @@ namespace FShelf
         // Set Map Route
         aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
         // Load Shelf Docs
-        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, false );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
       }
     }
@@ -1027,10 +1098,10 @@ namespace FShelf
     {
       DebSaveRouteString( e.MSFSFltData, "FLT" );
 
-      lblCfgMsPlanData.Text = "FLT data received";
       var ins = e.MSFSFltData;
       _flightPlan.LoadMsFsFLT( ins );
       if (_flightPlan.IsMsFsPLN) {
+        lblCfgMsPlanData.Text = "FLT file received";
         // save selected file in settings 
         if (!string.IsNullOrEmpty( _selectedPlanFile )) {
           AppSettings.Instance.LastMsfsPlan = _selectedPlanFile;
@@ -1074,14 +1145,180 @@ namespace FShelf
         // Set Map Route
         aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
         // Load Shelf Docs
-        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, false );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
+      }
+      else {
+        lblCfgMsPlanData.Text = "got an invalid file";
       }
     }
 
     #endregion
 
+    #region LNM Gpx Events
+    private void _lnmGpx_GPXplnDataEvent( object sender, GPXplnDataEventArgs e )
+    {
+      DebSaveRouteString( e.GPXplnData, "GPX" );
+
+      lblCfgMsPlanData.Text = "GPX data received";
+      var xs = e.GPXplnData;
+      _flightPlan.LoadLnmGPX( xs );
+      if (_flightPlan.IsLnmGPX) {
+        // save selected file in settings 
+        if (!string.IsNullOrEmpty( _selectedPlanFile )) {
+          AppSettings.Instance.LastMsfsPlan = _selectedPlanFile;
+        }
+
+        // populate CFG fields
+        lblCfgMsPlanData.Text = $"GPX: {_flightPlan.FlightPlan.Origin.Icao_Ident} to {_flightPlan.FlightPlan.Destination.Icao_Ident}";
+        lblCfgSbPlanData.Text = "..."; // clear the SB one
+
+        // preselect airports
+        txCfgDep.Text = _flightPlan.FlightPlan.Origin.Icao_Ident.ICAO;
+        var apt = GetAirport( txCfgDep.Text );
+        if (apt == null) {
+          txCfgDep.ForeColor = Color.Red;
+          this.DEP_Airport = "n.a.";
+          lblCfgDep.Text = this.DEP_Airport;
+        }
+        else {
+          txCfgDep.ForeColor = Color.GreenYellow;
+          this.DEP_Airport = txCfgDep.Text;
+          lblCfgDep.Text = apt.Name;
+        }
+
+        txCfgArr.Text = _flightPlan.FlightPlan.Destination.Icao_Ident.ICAO;
+        apt = GetAirport( txCfgArr.Text );
+        if (apt == null) {
+          txCfgArr.ForeColor = Color.Red;
+          this.ARR_Airport = "n.a.";
+          lblCfgArr.Text = this.ARR_Airport;
+        }
+        else {
+          txCfgArr.ForeColor = Color.GreenYellow;
+          this.ARR_Airport = txCfgArr.Text;
+          lblCfgArr.Text = apt.Name;
+        }
+
+        // Set Map Route
+        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        // Load Shelf Docs
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, false );
+        if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
+      }
+    }
+    #endregion
+
+    #region LNM Rte Events
+    private void _lnmRte_RTEplnDataEvent( object sender, RTEplnDataEventArgs e )
+    {
+      DebSaveRouteString( e.RTEplnData, "RTE" );
+
+      lblCfgMsPlanData.Text = "RTE data received";
+      var xs = e.RTEplnData;
+      _flightPlan.LoadLnmRTE( xs );
+      if (_flightPlan.IsLnmRTE) {
+        // save selected file in settings 
+        if (!string.IsNullOrEmpty( _selectedPlanFile )) {
+          AppSettings.Instance.LastMsfsPlan = _selectedPlanFile;
+        }
+
+        // populate CFG fields
+        lblCfgMsPlanData.Text = $"RTE: {_flightPlan.FlightPlan.Origin.Icao_Ident} to {_flightPlan.FlightPlan.Destination.Icao_Ident}";
+        lblCfgSbPlanData.Text = "..."; // clear the SB one
+
+        // preselect airports
+        txCfgDep.Text = _flightPlan.FlightPlan.Origin.Icao_Ident.ICAO;
+        var apt = GetAirport( txCfgDep.Text );
+        if (apt == null) {
+          txCfgDep.ForeColor = Color.Red;
+          this.DEP_Airport = "n.a.";
+          lblCfgDep.Text = this.DEP_Airport;
+        }
+        else {
+          txCfgDep.ForeColor = Color.GreenYellow;
+          this.DEP_Airport = txCfgDep.Text;
+          lblCfgDep.Text = apt.Name;
+        }
+
+        txCfgArr.Text = _flightPlan.FlightPlan.Destination.Icao_Ident.ICAO;
+        apt = GetAirport( txCfgArr.Text );
+        if (apt == null) {
+          txCfgArr.ForeColor = Color.Red;
+          this.ARR_Airport = "n.a.";
+          lblCfgArr.Text = this.ARR_Airport;
+        }
+        else {
+          txCfgArr.ForeColor = Color.GreenYellow;
+          this.ARR_Airport = txCfgArr.Text;
+          lblCfgArr.Text = apt.Name;
+        }
+
+        // Set Map Route
+        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        // Load Shelf Docs
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, false );
+        if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
+      }
+    }
+    #endregion
+
+    #region LNM Plan Events
+    private void _lnmPln_LNMplnDataEvent( object sender, LNMplnDataEventArgs e )
+    {
+      DebSaveRouteString( e.LNMplnData, "LNM" );
+
+      lblCfgMsPlanData.Text = "LNM data received";
+      var xs = e.LNMplnData;
+      _flightPlan.LoadLnmPLN( xs );
+      if (_flightPlan.IsLnmPLN) {
+        // save selected file in settings 
+        if (!string.IsNullOrEmpty( _selectedPlanFile )) {
+          AppSettings.Instance.LastMsfsPlan = _selectedPlanFile;
+        }
+
+        // populate CFG fields
+        lblCfgMsPlanData.Text = $"LNM: {_flightPlan.FlightPlan.Origin.Icao_Ident} to {_flightPlan.FlightPlan.Destination.Icao_Ident}";
+        lblCfgSbPlanData.Text = "..."; // clear the SB one
+
+        // preselect airports
+        txCfgDep.Text = _flightPlan.FlightPlan.Origin.Icao_Ident.ICAO;
+        var apt = GetAirport( txCfgDep.Text );
+        if (apt == null) {
+          txCfgDep.ForeColor = Color.Red;
+          this.DEP_Airport = "n.a.";
+          lblCfgDep.Text = this.DEP_Airport;
+        }
+        else {
+          txCfgDep.ForeColor = Color.GreenYellow;
+          this.DEP_Airport = txCfgDep.Text;
+          lblCfgDep.Text = apt.Name;
+        }
+
+        txCfgArr.Text = _flightPlan.FlightPlan.Destination.Icao_Ident.ICAO;
+        apt = GetAirport( txCfgArr.Text );
+        if (apt == null) {
+          txCfgArr.ForeColor = Color.Red;
+          this.ARR_Airport = "n.a.";
+          lblCfgArr.Text = this.ARR_Airport;
+        }
+        else {
+          txCfgArr.ForeColor = Color.GreenYellow;
+          this.ARR_Airport = txCfgArr.Text;
+          lblCfgArr.Text = apt.Name;
+        }
+
+        // Set Map Route
+        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        // Load Shelf Docs
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, false );
+        if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
+      }
+    }
+    #endregion
+
     #region Performance Setup
+
     // fill the Perf Tab
     private void SetPerfContent( )
     {
@@ -1106,26 +1343,26 @@ namespace FShelf
       RTF.Write( $"Weight and Balance:" ); RTF.WriteTab( $"{unit}" ); RTF.WriteLn( );
       RTF.RBold = false;
       value = lbs ? SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) / 1_000f
-                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) ) / 1_000f;
+                  : (float)Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) ) / 1_000f;
       RTF.Write( $"TOTAL Weight" ); RTF.WriteTab( $"{value:##0.000}\n" ); RTF.WriteLn( );
       value = lbs ? SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) / 1_000f
-                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ) / 1_000f;
+                  : (float)Kg_From_Lbs( SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ) / 1_000f;
       RTF.Write( $"FUEL Weight" ); RTF.WriteTab( $"{value:##0.000}" );
       RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Fuel_Quantity_total_gal ):##0.0} gal" ); RTF.WriteLn( );
       value = lbs ? SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ) / 1_000f
-                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ) ) / 1_000f;
+                  : (float)Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ) ) / 1_000f;
       RTF.Write( $"PAYLOAD Weight" ); RTF.WriteTab( $"{value:##0.000}" ); RTF.WriteLn( );
       value = lbs ? (SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb )) / 1_000f
-                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ) / 1_000f;
+                  : (float)Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ) / 1_000f;
       RTF.Write( $"ZF Weight" ); RTF.WriteTab( $"{value:##0.000}" ); RTF.WriteLn( );
       RTF.Write( $"CG lon/lat" );
       RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Acft_AcftCGlong_perc ) * 100f:#0.00} %  /  {SV.Get<float>( SItem.fG_Acft_AcftCGlat_perc ) * 100f:#0.00} %" );
       RTF.WriteLn( );
       value = lbs ? SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) / 1_000f
-                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) ) / 1_000f;
+                  : (float)Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) ) / 1_000f;
       RTF.Write( $"Empty Weight" ); RTF.WriteTab( $"{value:##0.000}" ); RTF.WriteLn( );
       value = lbs ? SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ) / 1_000f
-                  : Conversions.Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ) ) / 1_000f;
+                  : (float)Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ) ) / 1_000f;
       RTF.Write( $"MAX Weight" ); RTF.WriteTab( $"{value:##0.000}" ); RTF.WriteLn( );
 
       RTF.WriteLn( );
@@ -1176,12 +1413,12 @@ namespace FShelf
     {
       if (tab.SelectedTab != tabProfile) return; // Tab not shown, omit updates
 
-      lblGS.Text = $"{_tAircraft.Gs_kt:##0}";
-      lblVS.Text = $"{_tAircraft.Vs_fpm:#,##0}";
-      lblAlt.Text = $"{_tAircraft.Altitude_ft:##,##0}";
-      lblIAS.Text = $"{_tAircraft.Ias_kt:##0}";
-      lblTAS.Text = $"{_tAircraft.Tas_kt:##0}";
-      lblFPA.Text = $"{_tAircraft.Fpa_deg:#0.0}";
+      lblGS_P.Text = $"{_tAircraft.Gs_kt:##0}";
+      lblVS_P.Text = $"{_tAircraft.Vs_fpm:#,##0}";
+      lblAlt_P.Text = $"{_tAircraft.Altitude_ft:##,##0}";
+      lblIAS_P.Text = $"{_tAircraft.Ias_kt:##0}";
+      lblTAS_P.Text = $"{_tAircraft.Tas_kt:##0}";
+      lblFPA_P.Text = $"{_tAircraft.Fpa_deg:#0.0}";
       // mark the Row entries
       MarkGS( _tAircraft.Gs_kt );
       MarkAlt( _tAircraft.Altitude_ft );
@@ -1205,6 +1442,58 @@ namespace FShelf
       if (dgvAlt.SelectedRows.Count <= 0) return;
 
       _profileCat.SetStartAltitude( dgvAlt.SelectedRows[0] );
+    }
+
+    #endregion
+
+    #region EnergyTab Events
+
+    // update the EnergyTab data
+    private void UpdateEnergyData( )
+    {
+      if (tab.SelectedTab != tabEnergy) return; // Tab not shown, omit updates
+
+      //Maintain E-Table values - using the Data API
+      uC_ETable1.SetValues(
+        SV.Get<float>( SItem.fG_Acft_TAS_kt ),
+        SV.Get<float>( SItem.fG_Acft_AltMsl_ft ),
+        SV.Get<double>( SItem.dG_Env_Time_absolute_sec )
+      );
+      // Using Design Constants for Stall Speed
+      if (SV.Get<float>( SItem.fG_Flp_Deployment_prct ) > 90) {
+        uC_ETable1.StallSpeed_kt = SV.Get<float>( SItem.fG_Dsg_SpeedVS0_kt );
+      }
+      else {
+        uC_ETable1.StallSpeed_kt = SV.Get<float>( SItem.fG_Dsg_SpeedVS1_kt );
+      }
+      // using the Flight Assistants number for Stall Speed
+      /* DOES NOT REPLY - Asobo do better !!!!!
+      uC_ETable1.StallSpeed_kt = SV.Get<float>( SItem.fG_Acft_FA_StallSpeed_kt );
+      */
+      // Elevation of the ground below the aircraft
+      uC_ETable1.GroundElevation_ft = (float)Units.Ft_From_M( SV.Get<float>( SItem.fG_Env_GroundAltitude_m ) );
+
+      // Disp Labels on top - use the aircraft obj to pull them from
+      lblGS_E.Text = $"{_tAircraft.Gs_kt:##0}";
+      lblVS_E.Text = $"{_tAircraft.Vs_fpm:#,##0}";
+      lblAlt_E.Text = $"{_tAircraft.Altitude_ft:##,##0}";
+      lblIAS_E.Text = $"{_tAircraft.Ias_kt:##0}";
+      lblTAS_E.Text = $"{_tAircraft.Tas_kt:##0}";
+      lblFPA_E.Text = $"{_tAircraft.Fpa_deg:#0.0}";
+    }
+
+    private void rb6sec_CheckedChanged( object sender, EventArgs e )
+    {
+      if (rb6sec.Checked) {
+        uC_ETable1.Est_Time_s = 6f;
+      }
+    }
+
+    private void rb30sec_CheckedChanged( object sender, EventArgs e )
+    {
+      if (rb30sec.Checked) {
+        uC_ETable1.Est_Time_s = 30f;
+      }
     }
 
     #endregion
@@ -1282,7 +1571,7 @@ namespace FShelf
       if (SimBrief.IsSimBriefUserID( txCfgSbPilotID.Text )) {
         lblCfgSbPlanData.Text = "loading...";
         // call for a JSON OFP
-        _simBrief.PostDocument_Request( txCfgSbPilotID.Text, SimBriefDataFormat.JSON );
+        _simBrief.PostDocument_Request( txCfgSbPilotID.Text, SimBriefDataFormat.JSON ); // USE HTTP
         // will return in the CallBack
       }
       else {
@@ -1293,6 +1582,9 @@ namespace FShelf
     // MSFS Select and load a plan
     private void btCfgMsSelectPlan_Click( object sender, EventArgs e )
     {
+      // override GUI
+      OFD.Filter = "MSFS Flightplans|*.pln;*.flt|LittleNavMap Plan|*.lnmpln|GPX File|*.gpx|Route String|*.rte|All files|*.*";
+
       OFD.Title = "Select and Load a Flightplan";
       // usually it is the last selected one
       var path = AppSettings.Instance.LastMsfsPlan;
@@ -1301,11 +1593,18 @@ namespace FShelf
         // path exists - use it
         OFD.FileName = Path.GetFileName( path );
         OFD.InitialDirectory = Path.GetDirectoryName( path );
+        OFD.FilterIndex = (Path.GetExtension( path ).ToLowerInvariant( ) == ".rte") ? 4
+          : (Path.GetExtension( path ).ToLowerInvariant( ) == ".gpx") ? 3
+          : (Path.GetExtension( path ).ToLowerInvariant( ) == ".lnmpln") ? 2
+          : (Path.GetExtension( path ).ToLowerInvariant( ) == ".pln") ? 1
+          : (Path.GetExtension( path ).ToLowerInvariant( ) == ".flt") ? 1
+          : 5;
       }
       else {
         // set a default path if the last one does not longer exists
         OFD.FileName = "CustomFlight.pln";
         OFD.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
+        OFD.FilterIndex = 1;
       }
 
       if (OFD.ShowDialog( this ) == DialogResult.OK) {
@@ -1317,6 +1616,15 @@ namespace FShelf
         }
         else if (_selectedPlanFile.ToLowerInvariant( ).EndsWith( ".flt" )) {
           _msfsFlt.PostDocument_Request( _selectedPlanFile );
+        }
+        else if (_selectedPlanFile.ToLowerInvariant( ).EndsWith( ".gpx" )) {
+          _lnmGpx.PostDocument_Request( _selectedPlanFile );
+        }
+        else if (_selectedPlanFile.ToLowerInvariant( ).EndsWith( ".rte" )) {
+          _lnmRte.PostDocument_Request( _selectedPlanFile );
+        }
+        else if (_selectedPlanFile.ToLowerInvariant( ).EndsWith( ".lnmpln" )) {
+          _lnmPln.PostDocument_Request( _selectedPlanFile );
         }
         // will report in the Event
       }
@@ -1378,7 +1686,7 @@ namespace FShelf
     {
       if (_awaitingFLTfile) {
         _awaitingFLTfile = false;
-        if (e.Filename.ToLowerInvariant( ).EndsWith( ".flt" )) {
+        if (e.FileValid && e.Filename.ToLowerInvariant( ).EndsWith( ".flt" )) {
           _msfsFlt.PostDocument_Request( e.Filename );
         }
       }

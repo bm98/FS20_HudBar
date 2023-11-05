@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace FS20_HudBar.GUI.Templates
 {
   /// <summary>
-  /// An ICAO label (LEFT aligned)
+  /// An IlsID label (LEFT aligned)
   /// </summary>
   class V_ICAO_L : V_ICAO
   {

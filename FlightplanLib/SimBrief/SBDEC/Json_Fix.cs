@@ -1,10 +1,12 @@
-﻿using CoordLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+
+using CoordLib;
+using FSimFacilityIF;
 
 namespace FlightplanLib.SimBrief.SBDEC
 {
@@ -125,7 +127,7 @@ namespace FlightplanLib.SimBrief.SBDEC
     public float Altitude_ft => (float)Formatter.GetValue( Altitude );
 
     /// <summary>
-    /// True if the Wyp is part of an Airway
+    /// True if the Wyp is part of an Enroute
     /// </summary>
     public bool IsAirway => !string.IsNullOrWhiteSpace( Via_Airway ) && (!IsSidOrStar);
     /// <summary>
@@ -156,26 +158,26 @@ namespace FlightplanLib.SimBrief.SBDEC
     /// A rounded Altitude to 100ft except for Airports and Runways
     /// </summary>
     public float AltitudeRounded_ft =>
-      (WaypointType == TypeOfWaypoint.Airport || WaypointType == TypeOfWaypoint.Runway)
+      (WaypointType == WaypointTyp.APT || WaypointType == WaypointTyp.RWY)
         ? Altitude_ft
         : (float)(Math.Round( Altitude_ft / 100.0 ) * 100.0);
 
     /// <summary>
     /// The type of the Waypoint as enum
     /// </summary>
-    public TypeOfWaypoint WaypointType => ToTypeOfWP( FixType );
+    public WaypointTyp WaypointType => ToWaypointTyp( FixType );
 
     // local only
-    private static TypeOfWaypoint ToTypeOfWP( string fpType )
+    private static WaypointTyp ToWaypointTyp( string fpType )
     {
       switch (fpType.ToLowerInvariant( )) {
-        case "apt": return TypeOfWaypoint.Airport;
-        case "wpt": return TypeOfWaypoint.Waypoint;
-        case "ndb": return TypeOfWaypoint.NDB;
-        case "rwy": return TypeOfWaypoint.Runway; // ?? exists ??
-        case "usr": return TypeOfWaypoint.User; // ?? exists ??
-        case "vor": return TypeOfWaypoint.VOR;
-        default: return TypeOfWaypoint.Other; // TOC,TOD goes here
+        case "apt": return WaypointTyp.APT;
+        case "wpt": return WaypointTyp.WYP;
+        case "ndb": return WaypointTyp.NDB;
+        case "rwy": return WaypointTyp.RWY; // ?? exists ??
+        case "usr": return WaypointTyp.USR; // ?? exists ??
+        case "vor": return WaypointTyp.VOR;
+        default: return WaypointTyp.OTH; // TOC,TOD goes here
       }
     }
 
