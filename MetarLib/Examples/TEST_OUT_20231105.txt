@@ -1,0 +1,562 @@
+LSMD 151050Z AUTO VRB02KT 9999NDV NCD M35/M39 Q1016 RMK
+LSMD @ Report Date 15. Time 10:50Z - 
+Altimeter: 30.00 inHg - 1016 hPa
+Temp: -35°C (-31°F) - Dewpoint: -39°C (-38°F) (RH=67%)
+Wind: variable @ 2kt
+Visibility: more than 6.2 SM (10.0 km) NDV
+Clouds: clear
+Flight Category: VFR (green)
+
+TAF LSZH 272325Z 2800/2906 VRB02KT 9999 FEW055 TX23/2815Z TN16/2804Z TN14/2903Z TEMPO 2800/2809 SHRA SCT045TCU PROB30 TEMPO 2800/2809 25010KT 4500 TSRA SCT035CB BECMG 2901/2904 1200 PRFG BKN003 PROB40 2903/2906 0600 FG VV002
+Forecast: LSZH @ Report Date 27. Time 23:25Z
+
+From 28. 12:00Z to 29. 06:00Z
+T-Maximum 23°C (73°F) at 03:00
+T-Minimum 16°C (61°F) at 04:00
+T-Minimum 14°C (57°F) at 03:00
+Wind: variable @ 2kt
+Visibility: more than 6.2 SM (10.0 km) 
+Clouds: few at 5’500 ft (AGL)
+Flight Category: VFR (green)
+
+Temporary From 28. 12:00Z to 28. 09:00Z
+Clouds: scattered at 4’500 ft (AGL) towering cumulus
+Weather: Moderate showers rain
+Flight Category: UNKOWN (white)
+
+30% - Temporary From 28. 12:00Z to 28. 09:00Z
+Wind: 250° @ 10kt
+Visibility: 2.8 SM (4.5 km) 
+Clouds: scattered at 3’500 ft (AGL) cumulonimbus
+Weather: Moderate thunderstorm rain
+Flight Category: IFR (red)
+
+Change From 29. 01:00Z to 29. 04:00Z
+Visibility: 0.7 SM (1.2 km) 
+Clouds: broken at 300 ft (AGL)
+Weather: Moderate partial fog
+Flight Category: LIFR (magenta)
+
+40% - From 29. 03:00Z to 29. 06:00Z
+Visibility: 0.4 SM (0.6 km) 
+Clouds: sky obscured vert. visibility 200 ft
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+TAF LSZH 272025Z 2721/2903 14003KT 9999 FEW022 TX24/2815Z TN15/2804Z TEMPO 2721/2810 SHRA SCT035TCU PROB30 TEMPO 2721/2809 25010KT 4500 TSRA BKN014 SCT035CB
+Forecast: LSZH @ Report Date 27. Time 20:25Z
+
+From 27. 09:00Z to 29. 03:00Z
+T-Maximum 24°C (75°F) at 03:00
+T-Minimum 15°C (59°F) at 04:00
+Wind: 140° @ 3kt
+Visibility: more than 6.2 SM (10.0 km) 
+Clouds: few at 2’200 ft (AGL)
+Flight Category: MVFR (blue)
+
+Temporary From 27. 09:00Z to 28. 10:00Z
+Clouds: scattered at 3’500 ft (AGL) towering cumulus
+Weather: Moderate showers rain
+Flight Category: UNKOWN (white)
+
+30% - Temporary From 27. 09:00Z to 28. 09:00Z
+Wind: 250° @ 10kt
+Visibility: 2.8 SM (4.5 km) 
+Clouds: broken at 1’400 ft (AGL)
+Clouds: scattered at 3’500 ft (AGL) cumulonimbus
+Weather: Moderate thunderstorm rain
+Flight Category: IFR (red)
+
+TAF KLAX 271738Z 2718/2824 28008KT P6SM OVC008 FM272000 26010KT P6SM SCT010 FM280400 26006KT P6SM SCT010 FM280600 VRB03KT P6SM OVC009 FM281500 VRB03KT P6SM BKN012
+Forecast: KLAX @ Report Date 27. Time 17:38Z
+
+From 27. 06:00Z to 28. 11:59Z
+Wind: 280° @ 8kt
+Visibility: more than 6.0 SM (9.7 km) 
+Clouds: overcast at 800 ft (AGL)
+Flight Category: IFR (red)
+
+From 27. 08:00Z onwards
+Wind: 260° @ 10kt
+Visibility: more than 6.0 SM (9.7 km) 
+Clouds: scattered at 1’000 ft (AGL)
+Flight Category: MVFR (blue)
+
+From 28. 04:00Z onwards
+Wind: 260° @ 6kt
+Visibility: more than 6.0 SM (9.7 km) 
+Clouds: scattered at 1’000 ft (AGL)
+Flight Category: MVFR (blue)
+
+From 28. 06:00Z onwards
+Wind: variable @ 3kt
+Visibility: more than 6.0 SM (9.7 km) 
+Clouds: overcast at 900 ft (AGL)
+Flight Category: IFR (red)
+
+From 28. 03:00Z onwards
+Wind: variable @ 3kt
+Visibility: more than 6.0 SM (9.7 km) 
+Clouds: broken at 1’200 ft (AGL)
+Flight Category: MVFR (blue)
+
+CYYC 151100Z 09005KT 1 1/2SM -SN BR OVC003 00/00 A2990 RMK F6SF2 SLP009=
+CYYC @ Report Date 15. Time 11:00Z - 
+Altimeter: 29.90 inHg - 1013 hPa
+Temp: 0°C (32°F) - Dewpoint: 0°C (32°F) (RH=100%)
+Wind: 090° @ 5kt
+Visibility: 1.5 SM (2.4 km) 
+Clouds: overcast at 300 ft (AGL)
+Weather: Light snow
+Weather: Moderate mist
+Flight Category: LIFR (magenta)
+
+CYVR 151100Z VRB03KT 1/4SM FG VV002 09/08 A2963 RMK F8 SLP998=
+CYVR @ Report Date 15. Time 11:00Z - 
+Altimeter: 29.63 inHg - 1003 hPa
+Temp: 9°C (48°F) - Dewpoint: 8°C (46°F) (RH=93%)
+Wind: variable @ 3kt
+Visibility: 0.3 SM (0.4 km) 
+Clouds: sky obscured vert. visibility 200 ft
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+CYEG 151100Z 00000KT 15SM FEW018 BKN040 OVC095 M00/M02 A2996 RMK CF2SC3AC3 SLP141=
+CYEG @ Report Date 15. Time 11:00Z - 
+Altimeter: 29.96 inHg - 1015 hPa
+Temp: 0°C (32°F) - Dewpoint: -2°C (28°F) (RH=86%)
+Wind: calm
+Visibility: 15.0 SM (24.1 km) 
+Clouds: few at 1’800 ft (AGL)
+Clouds: broken at 4’000 ft (AGL)
+Clouds: overcast at 9’500 ft (AGL)
+Flight Category: MVFR (blue)
+
+CYZF 151100Z 28005KT 12SM -SN FEW015 OVC025 M11/M13 A2988 RMK SF1SC7 SLP105=
+CYZF @ Report Date 15. Time 11:00Z - 
+Altimeter: 29.88 inHg - 1012 hPa
+Temp: -11°C (12°F) - Dewpoint: -13°C (9°F) (RH=85%)
+Wind: 280° @ 5kt
+Visibility: 12.0 SM (19.3 km) 
+Clouds: few at 1’500 ft (AGL)
+Clouds: overcast at 2’500 ft (AGL)
+Weather: Light snow
+Flight Category: MVFR (blue)
+
+CYYQ 151100Z 34015G30KT 1/2SM -SN BLSN VV005 M05/M07 A2975 RMK S8 SLP002=
+CYYQ @ Report Date 15. Time 11:00Z - 
+Altimeter: 29.75 inHg - 1007 hPa
+Temp: -5°C (23°F) - Dewpoint: -7°C (19°F) (RH=86%)
+Wind: 340° @ 15kt (gusts 30kt)
+Visibility: 0.5 SM (0.8 km) 
+Clouds: sky obscured vert. visibility 500 ft
+Weather: Light snow
+Weather: Moderate blowing snow
+Flight Category: LIFR (magenta)
+
+CYUL 151100Z AUTO 04002KT 9SM BKN050 BKN090 00/M01 A3032 RMK SLP244=
+CYUL @ Report Date 15. Time 11:00Z - 
+Altimeter: 30.32 inHg - 1027 hPa
+Temp: 0°C (32°F) - Dewpoint: -1°C (30°F) (RH=93%)
+Wind: 040° @ 2kt
+Visibility: 9.0 SM (14.5 km) 
+Clouds: broken at 5’000 ft (AGL)
+Clouds: broken at 9’000 ft (AGL)
+Flight Category: VFR (green)
+
+CYHZ 151100Z 00000KT 15SM BCFG FEW020 SCT100 SCT250 M00/M02 A3038 RMK CU1AS2CI0 SLP299=
+CYHZ @ Report Date 15. Time 11:00Z - 
+Altimeter: 30.38 inHg - 1029 hPa
+Temp: 0°C (32°F) - Dewpoint: -2°C (28°F) (RH=86%)
+Wind: calm
+Visibility: 15.0 SM (24.1 km) 
+Clouds: few at 2’000 ft (AGL)
+Clouds: scattered at 10’000 ft (AGL)
+Clouds: scattered at 25’000 ft (AGL)
+Weather: Moderate patches of fog
+Flight Category: MVFR (blue)
+
+CYYT 151100Z 00000KT 0SM FG VV000 07/07 A3019 RMK F8 SLP212=
+CYYT @ Report Date 15. Time 11:00Z - 
+Altimeter: 30.19 inHg - 1022 hPa
+Temp: 7°C (45°F) - Dewpoint: 7°C (45°F) (RH=100%)
+Wind: calm
+Visibility: 0.0 SM (0.0 km) 
+Clouds: sky obscured vert. visibility 0 ft
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+CYAW 151100Z 03006KT 1 1/4SM ?RADZ BR OVC003 10/10 A2976 WS ALL RWY RMK SF7 CIG RGD SLP001=
+CYAW @ Report Date 15. Time 11:00Z - 
+Altimeter: 29.76 inHg - 1008 hPa
+Temp: 10°C (50°F) - Dewpoint: 10°C (50°F) (RH=100%)
+Wind: 030° @ 6kt
+Visibility: 1.3 SM (2.0 km) 
+Clouds: overcast at 300 ft (AGL)
+Weather: Chance of rain drizzle
+Weather: Moderate mist
+Flight Category: LIFR (magenta)
+
+CYQX 151100Z 30007KT 1/8SM FZFG VV001 M02/M03 A2998 RMK F8 SLP146=
+CYQX @ Report Date 15. Time 11:00Z - 
+Altimeter: 29.98 inHg - 1015 hPa
+Temp: -2°C (28°F) - Dewpoint: -3°C (27°F) (RH=93%)
+Wind: 300° @ 7kt
+Visibility: 0.1 SM (0.2 km) 
+Clouds: sky obscured vert. visibility 100 ft
+Weather: Moderate freezing fog
+Flight Category: LIFR (magenta)
+
+METAR CYQB 201900Z 00000KT 3/4SM -SHRA BR BKN004 OVC020 19/18 A2962 RMK SF6SC2 SLP032=
+CYQB @ Report Date 20. Time 19:00Z - 
+Altimeter: 29.62 inHg - 1003 hPa
+Temp: 19°C (66°F) - Dewpoint: 18°C (64°F) (RH=94%)
+Wind: calm
+Visibility: 0.8 SM (1.2 km) 
+Clouds: broken at 400 ft (AGL)
+Clouds: overcast at 2’000 ft (AGL)
+Weather: Light showers rain
+Weather: Moderate mist
+Flight Category: LIFR (magenta)
+
+METAR CYYQ 301300Z 35011KT 1/8SM FG VV001 02/02 A2991 RMK F8 SLP131=
+CYYQ @ Report Date 30. Time 13:00Z - 
+Altimeter: 29.91 inHg - 1013 hPa
+Temp: 2°C (36°F) - Dewpoint: 2°C (36°F) (RH=100%)
+Wind: 350° @ 11kt
+Visibility: 0.1 SM (0.2 km) 
+Clouds: sky obscured vert. visibility 100 ft
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+METAR CYYQ 241700Z 34011KT 2SM -DZ BR OVC004 05/05 A2994 RMK F4SF3 VSBY NE QUAD 1 SLP140=METAR CYYQ 241700Z 34011KT 2SM -DZ BR OVC004 05/05 A2994 RMK F4SF3 VSBY NE QUAD 1 SLP140=
+CYYQ @ Report Date 24. Time 17:00Z - 
+Altimeter: 29.94 inHg - 1014 hPa
+Temp: 5°C (41°F) - Dewpoint: 5°C (41°F) (RH=100%)
+Wind: 340° @ 11kt
+Visibility: 2.0 SM (3.2 km) 
+Clouds: overcast at 400 ft (AGL)
+Weather: Light drizzle
+Weather: Moderate mist
+Flight Category: LIFR (magenta)
+
+METAR CYQX 141200Z CCB 32008KT 1/4SM FG VV002 09/08 A2963 RMK F8 SLP040=
+CYQX @ Report Date 14. Time 12:00Z - 
+Altimeter: 29.63 inHg - 1003 hPa
+Temp: 9°C (48°F) - Dewpoint: 8°C (46°F) (RH=93%)
+Wind: 320° @ 8kt
+Visibility: 0.3 SM (0.4 km) 
+Clouds: sky obscured vert. visibility 200 ft
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+CYOW 160800Z 21004KT 8SM -TSRA BKN020 OVC100 20/18 A2966 RMK SC5AC3 CB EMBDD LTGCG SE SLP044=
+CYOW @ Report Date 16. Time 08:00Z - 
+Altimeter: 29.66 inHg - 1004 hPa
+Temp: 20°C (68°F) - Dewpoint: 18°C (64°F) (RH=88%)
+Wind: 210° @ 4kt
+Visibility: 8.0 SM (12.9 km) 
+Clouds: broken at 2’000 ft (AGL)
+Clouds: overcast at 10’000 ft (AGL)
+Weather: Light thunderstorm rain
+Flight Category: MVFR (blue)
+
+LSZH 252020Z 29002KT CAVOK VV004 17/16 Q1013 NOSIG
+LSZH @ Report Date 25. Time 20:20Z - 
+Altimeter: 29.91 inHg - 1013 hPa
+Temp: 17°C (63°F) - Dewpoint: 16°C (61°F) (RH=94%)
+Wind: 290° @ 2kt
+Visibility: Ceiling And Visibility OK 
+Clouds: sky obscured vert. visibility 400 ft
+Flight Category: LIFR (magenta)
+
+YBCD 210600Z AUTO 20013KT 9999NDV // NCD 34/09 Q1023 RMK RF00.0/000.0
+YBCD @ Report Date 21. Time 06:00Z - 
+Altimeter: 30.21 inHg - 1023 hPa
+Temp: 34°C (93°F) - Dewpoint: 9°C (48°F) (RH=22%)
+Wind: 200° @ 13kt
+Visibility: more than 6.2 SM (10.0 km) NDV
+Clouds: clear
+Weather: Moderate 
+Flight Category: VFR (green)
+
+LSZH 252020Z 29002KT CAVOK 17/16 Q1013 NOSIG
+LSZH @ Report Date 25. Time 20:20Z - 
+Altimeter: 29.91 inHg - 1013 hPa
+Temp: 17°C (63°F) - Dewpoint: 16°C (61°F) (RH=94%)
+Wind: 290° @ 2kt
+Visibility: Ceiling And Visibility OK 
+Flight Category: VFR (green)
+
+CYQX 261300Z 22004KT 170V260 20SM FEW025 FEW220 FEW260 19/13 A3000 RMK CU1CC1CI1 CC TR CI TR SLP161 DENSITY ALT 1000FT
+CYQX @ Report Date 26. Time 13:00Z - 
+Altimeter: 30.00 inHg - 1016 hPa
+Temp: 19°C (66°F) - Dewpoint: 13°C (55°F) (RH=68%)
+Wind: 220° (var 170°..260°) @ 4kt
+Visibility: 20.0 SM (32.2 km) 
+Clouds: few at 2’500 ft (AGL)
+Clouds: few at 22’000 ft (AGL)
+Clouds: few at 26’000 ft (AGL)
+Flight Category: MVFR (blue)
+
+LPPT 271200Z 24004KT 9999 -SHRA SCT017TCU FEW030CB BKN040 15/13 Q1005
+LPPT @ Report Date 27. Time 12:00Z - 
+Altimeter: 29.68 inHg - 1005 hPa
+Temp: 15°C (59°F) - Dewpoint: 13°C (55°F) (RH=88%)
+Wind: 240° @ 4kt
+Visibility: more than 6.2 SM (10.0 km) 
+Clouds: scattered at 1’700 ft (AGL) towering cumulus
+Clouds: few at 3’000 ft (AGL) cumulonimbus
+Clouds: broken at 4’000 ft (AGL)
+Weather: Light showers rain
+Flight Category: MVFR (blue)
+
+LEMG 271200Z 22013KT 170V250 9999 SCT040 SCT070 BKN200 18/10 Q1007 NOSIG
+LEMG @ Report Date 27. Time 12:00Z - 
+Altimeter: 29.74 inHg - 1007 hPa
+Temp: 18°C (64°F) - Dewpoint: 10°C (50°F) (RH=60%)
+Wind: 220° (var 170°..250°) @ 13kt
+Visibility: more than 6.2 SM (10.0 km) 
+Clouds: scattered at 4’000 ft (AGL)
+Clouds: scattered at 7’000 ft (AGL)
+Clouds: broken at 20’000 ft (AGL)
+Flight Category: VFR (green)
+
+EGAA 280750Z 35005KT 0800 R25/P1500 FG OVC000 09/08 Q1032
+EGAA @ Report Date 28. Time 07:50Z - 
+Altimeter: 30.47 inHg - 1032 hPa
+Temp: 9°C (48°F) - Dewpoint: 8°C (46°F) (RH=93%)
+Wind: 350° @ 5kt
+Visibility: 0.5 SM (0.8 km) 
+Runway: R25 vis > 4’900ft
+Clouds: overcast at 0 ft (AGL)
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+LFML 271230Z 27006KT 8000 VCSH SCT026TCU SCT036 BKN046 16/11 Q1012
+LFML @ Report Date 27. Time 12:30Z - 
+Altimeter: 29.88 inHg - 1012 hPa
+Temp: 16°C (61°F) - Dewpoint: 11°C (52°F) (RH=72%)
+Wind: 270° @ 6kt
+Visibility: 5.0 SM (8.0 km) 
+Clouds: scattered at 2’600 ft (AGL) towering cumulus
+Clouds: scattered at 3’600 ft (AGL)
+Clouds: broken at 4’600 ft (AGL)
+Weather: Nearby showers
+Flight Category: MVFR (blue)
+
+LPPT 271200Z 24004KT 9999 SHRA SCT017TCU FEW030CB BKN040 15/13 Q1005
+LPPT @ Report Date 27. Time 12:00Z - 
+Altimeter: 29.68 inHg - 1005 hPa
+Temp: 15°C (59°F) - Dewpoint: 13°C (55°F) (RH=88%)
+Wind: 240° @ 4kt
+Visibility: more than 6.2 SM (10.0 km) 
+Clouds: scattered at 1’700 ft (AGL) towering cumulus
+Clouds: few at 3’000 ft (AGL) cumulonimbus
+Clouds: broken at 4’000 ft (AGL)
+Weather: Moderate showers rain
+Flight Category: MVFR (blue)
+
+EGPA 280750Z 30014KT 3500 -DZ FEW001 BKN002 OVC003 09/08 Q1031
+EGPA @ Report Date 28. Time 07:50Z - 
+Altimeter: 30.45 inHg - 1031 hPa
+Temp: 9°C (48°F) - Dewpoint: 8°C (46°F) (RH=93%)
+Wind: 300° @ 14kt
+Visibility: 2.2 SM (3.5 km) 
+Clouds: few at 100 ft (AGL)
+Clouds: broken at 200 ft (AGL)
+Clouds: overcast at 300 ft (AGL)
+Weather: Light drizzle
+Flight Category: LIFR (magenta)
+
+EDDC 280750Z 30006KT 0300 R04/0500N FG BKN001 08/08 Q1020
+EDDC @ Report Date 28. Time 07:50Z - 
+Altimeter: 30.12 inHg - 1020 hPa
+Temp: 8°C (46°F) - Dewpoint: 8°C (46°F) (RH=100%)
+Wind: 300° @ 6kt
+Visibility: 0.2 SM (0.3 km) 
+Runway: R04 vis 1’600ft no trend
+Clouds: broken at 100 ft (AGL)
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+EDDK 290120Z 080002KT 9999 R25/1100VP1500U BCFG MIFG SKC 08/07 Q1018
+EDDK @ Report Date 29. Time 01:20Z - 
+Altimeter: 30.06 inHg - 1018 hPa
+Temp: 8°C (46°F) - Dewpoint: 7°C (45°F) (RH=93%)
+Wind: 080° @ 2kt
+Visibility: more than 6.2 SM (10.0 km) 
+Runway: R25 vis low 3’600ft high 4’900ft trending up
+Clouds: clear
+Weather: Moderate patches of fog
+Weather: Moderate shallow fog
+Flight Category: VFR (green)
+
+EDDC 280750Z 30006KT 0300 R04/0500U FG BKN001 08/08 Q1020
+EDDC @ Report Date 28. Time 07:50Z - 
+Altimeter: 30.12 inHg - 1020 hPa
+Temp: 8°C (46°F) - Dewpoint: 8°C (46°F) (RH=100%)
+Wind: 300° @ 6kt
+Visibility: 0.2 SM (0.3 km) 
+Runway: R04 vis 1’600ft trending up
+Clouds: broken at 100 ft (AGL)
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+EGAA 280750Z 35005KT 0800 R25/M0050 FG OVC000 09/08 Q1032
+EGAA @ Report Date 28. Time 07:50Z - 
+Altimeter: 30.47 inHg - 1032 hPa
+Temp: 9°C (48°F) - Dewpoint: 8°C (46°F) (RH=93%)
+Wind: 350° @ 5kt
+Visibility: 0.5 SM (0.8 km) 
+Runway: R25 vis < 200ft
+Clouds: overcast at 0 ft (AGL)
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+EGAA 280750Z 35005KT 0800 R25/P1500 FG OVC000 09/08 Q1032
+EGAA @ Report Date 28. Time 07:50Z - 
+Altimeter: 30.47 inHg - 1032 hPa
+Temp: 9°C (48°F) - Dewpoint: 8°C (46°F) (RH=93%)
+Wind: 350° @ 5kt
+Visibility: 0.5 SM (0.8 km) 
+Runway: R25 vis > 4’900ft
+Clouds: overcast at 0 ft (AGL)
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+EGPH 280750Z 36002KT 0350 R06/1100 FG BKN000 07/07 Q1031
+EGPH @ Report Date 28. Time 07:50Z - 
+Altimeter: 30.45 inHg - 1031 hPa
+Temp: 7°C (45°F) - Dewpoint: 7°C (45°F) (RH=100%)
+Wind: 360° @ 2kt
+Visibility: 0.2 SM (0.4 km) 
+Runway: R06 vis 3’600ft
+Clouds: broken at 0 ft (AGL)
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+EDDC 280750Z 30006KT 0300 R04/0500N FG BKN001 08/08 Q1020
+EDDC @ Report Date 28. Time 07:50Z - 
+Altimeter: 30.12 inHg - 1020 hPa
+Temp: 8°C (46°F) - Dewpoint: 8°C (46°F) (RH=100%)
+Wind: 300° @ 6kt
+Visibility: 0.2 SM (0.3 km) 
+Runway: R04 vis 1’600ft no trend
+Clouds: broken at 100 ft (AGL)
+Weather: Moderate fog
+Flight Category: LIFR (magenta)
+
+EGHH 271120Z 03017G28KT 360V060 9999 SCT025 16/10 Q1022
+EGHH @ Report Date 27. Time 11:20Z - 
+Altimeter: 30.18 inHg - 1022 hPa
+Temp: 16°C (61°F) - Dewpoint: 10°C (50°F) (RH=68%)
+Wind: 030° (var 360°..060°) @ 17kt (gusts 28kt)
+Visibility: more than 6.2 SM (10.0 km) 
+Clouds: scattered at 2’500 ft (AGL)
+Flight Category: MVFR (blue)
+
+LYBE 271130Z VRB03KT 9999 SCT040 20/11 Q1016 NOSIG
+LYBE @ Report Date 27. Time 11:30Z - 
+Altimeter: 30.00 inHg - 1016 hPa
+Temp: 20°C (68°F) - Dewpoint: 11°C (52°F) (RH=56%)
+Wind: variable @ 3kt
+Visibility: more than 6.2 SM (10.0 km) 
+Clouds: scattered at 4’000 ft (AGL)
+Flight Category: VFR (green)
+
+EGHD 271150Z 06017G30KT 6000 FEW020 15/13 Q1022
+EGHD @ Report Date 27. Time 11:50Z - 
+Altimeter: 30.18 inHg - 1022 hPa
+Temp: 15°C (59°F) - Dewpoint: 13°C (55°F) (RH=88%)
+Wind: 060° @ 17kt (gusts 30kt)
+Visibility: 3.7 SM (6.0 km) 
+Clouds: few at 2’000 ft (AGL)
+Flight Category: MVFR (blue)
+
+LGAT 280750Z 00000KT CAVOK 20/12 Q1018 NOSIG
+LGAT @ Report Date 28. Time 07:50Z - 
+Altimeter: 30.06 inHg - 1018 hPa
+Temp: 20°C (68°F) - Dewpoint: 12°C (54°F) (RH=60%)
+Wind: calm
+Visibility: Ceiling And Visibility OK 
+Flight Category: VFR (green)
+
+EDDH 010120Z 04010KT 7000 BR FEW006 BKN080 09/07 Q1021 NOSIG
+EDDH @ Report Date 01. Time 01:20Z - 
+Altimeter: 30.15 inHg - 1021 hPa
+Temp: 9°C (48°F) - Dewpoint: 7°C (45°F) (RH=87%)
+Wind: 040° @ 10kt
+Visibility: 4.3 SM (7.0 km) 
+Clouds: few at 600 ft (AGL)
+Clouds: broken at 8’000 ft (AGL)
+Weather: Moderate mist
+Flight Category: IFR (red)
+
+EDDS 081620Z 29010KT 9999 FEW040TCU 09/M03 Q1012 NOSIG
+EDDS @ Report Date 08. Time 16:20Z - 
+Altimeter: 29.88 inHg - 1012 hPa
+Temp: 9°C (48°F) - Dewpoint: -3°C (27°F) (RH=43%)
+Wind: 290° @ 10kt
+Visibility: more than 6.2 SM (10.0 km) 
+Clouds: few at 4’000 ft (AGL) towering cumulus
+Flight Category: VFR (green)
+
+LSGG 252020Z 26001KT 9999 FEW055 21/15 Q1012 NOSIG
+LSGG @ Report Date 25. Time 20:20Z - 
+Altimeter: 29.88 inHg - 1012 hPa
+Temp: 21°C (70°F) - Dewpoint: 15°C (59°F) (RH=69%)
+Wind: 260° @ 1kt
+Visibility: more than 6.2 SM (10.0 km) 
+Clouds: few at 5’500 ft (AGL)
+Flight Category: VFR (green)
+
+EDDL 252020Z VRB02KT 9999 FEW048 19/17 Q1009 NOSIG
+EDDL @ Report Date 25. Time 20:20Z - 
+Altimeter: 29.80 inHg - 1009 hPa
+Temp: 19°C (66°F) - Dewpoint: 17°C (63°F) (RH=88%)
+Wind: variable @ 2kt
+Visibility: more than 6.2 SM (10.0 km) 
+Clouds: few at 4’800 ft (AGL)
+Flight Category: VFR (green)
+
+KLAX 251953Z 26010KT 10SM FEW170 SCT240 SCT300 23/17 A2997 RMK AO2 SLP145 T02280167 $
+KLAX @ Report Date 25. Time 19:53Z - 
+Altimeter: 29.97 inHg - 1015 hPa
+Temp: 23°C (73°F) - Dewpoint: 17°C (63°F) (RH=69%)
+Wind: 260° @ 10kt
+Visibility: 10.0 SM (16.1 km) 
+Clouds: few at 17’000 ft (AGL)
+Clouds: scattered at 24’000 ft (AGL)
+Clouds: scattered at 30’000 ft (AGL)
+Flight Category: VFR (green)
+
+KSFO 251956Z 33011KT 10SM FEW009 SCT200 21/13 A2994 RMK A02 SLP137 T02060128
+KSFO @ Report Date 25. Time 19:56Z - 
+Altimeter: 29.94 inHg - 1014 hPa
+Temp: 21°C (70°F) - Dewpoint: 13°C (55°F) (RH=60%)
+Wind: 330° @ 11kt
+Visibility: 10.0 SM (16.1 km) 
+Clouds: few at 900 ft (AGL)
+Clouds: scattered at 20’000 ft (AGL)
+Flight Category: IFR (red)
+
+ZSPD 252030Z 10014G19MPS 7000 -SHRA BKN010 26/25 Q0985 NOSIG
+ZSPD @ Report Date 25. Time 20:30Z - 
+Altimeter: 29.09 inHg - 985 hPa
+Temp: 26°C (79°F) - Dewpoint: 25°C (77°F) (RH=94%)
+Wind: 100° @ 27kt (gusts 37kt)
+Visibility: 4.3 SM (7.0 km) 
+Clouds: broken at 1’000 ft (AGL)
+Weather: Light showers rain
+Flight Category: MVFR (blue)
+
+RJAA 252030Z 01010KT 9999 FEW015 24/23 Q1007 NOSIG
+RJAA @ Report Date 25. Time 20:30Z - 
+Altimeter: 29.74 inHg - 1007 hPa
+Temp: 24°C (75°F) - Dewpoint: 23°C (73°F) (RH=94%)
+Wind: 010° @ 10kt
+Visibility: more than 6.2 SM (10.0 km) 
+Clouds: few at 1’500 ft (AGL)
+Flight Category: MVFR (blue)
+

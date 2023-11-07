@@ -43,10 +43,10 @@ namespace MetarLib.MDEC
     public override string Pretty =>
       !Valid ? "" :
       "Visibility: " +
-      ( CAVOK ? CAVOKtext :
+      (CAVOK ? CAVOKtext :
       LessThanFlag ? $"less than {Distance_SM:##0.0} SM ({UnitC.SMtoKM( Distance_SM ):##0.0} km)" :
       MoreThanFlag ? $"more than {Distance_SM:##0.0} SM ({UnitC.SMtoKM( Distance_SM ):##0.0} km)" :
-      $"{Distance_SM:##0.0} SM ({UnitC.SMtoKM( Distance_SM ):##0.0} km)" )
+      $"{Distance_SM:##0.0} SM ({UnitC.SMtoKM( Distance_SM ):##0.0} km)")
       + $" {Direction}";
 
   }
@@ -58,9 +58,15 @@ namespace MetarLib.MDEC
     /*
     "^(?P<vis> (?P<dist>(M|P)?\d\d\d\d|////) (?P<dir>[NSEW][EW]? | NDV)? | (?P<distu>(M|P)?(\d+|\d\d?/\d\d?|\d+\s+\d/\d) )  (?P<units>SM|KM|M|U) | CAVOK )\s+"
     */
-    private static Regex RE_regular  = new Regex(@"^(?<chunk>(?<mp>(M|P))?(?<dist>\d{4})(?<dir>[NSEW][EW]?|NDV)?(?<unit>SM|KM|M)?)(?<rest>\s{1}.*)", RegexOptions.Compiled); // (M|P)0012SM
-    private static Regex RE_parts    = new Regex(@"^(?<chunk>(?<mp>(M|P))?(?<distu>\d+|\d\d?/\d\d?|\d+\s+\d/\d)(?<unit>SM|KM|M))(?<rest>\s{1}.*)", RegexOptions.Compiled); // (M|P)1 | 48/11 | 10 1/4  SM ..
-    private static Regex RE_cavok    = new Regex(@"^(?<chunk>(CAVOK))(?<rest>\s{1}.*)", RegexOptions.Compiled);
+    // [M|P]0012SM
+    private static Regex RE_regular = new Regex( @"^(?<chunk>(?<mp>(M|P))?(?<dist>\d{4})(?<dir>[NSEW][EW]?|NDV)?(?<unit>SM|KM|M)?)(?<rest>\s{1}.*)",
+      RegexOptions.Compiled );
+    // [M|P]1 | 48/11 | 10 1/4  SM ..
+    private static Regex RE_parts = new Regex( @"^(?<chunk>(?<mp>(M|P))?(?<distu>\d+|\d\d?/\d\d?|\d+\s+\d/\d)(?<unit>SM|KM|M))(?<rest>\s{1}.*)",
+      RegexOptions.Compiled );
+    // CAVOK
+    private static Regex RE_cavok = new Regex( @"^(?<chunk>(CAVOK))(?<rest>\s{1}.*)",
+      RegexOptions.Compiled );
 
     /// <summary>
     /// Decode a part into mData and return the rest
@@ -72,20 +78,20 @@ namespace MetarLib.MDEC
     {
       try {
         Match match = RE_regular.Match( raw );
-        if ( match.Success ) {
+        if (match.Success) {
           visibility.Chunks += match.Groups["chunk"].Value;
           visibility.Distance_SM = UnitC.DistAsSM( int.Parse( match.Groups["dist"].Value ), match.Groups["unit"].Value );
           visibility.LessThanFlag = match.Groups["mp"].Success && match.Groups["mp"].Value == "M";
-          visibility.MoreThanFlag = ( match.Groups["mp"].Success && match.Groups["mp"].Value == "P" ) || ( match.Groups["dist"].Value == "9999" );
+          visibility.MoreThanFlag = (match.Groups["mp"].Success && match.Groups["mp"].Value == "P") || (match.Groups["dist"].Value == "9999");
           visibility.Direction = match.Groups["dir"].Success ? match.Groups["dir"].Value : "";
           visibility.Valid = true;
           return match.Groups["rest"].Value.TrimStart( );
         }
 
         match = RE_parts.Match( raw );
-        if ( match.Success ) {
+        if (match.Success) {
           visibility.Chunks += match.Groups["chunk"].Value;
-          float val = UnitC.FromDistU(match.Groups["distu"].Value );
+          float val = UnitC.FromDistU( match.Groups["distu"].Value );
           visibility.Distance_SM = UnitC.DistAsSM( val, match.Groups["unit"].Value );
           visibility.LessThanFlag = match.Groups["mp"].Success && match.Groups["mp"].Value == "M";
           visibility.MoreThanFlag = match.Groups["mp"].Success && match.Groups["mp"].Value == "P";
@@ -95,7 +101,7 @@ namespace MetarLib.MDEC
         }
 
         match = RE_cavok.Match( raw );
-        if ( match.Success ) {
+        if (match.Success) {
           visibility.Chunks += match.Groups["chunk"].Value;
           visibility.CAVOK = true;
           visibility.Valid = true;

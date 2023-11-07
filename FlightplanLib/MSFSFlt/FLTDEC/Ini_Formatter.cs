@@ -7,10 +7,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+using DbgLib;
 using CoordLib;
 using FSimFacilityIF;
-using DbgLib;
-using FlightplanLib.MS;
 
 namespace FlightplanLib.MSFSFlt.FLTDEC
 {
@@ -208,93 +207,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
       return null;
     }
 
-
     #endregion
 
-
-#pragma warning disable CS0168 // Variable is declared but never used
-
-    /// <summary>
-    /// Reads from the open stream one entry
-    /// </summary>
-    /// <param name="iStream">An open stream at position</param>
-    /// <returns>A Controller obj or null for errors</returns>
-    public static T FromIniStream<T>( Stream iStream )
-    {
-      try {
-        var iniSerializer = new IniSerializer( typeof( T ) );
-        object objResponse = iniSerializer.Deserialize( iStream );
-        var iniResults = (T)objResponse;
-        iStream.Flush( );
-        return iniResults;
-      }
-      catch (Exception e) {
-        return default( T );
-      }
-    }
-
-    /// <summary>
-    /// Reads from the supplied string
-    /// </summary>
-    /// <param name="iString">A INI formatted string</param>
-    /// <returns>A Controller obj or null for errors</returns>
-    public static T FromIniString<T>( string iString )
-    {
-      try {
-        T iniResults = default;
-        using (var ms = new MemoryStream( Encoding.UTF8.GetBytes( iString ) )) {
-          iniResults = FromIniStream<T>( ms );
-        }
-        return iniResults;
-      }
-      catch (Exception e) {
-        return default;
-      }
-    }
-
-
-    /// <summary>
-    /// Reads from a file one entry
-    /// Tries to aquire a shared Read Access and blocks for max 100ms while doing so
-    /// </summary>
-    /// <param name="iFilename">The Xml Filename</param>
-    /// <returns>A Controller obj or null for errors</returns>
-    public static T FromIniFile<T>( string iFilename )
-    {
-      T retVal = default( T );
-      if (!File.Exists( iFilename )) {
-        return retVal;
-      }
-
-      int retries = 10; // 100ms worst case
-      while (retries-- > 0) {
-        byte[] byt;
-        try {
-          using (var ts = File.Open( iFilename, FileMode.Open, FileAccess.Read, FileShare.Read )) {
-            byt = new byte[ts.Length];
-            ts.Read( byt, 0, byt.Length );
-            var encoder = Encoding.GetEncoding( "iso-8859-1" ); // FLT INI File have this encoding
-            var tmp = Encoding.UTF8.GetString( Encoding.Convert( encoder, Encoding.UTF8, byt ) );
-            retVal = FromIniString<T>( tmp );
-          }
-          return retVal;
-        }
-        catch (IOException ioex) {
-          // retry after a short wait
-          Thread.Sleep( 10 ); // allow the others fileIO to be completed
-        }
-        catch (Exception ex) {
-          // not an IO exception - just fail
-          return retVal;
-        }
-        finally {
-          byt = new byte[0]; // help the GC
-        }
-      }
-
-      return retVal;
-    }
-
-#pragma warning restore CS0168 // Variable is declared but never used
   }
 }

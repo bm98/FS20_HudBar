@@ -25,7 +25,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>67</ApplicationRevision>
-    <ApplicationVersion>0.66.0.67</ApplicationVersion>
+    <ApplicationVersion>0.67.0.67</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -390,9 +390,7 @@
     <Compile Include="Bar\Items\FuelPara\DI_Fuel_LR_Lb.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\FuelPara\DI_Fuel_Total_Lb.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Bar\Items\FuelPara\DI_Fuel_Total_Lb.cs" />
     <Compile Include="Bar\Items\EnginePara\DI_N2.cs">
       <SubType>Component</SubType>
     </Compile>

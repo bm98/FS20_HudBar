@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using dNetBm98.IniLib;
+
 namespace FlightplanLib.MSFSFlt.FLTDEC
 {
   /// <summary>
@@ -19,7 +21,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// <returns>An OFP</returns>
     public static FLT FromString( string fltIniString )
     {
-      var ofp = Ini_Formatter.FromIniString<FLT>( fltIniString );
+      var ofp = IniSerializer.FromIniString<FLT>( fltIniString );
       if (ofp != null) {
         return ofp;
       }
@@ -34,7 +36,8 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// <returns>An OFP</returns>
     public static FLT FromFile( string fltIniFile )
     {
-      var ofp = Ini_Formatter.FromIniFile<FLT>( fltIniFile );
+      // MSFS FLT encoding is iso-8859-1 , don't unquote while decoding
+      var ofp = IniSerializer.FromIniFile<FLT>( fltIniFile, false, MSiniFile.IniEncoding.iso_8859_1 );
       if (ofp != null) {
         return ofp;
       }

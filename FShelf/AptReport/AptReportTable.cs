@@ -135,7 +135,7 @@ namespace FShelf.AptReport
       if (identList.Count > 0) identList.Remove( fixIdent );
 
       // get the direction of the fix and tag the procedure with a direction arrow
-      var procName = proc.Name + ((proc.NavType == NavTyp.RNAV) ? "(RNAV)" : "");
+      var procName = proc.Name + ((proc.NavType == NavTyp.RNAV) ? "  (RNAV)" : "");
       if (!string.IsNullOrEmpty( fixIdent )) {
         procName = ToDirectionArrow( Dms.CompassPoint( proc.Brg_deg, 2 ) ) + " " + procName; // outgoing arrow
       }
@@ -158,7 +158,7 @@ namespace FShelf.AptReport
       if (identList.Count > 0) identList.Remove( fixIdent );
 
       // get the direction of the fix and tag the procedure with a direction arrow
-      var procName = proc.Name + ((proc.NavType == NavTyp.RNAV) ? " (RNAV)" : "");
+      var procName = proc.Name + ((proc.NavType == NavTyp.RNAV) ? "  (RNAV)" : "");
       if (!string.IsNullOrEmpty( fixIdent )) {
         procName = ToDirectionArrow( Dms.CompassPoint( proc.Brg_deg + 180, 2 ) ) + " " + procName; // incomming arrow
       }
@@ -175,7 +175,7 @@ namespace FShelf.AptReport
     private void StreamProcRunway( IRunway runway, bool sid )
     {
       var rwString = (runway.Ident == RwALLIdent)
-                      ? $"{AptTableGen.HChar( AptTableGen.SpclChar.BULLSEYE )} ALL"
+                      ? $"{AptTableGen.HChar( AptTableGen.SpclChar.BULLSEYE )} ALL RW"
                       : $"{ToDirectionArrow( Dms.CompassPoint( runway.Bearing_degm, 2 ) )} {runway.Ident}"; // outgoing arrow
 
       var rwProcData = new RwyProcRowData( ) {

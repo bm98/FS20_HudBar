@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CoordLib;
-using FlightplanLib.MS;
+
+using dNetBm98.IniLib;
 
 namespace FlightplanLib.MSFSFlt.FLTDEC
 {

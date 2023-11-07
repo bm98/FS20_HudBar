@@ -725,7 +725,7 @@ namespace FS20_HudBar.Bar
              + $"Payload Weight:    {SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ) ):###,##0} kg)\n"
              + $"TOTAL Weight:      {SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) ):###,##0} kg)\n"
              + $"Zero Fuel Weight:  {SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ):###,##0} kg)\n"
-             + $"CG lon / lat:      {SV.Get<float>( SItem.fG_Acft_AcftCGlong_perc ) * 100f:#0.0} % / {SV.Get<float>( SItem.fG_Acft_AcftCGlat_perc ) * 100f:#0.0} %\n"
+             + $"CG lon / lat:      {SV.Get<float>( SItem.fG_Acft_AcftCGlong_perc ) :#0.0} % / {SV.Get<float>( SItem.fG_Acft_AcftCGlat_perc ) :#0.0} %\n"
              + $"Empty Weight:      {SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) ):###,##0} kg)\n"
              + $"Max. Weight:       {SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ) ):###,##0} kg)\n"
              ;

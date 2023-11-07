@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using FlightplanLib.MS;
+using dNetBm98.IniLib;
 
 namespace FlightplanLib.MSFSFlt.FLTDEC
 {
@@ -527,7 +527,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
 
     // Sect [Options] - not used
 
-    // Secct [Sim.0] - not used
+    // Sect [Sim.0] - not used
 
     /// <summary>
     /// Sect [Departure] 
@@ -563,7 +563,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
 
     // Sect [OriginalFlightPlan]   (Mission Files)
 
-    // Non XML
+    // Non INI
 
     /// <summary>
     /// True if successfully retrieved

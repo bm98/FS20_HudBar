@@ -85,6 +85,8 @@ V 0.67-B67
 - Update Display of Routes with procedures and limits
 - Update MapLib for Stamen Maps (now served by Stadia Maps - needs a Key, default OFF)
 - Update METAR collection (new URL from provider)
+- Fix DME only stations are now properly identified
+- Fix METAR decoding of weather improved
 - Update MSFS Connection procedure reviewed and improved
 - Update Using NLog for logging now
 - Update QuickGuide

@@ -93,11 +93,6 @@
     <Compile Include="MSFSFlt\Provider\FltRequest.cs" />
     <Compile Include="MSFSPln\MSFSPln.cs" />
     <Compile Include="MSFSPln\MSFSPlnDataEventArgs.cs" />
-    <Compile Include="MS\IniFileAttribute.cs" />
-    <Compile Include="MS\IniItem.cs" />
-    <Compile Include="MS\IniSection.cs" />
-    <Compile Include="MS\IniSerializer.cs" />
-    <Compile Include="MS\ItemCat.cs" />
     <Compile Include="MS\MsFolders.cs" />
     <Compile Include="MSFSPln\PLNDEC\PLN.cs" />
     <Compile Include="GPX\GPXDEC\GpxDecoder.cs" />
@@ -106,8 +101,6 @@
     <Compile Include="MSFSPln\PLNDEC\X_FlightPlan.cs" />
     <Compile Include="MSFSPln\PLNDEC\X_Icao.cs" />
     <Compile Include="MSFSPln\Provider\PlnRequest.cs" />
-    <Compile Include="MS\MSiniFile.cs" />
-    <Compile Include="MS\SectionCat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Routes\RDEC\R_Coord.cs" />
     <Compile Include="Routes\RDEC\R_SpeedAlt.cs" />

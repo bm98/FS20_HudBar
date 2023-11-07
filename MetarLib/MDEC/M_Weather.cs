@@ -42,10 +42,11 @@ namespace MetarLib.MDEC
 
     // Content decoders
 
-    private Dictionary<string,string> DIntensity = new Dictionary<string, string>(){
+    private Dictionary<string, string> DIntensity = new Dictionary<string, string>( ){
       {"-", "Light" },
       {"+", "Heavy" },
       {"=", "Moderate" }, // internal tag for METAR NO TAG = Moderate
+      {"?", "Chance of" }, // added since observed (20231105)
       {"VC", "Nearby" },
       {"-VC", "Nearby light" },
       {"+VC", "Nearby heavy" },
@@ -62,7 +63,7 @@ namespace MetarLib.MDEC
     }
 
 
-    private Dictionary<string,string> DDescriptor = new Dictionary<string, string>(){
+    private Dictionary<string, string> DDescriptor = new Dictionary<string, string>( ){
       {"MI", "shallow"},
       {"PR", "partial"},
       {"BC", "patches of"},
@@ -76,13 +77,13 @@ namespace MetarLib.MDEC
     {
       string ret = "";
       string desc = Descriptor;
-      while ( desc.Length > 1 ) {
-        string tag = desc.Substring(0,2);
+      while (desc.Length > 1) {
+        string tag = desc.Substring( 0, 2 );
         try {
           ret += $" {DDescriptor[tag]}";
         }
         catch { }
-        if ( desc.Length > 2 )
+        if (desc.Length > 2)
           desc = desc.Substring( 2 );
         else
           desc = "";
@@ -90,7 +91,7 @@ namespace MetarLib.MDEC
       return ret;
     }
 
-    private Dictionary<string,string> DPrecipitation = new Dictionary<string, string>(){
+    private Dictionary<string, string> DPrecipitation = new Dictionary<string, string>( ){
       {"DZ", "drizzle"},
       {"RA", "rain"},
       {"SN", "snow"},
@@ -106,13 +107,13 @@ namespace MetarLib.MDEC
     {
       string ret = "";
       string desc = Precipitation;
-      while ( desc.Length > 1 ) {
-        string tag = desc.Substring(0,2);
+      while (desc.Length > 1) {
+        string tag = desc.Substring( 0, 2 );
         try {
           ret += $" {DPrecipitation[tag]}";
         }
         catch { }
-        if ( desc.Length > 2 )
+        if (desc.Length > 2)
           desc = desc.Substring( 2 );
         else
           desc = "";
@@ -120,7 +121,7 @@ namespace MetarLib.MDEC
       return ret;
     }
 
-    private Dictionary<string,string> DObscuration = new Dictionary<string, string>(){
+    private Dictionary<string, string> DObscuration = new Dictionary<string, string>( ){
       {"BR", "mist"},
       {"FG", "fog"},
       {"FU", "smoke"},
@@ -134,13 +135,13 @@ namespace MetarLib.MDEC
     {
       string ret = "";
       string desc = Obscuration;
-      while ( desc.Length > 1 ) {
-        string tag = desc.Substring(0,2);
+      while (desc.Length > 1) {
+        string tag = desc.Substring( 0, 2 );
         try {
           ret += $" {DObscuration[tag]}";
         }
         catch { }
-        if ( desc.Length > 2 )
+        if (desc.Length > 2)
           desc = desc.Substring( 2 );
         else
           desc = "";
@@ -148,7 +149,7 @@ namespace MetarLib.MDEC
       return ret;
     }
 
-    private Dictionary<string,string> DOther = new Dictionary<string, string>(){
+    private Dictionary<string, string> DOther = new Dictionary<string, string>( ){
       {"PO", "sand whirls"},
       {"SQ", "squalls"},
       {"FC", "funnel cloud"},
@@ -159,13 +160,13 @@ namespace MetarLib.MDEC
     {
       string ret = "";
       string desc = Other;
-      while ( desc.Length > 1 ) {
-        string tag = desc.Substring(0,2);
+      while (desc.Length > 1) {
+        string tag = desc.Substring( 0, 2 );
         try {
           ret += $" {DOther[tag]}";
         }
         catch { }
-        if ( desc.Length > 2 )
+        if (desc.Length > 2)
           desc = desc.Substring( 2 );
         else
           desc = "";
@@ -182,7 +183,7 @@ namespace MetarLib.MDEC
   internal static class M_WeatherDecoder
   {
     /*
-      "^(?P<int>(-|\+|VC)*)
+      "^(?P<int>(-|\+|VC\?)*)
         (?P<desc>(MI|PR|BC|DR|BL|SH|TS|FZ)+)?
         (?P<prec>(DZ|RA|SN|SG|IC|PL|GR|GS|UP|/)*)
         (?P<obsc>BR|FG|FU|VA|DU|SA|HZ|PY)?
@@ -190,15 +191,15 @@ namespace MetarLib.MDEC
         (?P<int2>[-+])?\s+"
      */
 
-    private static Regex RE_regular  = new Regex(
-       @"^(?<chunk>(?<int>(-|\+|VC)*)" // optional (if not it's medium) (succeeds if 0 captured !!)
-      +@"(?<desc>(MI|PR|BC|DR|BL|SH|TS|FZ)+)?"     // optional (BR)
-      +@"(?<prec>(DZ|RA|SN|SG|IC|PL|GR|GS|UP|/)*)" // up to 3 per manual (succeeds if 0 captured !!)
-      +@"(?<obsc>BR|FG|FU|VA|DU|SA|HZ|PY)?"        // optional
-      +@"(?<other>PO|SQ|FC|SS|DS|NSW|/+)?"
-      +@"(?<int2>[-+])?)"
-      +@"(?<rest>\s{1}.*)",
-       RegexOptions.Compiled);
+    private static Regex RE_regular = new Regex(
+       @"^(?<chunk>(?<int>(-|\+|VC|\?)*)"           // optional (if not it's medium) (succeeds if 0 captured !!) can be ? (added 20231105)
+      + @"(?<desc>(MI|PR|BC|DR|BL|SH|TS|FZ)+)?"     // optional (BR) 
+      + @"(?<prec>(DZ|RA|SN|SG|IC|PL|GR|GS|UP|/)*)"  // up to 3 per manual (succeeds if 0 captured !!)
+      + @"(?<obsc>BR|FG|FU|VA|DU|SA|HZ|PY)?"         // optional
+      + @"(?<other>PO|SQ|FC|SS|DS|NSW|/+)?"
+      + @"(?<int2>[-+])?)"
+      + @"(?<rest>\s{1}.*)",
+       RegexOptions.Compiled );
 
     /// <summary>
     /// Test if the content matches
@@ -208,10 +209,10 @@ namespace MetarLib.MDEC
     public static bool IsMatch( string raw )
     {
       // darn METAR protocol allows any strange combinations...
-      if ( RE_regular.Match( raw ).Groups["desc"].Success ) return true;
-      if ( RE_regular.Match( raw ).Groups["prec"].Success && !string.IsNullOrEmpty( RE_regular.Match( raw ).Groups["prec"].Value ) ) return true;
-      if ( RE_regular.Match( raw ).Groups["obsc"].Success ) return true;
-      if ( RE_regular.Match( raw ).Groups["other"].Success ) return true;
+      if (RE_regular.Match( raw ).Groups["desc"].Success) return true;
+      if (RE_regular.Match( raw ).Groups["prec"].Success && !string.IsNullOrEmpty( RE_regular.Match( raw ).Groups["prec"].Value )) return true;
+      if (RE_regular.Match( raw ).Groups["obsc"].Success) return true;
+      if (RE_regular.Match( raw ).Groups["other"].Success) return true;
 
       return false;
     }
@@ -227,21 +228,27 @@ namespace MetarLib.MDEC
     {
       try {
         Match match = RE_regular.Match( raw );
-        if ( IsMatch( raw ) ) {
-          var w = new M_Weather();
+        if (IsMatch( raw )) {
+          var w = new M_Weather( );
           w.Chunks += match.Groups["chunk"].Value;
-          if ( !string.IsNullOrEmpty( match.Groups["int"].Value ) ) // succeeds everytime (0 captures wins)
+          if (!string.IsNullOrEmpty( match.Groups["int"].Value )) {// succeeds everytime (0 captures wins)
             w.Intensity = match.Groups["int"].Value;
-          else
+          }
+          else {
             w.Intensity = "="; // our moderate tag
-          if ( match.Groups["desc"].Success )
+          }
+          if (match.Groups["desc"].Success) {
             w.Descriptor = match.Groups["desc"].Value;
-          if ( match.Groups["prec"].Success ) // succeeds everytime (0 captures wins)
+          }
+          if (match.Groups["prec"].Success) { // succeeds everytime (0 captures wins)
             w.Precipitation = match.Groups["prec"].Value; //value is empty - OK to capture
-          if ( match.Groups["obsc"].Success )
+          }
+          if (match.Groups["obsc"].Success) {
             w.Obscuration = match.Groups["obsc"].Value;
-          if ( match.Groups["other"].Success )
+          }
+          if (match.Groups["other"].Success) {
             w.Other = match.Groups["other"].Value;
+          }
 
           w.Valid = true;
           weather.Add( w );
