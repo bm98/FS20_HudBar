@@ -134,7 +134,7 @@ namespace FS20_HudBar.Bar
       if (!e.FlightPlanAvailable) return; // no (new or old) FP was stored
 
       lock (m_lock) {
-        m_FP = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Copy( ); // we have a copy
+        m_FP = SC.SimConnectClient.Instance.FlightPlanModule.FlightPlan.Clone( ); // we have a copy
         HasChanged = (m_currentHash != m_FP.Hash);
         m_currentHash = m_FP.Hash;
       }

@@ -334,7 +334,7 @@ namespace PingLib
           await EndOfSound( );
           return;
         }
-        LOG.Log( "PlayAsyncLow", $"FileInputNode: CREATED, srcFile is {resultAF.FileInputNode.SourceFile}" );
+        LOG.Log( "PlayAsyncLow", $"FileInputNode: CREATED, srcFile is {resultAF.FileInputNode.SourceFile?.Name}" );
         _fileInputNode = resultAF.FileInputNode;
         _fileInputNode.FileCompleted += _fileInputNode_FileCompleted;
         _fileInputNode.AddOutgoingConnection( _deviceOutputNode );

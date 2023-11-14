@@ -64,7 +64,10 @@ namespace FS20_HudBar.Bar.Items
         if (SV.Get<bool>( SItem.bG_Com_Transponder_available )) {
           _value1.Text = $"{SV.Get<int>( SItem.iGS_Com_Transponder_code ):0000}";
           _value2.Text = $"{stat}";
-          if (stat == TransponderStatus.ALT) {
+          if (stat == TransponderStatus.ALT
+            || stat == TransponderStatus.TA
+            || stat == TransponderStatus.TA_RA
+            ) {
             _value1.ItemForeColor = cTxNav;
             _value2.ItemForeColor = cTxNav;
           }

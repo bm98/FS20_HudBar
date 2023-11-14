@@ -42,6 +42,18 @@ namespace FlightplanLib.MSFSPln.PLNDEC
     public string CoordLLA { get; set; } = ""; // N29° 15' 18.00",E91° 45' 54.00",+023630.00
 
     /// <summary>
+    /// The Alt1FP element
+    /// </summary>
+    [XmlElement( ElementName = "Alt1FP", IsNullable = false )]
+    public string Alt1FP_S { get; set; } = "";  // an Altitude
+
+    /// <summary>
+    /// The AltDescFP element
+    /// </summary>
+    [XmlElement( ElementName = "AltDescFP", IsNullable = false )]
+    public string AltDescFP { get; set; } = "";  // an Altitude descriptor (AT_OR_ABOVE, AT_OR_BELOW, AT, ??)
+
+    /// <summary>
     /// The ICAO element
     /// </summary>
     [XmlElement( ElementName = "ICAO" )]
@@ -94,6 +106,7 @@ namespace FlightplanLib.MSFSPln.PLNDEC
     /// </summary>
     [XmlElement( ElementName = "SuffixFP", IsNullable = false )]
     public string Approach_Suffix { get; set; } = ""; // empty or X,Y,Z etc. from approach ILS 22 Y
+
 
     // Non XML
 

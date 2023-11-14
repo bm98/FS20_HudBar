@@ -40,7 +40,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Dist( valueProto ) { ItemForeColor = cTxGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond/2, OnDataArrival ); // twice per sec
+      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond / 2, OnDataArrival ); // twice per sec
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )
@@ -54,13 +54,9 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
-          _value1.Value = SV.Get<float>( SItem.fG_Gps_WYP_dist_nm );
-        }
-        else {
-          // No SIM GPS - Flightplan active
-          _value1.Value = null;
-        }
+        var d = SV.Get<float>( SItem.fG_Gps_WYP_dist_nm );
+        _value1.Value = (d > 0) ? d : float.NaN;
+        // No SIM GPS - Flightplan active
       }
     }
 

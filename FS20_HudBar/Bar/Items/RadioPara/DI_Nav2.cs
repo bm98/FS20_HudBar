@@ -90,6 +90,14 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
+        if (!SV.Get<bool>( SItem.bG_Nav_2_available )) {
+          _value1.Text = "n.a.";
+          _value1.ItemForeColor = cTxDim;
+          _value2.Text = "";
+          return;
+        }
+
+        // Has NAV2
         _value1.Text = $"{SV.Get<int>( SItem.iGS_Nav_2_stdby_hz ) / 1_000_000f:000.00}";
         _value2.Text = $"{SV.Get<int>( SItem.iG_Nav_2_active_hz ) / 1_000_000f:000.00}";
       }

@@ -31,8 +31,6 @@ namespace FS20_HudBar
       if (cl.Length > 1) {
         Instance = cl[1];
       }
-      // see if we start with Debug Out Enabled
-      DebugStart.CheckForDebugStart( );
 
       LOG.Log( $"Program Start with Instance ({Instance})" );
 

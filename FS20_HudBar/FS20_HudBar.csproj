@@ -228,6 +228,18 @@
     <Compile Include="Bar\Items\AircraftPara\DI_HTrim.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Nav2_Course.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Adf2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Adf2_Active.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Adf2_Name.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\EnginePara\DI_EPR.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -277,6 +289,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\RadioPara\DI_Nav1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\RadioPara\DI_Nav1_Course.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\RadioPara\DI_Nav2.cs">
@@ -390,7 +405,9 @@
     <Compile Include="Bar\Items\FuelPara\DI_Fuel_LR_Lb.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Bar\Items\FuelPara\DI_Fuel_Total_Lb.cs" />
+    <Compile Include="Bar\Items\FuelPara\DI_Fuel_Total_Lb.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\EnginePara\DI_N2.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -649,7 +666,6 @@
     <Compile Include="Bar\Items\SimPara\DI_SimRate.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="AApp\DebugStart.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GUI\GUI_ColorSet.cs" />
     <Compile Include="GUI\IAlign.cs" />

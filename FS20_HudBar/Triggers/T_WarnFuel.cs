@@ -8,14 +8,13 @@ using SC = SimConnectClient;
 
 using FS20_HudBar.Bar;
 using FS20_HudBar.Triggers.Base;
-using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Triggers
 {
   class T_WarnFuel : TriggerBinary
   {
-
-    private TSmoother _smooth = new TSmoother( );
+    // use 10 values
+    private TSmoother _smooth = new TSmoother( 10 );
 
     /// <summary>
     /// Calls to register for dataupdates

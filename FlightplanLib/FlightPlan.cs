@@ -121,8 +121,9 @@ namespace FlightplanLib
   {
     /// <summary>
     /// True if the plan is Valid
+    /// Must have an Origin, Destination and at least one Waypoint
     /// </summary>
-    public bool IsValid => Waypoints.Count > 0;
+    public bool IsValid => (Origin != null) && (Destination != null) && (Waypoints.Count > 0);
     /// <summary>
     /// Filename or other source of this plan
     /// </summary>
@@ -278,6 +279,8 @@ namespace FlightplanLib
     /// </summary>
     private void EvalStepping( )
     {
+      // sanity
+      if (Origin == null) return;
       // this is kind of best guessing....
 
       // eval the Stepping profile

@@ -11,6 +11,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
 using static FSimClientIF.Sim;
+using FS20_HudBar.GUI;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -54,6 +55,13 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
+        if (!SV.Get<bool>( SItem.bG_Nav_1_available )) {
+          _value1.Text = "n.a.";
+          _value1.ItemForeColor = cTxDim;
+          return;
+        }
+
+        // Has NAV1
         this.Label.Text = SV.Get<bool>( SItem.bG_Nav_1_hasLOC) ? "LOC 1" : "NAV 1";
         if (SV.Get<string>( SItem.sG_Nav_1_Name) != "" ) {
           string dd = SV.Get<string>( SItem.sG_Nav_1_Name );

@@ -56,8 +56,9 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         // Distance to Destination
-        if (SV.Get<float>( SItem.fG_Gps_DEST_dist_nm ) > 0) {
-          _value1.Value = SV.Get<float>( SItem.fG_Gps_DEST_dist_nm );
+        var d = SV.Get<float>( SItem.fG_Gps_DEST_dist_nm );
+        if (d > 0) {
+          _value1.Value = d;
           _value1.ItemForeColor = cTxGps;
         }
         else if (HudBar.AtcFlightPlan.HasFlightPlan) {

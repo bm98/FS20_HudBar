@@ -74,19 +74,24 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.67-B67
+- RERUN FacilityDataLoader !!!
+- CHECK MapLibProvider.ini  to enable Stamen 3D 
+
 - Add Missed Approach Legs to Map Approach
 - Add Decoding and display of LNM Plan (LNM native format); load from file
 - Add Decoding and display of GPX Plan; load from file
 - Add PDF as supported Shelf Format
-- Add Subfolders in FlightBag - Shelf
+- Add Subfolders support in FlightBag - Shelf
 - Add Airport Overview to FlightBag - Shelf (in folder Airport Reports)
 - Update SimBrief Flightplan is now stored PDF document (@.FlightPlan)
 - Update FlightTable (@.FlightTable) more details added when available in plan
 - Update Display of Routes with procedures and limits
 - Update MapLib for Stamen Maps (now served by Stadia Maps - needs a Key, default OFF)
 - Update METAR collection (new URL from provider)
+- Update RA limit for Jet engine acft is now 2500ft
 - Fix DME only stations are now properly identified
-- Fix METAR decoding of weather improved
+- Fix METAR decoding of weather in some cases
+- Update Facility data base extended for procedures
 - Update MSFS Connection procedure reviewed and improved
 - Update Using NLog for logging now
 - Update QuickGuide

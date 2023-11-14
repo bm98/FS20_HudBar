@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NLog;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -12,7 +14,8 @@ namespace DbgLib
   /// </summary>
   public class DbgLogger : IDbg
   {
-    private string _assembly = "";
+    private readonly Logger LOG = LogManager.GetLogger( "Generic" );
+
     private string _type = "";
     private string _module = "";
 
@@ -28,6 +31,7 @@ namespace DbgLib
       _module = "Generic";
 
       _modName = _module;
+      LOG = LogManager.GetLogger( _modName );
     }
 
     /// <summary>
@@ -36,8 +40,8 @@ namespace DbgLib
     public DbgLogger( string module )
     {
       _module = module;
-
       _modName = _module;
+      LOG = LogManager.GetLogger( _modName );
     }
 
     /// <summary>
@@ -48,6 +52,7 @@ namespace DbgLib
       _type = type.Name;
 
       _modName = $"{_type}";
+      LOG = LogManager.GetLogger( _modName );
     }
 
     /// <summary>
@@ -55,10 +60,10 @@ namespace DbgLib
     /// </summary>
     public DbgLogger( Assembly assembly, Type type )
     {
-      _assembly = assembly.FullName;
       _type = type.Name;
 
       _modName = $"{assembly.GetName( ).Name}.{_type}";
+      LOG = LogManager.GetLogger( _modName );
     }
 
     /// <summary>
@@ -67,7 +72,7 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void Log( string text )
     {
-      Dbg.Instance.Log( $"({_modName})", text );
+      LOG.Info( text );
     }
 
     /// <summary>
@@ -76,7 +81,16 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void LogError( string text )
     {
-      Dbg.Instance.LogError( $"({_modName})", text );
+      LOG.Error( text );
+    }
+
+    /// <summary>
+    /// Log a Text Item as Trace
+    /// </summary>
+    /// <param name="text">Log Text</param>
+    public void LogTrace( string text )
+    {
+      LOG.Trace( text );
     }
 
     /// <summary>
@@ -86,7 +100,7 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void LogException( Exception ex, string text )
     {
-      Dbg.Instance.LogException( $"({_modName})", ex, text );
+      LOG.Error(ex, text );
     }
 
 
@@ -106,7 +120,8 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void Log( string context, string text )
     {
-      Dbg.Instance.Log( $"({_modName}.{context})", text );
+      using (ScopeContext.PushNestedState(context ))
+        LOG.Info( text );
     }
 
     /// <summary>
@@ -116,7 +131,19 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void LogError( string context, string text )
     {
-      Dbg.Instance.LogError( $"({_modName}.{context})", text );
+      using (ScopeContext.PushNestedState( context ))
+        LOG.Error( text );
+    }
+
+    /// <summary>
+    /// Log a Text Item as Trace
+    /// </summary>
+    /// <param name="context">A context</param>
+    /// <param name="text">Log Text</param>
+    public void LogTrace( string context, string text )
+    {
+      using (ScopeContext.PushNestedState( context ))
+        LOG.Trace( text );
     }
 
     /// <summary>
@@ -127,7 +154,8 @@ namespace DbgLib
     /// <param name="text">Log Text</param>
     public void LogException( string context, Exception ex, string text )
     {
-      Dbg.Instance.LogException( $"({_modName}.{context})", ex, text );
+      using (ScopeContext.PushNestedState( context ))
+        LOG.Error(ex, text );
     }
 
 

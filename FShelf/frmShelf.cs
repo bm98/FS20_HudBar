@@ -51,6 +51,9 @@ namespace FShelf
       System.Reflection.Assembly.GetCallingAssembly( ),
       System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
 
+    // RA display limits (Should match the ones in HudBar Calculator - but there is no sensible shared library to place them)
+    private const float c_raDefault_ft = 1500;
+    private const float c_raAirliner_ft = 2500;
 
     // SimConnect Client Adapter (used only to establish the connection and handle the Online color label)
     private SCClient SCAdapter;
@@ -883,9 +886,14 @@ namespace FShelf
         _tAircraft.Heading_degm = SV.Get<float>( SItem.fG_Nav_HDG_mag_degm );
         _tAircraft.Position = new LatLon( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) );
         _tAircraft.Altitude_ft = SV.Get<float>( SItem.fG_Acft_AltMsl_ft );
-        // limit RA visible to 1500 ft if not on ground
+
+        // limit RA visible to an altitude and if not on ground
+        var _raLimit_ft = (SV.Get<EngineType>( SItem.etG_Cfg_EngineType ) == EngineType.Jet) ? c_raAirliner_ft : c_raDefault_ft;
+        var ra_ft = SV.Get<float>( SItem.fG_Acft_AltAoG_ft );
         _tAircraft.RadioAlt_ft = SV.Get<bool>( SItem.bG_Sim_OnGround ) ? float.NaN
-                                  : (SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) <= 1500) ? SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) : float.NaN;
+                                                                       : ra_ft <= _raLimit_ft ? ra_ft
+                                                                                              : float.NaN;
+
         _tAircraft.Ias_kt = SV.Get<float>( SItem.fG_Acft_IAS_kt );
         _tAircraft.Tas_kt = SV.Get<float>( SItem.fG_Acft_TAS_kt );
         _tAircraft.Gs_kt = SV.Get<float>( SItem.fG_Acft_GS_kt );
@@ -1149,7 +1157,7 @@ namespace FShelf
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
       }
       else {
-        lblCfgMsPlanData.Text = "got an invalid file";
+        lblCfgMsPlanData.Text = "got an incomplete plan";
       }
     }
 

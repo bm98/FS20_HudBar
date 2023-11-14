@@ -59,6 +59,25 @@ namespace FS20_HudBar.Bar
       }
     }
 
+    #region RadioAlt Limit
+
+    private const float c_raDefault_ft = 1500;
+    private const float c_raAirliner_ft = 2500;
+    private static float _raLimit_ft = c_raDefault_ft;
+
+    /// <summary>
+    /// Set the RA limit using EngineType of the aircraft
+    /// </summary>
+    public static void SetRA_Limit( EngineType engineType ) => _raLimit_ft = (engineType == EngineType.Jet) ? c_raAirliner_ft : c_raDefault_ft;
+    /// <summary>
+    /// The limit where RadioAltitude is available less than or equal..
+    /// depends on type of aircraft engine  
+    /// (Jet is considered as Airliner and replies earlier than all others)
+    /// </summary>
+    public static float RA_Limit_ft => _raLimit_ft;
+
+    #endregion
+
     #region AVG Modules
 
     /// <summary>
@@ -303,12 +322,15 @@ namespace FS20_HudBar.Bar
     /// <returns>Required VS to get to target at altitude</returns>
     public static float VSToTgt_AtAltitude( float tgtAlt, float tgtDist )
     {
-      if (tgtDist <= 0.0f) return 0; // avoid Div0 and cannot calc backwards 
-      if (m_gs <= 0.0f) return 0;      // avoid Div0 and cannot calc with GS <=0
+      if (float.IsNaN( tgtDist )) return float.NaN; // invalid or not available
+      if (tgtDist <= 0.0f) return float.NaN; // avoid Div0 and cannot calc backwards 
+      if (m_gs <= 0.0f) return float.NaN;      // avoid Div0 and cannot calc with GS <=0
 
       float dFt = tgtAlt - m_alt;
       float minToTgt = tgtDist / NmPerMin( m_gs );
-      return (int)Math.Round( (dFt / minToTgt) / 100f ) * 100;
+      int reqFpm = dNetBm98.XMath.RoundInt( dFt / minToTgt, 100 );
+      // return a reasonable number or NaN
+      return (Math.Abs( reqFpm ) > 9000f) ? float.NaN : reqFpm;
     }
 
     /// <summary>
@@ -318,12 +340,17 @@ namespace FS20_HudBar.Bar
     /// <returns>The altitude at target with current GS and VS from current Alt</returns>
     public static float AltitudeAtTgt( float tgtDist )
     {
-      if (tgtDist <= 0.0f) return m_alt; // cannot calc backwards aiming
-      if (m_gs <= 1f) return m_alt;      // should not calc with GS <=1
+      if (float.IsNaN( tgtDist )) return float.NaN; // invalid or not available
+      if (tgtDist <= 0.0f) return float.NaN; // cannot calc backwards aiming
+      if (m_gs <= 1f) return float.NaN;      // should not calc with GS <=1
 
       float minToTgt = tgtDist / NmPerMin( m_gs );
       float dAlt = m_vs * minToTgt;
-      return (int)Math.Round( (m_alt + dAlt) / 100f ) * 100; // fix at 100 steps
+      int tgtAlt = dNetBm98.XMath.RoundInt( m_alt + dAlt, 100 );// fix at 100 steps
+      // return a reasonable number or NaN
+      return tgtAlt > 60_000f ? float.NaN
+             : tgtAlt < -200f ? float.NaN
+             : tgtAlt;
     }
 
     #endregion

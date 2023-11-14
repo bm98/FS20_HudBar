@@ -31,6 +31,8 @@ namespace FlightplanLib.MSFSFlt
     public static FlightPlan AsFlightPlan( FLT msfsPlan )
     {
       // a lot may be missing depending on the FLT state
+      if (msfsPlan == null) return new FlightPlan( ); // sanity
+      if (msfsPlan.Used_Waypoints.Count < 1) return new FlightPlan( ); // cannot without Wyps
 
       // create gen doc items
       var plan = new FlightPlan {
@@ -43,22 +45,31 @@ namespace FlightplanLib.MSFSFlt
         StepProfile = "" // dont have one or need to calculate it
       };
 
-
+      string rwy = "";
       // create Origin (for the runway assuming the First Waypoint is the Airport)
-      string rwy = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.First( ).Key ).RwNumber_S
+      // We may have no waypoints at this point
+      if (msfsPlan.Used_Waypoints.Count > 0) {
+        rwy = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.First( ).Key ).RwNumber_S
                   + msfsPlan.Waypoint( msfsPlan.Used_Waypoints.First( ).Key ).RwDesignation;
 
-      rwy = AsRwIdent( rwy ); // fix as Ident
+        rwy = AsRwIdent( rwy ); // fix as Ident
+      }
       var loc = Formatter.ExpandAirport( msfsPlan.Used_ATC_FlightPlan.DepartureICAO, rwy, LocationTyp.Origin );
       plan.Origin = loc;
+      if (loc == null) return new FlightPlan( ); // cannot proceed without Origin, return an empty plan
 
-      // create Destination (for the runway assuming the Last Waypoint is the Airport)
-      rwy = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.Last( ).Key ).RwNumber_S
-                  + msfsPlan.Waypoint( msfsPlan.Used_Waypoints.Last( ).Key ).RwDesignation;
 
-      rwy = AsRwIdent( rwy ); // fix as Ident
+      // We may have no waypoints at this point
+      if (msfsPlan.Used_Waypoints.Count > 0) {
+        // create Destination (for the runway assuming the Last Waypoint is the Airport)
+        rwy = msfsPlan.Waypoint( msfsPlan.Used_Waypoints.Last( ).Key ).RwNumber_S
+                    + msfsPlan.Waypoint( msfsPlan.Used_Waypoints.Last( ).Key ).RwDesignation;
+
+        rwy = AsRwIdent( rwy ); // fix as Ident
+      }
       loc = Formatter.ExpandAirport( msfsPlan.Used_ATC_FlightPlan.DestinationICAO, rwy, LocationTyp.Destination );
       plan.Destination = loc;
+      if (loc == null) return new FlightPlan( ); // cannot proceed without Destination, return an empty plan
 
       // create waypoints
       Waypoint prevWyp = new Waypoint( );

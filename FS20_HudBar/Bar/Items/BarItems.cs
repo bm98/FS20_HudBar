@@ -203,6 +203,13 @@ namespace FS20_HudBar.Bar.Items
     ACCEL_ANI,    // Acceleration Graph
 
     EPR,          // Turbine EPR
+
+    ADF2,        // ADF2 Direction
+    ADF2_NAME,   // ADF2 ID,Name
+    ADF2_F,      // ADF2 Frequ
+
+    NAV1_OBS,    // NAV1 OBS/Course
+    NAV2_OBS,    // NAV2 OBS/Course
   }
 
 
@@ -483,10 +490,16 @@ namespace FS20_HudBar.Bar.Items
     NAV1_STDBY,   // NAV1 Standby Frequency
     NAV1_ACTIVE,  // NAV1 Active Frequency
 
+    NAV1_OBS,     // NAV1 OBS/Course
+    NAV1_OBS_ANI, // NAV1 OBS/Course Needle
+
     NAV2_ID,      // NAV2 ID
     NAV2_NAME,    // NAV2 Name {Apt}
     NAV2_DST,     // NAV2 DME Distance
     NAV2_BRG,     // NAV2 BRG to
+
+    NAV2_OBS,     // NAV2 OBS/Course
+    NAV2_OBS_ANI, // NAV2 OBS/Course Needle
 
     NAV2_SWAP,    // NAV2 Swap
     NAV2_STDBY,   // NAV2 Standby Frequency
@@ -500,6 +513,15 @@ namespace FS20_HudBar.Bar.Items
     ADF1_SWAP,    // ADF1 Swap
     ADF1_STDBY,   // ADF1 Standby Frequency
     ADF1_ACTIVE,  // ADF1 Active Frequency
+
+    ADF2_ID,      // ADF2 ID
+    ADF2_NAME,    // ADF2 Name
+    ADF2_BRG,     // ADF2 Radial
+    ADF2_ANI,     // ADF2 Needle
+
+    ADF2_SWAP,    // ADF2 Swap
+    ADF2_STDBY,   // ADF2 Standby Frequency
+    ADF2_ACTIVE,  // ADF2 Active Frequency
 
     COM1_SWAP,    // COM1 Swap
     COM1_STDBY,   // COM1 Standby Frequency

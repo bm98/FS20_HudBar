@@ -21,6 +21,7 @@ using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.Config;
 using FSimClientIF.Modules;
 using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar
 {
@@ -31,7 +32,7 @@ namespace FS20_HudBar.Bar
   /// </summary>
   internal sealed class HudBar : IDisposable
   {
-    #region STATIC
+    #region LOGGER
     // A logger
     private static readonly IDbg LOG = Dbg.Instance.GetLogger(
       System.Reflection.Assembly.GetCallingAssembly( ),
@@ -48,9 +49,10 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static FlightPlan AtcFlightPlan => FltPlanMgr.FlightPlan;
 
-
+    // voice and sounds
     private static readonly PingLib.Loops m_ping = new PingLib.Loops( ); // Ping, Tone=0 will be Silence
     private static readonly PingLib.SoundBite _silentLoop = new PingLib.SoundBite( PingLib.Melody.Silence, 0, 0, 0f ); // Use this Sound to set to Silence
+
     /// <summary>
     /// The Ping Library
     /// </summary>
@@ -98,9 +100,14 @@ namespace FS20_HudBar.Bar
       {LItem.FLAPS_ANI, DI_FlapsGraph.Desc }, {LItem.SPOILER_ANI, DI_SpoilersGraph.Desc },
       {LItem.Lights, DI_Lights.Desc },
 
-      {LItem.NAV1_F, DI_Nav1.Desc },          {LItem.NAV2_F, DI_Nav2.Desc },          {LItem.ADF1_F, DI_Adf1.Desc },
-      {LItem.NAV1, DI_Nav1_Active.Desc },     {LItem.NAV2, DI_Nav2_Active.Desc },     {LItem.ADF1, DI_Adf1_Active.Desc },
-      {LItem.NAV1_NAME, DI_Nav1_Name.Desc },  {LItem.NAV2_NAME, DI_Nav2_Name.Desc },  {LItem.ADF1_NAME, DI_Adf1_Name.Desc },
+      {LItem.NAV1_F, DI_Nav1.Desc },          {LItem.NAV2_F, DI_Nav2.Desc },
+      {LItem.NAV1, DI_Nav1_Active.Desc },     {LItem.NAV2, DI_Nav2_Active.Desc },
+      {LItem.NAV1_NAME, DI_Nav1_Name.Desc },  {LItem.NAV2_NAME, DI_Nav2_Name.Desc },
+      {LItem.NAV1_OBS, DI_Nav1_Course.Desc }, {LItem.NAV2_OBS, DI_Nav2_Course.Desc },
+
+      {LItem.ADF1_F, DI_Adf1.Desc },          {LItem.ADF2_F, DI_Adf2.Desc },
+      {LItem.ADF1, DI_Adf1_Active.Desc },     {LItem.ADF2, DI_Adf2_Active.Desc },
+      {LItem.ADF1_NAME, DI_Adf1_Name.Desc },  {LItem.ADF2_NAME, DI_Adf2_Name.Desc },
 
       {LItem.COM1, DI_Com1.Desc },            {LItem.COM2, DI_Com2.Desc },
       {LItem.COM1_NAME, DI_Com1_Name.Desc },  {LItem.COM2_NAME, DI_Com2_Name.Desc },
@@ -194,8 +201,8 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// The currently used profile settings for the Bar
     /// </summary>
-    public CProfile Profile => m_profile;
-    private CProfile m_profile = null;     // currently used profile
+    public CProfile Profile => _profile;
+    private CProfile _profile = null;     // currently used profile
 
     /// <summary>
     /// The Configured Hotkeys
@@ -250,22 +257,22 @@ namespace FS20_HudBar.Bar
     /// </summary>
     /// <param name="item">A Label item</param>
     /// <returns>True if it is shown</returns>
-    public bool ShowItem( LItem item ) => m_profile.IsShowItem( item );
+    public bool ShowItem( LItem item ) => _profile.IsShowItem( item );
 
     /// <summary>
     /// The Current FontSize to use
     /// </summary>
-    public FontSize FontSize => m_profile.FontSize;
+    public FontSize FontSize => _profile.FontSize;
 
     /// <summary>
     /// Placement of the Bar
     /// </summary>
-    public Placement Placement => m_profile.Placement;
+    public Placement Placement => _profile.Placement;
 
     /// <summary>
     /// Display Kind of the Bar
     /// </summary>
-    public Kind Kind => m_profile.Kind;
+    public Kind Kind => _profile.Kind;
 
     /// <summary>
     /// The Tooltip control for the FP
@@ -325,7 +332,7 @@ namespace FS20_HudBar.Bar
     {
       LOG.Log( "cTor HudBar: Start" );
       // just save them in the HUD mainly for config purpose
-      m_profile = cProfile;
+      _profile = cProfile;
       Hotkeys = hotkeys.Copy( );
       KeyboardHook = keyboardHook;
       InGameHook = inGameHook;
@@ -356,11 +363,11 @@ namespace FS20_HudBar.Bar
 
       // init the Fontprovider from the submitted labels
       LOG.Log( "cTor HudBar: Init Fontprovider" );
-      FONTS = new GUI_Fonts( m_profile.Condensed ); // get all fonts from built in
+      FONTS = new GUI_Fonts( _profile.Condensed ); // get all fonts from built in
       FONTS.FromConfigString( userFonts ); // and load from AppSettings
 
       // set desired size
-      FONTS.SetFontsize( m_profile.FontSize );
+      FONTS.SetFontsize( _profile.FontSize );
 
       // and prepare the prototype Controls used below - not really clever but handier to have all label defaults ....
       lblProto.Font = (Font)FONTS.LabelFont.Clone( );   // need to use a Clone, else the Controls throw Parameter Error on Height ?? 
@@ -502,12 +509,17 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Nav1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Adf1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Adf2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav1_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav2_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Adf1_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Adf2_Active( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav2_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Adf1_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Adf2_Name( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Nav1_Course( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Nav2_Course( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Xpdr( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Com1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Com2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -564,7 +576,7 @@ namespace FS20_HudBar.Bar
       }
 
       // Align the Vertical alignment accross the bar
-      if (m_profile.Placement == Placement.Top || m_profile.Placement == Placement.Bottom) {
+      if (_profile.Placement == Placement.Top || _profile.Placement == Placement.Bottom) {
         // Set min size of the labels in order to have them better aligned
         // Using arrow chars gets a larger height than regular ASCII chars (odd autosize behavior)
         // Setting minSize to the Max found height of any at least allows for some hotizontal alignment
@@ -588,7 +600,7 @@ namespace FS20_HudBar.Bar
 
       // Align the Value columns on left and right bound bar or tile
       LOG.Log( $"cTor HudBar: Aligning DI items" );
-      if (m_profile.Placement == Placement.Left || m_profile.Placement == Placement.Right) {
+      if (_profile.Placement == Placement.Left || _profile.Placement == Placement.Right) {
         // Determine max width and make them aligned
         int maxLabelWidth = 0;
         int max1ValueWidth = 0; // the Single Value DispItems Value label 
@@ -644,6 +656,8 @@ namespace FS20_HudBar.Bar
       m_voicePack.RegisterObservers( ); // add used ones
       // we want to know when an Aircraft is changed
       SC.SimConnectClient.Instance.AircraftChange += Instance_AircraftChange;
+      // init RA Limit
+      Calculator.SetRA_Limit( SV.Get<EngineType>( SItem.etG_Cfg_EngineType ) );
 
       LOG.Log( $"cTor HudBar: End" );
     }
@@ -709,8 +723,13 @@ namespace FS20_HudBar.Bar
         FltPlanMgr.Read( );
       }
 
+      // update Aircraft Props - Fuel has probably changed, sometimes Speeds depending on configuration, or a different aircraft at all
       if (_aircraftChanged || (secondsTic > _nextSecTic)) {
-        LOG.Log( $"UpdateGUI: Aircraft has changed to {SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )}" );
+        if (_aircraftChanged) {
+          Calculator.SetRA_Limit( SV.Get<EngineType>( SItem.etG_Cfg_EngineType ) ); // set RA Limit
+          LOG.Log( $"UpdateGUI: Aircraft has changed to {SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )}" );
+        }
+
         string tt = "";
         if (!string.IsNullOrWhiteSpace( SV.Get<string>( SItem.sG_Cfg_AcftConfigFile ) )) {
           tt = $"Aircraft Type:     {SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )}\n\n"
@@ -725,7 +744,7 @@ namespace FS20_HudBar.Bar
              + $"Payload Weight:    {SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ) ):###,##0} kg)\n"
              + $"TOTAL Weight:      {SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) ):###,##0} kg)\n"
              + $"Zero Fuel Weight:  {SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ):###,##0} kg)\n"
-             + $"CG lon / lat:      {SV.Get<float>( SItem.fG_Acft_AcftCGlong_perc ) :#0.0} % / {SV.Get<float>( SItem.fG_Acft_AcftCGlat_perc ) :#0.0} %\n"
+             + $"CG lon / lat:      {SV.Get<float>( SItem.fG_Acft_AcftCGlong_perc ):#0.0} % / {SV.Get<float>( SItem.fG_Acft_AcftCGlat_perc ):#0.0} %\n"
              + $"Empty Weight:      {SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) ):###,##0} kg)\n"
              + $"Max. Weight:       {SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ) ):###,##0} kg)\n"
              ;
@@ -1032,7 +1051,7 @@ namespace FS20_HudBar.Bar
     {
       // catch disabled items without raising an exception (to catch real issues further down)
       // retired items should not land here anyway
-      if (BarItems.IsINOP( item)) return $"{item} is INOP";
+      if (BarItems.IsINOP( item )) return $"{item} is INOP";
 
       try {
         return m_cfgNames[item];

@@ -1286,34 +1286,34 @@ namespace FS20_HudBar
     // initialize the form, the labels and default values
     private void InitGUI( )
     {
-      LOG.Log( $"InitGUI", "Start" );
+      LOG.Log( "InitGUI", "Start" );
 
       timer1.Enabled = false; // stop asynch Timer events
       m_initDone = false; // stop updating values while reconfiguring
       SynchGUIVisible( false ); // hide, else we see all kind of shaping
 
-      LOG.Log( $"InitGUI", "FltPlanMgr Setup" );
+      LOG.Log( "InitGUI", "FltPlanMgr Setup" );
       FltPlanMgr.FlightPlanMode = (FSimClientIF.FlightPlanMode)AppSettingsV2.Instance.FltAutoSaveATC;
       FltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
-      LOG.Log( $"InitGUI", "FlightLogModule Setup" );
+      LOG.Log( "InitGUI", "FlightLogModule Setup" );
       SC.SimConnectClient.Instance.FlightLogModule.Enabled = AppSettingsV2.Instance.FRecorder;
-      LOG.Log( $"InitGUI", "AirportMgr Reset" );
+      LOG.Log( "InitGUI", "AirportMgr Reset" );
       AirportMgr.Reset( );
 
       // Update profile selection items
-      LOG.Log( $"InitGUI", "Update profile selection" );
+      LOG.Log( "InitGUI", "Update profile selection" );
       for (int i = 0; i < CProfile.c_numProfiles; i++) {
         m_profileMenu[i].Text = m_profiles[i].PName;
         m_profileMenu[i].Checked = false;
       }
       m_profileMenu[m_selProfile].Checked = true;
       mSelProfile.Text = m_profiles[m_selProfile].PName;
-      LOG.Log( $"InitGUI", $"Selected profile {mSelProfile.Text}" );
+      LOG.Log( "InitGUI", $"Selected profile {mSelProfile.Text}" );
       // Set the Window Title
       this.Text = (string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance) + $" HudBar: {m_profiles[m_selProfile].PName}          - by bm98ch";
 
       // create a catalog from Settings (serialized as item strings..)
-      LOG.Log( $"InitGUI", "Setup Hotkeys" );
+      LOG.Log( "InitGUI", "Setup Hotkeys" );
       var _hotkeycat = new WinHotkeyCat( );
       _hotkeycat.MaintainHotkeyString( Hotkeys.Show_Hide, AppSettingsV2.Instance.HKShowHide );
       _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_1, AppSettingsV2.Instance.HKProfile1 );
@@ -1331,7 +1331,7 @@ namespace FS20_HudBar
       _hotkeycat.MaintainHotkeyString( Hotkeys.ChecklistBox, AppSettingsV2.Instance.HKChecklistBox );
       _hotkeycat.MaintainHotkeyString( Hotkeys.MoveBarToOtherWindow, "RShiftKey RControlKey Cancel" ); // not to configure (RCtrl-Shift-Break)
       foreach (var hk in _hotkeycat) {
-        LOG.Log( $"InitGUI", $"{hk.Key} - {hk.Value.AsString}" );
+        LOG.Log( "InitGUI", $"{hk.Key} - {hk.Value.AsString}" );
       }
 
       // Init Colors from Settings
@@ -1340,7 +1340,7 @@ namespace FS20_HudBar
       GUI_Colors.UpdateColorSet( ColorSet.InverseSet, GUI_Colors.FromConfigString( AppSettingsV2.Instance.UserColorsInv ) );
 
       // start the HudBar from scratch
-      LOG.Log( $"InitGUI", "Create HudBar" );
+      LOG.Log( "InitGUI", "Create HudBar" );
       HUD?.Dispose( ); // MUST ..
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
                           AppSettingsV2.Instance.KeyboardHook, AppSettingsV2.Instance.InGameHook, _hotkeycat,
@@ -1349,13 +1349,13 @@ namespace FS20_HudBar
                           AppSettingsV2.Instance.FRecorder );
 
       // reread from config (change)
-      LOG.Log( $"InitGUI", "Reread Config changes" );
+      LOG.Log( "InitGUI", "Reread Config changes" );
       SetupKeyboardHook( true, AppSettingsV2.Instance.KeyboardHook );
       SetupInGameHook( AppSettingsV2.Instance.InGameHook );
 
       // Prepare FLPanel to load controls
       // DON'T Suspend the Layout else the calculations below will not be valid, the form is invisible and no painting is done here
-      LOG.Log( $"InitGUI", $"Reload FlowPanel with Kind: {HUD.Profile.Kind}, Placement: {HUD.Placement}" );
+      LOG.Log( "InitGUI", $"Reload FlowPanel with Kind: {HUD.Profile.Kind}, Placement: {HUD.Placement}" );
 
       // suspend intermediate Size change Events as they are immediately obsolete
       _inLayout = true;
@@ -1368,7 +1368,7 @@ namespace FS20_HudBar
       // post proc - reset some properties and the location of the MainWindow
       //   A window is essentially a tile with border and will later be positioned at the last stored location
       //   A Bar or Tile is following along the edges of the primary screen
-      LOG.Log( $"InitGUI", "Post Processing" );
+      LOG.Log( "InitGUI", "Post Processing" );
       // no border for most
       this.FormBorderStyle = FormBorderStyle.None;
       if (HUD.Kind == GUI.Kind.Window) this.FormBorderStyle = FormBorderStyle.FixedToolWindow; // apply the border if needed

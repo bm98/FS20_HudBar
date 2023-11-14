@@ -109,21 +109,29 @@ namespace DbgLib
     private static readonly Lazy<Dbg> lazy = new Lazy<Dbg>( ( ) => new Dbg( ) );
     private Dbg( )
     {
-      _canWrite = false;
-
+      InitLog( );
+      DumpAudioProps( );
     }
 
-    // the debug file in the current directory
-    private readonly string c_logFileName = Path.Combine( ".", "DEBUG_log.txt" );
 
-    // flag is we can/shall write
-    private bool _canWrite;
+    // Log a Text Item as Error
+    private void LogError( string text )
+    {
+      using (ScopeContext.PushNestedState( "Logging" ))
+        LOG.Error( text );
+    }
+
+
+    // Log a Text Item from a Module
+    private void Log( string module, string text )
+    {
+      using (ScopeContext.PushNestedState( module ))
+        LOG.Info( text );
+    }
 
     // Init the Log with some basic information
     private void InitLog( )
     {
-      if (!_canWrite) return;
-
       try {
         LogManager.ThrowExceptions = true;
         using (ScopeContext.PushNestedState( "InitLog" ))
@@ -132,7 +140,6 @@ namespace DbgLib
       catch (Exception ex) {
         using (ScopeContext.PushNestedState( "InitLog" ))
           LOG.Error( ex, "Cannot write logfile" );
-        _canWrite = false;
         return;
       }
       finally {
@@ -164,16 +171,6 @@ namespace DbgLib
     /// The result of the last access check
     /// </summary>
     public AccessCheckResult AccessCheckResult { get; private set; } = AccessCheckResult.Success;
-
-    /// <summary>
-    /// Enable debugging 
-    /// From now on the log will be written
-    /// </summary>
-    public void EnableDebug( )
-    {
-      _canWrite = true;
-      InitLog( );
-    }
 
     /// <summary>
     /// Returns a new Logger with a Module Name
@@ -342,73 +339,6 @@ namespace DbgLib
 
     #region Logging
 
-    /// <summary>
-    /// Log a Text Item, writes immediately to the file
-    /// </summary>
-    /// <param name="text">Log Text</param>
-    public void Log( string text )
-    {
-      if (!_canWrite) return;
-
-      using (ScopeContext.PushNestedState( "Logging" ))
-        LOG.Info( text );
-    }
-
-    /// <summary>
-    /// Log a Text Item as Error
-    /// </summary>
-    /// <param name="text">Log Text</param>
-    public void LogError( string text )
-    {
-      using (ScopeContext.PushNestedState( "Logging" ))
-        LOG.Error( text );
-    }
-
-    /// <summary>
-    /// Log a Text Item as Error with Exception
-    /// </summary>
-    /// <param name="ex">Exception</param>
-    /// <param name="text">Log Text</param>
-    public void LogException( Exception ex, string text )
-    {
-      using (ScopeContext.PushNestedState( "Logging" ))
-        LOG.Error( ex, text );
-    }
-
-    /// <summary>
-    /// Log a Text Item from a Module
-    /// </summary>
-    /// <param name="module">The related sw part</param>
-    /// <param name="text">Log Text</param>
-    public void Log( string module, string text )
-    {
-      using (ScopeContext.PushNestedState( module ))
-        LOG.Info( text );
-    }
-
-    /// <summary>
-    /// Log a Text Item from a Module as Error
-    /// </summary>
-    /// <param name="module">The related sw part</param>
-    /// <param name="text">Log Text</param>
-    public void LogError( string module, string text )
-    {
-      using (ScopeContext.PushNestedState( module ))
-        LOG.Error( text );
-    }
-
-    /// <summary>
-    /// Log a Text Item as Error with Exception
-    /// </summary>
-    /// <param name="module">The related sw part</param>
-    /// <param name="ex">Exception</param>
-    /// <param name="text">Log Text</param>
-    public void LogException( string module, Exception ex, string text )
-    {
-      using (ScopeContext.PushNestedState( module ))
-        LOG.Error( ex, text );
-    }
-
 
     /// <summary>
     /// Log a text and dump the stacktrace from the calling process
@@ -442,7 +372,6 @@ namespace DbgLib
     // Get the current directory and files in it
     private void ListCurDir( )
     {
-      if (!_canWrite) return;
       using (ScopeContext.PushNestedState( "InitLog" )) {
         LOG.Info( $"Current Directory:" );
         LOG.Info( $"    {Environment.CurrentDirectory}" );
@@ -475,8 +404,6 @@ namespace DbgLib
     // dump the installed voices from MS
     private void ListInstalledVoices( )
     {
-      if (!_canWrite) return;
-
       var voices = SpeechSynthesizer.AllVoices;
       using (ScopeContext.PushNestedState( "InitLog" )) {
         LOG.Info( "Installed Voices:" );
@@ -495,8 +422,6 @@ namespace DbgLib
     async private void ListDeviceInformation( )
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
-      if (!_canWrite) return;
-
       var ret = DeviceInformation.FindAllAsync( DeviceClass.AudioRender ).AsTask( );
       ret.Wait( );
       if (ret.Status == TaskStatus.RanToCompletion) {

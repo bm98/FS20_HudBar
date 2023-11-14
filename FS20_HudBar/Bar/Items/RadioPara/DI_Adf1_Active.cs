@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
@@ -49,6 +48,7 @@ namespace FS20_HudBar.Bar.Items
 
       item = VItem.ADF1_ANI;
       _brg = new A_WindArrow( ) { BorderStyle = BorderStyle.FixedSingle, AutoSizeWidth = true, ItemForeColor = cScale3 };
+      _brg.Heading = 180; // Wind indicator is used - so inverse direction
       this.AddItem( _brg ); vCat.AddLbl( item, _brg );
 
       m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
@@ -65,6 +65,16 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
+        if (!SV.Get<bool>( SItem.bG_Nav_hasADF1 )) {
+          _value1.Text = "n.a.";
+          _value1.ItemForeColor = cTxDim;
+          _value2.Value = null;
+          _brg.ItemForeColor = cTxDim; // dimm
+          _brg.DirectionFrom = 0;
+          return;
+        }
+
+        // Has ADF 1
         if (SV.Get<string>( SItem.sG_Nav_ADF1_Ident ) != "") {
           _value1.ItemForeColor = cTxNav;
           _value1.Text = SV.Get<string>( SItem.sG_Nav_ADF1_Ident );
@@ -76,17 +86,18 @@ namespace FS20_HudBar.Bar.Items
 
         if (SV.Get<bool>( SItem.bG_Nav_ADF1_hasSignal )) {
           // desired heading to the NDB
-          _value2.Value = SV.Get<float>( SItem.fG_Nav_ADF1_Radial_mag_degm ) + SV.Get<float>( SItem.fG_Nav_HDG_mag_degm );
-          // Deviation from actual course
-          _brg.DirectionFrom = (int)CoordLib.Geo.Wrap360( (int)SV.Get<float>( SItem.fG_Nav_ADF1_Radial_mag_degm ) );
-          _brg.ItemForeColor = cScale3;
-          _brg.Heading = 180; // Wind indicator is used - so inverse direction
+          _value2.Value = (float)CoordLib.Geo.Wrap360( SV.Get<float>( SItem.fG_Nav_ADF1_Radial_mag_degm ) + 180f );
+          // Direction of Station
+          var dir = (float)CoordLib.Geo.DirectionOf( SV.Get<float>( SItem.fG_Nav_ADF1_Radial_mag_degm ) + 180f,
+                                                     SV.Get<float>( SItem.fG_Gps_GTRK_mag_degm ) );
+
+          _brg.DirectionFrom = (int)dir;
+          _brg.ItemForeColor = Math.Abs( dir ) <= 3 ? cOK : Math.Abs( dir ) <= 6 ? cWarn : cInfo; // green / orange / white
         }
         else {
           _value2.Value = null;
           _brg.ItemForeColor = cTxDim; // dimm
           _brg.DirectionFrom = 0;
-          _brg.Heading = 180; // Wind indicator is used - so inverse direction
         }
       }
     }

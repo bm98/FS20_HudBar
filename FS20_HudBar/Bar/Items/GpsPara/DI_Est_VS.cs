@@ -59,7 +59,7 @@ namespace FS20_HudBar.Bar.Items
           float tgtAlt = SV.Get<float>( SItem.fG_Gps_WYP_alt_ft );
           // Estimates use WYP ALT if >0 (there is no distinction if a WYP ALT is given - it is 0 if not)
           ColorType estCol = cTxEst;
-          if (tgtAlt == 0) {
+          if (float.IsNaN( tgtAlt ) || tgtAlt == 0) {
             // use Set Alt if WYP ALT is zero (see comment above)
             tgtAlt = SV.Get<float>( SItem.fGS_Ap_ALT_setting_ft );
             estCol = cTxSet;

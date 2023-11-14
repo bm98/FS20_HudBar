@@ -54,7 +54,8 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = SV.Get<float>( SItem.fG_Gps_WYP_alt_ft );
+        var a = SV.Get<float>( SItem.fG_Gps_WYP_alt_ft );
+        _value1.Value = (a < 60_000) ? a : float.NaN; // limit by ceiling
       }
     }
 

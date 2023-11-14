@@ -67,6 +67,15 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
+        if (!SV.Get<bool>( SItem.bG_Nav_2_available )) {
+          _value1.Text = "n.a.";
+          _value1.ItemForeColor = cTxDim;
+          _value2.Text = "";
+          _value3.Text = "";
+          return;
+        }
+
+        // Has NAV2
         this.Label.Text = SV.Get<bool>( SItem.bG_Nav_2_hasLOC ) ? "LOC 2" : "NAV 2";
         if (SV.Get<string>( SItem.sG_Nav_2_Ident ) != "") {
           _value1.ItemForeColor = cTxNav;

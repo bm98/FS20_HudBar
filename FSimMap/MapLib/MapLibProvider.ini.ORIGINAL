@@ -36,11 +36,16 @@
 DefaultProvider=OSM_OpenStreetMap    ; OSM_OpenStreetMap is the free default provider
 
 ;DefaultProvider=OpenTopo
-;DefaultProvider=Stamen_Terrain
 
 ; Here comes your Bing Map Key if you want to use Bing Maps
 BingKey=<YOUR KEY>
 
+; Here comes your Stadia Key for Stamen Maps
+StadiaStamenKey=<YOUR KEY>
+
+; Disk Cache per Provider in MB default 128MB (from 32 to 1024 max) 
+; Remove semicolon to enable your setting
+;DiskCacheMB=128
 
 ; PROVIDER SECTIONS
 
@@ -62,12 +67,11 @@ Enabled=true
 
 [Stamen_Terrain]
 ; Street Map 3D shaped
-; Stamen.com (see terms of use before using it)
+; NEW Oct.2023 served by Stadia - needs a Key see
+; https://docs.stadiamaps.com (see terms of use before using it)
 Name=Stamen 3D Street Map
-Enabled=true
-;Http=https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg  ; default
-;Http=https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg  ; without subdomain
-
+Enabled=false
+;Http=https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}.png?api_key=YOUR-API-KEY
 
 ; ***************
 ; From http://www.chartbundle.com/charts/  see terms of use 
