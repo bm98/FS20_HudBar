@@ -118,9 +118,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CamControl.ico" />
-    <Content Include="SimConnect.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FCamControl\FCamControl.csproj">
