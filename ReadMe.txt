@@ -1,5 +1,5 @@
-FS20_HudBar V 0.67 - Build 67 BETA
-(c) M. Burri - 10-Nov-2023
+FS20_HudBar V 0.68 - Build 68 BETA
+(c) M. Burri - 22-Mar-2024
 
 Contains files:
 
@@ -12,6 +12,7 @@ bm98_Album.dll              UserControl for displaying images
 bm98_Checklist.dll          UserControl for displaying the Checklist Box
 bm98_hb_Controls.dll        UserControls for displaying graphs
 bm98_Map.dll                Mapping display library
+bm98_AColorPicker.dll       A custom Color Picker Dialog
 BM98CH_WasmClient.dll       WASM Module client to get LVars
 CoordLib.dll                Coord. handling library
 DbgLib.dll                  Debug helper
@@ -83,6 +84,18 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.68-B68
+- RERUN FacilityDataLoader if not already done so after MS/Navigraph updates !!!
+
+- Add New HudBar Placement 'TopStacked' where Label and Value are stacked instead of lined up
+- Add per profile Background image
+- Add per profile Padding (Border) around the HudBar window
+- Add per profile definition of Colors and Fonts
+- Update Improve aircraft properties via LVARs incl. B787, B747, Fenix A320 V2 and others
+- Update ColorPicker in Config with custom dialog
+- Update Trim values get a warning background if >90% or <-90%
+- Update QuickGuides
 
 V 0.67-B67
 - RERUN FacilityDataLoader !!!

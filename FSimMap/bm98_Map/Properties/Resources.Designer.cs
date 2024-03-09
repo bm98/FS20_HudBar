@@ -313,6 +313,16 @@ namespace bm98_Map.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap route_waypoint_end {
+            get {
+                object obj = ResourceManager.GetObject("route_waypoint_end", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap runway_alt {
             get {
                 object obj = ResourceManager.GetObject("runway_alt", resourceCulture);

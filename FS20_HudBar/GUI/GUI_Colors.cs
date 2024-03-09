@@ -1,4 +1,6 @@
-﻿using System;
+﻿using dNetBm98;
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -6,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 using static FS20_HudBar.GUI.GUI_Colors;
 
 namespace FS20_HudBar.GUI
@@ -88,6 +91,10 @@ namespace FS20_HudBar.GUI
       /// Opaque Background (Black)
       /// </summary>
       cOpaqueBG,
+      /// <summary>
+      /// Actionable Items Background (dark blue)
+      /// </summary>
+      cActBG,
 
       // FOREGROUND OTHER THAN Labels/Values
 
@@ -125,10 +132,6 @@ namespace FS20_HudBar.GUI
       /// Default Background (Transparent)
       /// </summary>
       cBG,
-      /// <summary>
-      /// Actionable Items Background (dark blue)
-      /// </summary>
-      cActBG,
       /// <summary>
       /// Live Items Background (e.g. when something is temporary active)
       /// </summary>
@@ -204,17 +207,18 @@ namespace FS20_HudBar.GUI
       ColorType.cTxInfoInverse,
       ColorType.cTxDim,
       ColorType.cTxActive,
-      ColorType.cTxAlert,
       ColorType.cTxWarn,
+      ColorType.cTxAlert,
       ColorType.cTxAPActive,
-      ColorType.cTxSet,
       ColorType.cTxNav,
       ColorType.cTxGps,
+      ColorType.cTxSet,
       ColorType.cTxEst,
       ColorType.cTxRA,
       ColorType.cTxAvg,
       ColorType.cTxSubZero,
       ColorType.cOpaqueBG,
+      ColorType.cActBG, // 20240227 added
     };
 
 
@@ -249,6 +253,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cTxAvg, Dimm( Color.Yellow )}, // toned down yellow
       { ColorType.cTxSubZero, Color.DeepSkyBlue },
       { ColorType.cOpaqueBG,Color.FromArgb( 0, 1, 12 ) }, // Window background (slight blueish)
+      { ColorType.cActBG, Color.FromArgb(0,0,75) },
       //
       { ColorType.cInfo, Color.WhiteSmoke },
       { ColorType.cOK, Color.LimeGreen },
@@ -259,7 +264,6 @@ namespace FS20_HudBar.GUI
       { ColorType.cInverse, Color.Black },
 
       { ColorType.cBG, Color.Transparent },
-      { ColorType.cActBG, Color.FromArgb(0,0,75) },
       { ColorType.cLiveBG, Color.DarkGreen },
       { ColorType.cWarnBG, Color.DarkGoldenrod },
       { ColorType.cAlertBG, Color.Firebrick },
@@ -310,6 +314,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cTxAvg, Dimm( c_brightColors[ColorType.cTxAvg] )},
       { ColorType.cTxSubZero, Dimm( c_brightColors[ColorType.cTxSubZero] )},
       { ColorType.cOpaqueBG, Color.FromArgb( 0, 1, 12 ) }, // Window background (slight blueish)
+      { ColorType.cActBG, Color.FromArgb(0,0,75) },
       //
       { ColorType.cInfo, Dimm( c_brightColors[ColorType.cInfo] )},
       { ColorType.cOK, Dimm( c_brightColors[ColorType.cOK] )},
@@ -321,7 +326,6 @@ namespace FS20_HudBar.GUI
       { ColorType.cInverse, Color.Black },
 
       { ColorType.cBG, Color.Transparent },
-      { ColorType.cActBG, Color.FromArgb(0,0,75) },
       { ColorType.cLiveBG, Color.DarkGreen },
       { ColorType.cWarnBG, Color.DarkGoldenrod },
       { ColorType.cAlertBG, Color.Firebrick },
@@ -367,6 +371,7 @@ namespace FS20_HudBar.GUI
       { ColorType.cTxAvg, Color.FromArgb(90, 90, 0) }, // dark Yellow
       { ColorType.cTxSubZero, Color.DarkBlue },
       { ColorType.cOpaqueBG,Color.Honeydew }, // Window background (bright blueish)
+      { ColorType.cActBG, Color.FromArgb(124, 214, 252) }, // mid blue
       //
       { ColorType.cInfo, Color.Black },
       { ColorType.cOK, Color.DarkGreen },
@@ -378,7 +383,6 @@ namespace FS20_HudBar.GUI
       { ColorType.cInverse, Color.WhiteSmoke },
 
       { ColorType.cBG, Color.Transparent },
-      { ColorType.cActBG, Color.FromArgb(124, 214, 252) }, // mid blue
       { ColorType.cLiveBG, Color.DarkGreen },
       { ColorType.cWarnBG, Color.DarkGoldenrod },
       { ColorType.cAlertBG, Color.Firebrick },
@@ -438,14 +442,27 @@ namespace FS20_HudBar.GUI
     /// <summary>
     /// Returns a Copy of a Default ColorSet
     /// </summary>
-    /// <param name="colorSet"></param>
-    /// <returns></returns>
+    /// <param name="colorSet">The ColorSet</param>
+    /// <returns>A GUI_ColorSet</returns>
     public static GUI_ColorSet GetDefaultColorSet( ColorSet colorSet )
     {
       if (colorSet == ColorSet.BrightSet) return c_brightColors.Clone( );
       if (colorSet == ColorSet.DimmedSet) return c_dimColors.Clone( );
       if (colorSet == ColorSet.InverseSet) return c_inverseColors.Clone( );
-        return null;
+      return null;
+    }
+
+    /// <summary>
+    /// Returns a ColorConfig string
+    /// </summary>
+    /// <param name="colorSet">The ColorSet</param>
+    /// <returns>A string (config string)</returns>
+    public static string GetDefaultColors( ColorSet colorSet )
+    {
+      if (colorSet == ColorSet.BrightSet) return AsConfigString( c_brightColors );
+      if (colorSet == ColorSet.DimmedSet) return AsConfigString( c_dimColors );
+      if (colorSet == ColorSet.InverseSet) return AsConfigString( c_inverseColors );
+      return "";
     }
 
     /// <summary>
@@ -464,11 +481,11 @@ namespace FS20_HudBar.GUI
     }
 
     /// <summary>
-    /// Update the current Colors for a Set from the Catalog argument
+    /// Set the current Colors for a Set from the Catalog argument
     /// </summary>
     /// <param name="colorSet">ColorSet to update</param>
     /// <param name="colorCat">Update Values</param>
-    public static void UpdateColorSet( ColorSet colorSet, GUI_ColorSet colorCat )
+    public static void SetColorSet( ColorSet colorSet, GUI_ColorSet colorCat )
     {
       foreach (var c in ConfigurableColorList) {
         if (colorCat.TryGetValue( c, out var color )) {
@@ -546,7 +563,7 @@ namespace FS20_HudBar.GUI
     /// <returns>A Color</returns>
     public static Color ItemColor( ColorType colorType, GUI_ColorSet colorSet )
     {
-      if ( colorSet.TryGetValue(colorType, out var color )) {
+      if (colorSet.TryGetValue( colorType, out var color )) {
         return color;
       }
       return Color.Pink; // Error Color
@@ -587,11 +604,39 @@ namespace FS20_HudBar.GUI
     }
 
     /// <summary>
+    /// NEW version to write with
+    /// 
     /// Returns the Config String for a ColorSet (only configurable Elements)
     /// </summary>
     /// <param name="colorCat">The Color Catalog</param>
     /// <returns>A Config String</returns>
     public static string AsConfigString( GUI_ColorSet colorCat )
+    {
+      // format using ColorH() :
+      // ColorTypeNumber#aarrggbb;{ColorTypeNumber#aarrggbb;}
+      string cfg = "";
+
+      foreach (var c in ConfigurableColorList) {
+        if (colorCat.TryGetValue( c, out var color )) {
+          cfg += $"{(int)c}{color.ToColorH( )};";
+        }
+        else {
+          cfg += $"{(int)c}{Color.Pink.ToColorH( )};"; // mark errors
+        }
+      }
+      return cfg;
+    }
+
+    /*
+    /// <summary>
+    /// 
+    /// ****  OLD VERSION - does not support transparency
+    /// 
+    /// Returns the Config String for a ColorSet (only configurable Elements)
+    /// </summary>
+    /// <param name="colorCat">The Color Catalog</param>
+    /// <returns>A Config String</returns>
+    public static string AsConfigStringOLD( GUI_ColorSet colorCat )
     {
       // format:
       // ColorTypeNumber¬R¬G¬B¦{ColorTypeNumber¬R¬G¬B¦}
@@ -607,11 +652,10 @@ namespace FS20_HudBar.GUI
       }
       return cfg;
     }
+    */
 
-
-    // "EVal,R,G,B"
-    private static Regex c_rxCol = new Regex( @"(?<num>\d+)¬(?<r>\d+)¬(?<g>\d+)¬(?<b>\d+)", RegexOptions.Compiled );
-
+    // "EVal#aarrggbb"  cc = Hex bytes
+    private static Regex c_rxCol = new Regex( @"(?<num>\d+)(?<hex>#[0-9A-Fa-f]{8})", RegexOptions.Compiled );
     /// <summary>
     /// Returns the ColorSet from a Config String (only configurable Elements)
     /// </summary>
@@ -619,10 +663,59 @@ namespace FS20_HudBar.GUI
     /// <returns>The Color Catalog</returns>
     public static GUI_ColorSet FromConfigString( string configString )
     {
+      // sanity if empty
+      if (string.IsNullOrEmpty( configString )) return new GUI_ColorSet( );
+
+      // check for legacy format
+      if (configString.Contains( '¬' )) return FromConfigStringOLD( configString );
+
+      // current version; format using ColorH() :
+      // ColorTypeNumber#aarrggbb;{ColorTypeNumber#aarrggbb;}
+
+      GUI_ColorSet colorCat = new GUI_ColorSet( );
+      string[] e = configString.Split( new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries );
+      foreach (var colItem in e) {
+        Match match = c_rxCol.Match( colItem );
+        if (match.Success) {
+          int eVal = int.Parse( match.Groups["num"].Value );
+          if (Enum.IsDefined( typeof( ColorType ), eVal )) {
+            if (ConfigurableColorList.Contains( (ColorType)eVal )) {
+              colorCat.Add( (ColorType)eVal, (match.Groups["hex"].Value).FromColorH( ) );
+            }
+            else {
+              ; // Color cannot be configured ??
+            }
+          }
+          else {
+            ; // Color Enum not known ??
+          }
+        }
+        else {
+          ; // Regex Match failed - format Error ??
+        }
+      }
+      return colorCat;
+    }
+
+
+    // "EVal,R,G,B"
+    private static Regex c_rxColOLD = new Regex( @"(?<num>\d+)¬(?<r>\d+)¬(?<g>\d+)¬(?<b>\d+)", RegexOptions.Compiled );
+
+    /// <summary>
+    /// 
+    /// ****  OLD VERSION - does not support transparency
+    ///   for reading only
+    /// 
+    /// Returns the ColorSet from a Config String (only configurable Elements)
+    /// </summary>
+    /// <param name="configString">A Config String</param>
+    /// <returns>The Color Catalog</returns>
+    public static GUI_ColorSet FromConfigStringOLD( string configString )
+    {
       GUI_ColorSet colorCat = new GUI_ColorSet( );
       string[] e = configString.Split( new char[] { '¦' }, StringSplitOptions.RemoveEmptyEntries );
       foreach (var colItem in e) {
-        Match match = c_rxCol.Match( colItem );
+        Match match = c_rxColOLD.Match( colItem );
         if (match.Success) {
           int eVal = int.Parse( match.Groups["num"].Value );
           if (Enum.IsDefined( typeof( ColorType ), eVal )) {

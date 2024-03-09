@@ -33,10 +33,14 @@ namespace FS20_HudBar
       }
 
       LOG.Log( $"Program Start with Instance ({Instance})" );
-
+#if DEBUG
+      // TODO REMOVE FOR FINAL TEST AND RELEASE
+      // Init the Folders Utility with our AppSettings File
+      Folders.InitStorage( "HudBarAppSettings-NEXT.json" );
+#else
       // Init the Folders Utility with our AppSettings File
       Folders.InitStorage( "HudBarAppSettings.json" );
-
+#endif
       // init the V2 AppSettings instance based on the command line argument
       AppSettingsV2.InitInstance( Folders.SettingsFile, Instance );
       var v2Used = AppSettingsV2.Instance.V2InUse;

@@ -38,6 +38,10 @@ namespace FS20_HudBar.Config
       this.diPanel1 = new System.Windows.Forms.FlowLayoutPanel();
       this.diPanel2 = new System.Windows.Forms.FlowLayoutPanel();
       this.flpMain = new System.Windows.Forms.FlowLayoutPanel();
+      this.diPanel3 = new System.Windows.Forms.FlowLayoutPanel();
+      this.lbLabel3 = new System.Windows.Forms.Label();
+      this.lbNumber31 = new System.Windows.Forms.Label();
+      this.lbNumber32 = new System.Windows.Forms.Label();
       this.panel1 = new System.Windows.Forms.Panel();
       this.btAccept = new System.Windows.Forms.Button();
       this.btCancel = new System.Windows.Forms.Button();
@@ -47,15 +51,12 @@ namespace FS20_HudBar.Config
       this.label1 = new System.Windows.Forms.Label();
       this.cxCondensed = new System.Windows.Forms.CheckBox();
       this.btDefaults = new System.Windows.Forms.Button();
-      this.diPanel3 = new System.Windows.Forms.FlowLayoutPanel();
-      this.lbLabel3 = new System.Windows.Forms.Label();
-      this.lbNumber31 = new System.Windows.Forms.Label();
-      this.lbNumber32 = new System.Windows.Forms.Label();
+      this.lblUsingDefaults = new System.Windows.Forms.Label();
       this.diPanel1.SuspendLayout();
       this.diPanel2.SuspendLayout();
       this.flpMain.SuspendLayout();
-      this.panel1.SuspendLayout();
       this.diPanel3.SuspendLayout();
+      this.panel1.SuspendLayout();
       this.SuspendLayout();
       // 
       // FD
@@ -168,99 +169,6 @@ namespace FS20_HudBar.Config
       this.flpMain.WrapContents = false;
       this.flpMain.Layout += new System.Windows.Forms.LayoutEventHandler(this.flpMain_Layout);
       // 
-      // panel1
-      // 
-      this.panel1.BackColor = System.Drawing.Color.Black;
-      this.panel1.Controls.Add(this.flpMain);
-      this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-      this.panel1.Location = new System.Drawing.Point(0, 0);
-      this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(652, 265);
-      this.panel1.TabIndex = 8;
-      // 
-      // btAccept
-      // 
-      this.btAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.btAccept.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btAccept.Location = new System.Drawing.Point(397, 345);
-      this.btAccept.Name = "btAccept";
-      this.btAccept.Size = new System.Drawing.Size(106, 25);
-      this.btAccept.TabIndex = 9;
-      this.btAccept.Text = "Accept";
-      this.btAccept.UseVisualStyleBackColor = true;
-      this.btAccept.Click += new System.EventHandler(this.btAccept_Click);
-      // 
-      // btCancel
-      // 
-      this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.btCancel.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCancel.Location = new System.Drawing.Point(534, 345);
-      this.btCancel.Name = "btCancel";
-      this.btCancel.Size = new System.Drawing.Size(106, 25);
-      this.btCancel.TabIndex = 10;
-      this.btCancel.Text = "Cancel";
-      this.btCancel.UseVisualStyleBackColor = true;
-      // 
-      // btLabelFont
-      // 
-      this.btLabelFont.Location = new System.Drawing.Point(5, 271);
-      this.btLabelFont.Name = "btLabelFont";
-      this.btLabelFont.Size = new System.Drawing.Size(108, 31);
-      this.btLabelFont.TabIndex = 11;
-      this.btLabelFont.Text = "Label Font...";
-      this.btLabelFont.UseVisualStyleBackColor = true;
-      this.btLabelFont.Click += new System.EventHandler(this.btLabelFont_Click);
-      // 
-      // btValueFont
-      // 
-      this.btValueFont.Location = new System.Drawing.Point(122, 271);
-      this.btValueFont.Name = "btValueFont";
-      this.btValueFont.Size = new System.Drawing.Size(108, 31);
-      this.btValueFont.TabIndex = 12;
-      this.btValueFont.Text = "Value Font...";
-      this.btValueFont.UseVisualStyleBackColor = true;
-      this.btValueFont.Click += new System.EventHandler(this.btValueFont_Click);
-      // 
-      // cbxSize
-      // 
-      this.cbxSize.FormattingEnabled = true;
-      this.cbxSize.Location = new System.Drawing.Point(122, 318);
-      this.cbxSize.Name = "cbxSize";
-      this.cbxSize.Size = new System.Drawing.Size(173, 25);
-      this.cbxSize.TabIndex = 13;
-      this.cbxSize.SelectionChangeCommitted += new System.EventHandler(this.cbxSize_SelectionChangeCommitted);
-      // 
-      // label1
-      // 
-      this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(11, 321);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(87, 17);
-      this.label1.TabIndex = 14;
-      this.label1.Text = "Example Size:";
-      // 
-      // cxCondensed
-      // 
-      this.cxCondensed.AutoSize = true;
-      this.cxCondensed.Location = new System.Drawing.Point(122, 349);
-      this.cxCondensed.Name = "cxCondensed";
-      this.cxCondensed.Size = new System.Drawing.Size(173, 21);
-      this.cxCondensed.TabIndex = 15;
-      this.cxCondensed.Text = "Config. Condensed Fonts";
-      this.cxCondensed.UseVisualStyleBackColor = true;
-      this.cxCondensed.CheckedChanged += new System.EventHandler(this.cxCondensed_CheckedChanged);
-      // 
-      // btDefaults
-      // 
-      this.btDefaults.Location = new System.Drawing.Point(534, 271);
-      this.btDefaults.Name = "btDefaults";
-      this.btDefaults.Size = new System.Drawing.Size(108, 31);
-      this.btDefaults.TabIndex = 16;
-      this.btDefaults.Text = "Use Defaults";
-      this.btDefaults.UseVisualStyleBackColor = true;
-      this.btDefaults.Click += new System.EventHandler(this.btDefaults_Click);
-      // 
       // diPanel3
       // 
       this.diPanel3.AutoSize = true;
@@ -310,11 +218,119 @@ namespace FS20_HudBar.Config
       this.lbNumber32.Text = " 435 °C";
       this.lbNumber32.UseCompatibleTextRendering = true;
       // 
+      // panel1
+      // 
+      this.panel1.BackColor = System.Drawing.Color.Black;
+      this.panel1.Controls.Add(this.flpMain);
+      this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+      this.panel1.Location = new System.Drawing.Point(0, 0);
+      this.panel1.Name = "panel1";
+      this.panel1.Size = new System.Drawing.Size(652, 265);
+      this.panel1.TabIndex = 8;
+      // 
+      // btAccept
+      // 
+      this.btAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btAccept.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btAccept.ForeColor = System.Drawing.Color.Black;
+      this.btAccept.Location = new System.Drawing.Point(397, 345);
+      this.btAccept.Name = "btAccept";
+      this.btAccept.Size = new System.Drawing.Size(106, 25);
+      this.btAccept.TabIndex = 9;
+      this.btAccept.Text = "Accept";
+      this.btAccept.UseVisualStyleBackColor = true;
+      this.btAccept.Click += new System.EventHandler(this.btAccept_Click);
+      // 
+      // btCancel
+      // 
+      this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+      this.btCancel.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btCancel.ForeColor = System.Drawing.Color.Black;
+      this.btCancel.Location = new System.Drawing.Point(534, 345);
+      this.btCancel.Name = "btCancel";
+      this.btCancel.Size = new System.Drawing.Size(106, 25);
+      this.btCancel.TabIndex = 10;
+      this.btCancel.Text = "Cancel";
+      this.btCancel.UseVisualStyleBackColor = true;
+      // 
+      // btLabelFont
+      // 
+      this.btLabelFont.ForeColor = System.Drawing.Color.Black;
+      this.btLabelFont.Location = new System.Drawing.Point(5, 271);
+      this.btLabelFont.Name = "btLabelFont";
+      this.btLabelFont.Size = new System.Drawing.Size(108, 31);
+      this.btLabelFont.TabIndex = 11;
+      this.btLabelFont.Text = "Label Font...";
+      this.btLabelFont.UseVisualStyleBackColor = true;
+      this.btLabelFont.Click += new System.EventHandler(this.btLabelFont_Click);
+      // 
+      // btValueFont
+      // 
+      this.btValueFont.ForeColor = System.Drawing.Color.Black;
+      this.btValueFont.Location = new System.Drawing.Point(122, 271);
+      this.btValueFont.Name = "btValueFont";
+      this.btValueFont.Size = new System.Drawing.Size(108, 31);
+      this.btValueFont.TabIndex = 12;
+      this.btValueFont.Text = "Value Font...";
+      this.btValueFont.UseVisualStyleBackColor = true;
+      this.btValueFont.Click += new System.EventHandler(this.btValueFont_Click);
+      // 
+      // cbxSize
+      // 
+      this.cbxSize.ForeColor = System.Drawing.Color.Black;
+      this.cbxSize.FormattingEnabled = true;
+      this.cbxSize.Location = new System.Drawing.Point(122, 318);
+      this.cbxSize.Name = "cbxSize";
+      this.cbxSize.Size = new System.Drawing.Size(173, 25);
+      this.cbxSize.TabIndex = 13;
+      this.cbxSize.SelectionChangeCommitted += new System.EventHandler(this.cbxSize_SelectionChangeCommitted);
+      // 
+      // label1
+      // 
+      this.label1.AutoSize = true;
+      this.label1.Location = new System.Drawing.Point(11, 321);
+      this.label1.Name = "label1";
+      this.label1.Size = new System.Drawing.Size(87, 17);
+      this.label1.TabIndex = 14;
+      this.label1.Text = "Example Size:";
+      // 
+      // cxCondensed
+      // 
+      this.cxCondensed.AutoSize = true;
+      this.cxCondensed.Location = new System.Drawing.Point(122, 349);
+      this.cxCondensed.Name = "cxCondensed";
+      this.cxCondensed.Size = new System.Drawing.Size(173, 21);
+      this.cxCondensed.TabIndex = 15;
+      this.cxCondensed.Text = "Config. Condensed Fonts";
+      this.cxCondensed.UseVisualStyleBackColor = true;
+      this.cxCondensed.CheckedChanged += new System.EventHandler(this.cxCondensed_CheckedChanged);
+      // 
+      // btDefaults
+      // 
+      this.btDefaults.ForeColor = System.Drawing.Color.Black;
+      this.btDefaults.Location = new System.Drawing.Point(534, 271);
+      this.btDefaults.Name = "btDefaults";
+      this.btDefaults.Size = new System.Drawing.Size(108, 31);
+      this.btDefaults.TabIndex = 16;
+      this.btDefaults.Text = "Use Defaults";
+      this.btDefaults.UseVisualStyleBackColor = true;
+      this.btDefaults.Click += new System.EventHandler(this.btDefaults_Click);
+      // 
+      // lblUsingDefaults
+      // 
+      this.lblUsingDefaults.Location = new System.Drawing.Point(500, 273);
+      this.lblUsingDefaults.Name = "lblUsingDefaults";
+      this.lblUsingDefaults.Size = new System.Drawing.Size(24, 24);
+      this.lblUsingDefaults.TabIndex = 23;
+      // 
       // FrmFonts
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+      this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
       this.CausesValidation = false;
       this.ClientSize = new System.Drawing.Size(652, 382);
+      this.Controls.Add(this.lblUsingDefaults);
       this.Controls.Add(this.btDefaults);
       this.Controls.Add(this.cxCondensed);
       this.Controls.Add(this.label1);
@@ -326,6 +342,7 @@ namespace FS20_HudBar.Config
       this.Controls.Add(this.panel1);
       this.DoubleBuffered = true;
       this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.ForeColor = System.Drawing.Color.WhiteSmoke;
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MaximizeBox = false;
@@ -334,16 +351,17 @@ namespace FS20_HudBar.Config
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Configure HudBar Fonts";
       this.Load += new System.EventHandler(this.FrmFonts_Load);
+      this.Shown += new System.EventHandler(this.FrmFonts_Shown);
       this.diPanel1.ResumeLayout(false);
       this.diPanel1.PerformLayout();
       this.diPanel2.ResumeLayout(false);
       this.diPanel2.PerformLayout();
       this.flpMain.ResumeLayout(false);
       this.flpMain.PerformLayout();
-      this.panel1.ResumeLayout(false);
-      this.panel1.PerformLayout();
       this.diPanel3.ResumeLayout(false);
       this.diPanel3.PerformLayout();
+      this.panel1.ResumeLayout(false);
+      this.panel1.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -373,5 +391,6 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.Label lbLabel3;
     private System.Windows.Forms.Label lbNumber31;
     private System.Windows.Forms.Label lbNumber32;
+    private System.Windows.Forms.Label lblUsingDefaults;
   }
 }

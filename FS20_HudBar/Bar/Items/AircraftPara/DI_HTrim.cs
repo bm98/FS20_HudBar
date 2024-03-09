@@ -133,8 +133,13 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = SV.Get<float>( SItem.fGS_Trm_RotorLongitudinalTrim_prct100 ) * 100f;
-        _value2.Value = SV.Get<float>( SItem.fGS_Trm_RotorLateralTrim_prct100 ) * 100f;
+        float trimLon = SV.Get<float>( SItem.fGS_Trm_RotorLongitudinalTrim_prct100 );
+        float trimLat = SV.Get<float>( SItem.fGS_Trm_RotorLateralTrim_prct100 );
+        _value1.Value = trimLon * 100f;
+        _value2.Value = trimLat * 100f;
+        // warn if beyond 90%
+        _value1.ItemBackColor = (Math.Abs( trimLon ) > 0.9) ? cWarnBG : cValBG;
+        _value2.ItemBackColor = (Math.Abs( trimLat ) > 0.9) ? cWarnBG : cValBG;
       }
     }
 

@@ -10,16 +10,34 @@ using System.Windows.Forms;
 
 namespace FS20_HudBar.Config
 {
-
-
   public partial class FrmFonts : Form
   {
+    /// <summary>
+    /// The Fonts Obj to use
+    /// </summary>
+    internal GUI.GUI_Fonts Fonts { get; set; } = null;
+    /// <summary>
+    /// The Fallback Config String
+    /// </summary>
+    internal string DefaultFontsConfig { get; set; } = "";
 
-    internal GUI.GUI_Fonts Fonts { get; set; }
+    /// <summary>
+    /// Flags if default was selected and nothing changed so far
+    /// </summary>
+    public bool UsingDefault => _useDefault;
 
     public Label ProtoLabelRef { get; set; }
     public Label ProtoValueRef { get; set; }
     public Label ProtoValue2Ref { get; set; }
+
+    // default flag
+    private bool _useDefault = false;
+
+    private void SetUseDefaults( bool useDefault )
+    {
+      _useDefault = useDefault;
+      lblUsingDefaults.BackColor = _useDefault ? Color.Green : Color.Transparent;
+    }
 
     // Should look the same as in the Config Dialog itself
     private void PopulateFonts( ComboBox cbx )
@@ -48,7 +66,7 @@ namespace FS20_HudBar.Config
     // Apply the label props to have a similar appearance as the Bar itself
     private void LabelsSetup( Label target, Label proto )
     {
-      target.Font = proto.Font;   
+      target.Font = proto.Font;
       target.AutoSize = true;                          // force AutoSize
       target.TextAlign = proto.TextAlign;
       target.Anchor = proto.Anchor;
@@ -64,11 +82,17 @@ namespace FS20_HudBar.Config
     public FrmFonts( )
     {
       InitializeComponent( );
-
     }
 
     private void FrmFonts_Load( object sender, EventArgs e )
     {
+    }
+
+    private void FrmFonts_Shown( object sender, EventArgs e )
+    {
+      // sanity
+      if (Fonts == null) throw new InvalidOperationException( "Fonts cannot be null" );
+
       // set Dialog Props
       FD.AllowSimulations = true;
       FD.FontMustExist = true;
@@ -92,11 +116,12 @@ namespace FS20_HudBar.Config
       LabelsSetup( lbNumber32, ProtoValue2Ref );
 
       PopulateFonts( cbxSize );
-      cbxSize.SelectedIndex = cbxSize.Items.Count-1; // default to largest
+      cbxSize.SelectedIndex = cbxSize.Items.Count - 1; // default to largest
 
       cxCondensed.Checked = Fonts.Condensed;
 
       SetFont( );
+      SetUseDefaults( Fonts.IsUsingDefaults );
     }
 
     private void SetFont( )
@@ -125,18 +150,18 @@ namespace FS20_HudBar.Config
       lbLabel3.Padding = new Padding( 0, 0, lbLabel1.Width - lbLabel3.Width + 8, 0 );
       lbLabel2.Padding = new Padding( 0, 0, lbLabel1.Width - lbLabel2.Width + 8, 0 );
       lbLabel1.Padding = new Padding( 0, 0, 8, 0 );
-
     }
 
     private void btLabelFont_Click( object sender, EventArgs e )
     {
       // set Dialog Props
       FD.Font = lbLabel1.Font;
-      
-      if ( FD.ShowDialog( this ) == DialogResult.OK ) {
+
+      if (FD.ShowDialog( this ) == DialogResult.OK) {
         // save stuff
         Fonts.SetUserFont( GUI.GUI_Fonts.FKinds.Lbl, FD.Font, (GUI.FontSize)cbxSize.SelectedIndex, cxCondensed.Checked );
         Fonts.SetFontsize( (GUI.FontSize)cbxSize.SelectedIndex );
+        SetUseDefaults( false );
         SetFont( );
       }
     }
@@ -145,12 +170,13 @@ namespace FS20_HudBar.Config
     {
       FD.Font = lbNumber11.Font;
 
-      if ( FD.ShowDialog( this ) == DialogResult.OK ) {
+      if (FD.ShowDialog( this ) == DialogResult.OK) {
         // save stuff
         Fonts.SetUserFont( GUI.GUI_Fonts.FKinds.Value, FD.Font, (GUI.FontSize)cbxSize.SelectedIndex, cxCondensed.Checked );
         Fonts.SetUserFont( GUI.GUI_Fonts.FKinds.Value2, FD.Font, (GUI.FontSize)cbxSize.SelectedIndex, cxCondensed.Checked );
         Fonts.SetFontsize( (GUI.FontSize)cbxSize.SelectedIndex );
         SetFont( );
+        SetUseDefaults( false );
       }
     }
 
@@ -168,8 +194,9 @@ namespace FS20_HudBar.Config
 
     private void btDefaults_Click( object sender, EventArgs e )
     {
-      Fonts.ResetUserFonts( );
+      Fonts.FromConfigString( DefaultFontsConfig ); // set from fallback
       SetFont( );
+      SetUseDefaults( true );
     }
 
     private void flpMain_Layout( object sender, LayoutEventArgs e )

@@ -77,7 +77,10 @@
     <Compile Include="Drawing\MapGridItem.cs" />
     <Compile Include="Drawing\MapImage.cs" />
     <Compile Include="Drawing\NavaidItem.cs" />
+    <Compile Include="Drawing\RouteHookItem.cs" />
     <Compile Include="Drawing\RoutePointItem.cs" />
+    <Compile Include="Drawing\RouteSegment.cs" />
+    <Compile Include="Drawing\RouteSegmentMgr.cs" />
     <Compile Include="Drawing\RunwayItem.cs" />
     <Compile Include="Drawing\AircraftItem.cs" />
     <Compile Include="Drawing\ScaleItem.cs" />
@@ -268,6 +271,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\wyp_mapr.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\route_waypoint_end.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -189,7 +189,7 @@ namespace bm98_Map.Drawing
       _viewportRef.GProc.Drawings.AddItem( navaids );
 
       // Route Hook (ManagedDrawings but not using managed items)
-      var route = new ManagedHookItem( ) {
+      var route = new RouteHookItem( ) {
         Key = (int)DItems.ROUTE,
         Active = _showRoute, // visible at any Range
         String = "Route", // only deco for debug
@@ -868,14 +868,18 @@ namespace bm98_Map.Drawing
 
       // all Route items
       var routeList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.ROUTE )?.SubItemList;
+
       if (routeList == null) return; // CANNOT (yet)
+      var segMgr = (_viewportRef.GProc.Drawings.DispItem( (int)DItems.ROUTE ) as RouteHookItem).SegmentMgr;
       routeList.Clear( );
 
       // make all
       foreach (var rp in route.RoutePointCat) {
-        var rtPoint = new RoutePointItem( Properties.Resources.route_waypoint ) {
+        var bm = rp.OutboundCoordinate.IsEmpty ? Properties.Resources.route_waypoint_end : Properties.Resources.route_waypoint;
+        var rtPoint = new RoutePointItem( bm ) {
           Key = GProc.DispID_Anon( ),
           Active = true, // always true, we are using the ManagedHook
+          SegmentMgr = segMgr,
           Pen = rp.OutboundApt ? PenRouteApt
                   : rp.OutboundSID ? PenRouteSid
                   : rp.OutboundSTAR ? PenRouteSid

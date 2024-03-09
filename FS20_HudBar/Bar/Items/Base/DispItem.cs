@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using SC = SimConnectClient;
 using FS20_HudBar.GUI;
 using FSimClientIF.Modules;
+using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.Bar.Items.Base
 {
@@ -50,7 +51,7 @@ namespace FS20_HudBar.Bar.Items.Base
     /// </summary>
     public string TText = null;
     /// <summary>
-    /// Set to true if the Left/Right layout should create a 2 Line item for it
+    /// Set to true if the Left/Right layout should create a 2 Line Values item for it
     /// </summary>
     public bool TwoRows { get; protected set; } = false;
     /// <summary>
@@ -113,23 +114,23 @@ namespace FS20_HudBar.Bar.Items.Base
     public void AddItem( Control control )
     {
       //if ( !( control is Control ) ) throw new ArgumentException( "Argument must be of type Control" ); // sanity
-      if ( !( control is IColorType ) ) throw new ArgumentException( "Argument must implement IColorType" ); ; // sanity
+      if (!(control is IColorType)) throw new ArgumentException( "Argument must implement IColorType" ); ; // sanity
       // First one is the label
-      if ( this.Controls.Count == 0 ) {
+      if (this.Controls.Count == 0) {
         // the Label
         m_label = control;
       }
 
       // Extend for 3 and 4 Value Items
       // the 4th (and 5) would go on a second line (must be tagged as TwoRows ==> true)
-      if ( TwoRows && ( this.Controls.Count == 3 ) ) {
+      if (TwoRows && (this.Controls.Count == 3)) {
         // this is the 3rd Value item
         this.SetFlowBreak( this.Controls[2], true ); // on prev element
       }
       // Make Items which implement IAlign to have the Label height and AutoSize their Width when loading (e.g. WindArrow)
-      if ( control is IAlign ) {
-        ( control as IAlign ).AutoSizeHeight = false;
-        ( control as IAlign ).AutoSizeWidth = true;
+      if (control is IAlign) {
+        (control as IAlign).AutoSizeHeight = false;
+        (control as IAlign).AutoSizeWidth = true;
         control.Height = Label.Height;
       }
 
@@ -157,10 +158,24 @@ namespace FS20_HudBar.Bar.Items.Base
     /// <param name="n">MaxVisible Item (1..N)</param>
     public void SetValuesVisible( int n )
     {
-      if ( n < 1 ) return;
+      if (n < 1) return;
 
-      for ( int i = 1; i < this.Controls.Count; i++ ) {
-        this.Controls[i].Visible = ( i <= n );
+      for (int i = 1; i < this.Controls.Count; i++) {
+        this.Controls[i].Visible = (i <= n);
+      }
+    }
+
+    /// <summary>
+    /// Set a flowbreak after the Lable
+    /// </summary>
+    /// <param name="break">True to set, false to remove</param>
+    public void SetLabelFlowBreak( bool @break )
+    {
+      if (this.Controls.Count > 0) {
+        this.WrapContents = @break;    // if b enable wrapping with flowbreaks
+        this.Dock = @break ? DockStyle.Top : this.Dock;   // to make single buttons top aligned
+        //this.BorderStyle= BorderStyle.FixedSingle; // DEBUG Layout only
+        this.SetFlowBreak( this.Controls[0], @break ); // on prev element = Label
       }
     }
 
@@ -176,11 +191,11 @@ namespace FS20_HudBar.Bar.Items.Base
     /// <param name="disposing">Disposing flag</param>
     protected override void Dispose( bool disposing )
     {
-      if ( !disposedValue ) {
-        if ( disposing ) {
+      if (!disposedValue) {
+        if (disposing) {
           // dispose managed state (managed objects)
           UnregisterDataSource( );
-          while ( this.Controls.Count > 0 ) {
+          while (this.Controls.Count > 0) {
             var c = this.Controls[0];
             RemoveItem( c ); // Disposes
           }

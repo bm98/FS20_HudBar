@@ -126,7 +126,7 @@ namespace FS20_HudBar.Bar.Items
         // Set Value and color
         if (SV.Get<bool>( SItem.bGS_Ap_MACH_mode )) {
           Label.Text = Short + "m";
-          this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_IAS_hold ) ? cTxAPActive : cTxLabel;
+          this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_SPD_hold ) ? cTxAPActive : cTxLabel;
           _value1.Value = SV.Get<float>( SItem.fG_Ap_MACH_setting_mach );
 
           // Managed Mode
@@ -137,7 +137,7 @@ namespace FS20_HudBar.Bar.Items
         else {
           // IAS managed
           Label.Text = Short;
-          this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_IAS_hold ) ? cTxAPActive : cTxLabel;
+          this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_SPD_hold ) ? cTxAPActive : cTxLabel;
           _value1.Value = SV.Get<float>( SItem.fGS_Ap_IAS_setting_kt );
 
           // Managed Mode

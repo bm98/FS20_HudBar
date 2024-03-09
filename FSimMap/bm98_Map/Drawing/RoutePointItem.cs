@@ -29,6 +29,10 @@ namespace bm98_Map.Drawing
     /// Waypoint Label Rectangle
     /// </summary>
     public Rectangle WypLabelRectangle { get; set; }
+    /// <summary>
+    /// The Route Segment Manager to use
+    /// </summary>
+    public RouteSegmentMgr SegmentMgr { get; set; }
 
     /// <summary>
     /// cTor: create sprite, submit the image (will not be managed or disposed here)
@@ -46,7 +50,9 @@ namespace bm98_Map.Drawing
     protected override void PaintThis( Graphics g, Func<LatLon, Point> MapToPixel )
     {
       if (!Active) return; // shall not be drawn
-
+      if (String.StartsWith( "MIVEK")) {
+        ;
+      }
       var save = g.BeginContainer( );
       {
         // Set world transform of graphics object to translate.
@@ -59,7 +65,13 @@ namespace bm98_Map.Drawing
 
           // draw to if possible
           if (!OutboundLatLon.IsEmpty) {
-            g.DrawLine( Pen, mp, omp );
+            if (SegmentMgr != null) {
+              SegmentMgr.AddPoint( Pen, mp );
+              SegmentMgr.AddPoint( Pen, omp );
+            }
+            else {
+              g.DrawLine( Pen, mp, omp );
+            }
           }
           var rotSave = g.BeginContainer( );
           g.TranslateTransform( -rect.Width / 2, -rect.Height / 2, MatrixOrder.Append );
@@ -78,7 +90,13 @@ namespace bm98_Map.Drawing
           // only the track is visible
           // draw to if possible
           if (!OutboundLatLon.IsEmpty) {
-            g.DrawLine( Pen, mp, omp );
+            if (SegmentMgr != null) {
+              SegmentMgr.AddPoint( Pen, mp );
+              SegmentMgr.AddPoint( Pen, omp );
+            }
+            else {
+              g.DrawLine( Pen, mp, omp );
+            }
           }
         }
       }

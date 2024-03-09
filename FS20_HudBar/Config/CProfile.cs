@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using FS20_HudBar.Bar;
 using FS20_HudBar.Bar.Items;
+using FS20_HudBar.GUI;
+
+using FSimClientIF.Modules;
+
+using static FS20_HudBar.AppSettingsV2;
 
 namespace FS20_HudBar.Config
 {
@@ -18,6 +25,127 @@ namespace FS20_HudBar.Config
   /// </summary>
   class CProfile
   {
+    #region Settings Support
+
+    // ***** UPDATE WHEN SETTINGS ARE ADDED *****
+
+    // all Profile Settings, prepended by a type tag (for human reading purposes only)
+    private enum ProfileSettings
+    {
+      sName = 0,
+      iFontSize,
+      iPlacement,
+      iKind,
+      iTransparency,
+      ptLocation,
+      bCondensed,
+      sProfileItems,
+      sFlowBreaks,
+      sSequence,
+      sHotKey,
+      sBGImageFile,
+      paPadding,
+      sFonts,
+      sColorReg,
+      sColorDim,
+      sColorInv,
+    }
+
+    // return an initialized properties catalog, mapps profile setting enum to a distinct profile 
+    private static Dictionary<ProfileSettings, string> InitSettingCat( int profileNumber )
+    {
+      var sCat = new Dictionary<ProfileSettings, string> {
+        { ProfileSettings.sName, $"Profile_{profileNumber}_Name" }, // string
+        { ProfileSettings.iFontSize, $"Profile_{profileNumber}_FontSize" }, // int
+        { ProfileSettings.iPlacement, $"Profile_{profileNumber}_Placement" }, // int
+        { ProfileSettings.iKind, $"Profile_{profileNumber}_Kind" }, // int
+        { ProfileSettings.iTransparency, $"Profile_{profileNumber}_Trans" }, // int
+        { ProfileSettings.ptLocation, $"Profile_{profileNumber}_Location" }, // Point
+        { ProfileSettings.bCondensed, $"Profile_{profileNumber}_Condensed" }, // bool
+        { ProfileSettings.sProfileItems, $"Profile_{profileNumber}" }, // string
+        { ProfileSettings.sFlowBreaks, $"FlowBreak_{profileNumber}" }, // string
+        { ProfileSettings.sSequence, $"Sequence_{profileNumber}" },// string
+        { ProfileSettings.sHotKey, $"HKProfile{profileNumber}" },// string
+        { ProfileSettings.sBGImageFile, $"BgImageName_{profileNumber}" },// string
+        { ProfileSettings.paPadding, $"BgImageArea_{profileNumber}" },// Padding
+        { ProfileSettings.sFonts, $"ProfileFonts_{profileNumber}" },// string
+        { ProfileSettings.sColorReg, $"ProfileColorsReg_{profileNumber}" },// string
+        { ProfileSettings.sColorDim, $"ProfileColorsDim_{profileNumber}" },// string
+        { ProfileSettings.sColorInv, $"ProfileColorsInv_{profileNumber}" }// string
+      };
+
+      return sCat;
+    }
+
+
+    // return a new profile from settings (with profile number 1..)
+    public static CProfile GetFromSettings( int profileNumber )
+    {
+      // sanity
+      if (profileNumber < 1) throw new ArgumentException( $"profileNumber <{profileNumber}> must be 1..{c_numProfiles}" );
+      if (profileNumber > c_numProfiles) throw new ArgumentException( $"profileNumber <{profileNumber}> must be 1..{c_numProfiles}" );
+
+      var sCat = InitSettingCat( profileNumber );
+
+      return new CProfile(
+          profileNumber,
+          GetSetting<string>( sCat[ProfileSettings.sName], "" ),
+          GetSetting<string>( sCat[ProfileSettings.sProfileItems], "" ),
+          GetSetting<string>( sCat[ProfileSettings.sFlowBreaks], "" ),
+          GetSetting<string>( sCat[ProfileSettings.sSequence], "" ),
+          GetSetting<int>( sCat[ProfileSettings.iFontSize], 0 ),
+          GetSetting<int>( sCat[ProfileSettings.iPlacement], 0 ),
+          GetSetting<int>( sCat[ProfileSettings.iKind], 0 ),
+          GetSetting<Point>( sCat[ProfileSettings.ptLocation], Point.Empty ),
+          GetSetting<bool>( sCat[ProfileSettings.bCondensed], false ),
+          GetSetting<int>( sCat[ProfileSettings.iTransparency], 0 ),
+          GetSetting<string>( sCat[ProfileSettings.sBGImageFile], "" ),
+          GetSetting<Padding>( sCat[ProfileSettings.paPadding], Padding.Empty ),
+          GetSetting<string>( sCat[ProfileSettings.sFonts], "" ),
+          GetSetting<string>( sCat[ProfileSettings.sColorReg], "" ),
+          GetSetting<string>( sCat[ProfileSettings.sColorDim], "" ),
+          GetSetting<string>( sCat[ProfileSettings.sColorInv], "" ),
+          GetSetting<string>( sCat[ProfileSettings.sHotKey], "" )
+       );
+    }
+
+    /// <summary>
+    /// Save the profile to Settings
+    /// </summary>
+    /// <param name="profile">A Profile</param>
+    public static void SaveToSettings( CProfile profile )
+    {
+      // sanity
+      if (profile == null) throw new ArgumentNullException( "profile cannot be null" );
+      if (profile.ProfileNumber < 1) return; // ?? should not happen...
+      if (profile.ProfileNumber > c_numProfiles) return; // ?? should not happen...
+
+      var sCat = InitSettingCat( profile.ProfileNumber );
+
+      SetSetting<string>( sCat[ProfileSettings.sName], profile.PName );
+      SetSetting<string>( sCat[ProfileSettings.sProfileItems], profile.ProfileString( ) );
+      SetSetting<string>( sCat[ProfileSettings.sFlowBreaks], profile.FlowBreakString( ) );
+      SetSetting<string>( sCat[ProfileSettings.sSequence], profile.ItemPosString( ) );
+      SetSetting<int>( sCat[ProfileSettings.iFontSize], (int)profile.FontSize );
+      SetSetting<int>( sCat[ProfileSettings.iPlacement], (int)profile.Placement );
+      SetSetting<int>( sCat[ProfileSettings.iKind], (int)profile.Kind );
+      SetSetting<Point>( sCat[ProfileSettings.ptLocation], profile.Location );
+      SetSetting<bool>( sCat[ProfileSettings.bCondensed], profile.Condensed );
+      SetSetting<int>( sCat[ProfileSettings.iTransparency], (int)profile.Transparency );
+      SetSetting<string>( sCat[ProfileSettings.sBGImageFile], profile.BgImageName );
+      SetSetting<Padding>( sCat[ProfileSettings.paPadding], profile.BgImageBorder );
+      SetSetting<string>( sCat[ProfileSettings.sFonts], profile.Fonts );
+      SetSetting<string>( sCat[ProfileSettings.sColorReg], profile.ColorReg );
+      SetSetting<string>( sCat[ProfileSettings.sColorDim], profile.ColorDim );
+      SetSetting<string>( sCat[ProfileSettings.sColorInv], profile.ColorInv );
+      SetSetting<string>( sCat[ProfileSettings.sHotKey], profile.HKProfile );
+    }
+
+    #endregion
+
+
+    // *** CLASS 
+
     public const int c_numProfiles = 10; // Supported number of profiles
 
     private int m_pNumber = 0; // Profile Number 1...
@@ -25,13 +153,21 @@ namespace FS20_HudBar.Config
     // stores all item data (checked, flowbreak, position)
     private FlpItems m_items = new FlpItems( );
 
-
     private GUI.FontSize m_fontSize = GUI.FontSize.Regular;
     private GUI.Placement m_placement = GUI.Placement.Bottom;
     private GUI.Kind m_kind = GUI.Kind.Bar;
     private Point m_location = new Point( 0, 0 );
     private bool m_condensed = false;
     private GUI.Transparent m_transparent = GUI.Transparent.T0;
+
+    private string m_bgImageName = ""; // 20240224
+    private Padding m_bgImageBorder = Padding.Empty; // 20240224
+
+    private string m_profileFont = ""; // 20240226
+    private string m_profileColorReg = ""; // 20240226
+    private string m_profileColorDim = ""; // 20240226
+    private string m_profileColorInv = ""; // 20240226
+    private string m_hkProfile = "";
 
     /// <summary>
     /// The string divider char
@@ -110,6 +246,10 @@ namespace FS20_HudBar.Config
     #endregion
 
     /// <summary>
+    /// Number of the Profile 1..N
+    /// </summary>
+    public int ProfileNumber => m_pNumber;
+    /// <summary>
     /// The Profile name
     /// </summary>
     public string PName { get; set; } = "Profile";
@@ -143,6 +283,44 @@ namespace FS20_HudBar.Config
     /// </summary>
     public float Opacity => 1.0f - (int)m_transparent / 10f; // inverse of transparency
 
+    /// <summary>
+    /// Filename of the Background Image or empty if none to be shown
+    /// </summary>
+    public string BgImageName => m_bgImageName;
+    /// <summary>
+    /// Border Area
+    /// </summary>
+    public Padding BgImageBorder => m_bgImageBorder;
+
+    /// <summary>
+    /// True when using default fonts
+    /// </summary>
+    public bool UsingDefaultFonts => string.IsNullOrEmpty( m_profileFont );
+    /// <summary>
+    /// Fonts for this Profile
+    /// </summary>
+    public string Fonts => m_profileFont;
+
+    /// <summary>
+    /// True when using default colors
+    /// </summary>
+    public bool UsingDefaultColors => string.IsNullOrEmpty( m_profileColorReg );
+    /// <summary>
+    /// Color Set regular
+    /// </summary>
+    public string ColorReg => m_profileColorReg;
+    /// <summary>
+    /// Color Set dimmed
+    /// </summary>
+    public string ColorDim => m_profileColorDim;
+    /// <summary>
+    /// Color Set inversed
+    /// </summary>
+    public string ColorInv => m_profileColorInv;
+    /// <summary>
+    /// The Profile switching hotkey as ConfigString
+    /// </summary>
+    public string HKProfile => m_hkProfile;
 
     /// <summary>
     /// Update the Location of the profile
@@ -171,7 +349,10 @@ namespace FS20_HudBar.Config
       m_pNumber = other.m_pNumber;
       LoadProfile( other.PName,
         other.ProfileString( ), other.FlowBreakString( ), other.ItemPosString( ),
-        other.FontSize, other.Placement, other.Kind, other.Location, other.Condensed, other.Transparency );
+        other.FontSize, other.Placement, other.Kind, other.Location, other.Condensed, other.Transparency,
+        other.BgImageName, other.BgImageBorder,
+        other.Fonts, other.ColorReg, other.ColorDim, other.ColorInv,
+        other.HKProfile );
     }
 
     /// <summary>
@@ -185,14 +366,27 @@ namespace FS20_HudBar.Config
     /// <param name="placement">The Placement Number (matches the enum)</param>
     /// <param name="condensed">The Condensed Font Flag</param>
     /// <param name="transparent">The Transparency value</param>
+    /// <param name="bgImageName">The filename of the background image</param>
+    /// <param name="bgImageBorder">The Padding value of the background image border</param>
+    /// <param name="fonts">The Font string</param>
+    /// <param name="colReg">The Color string regular</param>
+    /// <param name="colDim">The Color string dimmed</param>
+    /// <param name="colInv">The Color string inverser</param>
+    /// <param name="hk">The Hotkey config string</param>
     public CProfile( int pNum, string profileName,
                      string profile, string flowBreak, string sequence,
-                     int fontSize, int placement, int kind, Point location, bool condensed, int transparent )
+                     int fontSize, int placement, int kind, Point location, bool condensed, int transparent,
+                     string bgImageName, Padding bgImageBorder,
+                     string fonts, string colReg, string colDim, string colInv,
+                     string hk )
     {
       m_pNumber = pNum;
       LoadProfile( profileName, profile, flowBreak, sequence,
                     (GUI.FontSize)fontSize, (GUI.Placement)placement, (GUI.Kind)kind,
-                    location, condensed, (GUI.Transparent)transparent );
+                    location, condensed, (GUI.Transparent)transparent,
+                    bgImageName, bgImageBorder,
+                    fonts, colReg, colDim, colInv,
+                    hk );
     }
 
     /// <summary>
@@ -340,10 +534,69 @@ namespace FS20_HudBar.Config
       m_transparent = (GUI.Transparent)box.SelectedIndex;
     }
 
+    /// <summary>
+    /// Update this profile from BG Image values
+    /// </summary>
+    /// <param name="bgImageName">The BG Image filename or empty if not used</param>
+    /// <param name="bgImageBorder">The BG Image border area</param>
+    public void SetBgImageFromValues( string bgImageName, Padding bgImageBorder )
+    {
+      m_bgImageName = bgImageName;
+      m_bgImageBorder = bgImageBorder;
+    }
+
+    /// <summary>
+    /// Update this profile using Default Fonts
+    /// </summary>
+    public void SetDefaultFonts( )
+    {
+      m_profileFont = "";
+    }
+    /// <summary>
+    /// Update this profile from Font string
+    /// </summary>
+    /// <param name="fonts">The font string</param>
+    public void SetFontsFromValues( string fonts )
+    {
+      m_profileFont = fonts;
+    }
+
+    /// <summary>
+    /// Update this profile using Default Colors
+    /// </summary>
+    public void SetDefaultColors( )
+    {
+      m_profileColorReg = "";
+      m_profileColorDim = "";
+      m_profileColorInv = "";
+    }
+    /// <summary>
+    /// Update this profile from Color strings
+    /// </summary>
+    /// <param name="colReg">Regular colors string</param>
+    /// <param name="colDim">Dimmed colors string</param>
+    /// <param name="colInv">Inversed colors string</param>
+    public void SetColorsFromValues( string colReg, string colDim, string colInv )
+    {
+      m_profileColorReg = colReg;
+      m_profileColorDim = colDim;
+      m_profileColorInv = colInv;
+    }
+
+    /// <summary>
+    /// Update this profile from Hotkey string
+    /// </summary>
+    /// <param name="hk">Hotkey config string</param>
+    public void SetHKfromValue( string hk ) => m_hkProfile = hk;
+
+
     // Load the profile from stored strings (Settings)
     private void LoadProfile( string profileName, string profile, string flowBreak, string sequence,
                                 GUI.FontSize fontSize, GUI.Placement placement, GUI.Kind kind,
-                                Point location, bool condensed, GUI.Transparent transparent )
+                                Point location, bool condensed, GUI.Transparent transparent,
+                                string bgImageName, Padding bgImageBorder,
+                                string fonts, string colReg, string colDim, string colInv,
+                                string hk )
     {
       // save props in Profile
       PName = profileName;
@@ -353,6 +606,13 @@ namespace FS20_HudBar.Config
       m_location = location;
       m_condensed = condensed;
       m_transparent = transparent;
+      m_bgImageName = bgImageName;
+      m_bgImageBorder = bgImageBorder;
+      m_profileFont = fonts;
+      m_profileColorReg = colReg;
+      m_profileColorDim = colDim;
+      m_profileColorInv = colInv;
+      m_hkProfile = hk;
 
       // The Dictionaries and stored strings of it maintain the Enum Sequence
       //   even if items are relocated for display
@@ -367,6 +627,18 @@ namespace FS20_HudBar.Config
       SetItemPosString( sequence );
     }
 
+    /// <summary>
+    /// Returns the regular ColorSet 
+    /// </summary>
+    public GUI_ColorSet ColorSetReg => GUI_Colors.FromConfigString( m_profileColorReg );
+    /// <summary>
+    /// Returns the dimmed ColorSet 
+    /// </summary>
+    public GUI_ColorSet ColorSetDim => GUI_Colors.FromConfigString( m_profileColorDim );
+    /// <summary>
+    /// Returns the inverse ColorSet 
+    /// </summary>
+    public GUI_ColorSet ColorSetInv => GUI_Colors.FromConfigString( m_profileColorInv );
 
     /// <summary>
     /// Returns the Show state of an item
@@ -460,6 +732,9 @@ namespace FS20_HudBar.Config
     /// </summary>
     /// <returns></returns>
     public List<LItem> ItemPosList( ) => m_items.ItemPosList( );
+
+
+
 
   }
 }

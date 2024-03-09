@@ -76,6 +76,9 @@
     <ApplicationIcon>HudBar.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="bm98_AColorPicker">
+      <HintPath>..\..\..\..\Redist\bm98_AColorPicker.dll</HintPath>
+    </Reference>
     <Reference Include="CoordLib, Version=1.2.0.10, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\CoordLib.dll</HintPath>
@@ -608,6 +611,7 @@
     <Compile Include="Bar\ValueItemCat.cs" />
     <Compile Include="Bar\CPointMeter.cs" />
     <Compile Include="Config\AcftMerges.cs" />
+    <Compile Include="Config\Configuration.cs" />
     <Compile Include="Config\DefaultProfiles.cs" />
     <Compile Include="Config\FlpHandler.cs" />
     <Compile Include="Config\FlpItems.cs" />
@@ -617,11 +621,23 @@
     <Compile Include="Config\frmApt.Designer.cs">
       <DependentUpon>frmApt.cs</DependentUpon>
     </Compile>
+    <Compile Include="Config\frmBgImage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\frmBgImage.Designer.cs">
+      <DependentUpon>frmBgImage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Config\FrmColors.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Config\FrmColors.Designer.cs">
       <DependentUpon>FrmColors.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Config\frmConfigV2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\frmConfigV2.Designer.cs">
+      <DependentUpon>frmConfigV2.cs</DependentUpon>
     </Compile>
     <Compile Include="Config\FrmFonts.cs">
       <SubType>Form</SubType>
@@ -641,7 +657,7 @@
     <Compile Include="Config\frmText.Designer.cs">
       <DependentUpon>frmText.cs</DependentUpon>
     </Compile>
-    <Compile Include="Config\ProfileStore.cs" />
+    <Compile Include="Config\ProfileItemsStore.cs" />
     <Compile Include="Config\CProfile.cs" />
     <Compile Include="AApp\AirportMgr.cs" />
     <Compile Include="Bar\FltPlanMgr.cs" />
@@ -650,12 +666,6 @@
     </Compile>
     <Compile Include="AApp\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Config\frmConfig.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Config\frmConfig.Designer.cs">
-      <DependentUpon>frmConfig.cs</DependentUpon>
     </Compile>
     <Compile Include="AApp\frmGui.cs">
       <SubType>Form</SubType>
@@ -913,15 +923,17 @@
     <EmbeddedResource Include="Config\frmApt.resx">
       <DependentUpon>frmApt.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Config\frmBgImage.resx">
+      <DependentUpon>frmBgImage.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Config\FrmColors.resx">
       <DependentUpon>FrmColors.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Config\frmConfig.resx">
-      <DependentUpon>frmConfig.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="AApp\frmGui.resx">
       <DependentUpon>frmGui.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Config\frmConfigV2.resx">
+      <DependentUpon>frmConfigV2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Config\FrmFonts.resx">
       <DependentUpon>FrmFonts.cs</DependentUpon>
@@ -1036,7 +1048,7 @@
       <Version>5.0.17</Version>
     </PackageReference>
     <PackageReference Include="NLog">
-      <Version>5.2.5</Version>
+      <Version>5.2.8</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -59,7 +59,7 @@ namespace FS20_HudBar.Bar.Items
 
     private void _label_MouseClick( object sender, MouseEventArgs e )
     {
-      if (!SC.SimConnectClient.Instance.IsConnected) return;
+      // if (!SC.SimConnectClient.Instance.IsConnected) return; // need to set it even if the Sim is not connected
 
       var TTX = new Config.frmApt( );
       // load default

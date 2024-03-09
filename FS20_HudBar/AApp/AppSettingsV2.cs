@@ -3,6 +3,8 @@ using System.Drawing;
 
 using SettingsLib;
 using FS20_HudBar.Config;
+using System.Windows.Forms;
+using System.Reflection;
 
 namespace FS20_HudBar
 {
@@ -17,6 +19,45 @@ namespace FS20_HudBar
   /// </summary>
   internal sealed class AppSettingsV2 : AppSettingsBaseV2
   {
+    #region Named Setting access Support
+
+    /// <summary>
+    /// Get a named Setting
+    /// </summary>
+    /// <typeparam name="T">Type of the Setting item</typeparam>
+    /// <param name="key">Property name of the Setting item</param>
+    /// <param name="defaultValue">Default value if not found</param>
+    /// <returns>Setting item</returns>
+    public static T GetSetting<T>( string key, T defaultValue )
+    {
+      T data = defaultValue;
+
+      try {
+        PropertyInfo settingProperty = typeof( AppSettingsV2 ).GetProperty( key );
+        data = (T)settingProperty.GetValue( AppSettingsV2.Instance, null );
+      }
+      catch { }
+      return data;
+    }
+
+    /// <summary>
+    /// Set a named Setting
+    /// </summary>
+    /// <typeparam name="T">Type of the Setting item</typeparam>
+    /// <param name="key">Property name of the Setting item</param>
+    /// <param name="value">The Value to set</param>
+    public static void SetSetting<T>( string key, T value )
+    {
+      try {
+        PropertyInfo settingProperty = typeof( AppSettingsV2 ).GetProperty( key );
+        settingProperty.SetValue( AppSettingsV2.Instance, value );
+      }
+      catch { }
+    }
+
+    #endregion
+
+
     // Singleton
     private static Lazy<AppSettingsV2> m_lazy = new Lazy<AppSettingsV2>( ( ) => new AppSettingsV2( ) );
     public static AppSettingsV2 Instance { get => m_lazy.Value; }
@@ -146,71 +187,8 @@ namespace FS20_HudBar
       set { this["ScreenNumber"] = value; }
     }
 
-    // Sub App Hotkeys
-    [DefaultSettingValue( "" )]
-    public string HKCamera {
-      get { return (string)this["HKCamera"]; }
-      set { this["HKCamera"] = value; }
-    }
+    // User Display Settings
 
-    [DefaultSettingValue( "" )]
-    public string HKShelf {
-      get { return (string)this["HKShelf"]; }
-      set { this["HKShelf"] = value; }
-    }
-
-    [DefaultSettingValue( "" )]
-    public string HKChecklistBox {
-      get { return (string)this["HKChecklistBox"]; }
-      set { this["HKChecklistBox"] = value; }
-    }
-
-    [DefaultSettingValue( "" )]
-    public string HKShowHide {
-      get { return (string)this["HKShowHide"]; }
-      set { this["HKShowHide"] = value; }
-    }
-
-    [DefaultSettingValue( "False" )]
-    public bool KeyboardHook {
-      get { return (bool)this["KeyboardHook"]; }
-      set { this["KeyboardHook"] = value; }
-    }
-
-    [DefaultSettingValue( "False" )]
-    public bool InGameHook {
-      get { return (bool)this["InGameHook"]; }
-      set { this["InGameHook"] = value; }
-    }
-
-    // User Fonts
-    [DefaultSettingValue( "" )]
-    public string UserFonts {
-      get { return (string)this["UserFonts"]; }
-      set { this["UserFonts"] = value; }
-    }
-
-    // User Colors
-    [DefaultSettingValue( "" )]
-    public string UserColorsReg {
-      get { return (string)this["UserColorsReg"]; }
-      set { this["UserColorsReg"] = value; }
-    }
-
-    [DefaultSettingValue( "" )]
-    public string UserColorsDim {
-      get { return (string)this["UserColorsDim"]; }
-      set { this["UserColorsDim"] = value; }
-    }
-
-    [DefaultSettingValue( "" )]
-    public string UserColorsInv {
-      get { return (string)this["UserColorsInv"]; }
-      set { this["UserColorsInv"] = value; }
-    }
-
-
-    // User Config Settings
     [DefaultSettingValue( "..." )]
     public string FreeText {
       get { return (string)this["FreeText"]; }
@@ -222,27 +200,76 @@ namespace FS20_HudBar
       get { return (bool)this["ShowUnits"]; }
       set { this["ShowUnits"] = value; }
     }
-
     [DefaultSettingValue( "False" )]
     public bool Altitude_Metric {
       get { return (bool)this["Altitude_Metric"]; }
       set { this["Altitude_Metric"] = value; }
     }
-
     [DefaultSettingValue( "False" )]
     public bool Distance_Metric {
       get { return (bool)this["Distance_Metric"]; }
       set { this["Distance_Metric"] = value; }
     }
 
+    // Color Set in use (Reg,Dim,Inv)
+    [DefaultSettingValue( "0" )]  // ref enum GUI_Colors.ColorSet
+    public int Appearance {
+      get { return (int)this["Appearance"]; }
+      set { this["Appearance"] = value; }
+    }
 
+    // Color Picker stored Patches
+    [DefaultSettingValue( "" )]
+    public string ColorPatches {
+      get { return (string)this["ColorPatches"]; }
+      set { this["ColorPatches"] = value; }
+    }
+
+
+    #region Configuration Settings
+
+    // Config Settings
+
+    // Location of the Config Dialog
+    [DefaultSettingValue( "10, 10" )]
+    public Point ConfigLocation {
+      get { return (Point)this["ConfigLocation"]; }
+      set { this["ConfigLocation"] = value; }
+    }
+    // Size of the Config Dialog
+    [DefaultSettingValue( "0, 0" )]
+    public Size ConfigSize {
+      get { return (Size)this["ConfigSize"]; }
+      set { this["ConfigSize"] = value; }
+    }
+
+    // Voice Config
+    [DefaultSettingValue( "" )]
+    public string OutputDeviceName {
+      get { return (string)this["OutputDeviceName"]; }
+      set { this["OutputDeviceName"] = value; }
+    }
+    [DefaultSettingValue( "" )]
+    public string VoiceName {
+      get { return (string)this["VoiceName"]; }
+      set { this["VoiceName"] = value; }
+    }
+
+    // Voice Out config
+    [DefaultSettingValue( "" )] // 0/1 list - HudVoice() order
+    public string VoiceCalloutProfile {
+      get { return (string)this["VoiceCalloutProfile"]; }
+      set { this["VoiceCalloutProfile"] = value; }
+    }
+
+    // FRecoder Flag
     [DefaultSettingValue( "False" )]
     public bool FRecorder {
       get { return (bool)this["FRecorder"]; }
       set { this["FRecorder"] = value; }
     }
 
-
+    // Backup Flag
     [DefaultSettingValue( "0" )] // ref enum FSimClientIF.FlightPlanMode  (0=Disabled, 1=AutoB, 2=AutoB+ATC)
     public int FltAutoSaveATC {
       get { return (int)this["FltAutoSaveATC"]; }
@@ -250,38 +277,70 @@ namespace FS20_HudBar
     }
 
 
+    // Keyboard HK enabled flag
+    [DefaultSettingValue( "False" )]
+    public bool KeyboardHook {
+      get { return (bool)this["KeyboardHook"]; }
+      set { this["KeyboardHook"] = value; }
+    }
+    // InGame HK enabled flag
+    [DefaultSettingValue( "False" )]
+    public bool InGameHook {
+      get { return (bool)this["InGameHook"]; }
+      set { this["InGameHook"] = value; }
+    }
+    // Show Hide HudBar
     [DefaultSettingValue( "" )]
-    public string VoiceName {
-      get { return (string)this["VoiceName"]; }
-      set { this["VoiceName"] = value; }
+    public string HKShowHide {
+      get { return (string)this["HKShowHide"]; }
+      set { this["HKShowHide"] = value; }
+    }
+    // Sub App Hotkeys
+    [DefaultSettingValue( "" )]
+    public string HKCamera {
+      get { return (string)this["HKCamera"]; }
+      set { this["HKCamera"] = value; }
+    }
+    [DefaultSettingValue( "" )]
+    public string HKShelf {
+      get { return (string)this["HKShelf"]; }
+      set { this["HKShelf"] = value; }
+    }
+    [DefaultSettingValue( "" )]
+    public string HKChecklistBox {
+      get { return (string)this["HKChecklistBox"]; }
+      set { this["HKChecklistBox"] = value; }
     }
 
-
+    // User Fonts
     [DefaultSettingValue( "" )]
-    public string OutputDeviceName {
-      get { return (string)this["OutputDeviceName"]; }
-      set { this["OutputDeviceName"] = value; }
+    public string UserFonts {
+      get { return (string)this["UserFonts"]; }
+      set { this["UserFonts"] = value; }
+    }
+    // User Colors
+    [DefaultSettingValue( "" )]
+    public string UserColorsReg {
+      get { return (string)this["UserColorsReg"]; }
+      set { this["UserColorsReg"] = value; }
+    }
+    [DefaultSettingValue( "" )]
+    public string UserColorsDim {
+      get { return (string)this["UserColorsDim"]; }
+      set { this["UserColorsDim"] = value; }
+    }
+    [DefaultSettingValue( "" )]
+    public string UserColorsInv {
+      get { return (string)this["UserColorsInv"]; }
+      set { this["UserColorsInv"] = value; }
     }
 
-
-    [DefaultSettingValue( "" )]
-    public string VoiceCalloutProfile {
-      get { return (string)this["VoiceCalloutProfile"]; }
-      set { this["VoiceCalloutProfile"] = value; }
-    }
-
+    // selected Profile
     [DefaultSettingValue( "0" )]
     public int SelProfile {
       get { return (int)this["SelProfile"]; }
       set { this["SelProfile"] = value; }
     }
-
-    [DefaultSettingValue( "0" )]
-    public int Appearance {
-      get { return (int)this["Appearance"]; }
-      set { this["Appearance"] = value; }
-    }
-
 
     // PROFILE 1
 
@@ -351,6 +410,39 @@ namespace FS20_HudBar
       set { this["HKProfile1"] = value; }
     }
 
+    [DefaultSettingValue( "" )] // 20240224
+    public string BgImageName_1 {
+      get { return (string)this["BgImageName_1"]; }
+      set { this["BgImageName_1"] = value; }
+    }
+    [DefaultSettingValue( "0, 0, 0, 0" )] // 20240224
+    public Padding BgImageArea_1 {
+      get { return (Padding)this["BgImageArea_1"]; }
+      set { this["BgImageArea_1"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileFonts_1 {
+      get { return (string)this["ProfileFonts_1"]; }
+      set { this["ProfileFonts_1"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsReg_1 {
+      get { return (string)this["ProfileColorsReg_1"]; }
+      set { this["ProfileColorsReg_1"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsDim_1 {
+      get { return (string)this["ProfileColorsDim_1"]; }
+      set { this["ProfileColorsDim_1"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsInv_1 {
+      get { return (string)this["ProfileColorsInv_1"]; }
+      set { this["ProfileColorsInv_1"] = value; }
+    }
+
+
     // PROFILE 2
 
     [DefaultSettingValue( "Profile 2" )]
@@ -417,6 +509,38 @@ namespace FS20_HudBar
     public string HKProfile2 {
       get { return (string)this["HKProfile2"]; }
       set { this["HKProfile2"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240224
+    public string BgImageName_2 {
+      get { return (string)this["BgImageName_2"]; }
+      set { this["BgImageName_2"] = value; }
+    }
+    [DefaultSettingValue( "0, 0, 0, 0" )] // 20240224
+    public Padding BgImageArea_2 {
+      get { return (Padding)this["BgImageArea_2"]; }
+      set { this["BgImageArea_2"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileFonts_2 {
+      get { return (string)this["ProfileFonts_2"]; }
+      set { this["ProfileFonts_2"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsReg_2 {
+      get { return (string)this["ProfileColorsReg_2"]; }
+      set { this["ProfileColorsReg_2"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsDim_2 {
+      get { return (string)this["ProfileColorsDim_2"]; }
+      set { this["ProfileColorsDim_2"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsInv_2 {
+      get { return (string)this["ProfileColorsInv_2"]; }
+      set { this["ProfileColorsInv_2"] = value; }
     }
 
     // PROFILE 3
@@ -487,6 +611,38 @@ namespace FS20_HudBar
       set { this["HKProfile3"] = value; }
     }
 
+    [DefaultSettingValue( "" )] // 20240224
+    public string BgImageName_3 {
+      get { return (string)this["BgImageName_3"]; }
+      set { this["BgImageName_3"] = value; }
+    }
+    [DefaultSettingValue( "0, 0, 0, 0" )] // 20240224
+    public Padding BgImageArea_3 {
+      get { return (Padding)this["BgImageArea_3"]; }
+      set { this["BgImageArea_3"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileFonts_3 {
+      get { return (string)this["ProfileFonts_3"]; }
+      set { this["ProfileFonts_3"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsReg_3 {
+      get { return (string)this["ProfileColorsReg_3"]; }
+      set { this["ProfileColorsReg_3"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsDim_3 {
+      get { return (string)this["ProfileColorsDim_3"]; }
+      set { this["ProfileColorsDim_3"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsInv_3 {
+      get { return (string)this["ProfileColorsInv_3"]; }
+      set { this["ProfileColorsInv_3"] = value; }
+    }
+
     // PROFILE 4
 
     [DefaultSettingValue( "Profile 4" )]
@@ -553,6 +709,38 @@ namespace FS20_HudBar
     public string HKProfile4 {
       get { return (string)this["HKProfile4"]; }
       set { this["HKProfile4"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240224
+    public string BgImageName_4 {
+      get { return (string)this["BgImageName_4"]; }
+      set { this["BgImageName_4"] = value; }
+    }
+    [DefaultSettingValue( "0, 0, 0, 0" )] // 20240224
+    public Padding BgImageArea_4 {
+      get { return (Padding)this["BgImageArea_4"]; }
+      set { this["BgImageArea_4"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileFonts_4 {
+      get { return (string)this["ProfileFonts_4"]; }
+      set { this["ProfileFonts_4"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsReg_4 {
+      get { return (string)this["ProfileColorsReg_4"]; }
+      set { this["ProfileColorsReg_4"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsDim_4 {
+      get { return (string)this["ProfileColorsDim_4"]; }
+      set { this["ProfileColorsDim_4"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsInv_4 {
+      get { return (string)this["ProfileColorsInv_4"]; }
+      set { this["ProfileColorsInv_4"] = value; }
     }
 
     // PROFILE 5
@@ -623,6 +811,38 @@ namespace FS20_HudBar
       set { this["HKProfile5"] = value; }
     }
 
+    [DefaultSettingValue( "" )] // 20240224
+    public string BgImageName_5 {
+      get { return (string)this["BgImageName_5"]; }
+      set { this["BgImageName_5"] = value; }
+    }
+    [DefaultSettingValue( "0, 0, 0, 0" )] // 20240224
+    public Padding BgImageArea_5 {
+      get { return (Padding)this["BgImageArea_5"]; }
+      set { this["BgImageArea_5"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileFonts_5 {
+      get { return (string)this["ProfileFonts_5"]; }
+      set { this["ProfileFonts_5"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsReg_5 {
+      get { return (string)this["ProfileColorsReg_5"]; }
+      set { this["ProfileColorsReg_5"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsDim_5 {
+      get { return (string)this["ProfileColorsDim_5"]; }
+      set { this["ProfileColorsDim_5"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsInv_5 {
+      get { return (string)this["ProfileColorsInv_5"]; }
+      set { this["ProfileColorsInv_5"] = value; }
+    }
+
     // PROFILE 6
 
     [DefaultSettingValue( "Profile 6" )]
@@ -689,6 +909,38 @@ namespace FS20_HudBar
     public string HKProfile6 {
       get { return (string)this["HKProfile6"]; }
       set { this["HKProfile6"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240224
+    public string BgImageName_6 {
+      get { return (string)this["BgImageName_6"]; }
+      set { this["BgImageName_6"] = value; }
+    }
+    [DefaultSettingValue( "0, 0, 0, 0" )] // 20240224
+    public Padding BgImageArea_6 {
+      get { return (Padding)this["BgImageArea_6"]; }
+      set { this["BgImageArea_6"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileFonts_6 {
+      get { return (string)this["ProfileFonts_6"]; }
+      set { this["ProfileFonts_6"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsReg_6 {
+      get { return (string)this["ProfileColorsReg_6"]; }
+      set { this["ProfileColorsReg_6"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsDim_6 {
+      get { return (string)this["ProfileColorsDim_6"]; }
+      set { this["ProfileColorsDim_6"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsInv_6 {
+      get { return (string)this["ProfileColorsInv_6"]; }
+      set { this["ProfileColorsInv_6"] = value; }
     }
 
     // PROFILE 7
@@ -759,6 +1011,38 @@ namespace FS20_HudBar
       set { this["HKProfile7"] = value; }
     }
 
+    [DefaultSettingValue( "" )] // 20240224
+    public string BgImageName_7 {
+      get { return (string)this["BgImageName_7"]; }
+      set { this["BgImageName_7"] = value; }
+    }
+    [DefaultSettingValue( "0, 0, 0, 0" )] // 20240224
+    public Padding BgImageArea_7 {
+      get { return (Padding)this["BgImageArea_7"]; }
+      set { this["BgImageArea_7"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileFonts_7 {
+      get { return (string)this["ProfileFonts_7"]; }
+      set { this["ProfileFonts_7"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsReg_7 {
+      get { return (string)this["ProfileColorsReg_7"]; }
+      set { this["ProfileColorsReg_7"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsDim_7 {
+      get { return (string)this["ProfileColorsDim_7"]; }
+      set { this["ProfileColorsDim_7"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsInv_7 {
+      get { return (string)this["ProfileColorsInv_7"]; }
+      set { this["ProfileColorsInv_7"] = value; }
+    }
+
     // PROFILE 8
 
     [DefaultSettingValue( "Profile 8" )]
@@ -825,6 +1109,38 @@ namespace FS20_HudBar
     public string HKProfile8 {
       get { return (string)this["HKProfile8"]; }
       set { this["HKProfile8"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240224
+    public string BgImageName_8 {
+      get { return (string)this["BgImageName_8"]; }
+      set { this["BgImageName_8"] = value; }
+    }
+    [DefaultSettingValue( "0, 0, 0, 0" )] // 20240224
+    public Padding BgImageArea_8 {
+      get { return (Padding)this["BgImageArea_8"]; }
+      set { this["BgImageArea_8"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileFonts_8 {
+      get { return (string)this["ProfileFonts_8"]; }
+      set { this["ProfileFonts_8"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsReg_8 {
+      get { return (string)this["ProfileColorsReg_8"]; }
+      set { this["ProfileColorsReg_8"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsDim_8 {
+      get { return (string)this["ProfileColorsDim_8"]; }
+      set { this["ProfileColorsDim_8"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsInv_8 {
+      get { return (string)this["ProfileColorsInv_8"]; }
+      set { this["ProfileColorsInv_8"] = value; }
     }
 
     // PROFILE 9
@@ -895,6 +1211,38 @@ namespace FS20_HudBar
       set { this["HKProfile9"] = value; }
     }
 
+    [DefaultSettingValue( "" )] // 20240224
+    public string BgImageName_9 {
+      get { return (string)this["BgImageName_9"]; }
+      set { this["BgImageName_9"] = value; }
+    }
+    [DefaultSettingValue( "0, 0, 0, 0" )] // 20240224
+    public Padding BgImageArea_9 {
+      get { return (Padding)this["BgImageArea_9"]; }
+      set { this["BgImageArea_9"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileFonts_9 {
+      get { return (string)this["ProfileFonts_9"]; }
+      set { this["ProfileFonts_9"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsReg_9 {
+      get { return (string)this["ProfileColorsReg_9"]; }
+      set { this["ProfileColorsReg_9"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsDim_9 {
+      get { return (string)this["ProfileColorsDim_9"]; }
+      set { this["ProfileColorsDim_9"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsInv_9 {
+      get { return (string)this["ProfileColorsInv_9"]; }
+      set { this["ProfileColorsInv_9"] = value; }
+    }
+
     // PROFILE 10
 
     [DefaultSettingValue( "Profile 10" )]
@@ -963,7 +1311,41 @@ namespace FS20_HudBar
       set { this["HKProfile10"] = value; }
     }
 
-    #endregion
+    [DefaultSettingValue( "" )] // 20240224
+    public string BgImageName_10 {
+      get { return (string)this["BgImageName_10"]; }
+      set { this["BgImageName_10"] = value; }
+    }
+    [DefaultSettingValue( "0, 0, 0, 0" )] // 20240224
+    public Padding BgImageArea_10 {
+      get { return (Padding)this["BgImageArea_10"]; }
+      set { this["BgImageArea_10"] = value; }
+    }
+
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileFonts_10 {
+      get { return (string)this["ProfileFonts_10"]; }
+      set { this["ProfileFonts_10"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsReg_10 {
+      get { return (string)this["ProfileColorsReg_10"]; }
+      set { this["ProfileColorsReg_10"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsDim_10 {
+      get { return (string)this["ProfileColorsDim_10"]; }
+      set { this["ProfileColorsDim_10"] = value; }
+    }
+    [DefaultSettingValue( "" )] // 20240226
+    public string ProfileColorsInv_10 {
+      get { return (string)this["ProfileColorsInv_10"]; }
+      set { this["ProfileColorsInv_10"] = value; }
+    }
+
+    #endregion // ConfigSettings
+
+    #endregion // Settings
 
   }
 }

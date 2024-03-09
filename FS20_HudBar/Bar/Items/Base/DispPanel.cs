@@ -54,21 +54,21 @@ namespace FS20_HudBar.Bar.Items.Base
     /// <param name="numEngines">Num Engines to show, <0 to reset the manager</param>
     public void SetEnginesVisible( int numEngines )
     {
-      if ( numEngines == _numEngines ) return; // we are already there..
+      if (numEngines == _numEngines) return; // we are already there..
       // check for a forced Reset 
-      if ( numEngines < 0 ) {
+      if (numEngines < 0) {
         _numEngines = -1;
         return;
       }
 
       // Engine dependent items are Tagged with 'EngineItem' and will contain 4 Value fields (Guidance!!)
       this.SuspendLayout( );
-      foreach ( var di in this.Controls ) {
-        if ( !( di is DispItem ) ) continue; // can only handle DispItems
+      foreach (var di in this.Controls) {
+        if (!(di is DispItem)) continue; // can only handle DispItems
         var dix = di as DispItem;
 
-        if ( dix.IsDisposed ) continue; // Sanity, would be a program error
-        if ( !dix.IsEngineItem ) continue; // not to be handled
+        if (dix.IsDisposed) continue; // Sanity, would be a program error
+        if (!dix.IsEngineItem) continue; // not to be handled
 
         dix.SetValuesVisible( numEngines );
       }

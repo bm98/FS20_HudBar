@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -70,16 +69,19 @@ namespace FS20_HudBar
     // A HudBar standard ToolTip for the Button Helpers
     private ToolTip_Base m_toolTip = new ToolTip_Base( );
 
+    // The configuration 
+    private Configuration m_config = null;
+
     // The profiles
-    private List<CProfile> m_profiles = new List<CProfile>( );
-    private int m_selProfile = 0;
+    //    private List<CProfile> m_profiles = new List<CProfile>( );
+    //    private int m_selProfile = 0;
     private ToolStripMenuItem[] m_profileMenu; // enable array access for the MenuItems
 
     // Handles the RawInput from HID Keyboards
     Win.HotkeyController _keyHook;
 
     // MSFS Input handlers
-    private Dictionary<Hotkeys, SC.Input.InputHandler> _fsInputCat = new Dictionary<Hotkeys, SC.Input.InputHandler>( );
+    private Dictionary<Hotkeys, SC.SimEvents.SimEventAdapter> _fsInputCat = new Dictionary<Hotkeys, SC.SimEvents.SimEventAdapter>( );
 
     // SimVar access
     private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
@@ -94,7 +96,8 @@ namespace FS20_HudBar
     private FChecklistBox.frmChecklistBox m_checklistBox;
 
     // Configuration Dialog
-    private readonly frmConfig CFG = new frmConfig( );
+    //    private readonly frmConfig CFG = new frmConfig( );
+    private readonly frmConfigV2 CFG = new frmConfigV2( ); // 20240223
 
     // need to stop processing while reconfiguring the bar
     private bool m_initDone = false;
@@ -119,9 +122,8 @@ namespace FS20_HudBar
     public void UpdateColor( )
     {
       this.BackColor = c_WinBG; // start with the default for non Opaque
-      if (HUD == null) return; // not yet available
 
-      if (HUD.Profile.Opacity >= 0.999) {
+      if (m_config.UsedProfile.Opacity >= 0.999) {
         // full opaque is configurable
         this.BackColor = GUI_Colors.ItemColor( ColorType.cOpaqueBG );
       }
@@ -184,10 +186,10 @@ namespace FS20_HudBar
     private Point TileBoundLocation( Point curLoc, Size size )
     {
       Point newL = curLoc;
-      if (HUD == null) return newL; // we need the HUD to apply rules
 
       // Tiles are bound to a border of the main screen
-      switch (HUD.Placement) {
+      switch (m_config.UsedProfile.Placement) {
+        case GUI.Placement.TopStack:
         case GUI.Placement.Top:
           newL.X = (newL.X > m_barScreen.Bounds.Right - size.Width / 2) ? m_barScreen.Bounds.Right - size.Width / 2 : newL.X; // catch right side out of bounds
           newL.X = (newL.X < m_barScreen.Bounds.Left - size.Width / 2) ? m_barScreen.Bounds.Left - size.Width / 2 : newL.X; // catch left side out of bounds, wins if the width is > screen.Width
@@ -218,7 +220,6 @@ namespace FS20_HudBar
     private Size BarSize( )
     {
       Size newS = m_frmGui.PreferredSize;
-      if (HUD == null) return newS; // we need the HUD to find the Size
 
       // get the window manager decoration borders from the Main Window
       Rectangle screenClientRect = base.RectangleToScreen( base.ClientRectangle );
@@ -232,8 +233,9 @@ namespace FS20_HudBar
       newS.Width += leftBorderWidth + rightBorderWidth;
       newS.Height += topBorderHeight + bottomBorderHeight;
       // Adjust for Bar which is stretching the screen in vert or hor direction and is only on the Main Screen 
-      if (HUD.Kind == GUI.Kind.Bar) {
-        switch (HUD.Placement) {
+      if (m_config.UsedProfile.Kind == GUI.Kind.Bar) {
+        switch (m_config.UsedProfile.Placement) {
+          case GUI.Placement.TopStack:
           case GUI.Placement.Top: newS.Width = m_barScreen.Bounds.Width; break;
           case GUI.Placement.Bottom: newS.Width = m_barScreen.Bounds.Width; break;
           case GUI.Placement.Left: newS.Height = m_barScreen.Bounds.Height; break;
@@ -254,36 +256,36 @@ namespace FS20_HudBar
     private Point BarLocation( Point curLoc, Size size )
     {
       Point newL = curLoc;
-      if (HUD == null) return newL; // we need the HUD to find the Location
 
       // location is managed when it is a Bar or Tile, else it is movable and we return the current Location
       // Bar is on the Main Screen Border aligned full width or height
       // Tile follows the preferred border but the dimension is the same as a Borderless Window
-      switch (HUD.Placement) {
+      switch (m_config.UsedProfile.Placement) {
+        case GUI.Placement.TopStack:
         case GUI.Placement.Top:
-          if (HUD.Profile.Kind == GUI.Kind.Bar) newL = new Point( m_barScreen.Bounds.X, m_barScreen.Bounds.Y );
-          else if (HUD.Profile.Kind == GUI.Kind.Tile) {
+          if (m_config.UsedProfile.Kind == GUI.Kind.Bar) newL = new Point( m_barScreen.Bounds.X, m_barScreen.Bounds.Y );
+          else if (m_config.UsedProfile.Kind == GUI.Kind.Tile) {
             newL.Y = m_barScreen.Bounds.Y;
             newL = TileBoundLocation( newL, size );
           }
           break;
         case GUI.Placement.Bottom:
-          if (HUD.Profile.Kind == GUI.Kind.Bar) newL = new Point( m_barScreen.Bounds.X, m_barScreen.Bounds.Y + m_barScreen.Bounds.Height - size.Height );
-          else if (HUD.Profile.Kind == GUI.Kind.Tile) {
+          if (m_config.UsedProfile.Kind == GUI.Kind.Bar) newL = new Point( m_barScreen.Bounds.X, m_barScreen.Bounds.Y + m_barScreen.Bounds.Height - size.Height );
+          else if (m_config.UsedProfile.Kind == GUI.Kind.Tile) {
             newL.Y = m_barScreen.Bounds.Y + m_barScreen.Bounds.Height - size.Height;
             newL = TileBoundLocation( newL, size );
           }
           break;
         case GUI.Placement.Left:
-          if (HUD.Profile.Kind == GUI.Kind.Bar) newL = new Point( m_barScreen.Bounds.X, m_barScreen.Bounds.Y );
-          else if (HUD.Profile.Kind == GUI.Kind.Tile) {
+          if (m_config.UsedProfile.Kind == GUI.Kind.Bar) newL = new Point( m_barScreen.Bounds.X, m_barScreen.Bounds.Y );
+          else if (m_config.UsedProfile.Kind == GUI.Kind.Tile) {
             newL.X = m_barScreen.Bounds.X;
             newL = TileBoundLocation( newL, size );
           }
           break;
         case GUI.Placement.Right:
-          if (HUD.Profile.Kind == GUI.Kind.Bar) newL = new Point( m_barScreen.Bounds.X + m_barScreen.Bounds.Width - size.Width, m_barScreen.Bounds.Y );
-          else if (HUD.Profile.Kind == GUI.Kind.Tile) {
+          if (m_config.UsedProfile.Kind == GUI.Kind.Bar) newL = new Point( m_barScreen.Bounds.X + m_barScreen.Bounds.Width - size.Width, m_barScreen.Bounds.Y );
+          else if (m_config.UsedProfile.Kind == GUI.Kind.Tile) {
             newL.X = m_barScreen.Bounds.X + m_barScreen.Bounds.Width - size.Width;
             newL = TileBoundLocation( newL, size );
           }
@@ -360,26 +362,26 @@ namespace FS20_HudBar
       if (enabled) {
         if (_fsInputCat.Count <= 0) {
           // reinitiate the hooks
-          _fsInputCat.Add( Hotkeys.Show_Hide, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_01 ) );
-          _fsInputCat[Hotkeys.Show_Hide].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.FlightBag, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_07 ) );
-          _fsInputCat[Hotkeys.FlightBag].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.Camera, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_08 ) );
-          _fsInputCat[Hotkeys.Camera].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.ChecklistBox, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_09 ) );
-          _fsInputCat[Hotkeys.ChecklistBox].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Show_Hide, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_01 ) );
+          _fsInputCat[Hotkeys.Show_Hide].AppInputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.FlightBag, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_07 ) );
+          _fsInputCat[Hotkeys.FlightBag].AppInputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Camera, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_08 ) );
+          _fsInputCat[Hotkeys.Camera].AppInputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.ChecklistBox, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_09 ) );
+          _fsInputCat[Hotkeys.ChecklistBox].AppInputArrived += FSInput_InputArrived;
 
           // ONLY the first 5 have SimKey Hooks (6..10 do not have this hotkey)
-          _fsInputCat.Add( Hotkeys.Profile_1, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_02 ) );
-          _fsInputCat[Hotkeys.Profile_1].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.Profile_2, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_03 ) );
-          _fsInputCat[Hotkeys.Profile_2].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.Profile_3, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_04 ) );
-          _fsInputCat[Hotkeys.Profile_3].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.Profile_4, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_05 ) );
-          _fsInputCat[Hotkeys.Profile_4].InputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.Profile_5, SC.SimConnectClient.Instance.InputHandler( SC.Input.InputNameE.FST_06 ) );
-          _fsInputCat[Hotkeys.Profile_5].InputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Profile_1, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_02 ) );
+          _fsInputCat[Hotkeys.Profile_1].AppInputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Profile_2, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_03 ) );
+          _fsInputCat[Hotkeys.Profile_2].AppInputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Profile_3, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_04 ) );
+          _fsInputCat[Hotkeys.Profile_3].AppInputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Profile_4, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_05 ) );
+          _fsInputCat[Hotkeys.Profile_4].AppInputArrived += FSInput_InputArrived;
+          _fsInputCat.Add( Hotkeys.Profile_5, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_06 ) );
+          _fsInputCat[Hotkeys.Profile_5].AppInputArrived += FSInput_InputArrived;
         }
       }
       else {
@@ -387,7 +389,7 @@ namespace FS20_HudBar
         foreach (var fi in _fsInputCat) {
           // this shall never fail..
           try {
-            fi.Value.InputArrived -= FSInput_InputArrived;
+            fi.Value.AppInputArrived -= FSInput_InputArrived;
           }
           catch { }
         }
@@ -397,22 +399,22 @@ namespace FS20_HudBar
     }
 
     // Receive commands from FSim
-    private void FSInput_InputArrived( object sender, SC.Input.FSInputEventArgs e )
+    private void FSInput_InputArrived( object sender, SC.SimEvents.AppInputEventArgs e )
     {
       // sanity checks
       if (!SC.SimConnectClient.Instance.IsConnected) return; // catch odd cases of disruption
       if (_fsInputCat.Count <= 0) return;
 
       // _fsInputCat should be valid when this event fires..
-      if (e.ActionName == _fsInputCat[Hotkeys.Show_Hide].InputName) SynchGUIVisible( !this.Visible );
-      else if (e.ActionName == _fsInputCat[Hotkeys.FlightBag].InputName) mShelf_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Camera].InputName) mCamera_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.ChecklistBox].InputName) mChecklistBox_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_1].InputName) mP1_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_2].InputName) mP2_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_3].InputName) mP3_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_4].InputName) mP4_Click( null, new EventArgs( ) );
-      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_5].InputName) mP5_Click( null, new EventArgs( ) );
+      if (e.ActionName == _fsInputCat[Hotkeys.Show_Hide].AppInput) SynchGUIVisible( !this.Visible );
+      else if (e.ActionName == _fsInputCat[Hotkeys.FlightBag].AppInput) mShelf_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Camera].AppInput) mCamera_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.ChecklistBox].AppInput) mChecklistBox_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_1].AppInput) mP1_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_2].AppInput) mP2_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_3].AppInput) mP3_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_4].AppInput) mP4_Click( null, new EventArgs( ) );
+      else if (e.ActionName == _fsInputCat[Hotkeys.Profile_5].AppInput) mP5_Click( null, new EventArgs( ) );
     }
 
     /// <summary>
@@ -490,7 +492,7 @@ namespace FS20_HudBar
           if (tag == ((Hotkeys)p).ToString( )) {
             // switch Profile - this may take too long for some Profiles if they contain a lot of items
             // Windows may unhook in such cases (see MS doc rsp. code in HookController)
-            m_selProfile = p;
+            m_config.SetProfile( p );
             InitGUI( );
             return;
           }
@@ -524,90 +526,119 @@ namespace FS20_HudBar
       InitializeComponent( );
 
       // Load all from AppSettings
-      AppSettingsV2.Instance.Reload( );
+      var AS = AppSettingsV2.Instance;
 
-      LOG.Log( "frmMain", "Load Profiles" );
-      m_profiles.Add( new CProfile( 1, AppSettingsV2.Instance.Profile_1_Name,
-                                       AppSettingsV2.Instance.Profile_1, AppSettingsV2.Instance.FlowBreak_1, AppSettingsV2.Instance.Sequence_1,
-                                       AppSettingsV2.Instance.Profile_1_FontSize, AppSettingsV2.Instance.Profile_1_Placement,
-                                       AppSettingsV2.Instance.Profile_1_Kind, AppSettingsV2.Instance.Profile_1_Location,
-                                       AppSettingsV2.Instance.Profile_1_Condensed,
-                                       AppSettingsV2.Instance.Profile_1_Trans ) );
+      AS.Reload( );
+      LOG.Log( "frmMain", "Load Configuration" );
+      m_config = Configuration.GetFromSettings( );
 
-      m_profiles.Add( new CProfile( 2, AppSettingsV2.Instance.Profile_2_Name,
-                                       AppSettingsV2.Instance.Profile_2, AppSettingsV2.Instance.FlowBreak_2, AppSettingsV2.Instance.Sequence_2,
-                                       AppSettingsV2.Instance.Profile_2_FontSize, AppSettingsV2.Instance.Profile_2_Placement,
-                                       AppSettingsV2.Instance.Profile_2_Kind, AppSettingsV2.Instance.Profile_2_Location,
-                                       AppSettingsV2.Instance.Profile_2_Condensed,
-                                       AppSettingsV2.Instance.Profile_2_Trans ) );
+      /*
+            m_profiles.Add( new CProfile( 1, AS.Profile_1_Name,
+                                             AS.Profile_1, AS.FlowBreak_1, AS.Sequence_1,
+                                             AS.Profile_1_FontSize, AS.Profile_1_Placement,
+                                             AS.Profile_1_Kind, AS.Profile_1_Location,
+                                             AS.Profile_1_Condensed,
+                                             AS.Profile_1_Trans,
+                                             AS.BgImageName_1, AS.BgImageArea_1,
+                                             AS.ProfileFonts_1, AS.ProfileColorsReg_1, AS.ProfileColorsDim_1, AS.ProfileColorsInv_1 ) );
 
-      m_profiles.Add( new CProfile( 3, AppSettingsV2.Instance.Profile_3_Name,
-                                       AppSettingsV2.Instance.Profile_3, AppSettingsV2.Instance.FlowBreak_3, AppSettingsV2.Instance.Sequence_3,
-                                       AppSettingsV2.Instance.Profile_3_FontSize, AppSettingsV2.Instance.Profile_3_Placement,
-                                       AppSettingsV2.Instance.Profile_3_Kind, AppSettingsV2.Instance.Profile_3_Location,
-                                       AppSettingsV2.Instance.Profile_3_Condensed,
-                                       AppSettingsV2.Instance.Profile_3_Trans ) );
+            m_profiles.Add( new CProfile( 2, AS.Profile_2_Name,
+                                             AS.Profile_2, AS.FlowBreak_2, AS.Sequence_2,
+                                             AS.Profile_2_FontSize, AS.Profile_2_Placement,
+                                             AS.Profile_2_Kind, AS.Profile_2_Location,
+                                             AS.Profile_2_Condensed,
+                                             AS.Profile_2_Trans,
+                                             AS.BgImageName_2, AS.BgImageArea_2,
+                                             AS.ProfileFonts_2, AS.ProfileColorsReg_2, AS.ProfileColorsDim_2, AS.ProfileColorsInv_2 ) );
 
-      m_profiles.Add( new CProfile( 4, AppSettingsV2.Instance.Profile_4_Name,
-                                       AppSettingsV2.Instance.Profile_4, AppSettingsV2.Instance.FlowBreak_4, AppSettingsV2.Instance.Sequence_4,
-                                       AppSettingsV2.Instance.Profile_4_FontSize, AppSettingsV2.Instance.Profile_4_Placement,
-                                       AppSettingsV2.Instance.Profile_4_Kind, AppSettingsV2.Instance.Profile_4_Location,
-                                       AppSettingsV2.Instance.Profile_4_Condensed,
-                                       AppSettingsV2.Instance.Profile_4_Trans ) );
+            m_profiles.Add( new CProfile( 3, AS.Profile_3_Name,
+                                             AS.Profile_3, AS.FlowBreak_3, AS.Sequence_3,
+                                             AS.Profile_3_FontSize, AS.Profile_3_Placement,
+                                             AS.Profile_3_Kind, AS.Profile_3_Location,
+                                             AS.Profile_3_Condensed,
+                                             AS.Profile_3_Trans,
+                                             AS.BgImageName_3, AS.BgImageArea_3,
+                                             AS.ProfileFonts_3, AS.ProfileColorsReg_3, AS.ProfileColorsDim_3, AS.ProfileColorsInv_3 ) );
 
-      m_profiles.Add( new CProfile( 5, AppSettingsV2.Instance.Profile_5_Name,
-                                       AppSettingsV2.Instance.Profile_5, AppSettingsV2.Instance.FlowBreak_5, AppSettingsV2.Instance.Sequence_5,
-                                       AppSettingsV2.Instance.Profile_5_FontSize, AppSettingsV2.Instance.Profile_5_Placement,
-                                       AppSettingsV2.Instance.Profile_5_Kind, AppSettingsV2.Instance.Profile_5_Location,
-                                       AppSettingsV2.Instance.Profile_5_Condensed,
-                                       AppSettingsV2.Instance.Profile_5_Trans ) );
+            m_profiles.Add( new CProfile( 4, AS.Profile_4_Name,
+                                             AS.Profile_4, AS.FlowBreak_4, AS.Sequence_4,
+                                             AS.Profile_4_FontSize, AS.Profile_4_Placement,
+                                             AS.Profile_4_Kind, AS.Profile_4_Location,
+                                             AS.Profile_4_Condensed,
+                                             AS.Profile_4_Trans,
+                                             AS.BgImageName_4, AS.BgImageArea_4,
+                                             AS.ProfileFonts_4, AS.ProfileColorsReg_4, AS.ProfileColorsDim_4, AS.ProfileColorsInv_4 ) );
 
-      m_profiles.Add( new CProfile( 6, AppSettingsV2.Instance.Profile_6_Name,
-                                       AppSettingsV2.Instance.Profile_6, AppSettingsV2.Instance.FlowBreak_6, AppSettingsV2.Instance.Sequence_6,
-                                       AppSettingsV2.Instance.Profile_6_FontSize, AppSettingsV2.Instance.Profile_6_Placement,
-                                       AppSettingsV2.Instance.Profile_6_Kind, AppSettingsV2.Instance.Profile_6_Location,
-                                       AppSettingsV2.Instance.Profile_6_Condensed,
-                                       AppSettingsV2.Instance.Profile_6_Trans ) );
+            m_profiles.Add( new CProfile( 5, AS.Profile_5_Name,
+                                             AS.Profile_5, AS.FlowBreak_5, AS.Sequence_5,
+                                             AS.Profile_5_FontSize, AS.Profile_5_Placement,
+                                             AS.Profile_5_Kind, AS.Profile_5_Location,
+                                             AS.Profile_5_Condensed,
+                                             AS.Profile_5_Trans,
+                                             AS.BgImageName_5, AS.BgImageArea_5,
+                                             AS.ProfileFonts_5, AS.ProfileColorsReg_5, AS.ProfileColorsDim_5, AS.ProfileColorsInv_5 ) );
 
-      m_profiles.Add( new CProfile( 7, AppSettingsV2.Instance.Profile_7_Name,
-                                       AppSettingsV2.Instance.Profile_7, AppSettingsV2.Instance.FlowBreak_7, AppSettingsV2.Instance.Sequence_7,
-                                       AppSettingsV2.Instance.Profile_7_FontSize, AppSettingsV2.Instance.Profile_7_Placement,
-                                       AppSettingsV2.Instance.Profile_7_Kind, AppSettingsV2.Instance.Profile_7_Location,
-                                       AppSettingsV2.Instance.Profile_7_Condensed,
-                                       AppSettingsV2.Instance.Profile_7_Trans ) );
+            m_profiles.Add( new CProfile( 6, AS.Profile_6_Name,
+                                             AS.Profile_6, AS.FlowBreak_6, AS.Sequence_6,
+                                             AS.Profile_6_FontSize, AS.Profile_6_Placement,
+                                             AS.Profile_6_Kind, AS.Profile_6_Location,
+                                             AS.Profile_6_Condensed,
+                                             AS.Profile_6_Trans,
+                                             AS.BgImageName_6, AS.BgImageArea_6,
+                                             AS.ProfileFonts_6, AS.ProfileColorsReg_6, AS.ProfileColorsDim_6, AS.ProfileColorsInv_6 ) );
 
-      m_profiles.Add( new CProfile( 8, AppSettingsV2.Instance.Profile_8_Name,
-                                       AppSettingsV2.Instance.Profile_8, AppSettingsV2.Instance.FlowBreak_8, AppSettingsV2.Instance.Sequence_8,
-                                       AppSettingsV2.Instance.Profile_8_FontSize, AppSettingsV2.Instance.Profile_8_Placement,
-                                       AppSettingsV2.Instance.Profile_8_Kind, AppSettingsV2.Instance.Profile_8_Location,
-                                       AppSettingsV2.Instance.Profile_8_Condensed,
-                                       AppSettingsV2.Instance.Profile_8_Trans ) );
+            m_profiles.Add( new CProfile( 7, AS.Profile_7_Name,
+                                             AS.Profile_7, AS.FlowBreak_7, AS.Sequence_7,
+                                             AS.Profile_7_FontSize, AS.Profile_7_Placement,
+                                             AS.Profile_7_Kind, AS.Profile_7_Location,
+                                             AS.Profile_7_Condensed,
+                                             AS.Profile_7_Trans,
+                                             AS.BgImageName_7, AS.BgImageArea_7,
+                                             AS.ProfileFonts_7, AS.ProfileColorsReg_7, AS.ProfileColorsDim_7, AS.ProfileColorsInv_7 ) );
 
-      m_profiles.Add( new CProfile( 9, AppSettingsV2.Instance.Profile_9_Name,
-                                       AppSettingsV2.Instance.Profile_9, AppSettingsV2.Instance.FlowBreak_9, AppSettingsV2.Instance.Sequence_9,
-                                       AppSettingsV2.Instance.Profile_9_FontSize, AppSettingsV2.Instance.Profile_9_Placement,
-                                       AppSettingsV2.Instance.Profile_9_Kind, AppSettingsV2.Instance.Profile_9_Location,
-                                       AppSettingsV2.Instance.Profile_9_Condensed,
-                                       AppSettingsV2.Instance.Profile_9_Trans ) );
+            m_profiles.Add( new CProfile( 8, AS.Profile_8_Name,
+                                             AS.Profile_8, AS.FlowBreak_8, AS.Sequence_8,
+                                             AS.Profile_8_FontSize, AS.Profile_8_Placement,
+                                             AS.Profile_8_Kind, AS.Profile_8_Location,
+                                             AS.Profile_8_Condensed,
+                                             AS.Profile_8_Trans,
+                                             AS.BgImageName_8, AS.BgImageArea_8,
+                                             AS.ProfileFonts_8, AS.ProfileColorsReg_8, AS.ProfileColorsDim_8, AS.ProfileColorsInv_8 ) );
 
-      m_profiles.Add( new CProfile( 10, AppSettingsV2.Instance.Profile_10_Name,
-                                       AppSettingsV2.Instance.Profile_10, AppSettingsV2.Instance.FlowBreak_10, AppSettingsV2.Instance.Sequence_10,
-                                       AppSettingsV2.Instance.Profile_10_FontSize, AppSettingsV2.Instance.Profile_10_Placement,
-                                       AppSettingsV2.Instance.Profile_10_Kind, AppSettingsV2.Instance.Profile_10_Location,
-                                       AppSettingsV2.Instance.Profile_10_Condensed,
-                                       AppSettingsV2.Instance.Profile_10_Trans ) );
+            m_profiles.Add( new CProfile( 9, AS.Profile_9_Name,
+                                             AS.Profile_9, AS.FlowBreak_9, AS.Sequence_9,
+                                             AS.Profile_9_FontSize, AS.Profile_9_Placement,
+                                             AS.Profile_9_Kind, AS.Profile_9_Location,
+                                             AS.Profile_9_Condensed,
+                                             AS.Profile_9_Trans,
+                                             AS.BgImageName_9, AS.BgImageArea_9,
+                                             AS.ProfileFonts_9, AS.ProfileColorsReg_9, AS.ProfileColorsDim_9, AS.ProfileColorsInv_9 ) );
 
-      m_selProfile = AppSettingsV2.Instance.SelProfile;
-      mSelProfile.Text = m_profiles[m_selProfile].PName;
+            m_profiles.Add( new CProfile( 10, AS.Profile_10_Name,
+                                             AS.Profile_10, AS.FlowBreak_10, AS.Sequence_10,
+                                             AS.Profile_10_FontSize, AS.Profile_10_Placement,
+                                             AS.Profile_10_Kind, AS.Profile_10_Location,
+                                             AS.Profile_10_Condensed,
+                                             AS.Profile_10_Trans,
+                                             AS.BgImageName_10, AS.BgImageArea_10,
+                                             AS.ProfileFonts_10, AS.ProfileColorsReg_10, AS.ProfileColorsDim_10, AS.ProfileColorsInv_10 ) );
+      */
+
+      // last from Setting
+      m_config.SetProfile( AS.SelProfile );
+      mSelProfile.Text = m_config.UsedProfileName;
+      //      m_selProfile = AS.SelProfile;
+
+
       // collect the Menus for the profiles
       m_profileMenu = new ToolStripMenuItem[] { mP1, mP2, mP3, mP4, mP5, mP6, mP7, mP8, mP9, mP10 };
 
       LOG.Log( "frmMain", "Load Colors" );
-      Colorset = ToColorSet( AppSettingsV2.Instance.Appearance );
+      Colorset = ToColorSet( AS.Appearance );
 
-      mAltMetric.CheckState = AppSettingsV2.Instance.Altitude_Metric ? CheckState.Checked : CheckState.Unchecked;
-      mDistMetric.CheckState = AppSettingsV2.Instance.Distance_Metric ? CheckState.Checked : CheckState.Unchecked;
-      mShowUnits.CheckState = AppSettingsV2.Instance.ShowUnits ? CheckState.Checked : CheckState.Unchecked;
+      mAltMetric.CheckState = AS.Altitude_Metric ? CheckState.Checked : CheckState.Unchecked;
+      mDistMetric.CheckState = AS.Distance_Metric ? CheckState.Checked : CheckState.Unchecked;
+      mShowUnits.CheckState = AS.ShowUnits ? CheckState.Checked : CheckState.Unchecked;
 
       // Use CoordLib with no blanks as separator
       CoordLib.Dms.Separator = "";
@@ -656,7 +687,7 @@ namespace FS20_HudBar
       UpdateShelfSettings( ); // needed for transition to new AppSettings concept
 
       // Setup the screen the bar/tile is attached to
-      m_barScreenNumber = AppSettingsV2.Instance.ScreenNumber;
+      m_barScreenNumber = AS.ScreenNumber;
       m_barScreen = null;
       // Find and hold the Primary Screen
       Screen[] screens = Screen.AllScreens;
@@ -739,19 +770,19 @@ namespace FS20_HudBar
                                                                 // can only handle Windows here, Bar and Tile is tied to the screen border
       if (!(HUD.Kind == GUI.Kind.Window || HUD.Kind == GUI.Kind.WindowBL)) return;
 
-      HUD.Profile.UpdateLocation( this.Location );
+      m_config.UsedProfile.UpdateLocation( this.Location );
       // store new location per profile
-      switch (m_selProfile) {
-        case 0: AppSettingsV2.Instance.Profile_1_Location = this.Location; break;
-        case 1: AppSettingsV2.Instance.Profile_2_Location = this.Location; break;
-        case 2: AppSettingsV2.Instance.Profile_3_Location = this.Location; break;
-        case 3: AppSettingsV2.Instance.Profile_4_Location = this.Location; break;
-        case 4: AppSettingsV2.Instance.Profile_5_Location = this.Location; break;
-        case 5: AppSettingsV2.Instance.Profile_6_Location = this.Location; break;
-        case 6: AppSettingsV2.Instance.Profile_7_Location = this.Location; break;
-        case 7: AppSettingsV2.Instance.Profile_8_Location = this.Location; break;
-        case 8: AppSettingsV2.Instance.Profile_9_Location = this.Location; break;
-        case 9: AppSettingsV2.Instance.Profile_10_Location = this.Location; break;
+      switch (m_config.CurrentProfile) {
+        case DProfile.Profile_1: AppSettingsV2.Instance.Profile_1_Location = this.Location; break;
+        case DProfile.Profile_2: AppSettingsV2.Instance.Profile_2_Location = this.Location; break;
+        case DProfile.Profile_3: AppSettingsV2.Instance.Profile_3_Location = this.Location; break;
+        case DProfile.Profile_4: AppSettingsV2.Instance.Profile_4_Location = this.Location; break;
+        case DProfile.Profile_5: AppSettingsV2.Instance.Profile_5_Location = this.Location; break;
+        case DProfile.Profile_6: AppSettingsV2.Instance.Profile_6_Location = this.Location; break;
+        case DProfile.Profile_7: AppSettingsV2.Instance.Profile_7_Location = this.Location; break;
+        case DProfile.Profile_8: AppSettingsV2.Instance.Profile_8_Location = this.Location; break;
+        case DProfile.Profile_9: AppSettingsV2.Instance.Profile_9_Location = this.Location; break;
+        case DProfile.Profile_10: AppSettingsV2.Instance.Profile_10_Location = this.Location; break;
         default: AppSettingsV2.Instance.Profile_1_Location = this.Location; break;
       }
       AppSettingsV2.Instance.Save( );
@@ -787,8 +818,7 @@ namespace FS20_HudBar
       m_shelf?.Close( );
 
       // Save all Settings
-      AppSettingsV2.Instance.SelProfile = m_selProfile;
-      AppSettingsV2.Instance.Save( );
+      Configuration.SaveToSettings( m_config );
       // stop connecting tries
       timer1.Enabled = false;
 
@@ -826,6 +856,10 @@ namespace FS20_HudBar
     {
       // SimConnect stuff
       SimConnectPacer( );
+
+      //DEBUG
+      SynchGUISize( ); // first time align the size
+
     }
 
 
@@ -869,156 +903,222 @@ namespace FS20_HudBar
       // hide the Shelf while in config
       m_shelf.Hide( );
 
-      // Config must use the current environment 
-      CFG.HudBarRef = HUD;
-      CFG.ProfilesRef = m_profiles;
-      CFG.SelectedProfile = m_selProfile;
-
       // Kill any Pings in Config - will restablish after getting back
       var muted = HudBar.PingLoop.Mute;
       HudBar.PingLoop.Mute = true;
 
+      // Config must use the current environment 
+      CFG.HudBarRef = HUD;
+      CFG.ConfigCopy = m_config.Clone( ); // send only a copy to work with
+
       // Show and see if the user Accepts the changes
       if (CFG.ShowDialog( this ) == DialogResult.OK) {
         LOG.Log( $"mConfig_Click", "Dialog OK" );
-        // Save all configuration properties
-        AppSettingsV2.Instance.FRecorder = HUD.FlightRecorder;
+        // Get changes done while Config was open
+        m_config = CFG.ConfigCopy.Clone( );
+        // Then save all configuration settings
+        Configuration.SaveToSettings( m_config );
 
-        AppSettingsV2.Instance.HKShowHide = HUD.Hotkeys.HotkeyString( Hotkeys.Show_Hide );
-        AppSettingsV2.Instance.HKProfile1 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_1 );
-        AppSettingsV2.Instance.HKProfile2 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_2 );
-        AppSettingsV2.Instance.HKProfile3 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_3 );
-        AppSettingsV2.Instance.HKProfile4 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_4 );
-        AppSettingsV2.Instance.HKProfile5 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_5 );
-        AppSettingsV2.Instance.HKProfile6 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_6 );
-        AppSettingsV2.Instance.HKProfile7 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_7 );
-        AppSettingsV2.Instance.HKProfile8 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_8 );
-        AppSettingsV2.Instance.HKProfile9 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_9 );
-        AppSettingsV2.Instance.HKProfile10 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_10 );
-        AppSettingsV2.Instance.HKShelf = HUD.Hotkeys.HotkeyString( Hotkeys.FlightBag );
-        AppSettingsV2.Instance.HKCamera = HUD.Hotkeys.HotkeyString( Hotkeys.Camera );
-        AppSettingsV2.Instance.HKChecklistBox = HUD.Hotkeys.HotkeyString( Hotkeys.ChecklistBox );
-        AppSettingsV2.Instance.KeyboardHook = HUD.KeyboardHook;
-        AppSettingsV2.Instance.InGameHook = HUD.InGameHook;
+        /*
+                AS.FRecorder = HUD.FlightRecorder;
 
-        AppSettingsV2.Instance.FltAutoSaveATC = (int)HUD.FltAutoSave;
-        AppSettingsV2.Instance.VoiceName = HUD.VoiceName;
-        AppSettingsV2.Instance.OutputDeviceName = HUD.OutputDeviceName;
+                AS.HKShowHide = HUD.Hotkeys.HotkeyString( Hotkeys.Show_Hide );
+                AS.HKProfile1 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_1 );
+                AS.HKProfile2 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_2 );
+                AS.HKProfile3 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_3 );
+                AS.HKProfile4 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_4 );
+                AS.HKProfile5 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_5 );
+                AS.HKProfile6 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_6 );
+                AS.HKProfile7 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_7 );
+                AS.HKProfile8 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_8 );
+                AS.HKProfile9 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_9 );
+                AS.HKProfile10 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_10 );
+                AS.HKShelf = HUD.Hotkeys.HotkeyString( Hotkeys.FlightBag );
+                AS.HKCamera = HUD.Hotkeys.HotkeyString( Hotkeys.Camera );
+                AS.HKChecklistBox = HUD.Hotkeys.HotkeyString( Hotkeys.ChecklistBox );
+                AS.KeyboardHook = HUD.KeyboardHook;
+                AS.InGameHook = HUD.InGameHook;
 
-        AppSettingsV2.Instance.UserFonts = HUD.FontRef.AsConfigString( );
+                AS.FltAutoSaveATC = (int)HUD.FltAutoSave;
+                AS.VoiceName = HUD.VoiceName;
+                AS.OutputDeviceName = HUD.OutputDeviceName;
 
-        AppSettingsV2.Instance.UserColorsReg = GUI_Colors.AsConfigString( GUI_Colors.GetColorSet( ColorSet.BrightSet ) );
-        AppSettingsV2.Instance.UserColorsDim = GUI_Colors.AsConfigString( GUI_Colors.GetColorSet( ColorSet.DimmedSet ) );
-        AppSettingsV2.Instance.UserColorsInv = GUI_Colors.AsConfigString( GUI_Colors.GetColorSet( ColorSet.InverseSet ) );
+                // TODO don't take from live fonts and colors but from a general config setting
+                //  as profiles have their own fonts/color, the current is not what the user wanted to go into general
+                AS.UserFonts = HUD.FontRef.AsConfigString( );
+                AS.UserColorsReg = GUI_Colors.AsConfigString( GUI_Colors.GetColorSet( ColorSet.BrightSet ) );
+                AS.UserColorsDim = GUI_Colors.AsConfigString( GUI_Colors.GetColorSet( ColorSet.DimmedSet ) );
+                AS.UserColorsInv = GUI_Colors.AsConfigString( GUI_Colors.GetColorSet( ColorSet.InverseSet ) );
 
-        AppSettingsV2.Instance.SelProfile = m_selProfile;
-        // All Profiles
-        int pIndex = 0; // use an index avoiding copy and paste mishaps...
-        AppSettingsV2.Instance.Profile_1_Name = m_profiles[pIndex].PName;
-        AppSettingsV2.Instance.Profile_1 = m_profiles[pIndex].ProfileString( );
-        AppSettingsV2.Instance.FlowBreak_1 = m_profiles[pIndex].FlowBreakString( );
-        AppSettingsV2.Instance.Sequence_1 = m_profiles[pIndex].ItemPosString( );
-        AppSettingsV2.Instance.Profile_1_FontSize = (int)m_profiles[pIndex].FontSize;
-        AppSettingsV2.Instance.Profile_1_Placement = (int)m_profiles[pIndex].Placement;
-        AppSettingsV2.Instance.Profile_1_Kind = (int)m_profiles[pIndex].Kind;
-        AppSettingsV2.Instance.Profile_1_Condensed = m_profiles[pIndex].Condensed;
-        AppSettingsV2.Instance.Profile_1_Trans = (int)m_profiles[pIndex].Transparency;
-        pIndex++;
-        AppSettingsV2.Instance.Profile_2_Name = m_profiles[pIndex].PName;
-        AppSettingsV2.Instance.Profile_2 = m_profiles[pIndex].ProfileString( );
-        AppSettingsV2.Instance.FlowBreak_2 = m_profiles[pIndex].FlowBreakString( );
-        AppSettingsV2.Instance.Sequence_2 = m_profiles[pIndex].ItemPosString( );
-        AppSettingsV2.Instance.Profile_2_FontSize = (int)m_profiles[pIndex].FontSize;
-        AppSettingsV2.Instance.Profile_2_Placement = (int)m_profiles[pIndex].Placement;
-        AppSettingsV2.Instance.Profile_2_Kind = (int)m_profiles[pIndex].Kind;
-        AppSettingsV2.Instance.Profile_2_Condensed = m_profiles[pIndex].Condensed;
-        AppSettingsV2.Instance.Profile_2_Trans = (int)m_profiles[pIndex].Transparency;
-        pIndex++;
-        AppSettingsV2.Instance.Profile_3_Name = m_profiles[pIndex].PName;
-        AppSettingsV2.Instance.Profile_3 = m_profiles[pIndex].ProfileString( );
-        AppSettingsV2.Instance.FlowBreak_3 = m_profiles[pIndex].FlowBreakString( );
-        AppSettingsV2.Instance.Sequence_3 = m_profiles[pIndex].ItemPosString( );
-        AppSettingsV2.Instance.Profile_3_FontSize = (int)m_profiles[pIndex].FontSize;
-        AppSettingsV2.Instance.Profile_3_Placement = (int)m_profiles[pIndex].Placement;
-        AppSettingsV2.Instance.Profile_3_Kind = (int)m_profiles[pIndex].Kind;
-        AppSettingsV2.Instance.Profile_3_Condensed = m_profiles[pIndex].Condensed;
-        AppSettingsV2.Instance.Profile_3_Trans = (int)m_profiles[pIndex].Transparency;
-        pIndex++;
-        AppSettingsV2.Instance.Profile_4_Name = m_profiles[pIndex].PName;
-        AppSettingsV2.Instance.Profile_4 = m_profiles[pIndex].ProfileString( );
-        AppSettingsV2.Instance.FlowBreak_4 = m_profiles[pIndex].FlowBreakString( );
-        AppSettingsV2.Instance.Sequence_4 = m_profiles[pIndex].ItemPosString( );
-        AppSettingsV2.Instance.Profile_4_FontSize = (int)m_profiles[pIndex].FontSize;
-        AppSettingsV2.Instance.Profile_4_Placement = (int)m_profiles[pIndex].Placement;
-        AppSettingsV2.Instance.Profile_4_Kind = (int)m_profiles[pIndex].Kind;
-        AppSettingsV2.Instance.Profile_4_Condensed = m_profiles[pIndex].Condensed;
-        AppSettingsV2.Instance.Profile_4_Trans = (int)m_profiles[pIndex].Transparency;
-        pIndex++;
-        AppSettingsV2.Instance.Profile_5_Name = m_profiles[pIndex].PName;
-        AppSettingsV2.Instance.Profile_5 = m_profiles[pIndex].ProfileString( );
-        AppSettingsV2.Instance.FlowBreak_5 = m_profiles[pIndex].FlowBreakString( );
-        AppSettingsV2.Instance.Sequence_5 = m_profiles[pIndex].ItemPosString( );
-        AppSettingsV2.Instance.Profile_5_FontSize = (int)m_profiles[pIndex].FontSize;
-        AppSettingsV2.Instance.Profile_5_Placement = (int)m_profiles[pIndex].Placement;
-        AppSettingsV2.Instance.Profile_5_Kind = (int)m_profiles[pIndex].Kind;
-        AppSettingsV2.Instance.Profile_5_Condensed = m_profiles[pIndex].Condensed;
-        AppSettingsV2.Instance.Profile_5_Trans = (int)m_profiles[pIndex].Transparency;
-        pIndex++;
-        AppSettingsV2.Instance.Profile_6_Name = m_profiles[pIndex].PName;
-        AppSettingsV2.Instance.Profile_6 = m_profiles[pIndex].ProfileString( );
-        AppSettingsV2.Instance.FlowBreak_6 = m_profiles[pIndex].FlowBreakString( );
-        AppSettingsV2.Instance.Sequence_6 = m_profiles[pIndex].ItemPosString( );
-        AppSettingsV2.Instance.Profile_6_FontSize = (int)m_profiles[pIndex].FontSize;
-        AppSettingsV2.Instance.Profile_6_Placement = (int)m_profiles[pIndex].Placement;
-        AppSettingsV2.Instance.Profile_6_Kind = (int)m_profiles[pIndex].Kind;
-        AppSettingsV2.Instance.Profile_6_Condensed = m_profiles[pIndex].Condensed;
-        AppSettingsV2.Instance.Profile_6_Trans = (int)m_profiles[pIndex].Transparency;
-        pIndex++;
-        AppSettingsV2.Instance.Profile_7_Name = m_profiles[pIndex].PName;
-        AppSettingsV2.Instance.Profile_7 = m_profiles[pIndex].ProfileString( );
-        AppSettingsV2.Instance.FlowBreak_7 = m_profiles[pIndex].FlowBreakString( );
-        AppSettingsV2.Instance.Sequence_7 = m_profiles[pIndex].ItemPosString( );
-        AppSettingsV2.Instance.Profile_7_FontSize = (int)m_profiles[pIndex].FontSize;
-        AppSettingsV2.Instance.Profile_7_Placement = (int)m_profiles[pIndex].Placement;
-        AppSettingsV2.Instance.Profile_7_Kind = (int)m_profiles[pIndex].Kind;
-        AppSettingsV2.Instance.Profile_7_Condensed = m_profiles[pIndex].Condensed;
-        AppSettingsV2.Instance.Profile_7_Trans = (int)m_profiles[pIndex].Transparency;
-        pIndex++;
-        AppSettingsV2.Instance.Profile_8_Name = m_profiles[pIndex].PName;
-        AppSettingsV2.Instance.Profile_8 = m_profiles[pIndex].ProfileString( );
-        AppSettingsV2.Instance.FlowBreak_8 = m_profiles[pIndex].FlowBreakString( );
-        AppSettingsV2.Instance.Sequence_8 = m_profiles[pIndex].ItemPosString( );
-        AppSettingsV2.Instance.Profile_8_FontSize = (int)m_profiles[pIndex].FontSize;
-        AppSettingsV2.Instance.Profile_8_Placement = (int)m_profiles[pIndex].Placement;
-        AppSettingsV2.Instance.Profile_8_Kind = (int)m_profiles[pIndex].Kind;
-        AppSettingsV2.Instance.Profile_8_Condensed = m_profiles[pIndex].Condensed;
-        AppSettingsV2.Instance.Profile_8_Trans = (int)m_profiles[pIndex].Transparency;
-        pIndex++;
-        AppSettingsV2.Instance.Profile_9_Name = m_profiles[pIndex].PName;
-        AppSettingsV2.Instance.Profile_9 = m_profiles[pIndex].ProfileString( );
-        AppSettingsV2.Instance.FlowBreak_9 = m_profiles[pIndex].FlowBreakString( );
-        AppSettingsV2.Instance.Sequence_9 = m_profiles[pIndex].ItemPosString( );
-        AppSettingsV2.Instance.Profile_9_FontSize = (int)m_profiles[pIndex].FontSize;
-        AppSettingsV2.Instance.Profile_9_Placement = (int)m_profiles[pIndex].Placement;
-        AppSettingsV2.Instance.Profile_9_Kind = (int)m_profiles[pIndex].Kind;
-        AppSettingsV2.Instance.Profile_9_Condensed = m_profiles[pIndex].Condensed;
-        AppSettingsV2.Instance.Profile_9_Trans = (int)m_profiles[pIndex].Transparency;
-        pIndex++;
-        AppSettingsV2.Instance.Profile_10_Name = m_profiles[pIndex].PName;
-        AppSettingsV2.Instance.Profile_10 = m_profiles[pIndex].ProfileString( );
-        AppSettingsV2.Instance.FlowBreak_10 = m_profiles[pIndex].FlowBreakString( );
-        AppSettingsV2.Instance.Sequence_10 = m_profiles[pIndex].ItemPosString( );
-        AppSettingsV2.Instance.Profile_10_FontSize = (int)m_profiles[pIndex].FontSize;
-        AppSettingsV2.Instance.Profile_10_Placement = (int)m_profiles[pIndex].Placement;
-        AppSettingsV2.Instance.Profile_10_Kind = (int)m_profiles[pIndex].Kind;
-        AppSettingsV2.Instance.Profile_10_Condensed = m_profiles[pIndex].Condensed;
-        AppSettingsV2.Instance.Profile_10_Trans = (int)m_profiles[pIndex].Transparency;
+                AS.SelProfile = m_selProfile;
+                // All Profiles
+                int pIndex = 0; // use an index avoiding copy and paste mishaps...
+                AS.Profile_1_Name = m_profiles[pIndex].PName;
+                AS.Profile_1 = m_profiles[pIndex].ProfileString( );
+                AS.FlowBreak_1 = m_profiles[pIndex].FlowBreakString( );
+                AS.Sequence_1 = m_profiles[pIndex].ItemPosString( );
+                AS.Profile_1_FontSize = (int)m_profiles[pIndex].FontSize;
+                AS.Profile_1_Placement = (int)m_profiles[pIndex].Placement;
+                AS.Profile_1_Kind = (int)m_profiles[pIndex].Kind;
+                AS.Profile_1_Condensed = m_profiles[pIndex].Condensed;
+                AS.Profile_1_Trans = (int)m_profiles[pIndex].Transparency;
+                AS.BgImageName_1 = m_profiles[pIndex].BgImageName;
+                AS.BgImageArea_1 = m_profiles[pIndex].BgImageBorder;
+                AS.ProfileFonts_1 = m_profiles[pIndex].Fonts;
+                AS.ProfileColorsReg_1 = m_profiles[pIndex].ColorReg;
+                AS.ProfileColorsDim_1 = m_profiles[pIndex].ColorDim;
+                AS.ProfileColorsInv_1 = m_profiles[pIndex].ColorInv;
+                pIndex++;
+                AS.Profile_2_Name = m_profiles[pIndex].PName;
+                AS.Profile_2 = m_profiles[pIndex].ProfileString( );
+                AS.FlowBreak_2 = m_profiles[pIndex].FlowBreakString( );
+                AS.Sequence_2 = m_profiles[pIndex].ItemPosString( );
+                AS.Profile_2_FontSize = (int)m_profiles[pIndex].FontSize;
+                AS.Profile_2_Placement = (int)m_profiles[pIndex].Placement;
+                AS.Profile_2_Kind = (int)m_profiles[pIndex].Kind;
+                AS.Profile_2_Condensed = m_profiles[pIndex].Condensed;
+                AS.Profile_2_Trans = (int)m_profiles[pIndex].Transparency;
+                AS.BgImageName_2 = m_profiles[pIndex].BgImageName;
+                AS.BgImageArea_2 = m_profiles[pIndex].BgImageBorder;
+                AS.ProfileFonts_2 = m_profiles[pIndex].Fonts;
+                AS.ProfileColorsReg_2 = m_profiles[pIndex].ColorReg;
+                AS.ProfileColorsDim_2 = m_profiles[pIndex].ColorDim;
+                AS.ProfileColorsInv_2 = m_profiles[pIndex].ColorInv;
+                pIndex++;
+                AS.Profile_3_Name = m_profiles[pIndex].PName;
+                AS.Profile_3 = m_profiles[pIndex].ProfileString( );
+                AS.FlowBreak_3 = m_profiles[pIndex].FlowBreakString( );
+                AS.Sequence_3 = m_profiles[pIndex].ItemPosString( );
+                AS.Profile_3_FontSize = (int)m_profiles[pIndex].FontSize;
+                AS.Profile_3_Placement = (int)m_profiles[pIndex].Placement;
+                AS.Profile_3_Kind = (int)m_profiles[pIndex].Kind;
+                AS.Profile_3_Condensed = m_profiles[pIndex].Condensed;
+                AS.Profile_3_Trans = (int)m_profiles[pIndex].Transparency;
+                AS.BgImageName_3 = m_profiles[pIndex].BgImageName;
+                AS.BgImageArea_3 = m_profiles[pIndex].BgImageBorder;
+                AS.ProfileFonts_3 = m_profiles[pIndex].Fonts;
+                AS.ProfileColorsReg_3 = m_profiles[pIndex].ColorReg;
+                AS.ProfileColorsDim_3 = m_profiles[pIndex].ColorDim;
+                AS.ProfileColorsInv_3 = m_profiles[pIndex].ColorInv;
+                pIndex++;
+                AS.Profile_4_Name = m_profiles[pIndex].PName;
+                AS.Profile_4 = m_profiles[pIndex].ProfileString( );
+                AS.FlowBreak_4 = m_profiles[pIndex].FlowBreakString( );
+                AS.Sequence_4 = m_profiles[pIndex].ItemPosString( );
+                AS.Profile_4_FontSize = (int)m_profiles[pIndex].FontSize;
+                AS.Profile_4_Placement = (int)m_profiles[pIndex].Placement;
+                AS.Profile_4_Kind = (int)m_profiles[pIndex].Kind;
+                AS.Profile_4_Condensed = m_profiles[pIndex].Condensed;
+                AS.Profile_4_Trans = (int)m_profiles[pIndex].Transparency;
+                AS.BgImageName_4 = m_profiles[pIndex].BgImageName;
+                AS.BgImageArea_4 = m_profiles[pIndex].BgImageBorder;
+                AS.ProfileFonts_4 = m_profiles[pIndex].Fonts;
+                AS.ProfileColorsReg_4 = m_profiles[pIndex].ColorReg;
+                AS.ProfileColorsDim_4 = m_profiles[pIndex].ColorDim;
+                AS.ProfileColorsInv_4 = m_profiles[pIndex].ColorInv;
+                pIndex++;
+                AS.Profile_5_Name = m_profiles[pIndex].PName;
+                AS.Profile_5 = m_profiles[pIndex].ProfileString( );
+                AS.FlowBreak_5 = m_profiles[pIndex].FlowBreakString( );
+                AS.Sequence_5 = m_profiles[pIndex].ItemPosString( );
+                AS.Profile_5_FontSize = (int)m_profiles[pIndex].FontSize;
+                AS.Profile_5_Placement = (int)m_profiles[pIndex].Placement;
+                AS.Profile_5_Kind = (int)m_profiles[pIndex].Kind;
+                AS.Profile_5_Condensed = m_profiles[pIndex].Condensed;
+                AS.Profile_5_Trans = (int)m_profiles[pIndex].Transparency;
+                AS.BgImageName_5 = m_profiles[pIndex].BgImageName;
+                AS.BgImageArea_5 = m_profiles[pIndex].BgImageBorder;
+                AS.ProfileFonts_5 = m_profiles[pIndex].Fonts;
+                AS.ProfileColorsReg_5 = m_profiles[pIndex].ColorReg;
+                AS.ProfileColorsDim_5 = m_profiles[pIndex].ColorDim;
+                AS.ProfileColorsInv_5 = m_profiles[pIndex].ColorInv;
+                pIndex++;
+                AS.Profile_6_Name = m_profiles[pIndex].PName;
+                AS.Profile_6 = m_profiles[pIndex].ProfileString( );
+                AS.FlowBreak_6 = m_profiles[pIndex].FlowBreakString( );
+                AS.Sequence_6 = m_profiles[pIndex].ItemPosString( );
+                AS.Profile_6_FontSize = (int)m_profiles[pIndex].FontSize;
+                AS.Profile_6_Placement = (int)m_profiles[pIndex].Placement;
+                AS.Profile_6_Kind = (int)m_profiles[pIndex].Kind;
+                AS.Profile_6_Condensed = m_profiles[pIndex].Condensed;
+                AS.Profile_6_Trans = (int)m_profiles[pIndex].Transparency;
+                AS.BgImageName_6 = m_profiles[pIndex].BgImageName;
+                AS.BgImageArea_6 = m_profiles[pIndex].BgImageBorder;
+                AS.ProfileFonts_6 = m_profiles[pIndex].Fonts;
+                AS.ProfileColorsReg_6 = m_profiles[pIndex].ColorReg;
+                AS.ProfileColorsDim_6 = m_profiles[pIndex].ColorDim;
+                AS.ProfileColorsInv_6 = m_profiles[pIndex].ColorInv;
+                pIndex++;
+                AS.Profile_7_Name = m_profiles[pIndex].PName;
+                AS.Profile_7 = m_profiles[pIndex].ProfileString( );
+                AS.FlowBreak_7 = m_profiles[pIndex].FlowBreakString( );
+                AS.Sequence_7 = m_profiles[pIndex].ItemPosString( );
+                AS.Profile_7_FontSize = (int)m_profiles[pIndex].FontSize;
+                AS.Profile_7_Placement = (int)m_profiles[pIndex].Placement;
+                AS.Profile_7_Kind = (int)m_profiles[pIndex].Kind;
+                AS.Profile_7_Condensed = m_profiles[pIndex].Condensed;
+                AS.Profile_7_Trans = (int)m_profiles[pIndex].Transparency;
+                AS.BgImageName_7 = m_profiles[pIndex].BgImageName;
+                AS.BgImageArea_7 = m_profiles[pIndex].BgImageBorder;
+                AS.ProfileFonts_7 = m_profiles[pIndex].Fonts;
+                AS.ProfileColorsReg_7 = m_profiles[pIndex].ColorReg;
+                AS.ProfileColorsDim_7 = m_profiles[pIndex].ColorDim;
+                AS.ProfileColorsInv_7 = m_profiles[pIndex].ColorInv;
+                pIndex++;
+                AS.Profile_8_Name = m_profiles[pIndex].PName;
+                AS.Profile_8 = m_profiles[pIndex].ProfileString( );
+                AS.FlowBreak_8 = m_profiles[pIndex].FlowBreakString( );
+                AS.Sequence_8 = m_profiles[pIndex].ItemPosString( );
+                AS.Profile_8_FontSize = (int)m_profiles[pIndex].FontSize;
+                AS.Profile_8_Placement = (int)m_profiles[pIndex].Placement;
+                AS.Profile_8_Kind = (int)m_profiles[pIndex].Kind;
+                AS.Profile_8_Condensed = m_profiles[pIndex].Condensed;
+                AS.Profile_8_Trans = (int)m_profiles[pIndex].Transparency;
+                AS.BgImageName_8 = m_profiles[pIndex].BgImageName;
+                AS.BgImageArea_8 = m_profiles[pIndex].BgImageBorder;
+                AS.ProfileFonts_8 = m_profiles[pIndex].Fonts;
+                AS.ProfileColorsReg_8 = m_profiles[pIndex].ColorReg;
+                AS.ProfileColorsDim_8 = m_profiles[pIndex].ColorDim;
+                AS.ProfileColorsInv_8 = m_profiles[pIndex].ColorInv;
+                pIndex++;
+                AS.Profile_9_Name = m_profiles[pIndex].PName;
+                AS.Profile_9 = m_profiles[pIndex].ProfileString( );
+                AS.FlowBreak_9 = m_profiles[pIndex].FlowBreakString( );
+                AS.Sequence_9 = m_profiles[pIndex].ItemPosString( );
+                AS.Profile_9_FontSize = (int)m_profiles[pIndex].FontSize;
+                AS.Profile_9_Placement = (int)m_profiles[pIndex].Placement;
+                AS.Profile_9_Kind = (int)m_profiles[pIndex].Kind;
+                AS.Profile_9_Condensed = m_profiles[pIndex].Condensed;
+                AS.Profile_9_Trans = (int)m_profiles[pIndex].Transparency;
+                AS.BgImageName_9 = m_profiles[pIndex].BgImageName;
+                AS.BgImageArea_9 = m_profiles[pIndex].BgImageBorder;
+                AS.ProfileFonts_9 = m_profiles[pIndex].Fonts;
+                AS.ProfileColorsReg_9 = m_profiles[pIndex].ColorReg;
+                AS.ProfileColorsDim_9 = m_profiles[pIndex].ColorDim;
+                AS.ProfileColorsInv_9 = m_profiles[pIndex].ColorInv;
+                pIndex++;
+                AS.Profile_10_Name = m_profiles[pIndex].PName;
+                AS.Profile_10 = m_profiles[pIndex].ProfileString( );
+                AS.FlowBreak_10 = m_profiles[pIndex].FlowBreakString( );
+                AS.Sequence_10 = m_profiles[pIndex].ItemPosString( );
+                AS.Profile_10_FontSize = (int)m_profiles[pIndex].FontSize;
+                AS.Profile_10_Placement = (int)m_profiles[pIndex].Placement;
+                AS.Profile_10_Kind = (int)m_profiles[pIndex].Kind;
+                AS.Profile_10_Condensed = m_profiles[pIndex].Condensed;
+                AS.Profile_10_Trans = (int)m_profiles[pIndex].Transparency;
+                AS.BgImageName_10 = m_profiles[pIndex].BgImageName;
+                AS.BgImageArea_10 = m_profiles[pIndex].BgImageBorder;
+                AS.ProfileFonts_10 = m_profiles[pIndex].Fonts;
+                AS.ProfileColorsReg_10 = m_profiles[pIndex].ColorReg;
+                AS.ProfileColorsDim_10 = m_profiles[pIndex].ColorDim;
+                AS.ProfileColorsInv_10 = m_profiles[pIndex].ColorInv;
 
-        // Finally Save
-        AppSettingsV2.Instance.Save( );
+                // Finally Save
+                AS.Save( );
+        */
 
         // Restart the GUI 
-        InitGUI( ); // redraw changes
+        InitGUI( );
       }
       // Dialog Cancelled, nothing changed
       HudBar.PingLoop.Mute = muted;
@@ -1035,64 +1135,64 @@ namespace FS20_HudBar
 
     #region Profile Selectors
 
-    // Menu Profile Selections 1..5
+    // Menu Profile Selections 1..10
     private void mP1_Click( object sender, EventArgs e )
     {
-      m_selProfile = 0;
+      m_config.SetProfile( DProfile.Profile_1 );
       InitGUI( );
     }
 
     private void mP2_Click( object sender, EventArgs e )
     {
-      m_selProfile = 1;
+      m_config.SetProfile( DProfile.Profile_2 );
       InitGUI( );
     }
 
     private void mP3_Click( object sender, EventArgs e )
     {
-      m_selProfile = 2;
+      m_config.SetProfile( DProfile.Profile_3 );
       InitGUI( );
     }
 
     private void mP4_Click( object sender, EventArgs e )
     {
-      m_selProfile = 3;
+      m_config.SetProfile( DProfile.Profile_4 );
       InitGUI( );
     }
 
     private void mP5_Click( object sender, EventArgs e )
     {
-      m_selProfile = 4;
+      m_config.SetProfile( DProfile.Profile_5 );
       InitGUI( );
     }
 
     private void mP6_Click( object sender, EventArgs e )
     {
-      m_selProfile = 5;
+      m_config.SetProfile( DProfile.Profile_6 );
       InitGUI( );
     }
 
     private void mP7_Click( object sender, EventArgs e )
     {
-      m_selProfile = 6;
+      m_config.SetProfile( DProfile.Profile_7 );
       InitGUI( );
     }
 
     private void mP8_Click( object sender, EventArgs e )
     {
-      m_selProfile = 7;
+      m_config.SetProfile( DProfile.Profile_8 );
       InitGUI( );
     }
 
     private void mP9_Click( object sender, EventArgs e )
     {
-      m_selProfile = 8;
+      m_config.SetProfile( DProfile.Profile_9 );
       InitGUI( );
     }
 
     private void mP10_Click( object sender, EventArgs e )
     {
-      m_selProfile = 9;
+      m_config.SetProfile( DProfile.Profile_10 );
       InitGUI( );
     }
 
@@ -1135,6 +1235,7 @@ namespace FS20_HudBar
     #endregion
 
     #region Shelf Selector
+
     private void mShelf_Click( object sender, EventArgs e )
     {
       if (m_shelf == null) return; // sanity check 
@@ -1230,6 +1331,7 @@ namespace FS20_HudBar
         else {
           // Tiles are bound to a border of the main screen
           switch (HUD.Placement) {
+            case GUI.Placement.TopStack:
             case GUI.Placement.Top:
               this.Location = new Point( this.Location.X + e.X - m_moveOffset.X, this.Location.Y );
               break;
@@ -1257,22 +1359,8 @@ namespace FS20_HudBar
 
       if ((e.Button & MouseButtons.Left) > 0) {
         m_moving = false;
-        HUD.Profile.UpdateLocation( this.Location );
-        // store new location per profile
-        switch (m_selProfile) {
-          case 0: AppSettingsV2.Instance.Profile_1_Location = this.Location; break;
-          case 1: AppSettingsV2.Instance.Profile_2_Location = this.Location; break;
-          case 2: AppSettingsV2.Instance.Profile_3_Location = this.Location; break;
-          case 3: AppSettingsV2.Instance.Profile_4_Location = this.Location; break;
-          case 4: AppSettingsV2.Instance.Profile_5_Location = this.Location; break;
-          case 5: AppSettingsV2.Instance.Profile_6_Location = this.Location; break;
-          case 6: AppSettingsV2.Instance.Profile_7_Location = this.Location; break;
-          case 7: AppSettingsV2.Instance.Profile_8_Location = this.Location; break;
-          case 8: AppSettingsV2.Instance.Profile_9_Location = this.Location; break;
-          case 9: AppSettingsV2.Instance.Profile_10_Location = this.Location; break;
-          default: AppSettingsV2.Instance.Profile_1_Location = this.Location; break;
-        }
-        AppSettingsV2.Instance.Save( );
+        m_config.UsedProfile.UpdateLocation( this.Location );
+        Configuration.SaveToSettings( m_config );
       }
     }
 
@@ -1288,74 +1376,98 @@ namespace FS20_HudBar
     {
       LOG.Log( "InitGUI", "Start" );
 
+      var AS = AppSettingsV2.Instance;
+
       timer1.Enabled = false; // stop asynch Timer events
       m_initDone = false; // stop updating values while reconfiguring
       SynchGUIVisible( false ); // hide, else we see all kind of shaping
 
       LOG.Log( "InitGUI", "FltPlanMgr Setup" );
-      FltPlanMgr.FlightPlanMode = (FSimClientIF.FlightPlanMode)AppSettingsV2.Instance.FltAutoSaveATC;
-      FltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
+      FltPlanMgr.FlightPlanMode = (FSimClientIF.FlightPlanMode)AS.FltAutoSaveATC;
+      FltPlanMgr.Enabled = AS.FltAutoSaveATC > 0;
       LOG.Log( "InitGUI", "FlightLogModule Setup" );
-      SC.SimConnectClient.Instance.FlightLogModule.Enabled = AppSettingsV2.Instance.FRecorder;
+      SC.SimConnectClient.Instance.FlightLogModule.Enabled = AS.FRecorder;
       LOG.Log( "InitGUI", "AirportMgr Reset" );
       AirportMgr.Reset( );
 
-      // Update profile selection items
+      // Update profile selection item names
       LOG.Log( "InitGUI", "Update profile selection" );
-      for (int i = 0; i < CProfile.c_numProfiles; i++) {
-        m_profileMenu[i].Text = m_profiles[i].PName;
-        m_profileMenu[i].Checked = false;
+      foreach (DProfile pe in Enum.GetValues( typeof( DProfile ) )) {
+        int index = (int)pe;
+        m_profileMenu[index].Text = m_config.Profiles[pe].PName;
+        m_profileMenu[index].Checked = false;
       }
-      m_profileMenu[m_selProfile].Checked = true;
-      mSelProfile.Text = m_profiles[m_selProfile].PName;
+      m_profileMenu[m_config.CurrentProfileIndex].Checked = true;
+      mSelProfile.Text = m_config.UsedProfileName;
       LOG.Log( "InitGUI", $"Selected profile {mSelProfile.Text}" );
+
       // Set the Window Title
-      this.Text = (string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance) + $" HudBar: {m_profiles[m_selProfile].PName}          - by bm98ch";
+      this.Text = (string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance) + $" HudBar: {m_config.UsedProfileName}          - by bm98ch";
 
       // create a catalog from Settings (serialized as item strings..)
       LOG.Log( "InitGUI", "Setup Hotkeys" );
       var _hotkeycat = new WinHotkeyCat( );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Show_Hide, AppSettingsV2.Instance.HKShowHide );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_1, AppSettingsV2.Instance.HKProfile1 );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_2, AppSettingsV2.Instance.HKProfile2 );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_3, AppSettingsV2.Instance.HKProfile3 );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_4, AppSettingsV2.Instance.HKProfile4 );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_5, AppSettingsV2.Instance.HKProfile5 );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_6, AppSettingsV2.Instance.HKProfile6 );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_7, AppSettingsV2.Instance.HKProfile7 );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_8, AppSettingsV2.Instance.HKProfile8 );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_9, AppSettingsV2.Instance.HKProfile9 );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_10, AppSettingsV2.Instance.HKProfile10 );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.FlightBag, AppSettingsV2.Instance.HKShelf );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.Camera, AppSettingsV2.Instance.HKCamera );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.ChecklistBox, AppSettingsV2.Instance.HKChecklistBox );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Show_Hide, m_config.HKShowHide );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_1, m_config.Profiles[DProfile.Profile_1].HKProfile );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_2, m_config.Profiles[DProfile.Profile_2].HKProfile );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_3, m_config.Profiles[DProfile.Profile_3].HKProfile );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_4, m_config.Profiles[DProfile.Profile_4].HKProfile );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_5, m_config.Profiles[DProfile.Profile_5].HKProfile );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_6, m_config.Profiles[DProfile.Profile_6].HKProfile );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_7, m_config.Profiles[DProfile.Profile_7].HKProfile );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_8, m_config.Profiles[DProfile.Profile_8].HKProfile );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_9, m_config.Profiles[DProfile.Profile_9].HKProfile );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_10, m_config.Profiles[DProfile.Profile_10].HKProfile );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.FlightBag, m_config.HKShelf );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.Camera, m_config.HKCamera );
+      _hotkeycat.MaintainHotkeyString( Hotkeys.ChecklistBox, m_config.HKChecklistBox );
       _hotkeycat.MaintainHotkeyString( Hotkeys.MoveBarToOtherWindow, "RShiftKey RControlKey Cancel" ); // not to configure (RCtrl-Shift-Break)
       foreach (var hk in _hotkeycat) {
         LOG.Log( "InitGUI", $"{hk.Key} - {hk.Value.AsString}" );
       }
 
-      // Init Colors from Settings
-      GUI_Colors.UpdateColorSet( ColorSet.BrightSet, GUI_Colors.FromConfigString( AppSettingsV2.Instance.UserColorsReg ) );
-      GUI_Colors.UpdateColorSet( ColorSet.DimmedSet, GUI_Colors.FromConfigString( AppSettingsV2.Instance.UserColorsDim ) );
-      GUI_Colors.UpdateColorSet( ColorSet.InverseSet, GUI_Colors.FromConfigString( AppSettingsV2.Instance.UserColorsInv ) );
+      // Init Colors from Config
+      LOG.Log( "InitGUI", "Setup Colors" );
+      GUI_Colors.SetColorSet( ColorSet.BrightSet, m_config.UsedColorSet( ColorSet.BrightSet ) );
+      GUI_Colors.SetColorSet( ColorSet.DimmedSet, m_config.UsedColorSet( ColorSet.DimmedSet ) );
+      GUI_Colors.SetColorSet( ColorSet.InverseSet, m_config.UsedColorSet( ColorSet.InverseSet ) );
+
+      // Add BG Image if needed
+      string bgImageName = m_config.UsedProfile.BgImageName;
+      if (!string.IsNullOrEmpty( bgImageName )) {
+        if (File.Exists( bgImageName )) {
+          Image img = null;
+          try {
+            // try to load and validate that it is an image to read..
+            img = Image.FromFile( bgImageName );
+            this.BackgroundImage = img;
+            this.BackgroundImageLayout = ImageLayout.Stretch;
+          }
+          catch (Exception ex) {
+            LOG.LogError( "InitGUI", $"Loading Background image failed with exception\n{ex}" );
+          }
+        }
+      }
+      else {
+        // disable BG image
+        this.BackgroundImage = null;
+      }
+      // set Border
+      m_frmGui.Padding = m_config.UsedProfile.BgImageBorder;
 
       // start the HudBar from scratch
       LOG.Log( "InitGUI", "Create HudBar" );
       HUD?.Dispose( ); // MUST ..
-      HUD = new HudBar( lblProto, valueProto, value2Proto, signProto,
-                          AppSettingsV2.Instance.KeyboardHook, AppSettingsV2.Instance.InGameHook, _hotkeycat,
-                          AppSettingsV2.Instance.FltAutoSaveATC,
-                          m_profiles[m_selProfile], AppSettingsV2.Instance.VoiceName, AppSettingsV2.Instance.OutputDeviceName, AppSettingsV2.Instance.UserFonts,
-                          AppSettingsV2.Instance.FRecorder );
+      HUD = new HudBar( lblProto, valueProto, value2Proto, signProto, _hotkeycat, m_config );
 
       // reread from config (change)
       LOG.Log( "InitGUI", "Reread Config changes" );
-      SetupKeyboardHook( true, AppSettingsV2.Instance.KeyboardHook );
-      SetupInGameHook( AppSettingsV2.Instance.InGameHook );
+      SetupKeyboardHook( true, AS.KeyboardHook );
+      SetupInGameHook( AS.InGameHook );
 
       // Prepare FLPanel to load controls
       // DON'T Suspend the Layout else the calculations below will not be valid, the form is invisible and no painting is done here
-      LOG.Log( "InitGUI", $"Reload FlowPanel with Kind: {HUD.Profile.Kind}, Placement: {HUD.Placement}" );
+      LOG.Log( "InitGUI", $"Reload FlowPanel with Kind: {m_config.UsedProfile.Kind}, Placement: {HUD.Placement}" );
 
       // suspend intermediate Size change Events as they are immediately obsolete
       _inLayout = true;
@@ -1373,17 +1485,17 @@ namespace FS20_HudBar
       this.FormBorderStyle = FormBorderStyle.None;
       if (HUD.Kind == GUI.Kind.Window) this.FormBorderStyle = FormBorderStyle.FixedToolWindow; // apply the border if needed
       // can move a tile kind profile (but not a bar or window - has it's own window border anyway)
-      this.Cursor = (HUD.Profile.Kind == GUI.Kind.Tile || HUD.Profile.Kind == GUI.Kind.WindowBL) ? Cursors.SizeAll : Cursors.Default;
+      this.Cursor = (m_config.UsedProfile.Kind == GUI.Kind.Tile || m_config.UsedProfile.Kind == GUI.Kind.WindowBL) ? Cursors.SizeAll : Cursors.Default;
       // set form opacity from Profile
-      this.Opacity = HUD.Profile.Opacity;
+      this.Opacity = m_config.UsedProfile.Opacity;
       // use Color Handler for the Form as well
       GUI_Colors.Register( this );
       UpdateColor( ); // apply initial setting 
 
 
       // init with the proposed location from profile
-      if (IsOnScreen( HUD.Profile.Location )) {
-        this.Location = HUD.Profile.Location;
+      if (IsOnScreen( m_config.UsedProfile.Location )) {
+        this.Location = m_config.UsedProfile.Location;
       }
       else {
         this.Location = new Point( 0, 0 ); // safe location
@@ -1450,8 +1562,8 @@ namespace FS20_HudBar
     //  moves the bar/tile to the next screen
     private void MoveBarToNextScreen( )
     {
-      if (m_profiles.ElementAt( m_selProfile ).Kind == GUI.Kind.Window) return; // Window is not attached to monitor
-      if (m_profiles.ElementAt( m_selProfile ).Kind == GUI.Kind.WindowBL) return; // Window is not attached to monitor
+      if (m_config.UsedProfile.Kind == GUI.Kind.Window) return; // Window is not attached to monitor
+      if (m_config.UsedProfile.Kind == GUI.Kind.WindowBL) return; // Window is not attached to monitor
 
       Screen[] screens = Screen.AllScreens;
       m_barScreenNumber++;

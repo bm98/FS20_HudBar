@@ -148,8 +148,11 @@ namespace DbgLib
 
       using (ScopeContext.PushNestedState( "InitLog" )) {
         LOG.Info( TagLine( "DGBLog - Init" ) );
-        LOG.Info( $"Debug:       {System.Reflection.Assembly.GetCallingAssembly( ).GetName( )}" );
-        LOG.Info( $"Application: {System.Reflection.Assembly.GetEntryAssembly( ).GetName( )}" );
+        try {
+          LOG.Info( $"Debug:       {System.Reflection.Assembly.GetCallingAssembly( ).GetName( )}" );
+          LOG.Info( $"Application: {System.Reflection.Assembly.GetEntryAssembly( ).GetName( )}" );
+        }
+        catch { }
       }
 
       CollectEnvironmentInformation( );

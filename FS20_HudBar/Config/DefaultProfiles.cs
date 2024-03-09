@@ -70,7 +70,7 @@ namespace FS20_HudBar.Config
           string profile = sr.ReadLine().Replace(',', CProfile.Divider); // allow to read comma and semi
           string order = sr.ReadLine().Replace(',', CProfile.Divider); // allow to read comma and semi
           string flowBreak = sr.ReadLine().Replace(',', CProfile.Divider); // allow to read comma and semi
-          _defaultProfileCat.Add( tag, new ProfileStore( pName, profile, order, flowBreak ) );
+          _defaultItemsCat.Add( tag, new ProfileItemsStore( pName, profile, order, flowBreak ) );
           // next
           line = sr.ReadLine( );
           tag++;
@@ -78,7 +78,7 @@ namespace FS20_HudBar.Config
       }
     }
 
-    private static Dictionary<DProfile, ProfileStore> _defaultProfileCat = new Dictionary<DProfile, ProfileStore>();
+    private static Dictionary<DProfile, ProfileItemsStore> _defaultItemsCat = new Dictionary<DProfile, ProfileItemsStore>();
 
     /// <summary>
     /// Add all menuitems to the dropdown menu
@@ -86,7 +86,7 @@ namespace FS20_HudBar.Config
     /// <param name="menu">A TS MenuItem</param>
     public static void AddMenuItems( ToolStripMenuItem menu, EventHandler onClick )
     {
-      for ( int i = 0; i < _defaultProfileCat.Count; i++ ) {
+      for ( int i = 0; i < _defaultItemsCat.Count; i++ ) {
         menu.DropDownItems.Add( GetDefaultProfile( (DProfile)i ).Name, null, onClick );
       }
     }
@@ -97,10 +97,10 @@ namespace FS20_HudBar.Config
     /// </summary>
     /// <param name="profile">The profile ID</param>
     /// <returns>The ProfileStore or null</returns>
-    public static ProfileStore GetDefaultProfile( DProfile profile )
+    public static ProfileItemsStore GetDefaultProfile( DProfile profile )
     {
-      if ( !_defaultProfileCat.ContainsKey( profile ) ) return null;
-      return _defaultProfileCat[profile];
+      if ( !_defaultItemsCat.ContainsKey( profile ) ) return null;
+      return _defaultItemsCat[profile];
     }
 
     /// <summary>
@@ -108,9 +108,9 @@ namespace FS20_HudBar.Config
     /// </summary>
     /// <param name="profileName">The profile Name</param>
     /// <returns>The ProfileStore or null</returns>
-    public static ProfileStore GetDefaultProfile( string profileName )
+    public static ProfileItemsStore GetDefaultProfile( string profileName )
     {
-      var dp = _defaultProfileCat.Where(x=> x.Value.Name == profileName );
+      var dp = _defaultItemsCat.Where(x=> x.Value.Name == profileName );
       if ( dp.Count( ) > 0 ) {
         return dp.First( ).Value;
       }

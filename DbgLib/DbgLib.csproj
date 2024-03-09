@@ -70,10 +70,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.22621.2428</Version>
+      <Version>10.0.22621.3233</Version>
     </PackageReference>
     <PackageReference Include="NLog">
-      <Version>5.2.5</Version>
+      <Version>5.2.8</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1364,7 +1364,7 @@ namespace FShelf
                   : (float)Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ) / 1_000f;
       RTF.Write( $"ZF Weight" ); RTF.WriteTab( $"{value:##0.000}" ); RTF.WriteLn( );
       RTF.Write( $"CG lon/lat" );
-      RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Acft_AcftCGlong_perc ) * 100f:#0.00} %  /  {SV.Get<float>( SItem.fG_Acft_AcftCGlat_perc ) * 100f:#0.00} %" );
+      RTF.WriteTab( $"{SV.Get<float>( SItem.fG_Acft_AcftCGlong_perc ):#0.00} %  /  {SV.Get<float>( SItem.fG_Acft_AcftCGlat_perc ):#0.00} %" );
       RTF.WriteLn( );
       value = lbs ? SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) / 1_000f
                   : (float)Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) ) / 1_000f;

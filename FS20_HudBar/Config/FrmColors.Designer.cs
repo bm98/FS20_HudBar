@@ -48,7 +48,7 @@
       this.label15 = new System.Windows.Forms.Label();
       this.label16 = new System.Windows.Forms.Label();
       this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-      this.label17 = new System.Windows.Forms.Label();
+      this.label18 = new System.Windows.Forms.Label();
       this.lblR01 = new System.Windows.Forms.Label();
       this.lblD01 = new System.Windows.Forms.Label();
       this.lblI01 = new System.Windows.Forms.Label();
@@ -94,22 +94,30 @@
       this.lblR16 = new System.Windows.Forms.Label();
       this.lblD16 = new System.Windows.Forms.Label();
       this.lblI16 = new System.Windows.Forms.Label();
-      this.lblRoBG = new System.Windows.Forms.Label();
-      this.lblDoBG = new System.Windows.Forms.Label();
-      this.lblIoBG = new System.Windows.Forms.Label();
       this.lblR04 = new System.Windows.Forms.Label();
       this.lblR05 = new System.Windows.Forms.Label();
       this.lblD04 = new System.Windows.Forms.Label();
       this.lblD05 = new System.Windows.Forms.Label();
       this.lblI04 = new System.Windows.Forms.Label();
       this.lblI05 = new System.Windows.Forms.Label();
+      this.label17 = new System.Windows.Forms.Label();
+      this.lblRoBG = new System.Windows.Forms.Label();
+      this.lblDoBG = new System.Windows.Forms.Label();
+      this.lblIoBG = new System.Windows.Forms.Label();
+      this.lblRoBGA = new System.Windows.Forms.Label();
+      this.lblDoBGA = new System.Windows.Forms.Label();
+      this.lblIoBGA = new System.Windows.Forms.Label();
       this.CDLG = new System.Windows.Forms.ColorDialog();
+      this.OFD = new System.Windows.Forms.OpenFileDialog();
+      this.lblUsingDefaults = new System.Windows.Forms.Label();
       this.tableLayoutPanel1.SuspendLayout();
       this.SuspendLayout();
       // 
       // btDefaults
       // 
-      this.btDefaults.Location = new System.Drawing.Point(12, 714);
+      this.btDefaults.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.btDefaults.ForeColor = System.Drawing.Color.Black;
+      this.btDefaults.Location = new System.Drawing.Point(12, 683);
       this.btDefaults.Name = "btDefaults";
       this.btDefaults.Size = new System.Drawing.Size(108, 31);
       this.btDefaults.TabIndex = 19;
@@ -119,9 +127,11 @@
       // 
       // btCancel
       // 
+      this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
       this.btCancel.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCancel.Location = new System.Drawing.Point(539, 720);
+      this.btCancel.ForeColor = System.Drawing.Color.Black;
+      this.btCancel.Location = new System.Drawing.Point(539, 689);
       this.btCancel.Name = "btCancel";
       this.btCancel.Size = new System.Drawing.Size(106, 25);
       this.btCancel.TabIndex = 18;
@@ -131,8 +141,10 @@
       // 
       // btAccept
       // 
+      this.btAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btAccept.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btAccept.Location = new System.Drawing.Point(402, 720);
+      this.btAccept.ForeColor = System.Drawing.Color.Black;
+      this.btAccept.Location = new System.Drawing.Point(402, 689);
       this.btAccept.Name = "btAccept";
       this.btAccept.Size = new System.Drawing.Size(106, 25);
       this.btAccept.TabIndex = 17;
@@ -357,6 +369,7 @@
       this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
       this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
       this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+      this.tableLayoutPanel1.Controls.Add(this.label18, 0, 19);
       this.tableLayoutPanel1.Controls.Add(this.label14, 0, 16);
       this.tableLayoutPanel1.Controls.Add(this.label9, 0, 11);
       this.tableLayoutPanel1.Controls.Add(this.label13, 0, 15);
@@ -428,10 +441,13 @@
       this.tableLayoutPanel1.Controls.Add(this.lblRoBG, 1, 18);
       this.tableLayoutPanel1.Controls.Add(this.lblDoBG, 2, 18);
       this.tableLayoutPanel1.Controls.Add(this.lblIoBG, 3, 18);
+      this.tableLayoutPanel1.Controls.Add(this.lblRoBGA, 1, 19);
+      this.tableLayoutPanel1.Controls.Add(this.lblDoBGA, 2, 19);
+      this.tableLayoutPanel1.Controls.Add(this.lblIoBGA, 3, 19);
       this.tableLayoutPanel1.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
       this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-      this.tableLayoutPanel1.RowCount = 19;
+      this.tableLayoutPanel1.RowCount = 20;
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
@@ -450,22 +466,23 @@
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
-      this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-      this.tableLayoutPanel1.Size = new System.Drawing.Size(633, 621);
+      this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+      this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+      this.tableLayoutPanel1.Size = new System.Drawing.Size(633, 650);
       this.tableLayoutPanel1.TabIndex = 21;
       // 
-      // label17
+      // label18
       // 
-      this.label17.AutoSize = true;
-      this.label17.Dock = System.Windows.Forms.DockStyle.Left;
-      this.label17.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label17.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.label17.Location = new System.Drawing.Point(3, 584);
-      this.label17.Name = "label17";
-      this.label17.Size = new System.Drawing.Size(145, 37);
-      this.label17.TabIndex = 21;
-      this.label17.Text = "Opaque Background";
-      this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      this.label18.AutoSize = true;
+      this.label18.Dock = System.Windows.Forms.DockStyle.Left;
+      this.label18.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label18.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label18.Location = new System.Drawing.Point(3, 616);
+      this.label18.Name = "label18";
+      this.label18.Size = new System.Drawing.Size(133, 34);
+      this.label18.TabIndex = 24;
+      this.label18.Text = "Active Background";
+      this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // lblR01
       // 
@@ -1134,51 +1151,6 @@
       this.lblI16.Text = "-15° C";
       this.lblI16.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       // 
-      // lblRoBG
-      // 
-      this.lblRoBG.AutoSize = true;
-      this.lblRoBG.BackColor = System.Drawing.Color.Black;
-      this.lblRoBG.Cursor = System.Windows.Forms.Cursors.Hand;
-      this.lblRoBG.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lblRoBG.Font = new System.Drawing.Font("Bahnschrift", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblRoBG.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.lblRoBG.Location = new System.Drawing.Point(173, 584);
-      this.lblRoBG.Name = "lblRoBG";
-      this.lblRoBG.Size = new System.Drawing.Size(144, 37);
-      this.lblRoBG.TabIndex = 22;
-      this.lblRoBG.Text = "TEXT";
-      this.lblRoBG.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      // 
-      // lblDoBG
-      // 
-      this.lblDoBG.AutoSize = true;
-      this.lblDoBG.BackColor = System.Drawing.Color.Black;
-      this.lblDoBG.Cursor = System.Windows.Forms.Cursors.Hand;
-      this.lblDoBG.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lblDoBG.Font = new System.Drawing.Font("Bahnschrift", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblDoBG.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.lblDoBG.Location = new System.Drawing.Point(323, 584);
-      this.lblDoBG.Name = "lblDoBG";
-      this.lblDoBG.Size = new System.Drawing.Size(144, 37);
-      this.lblDoBG.TabIndex = 23;
-      this.lblDoBG.Text = "TEXT";
-      this.lblDoBG.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      // 
-      // lblIoBG
-      // 
-      this.lblIoBG.AutoSize = true;
-      this.lblIoBG.BackColor = System.Drawing.Color.Black;
-      this.lblIoBG.Cursor = System.Windows.Forms.Cursors.Hand;
-      this.lblIoBG.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lblIoBG.Font = new System.Drawing.Font("Bahnschrift", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblIoBG.ForeColor = System.Drawing.Color.WhiteSmoke;
-      this.lblIoBG.Location = new System.Drawing.Point(473, 584);
-      this.lblIoBG.Name = "lblIoBG";
-      this.lblIoBG.Size = new System.Drawing.Size(144, 37);
-      this.lblIoBG.TabIndex = 23;
-      this.lblIoBG.Text = "TEXT";
-      this.lblIoBG.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-      // 
       // lblR04
       // 
       this.lblR04.AutoSize = true;
@@ -1268,15 +1240,131 @@
       this.lblI05.Text = "02:16:23";
       this.lblI05.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
       // 
+      // label17
+      // 
+      this.label17.AutoSize = true;
+      this.label17.Dock = System.Windows.Forms.DockStyle.Left;
+      this.label17.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label17.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.label17.Location = new System.Drawing.Point(3, 584);
+      this.label17.Name = "label17";
+      this.label17.Size = new System.Drawing.Size(145, 32);
+      this.label17.TabIndex = 21;
+      this.label17.Text = "Opaque Background";
+      this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lblRoBG
+      // 
+      this.lblRoBG.AutoSize = true;
+      this.lblRoBG.BackColor = System.Drawing.Color.Black;
+      this.lblRoBG.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.lblRoBG.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.lblRoBG.Font = new System.Drawing.Font("Bahnschrift", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblRoBG.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblRoBG.Location = new System.Drawing.Point(173, 584);
+      this.lblRoBG.Name = "lblRoBG";
+      this.lblRoBG.Size = new System.Drawing.Size(144, 32);
+      this.lblRoBG.TabIndex = 22;
+      this.lblRoBG.Text = "TEXT";
+      this.lblRoBG.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+      // 
+      // lblDoBG
+      // 
+      this.lblDoBG.AutoSize = true;
+      this.lblDoBG.BackColor = System.Drawing.Color.Black;
+      this.lblDoBG.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.lblDoBG.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.lblDoBG.Font = new System.Drawing.Font("Bahnschrift", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblDoBG.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblDoBG.Location = new System.Drawing.Point(323, 584);
+      this.lblDoBG.Name = "lblDoBG";
+      this.lblDoBG.Size = new System.Drawing.Size(144, 32);
+      this.lblDoBG.TabIndex = 23;
+      this.lblDoBG.Text = "TEXT";
+      this.lblDoBG.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+      // 
+      // lblIoBG
+      // 
+      this.lblIoBG.AutoSize = true;
+      this.lblIoBG.BackColor = System.Drawing.Color.Black;
+      this.lblIoBG.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.lblIoBG.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.lblIoBG.Font = new System.Drawing.Font("Bahnschrift", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblIoBG.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblIoBG.Location = new System.Drawing.Point(473, 584);
+      this.lblIoBG.Name = "lblIoBG";
+      this.lblIoBG.Size = new System.Drawing.Size(144, 32);
+      this.lblIoBG.TabIndex = 23;
+      this.lblIoBG.Text = "TEXT";
+      this.lblIoBG.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+      // 
+      // lblRoBGA
+      // 
+      this.lblRoBGA.AutoSize = true;
+      this.lblRoBGA.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(75)))));
+      this.lblRoBGA.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.lblRoBGA.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.lblRoBGA.Font = new System.Drawing.Font("Bahnschrift", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblRoBGA.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblRoBGA.Location = new System.Drawing.Point(173, 616);
+      this.lblRoBGA.Name = "lblRoBGA";
+      this.lblRoBGA.Size = new System.Drawing.Size(144, 34);
+      this.lblRoBGA.TabIndex = 22;
+      this.lblRoBGA.Text = "Action";
+      this.lblRoBGA.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+      // 
+      // lblDoBGA
+      // 
+      this.lblDoBGA.AutoSize = true;
+      this.lblDoBGA.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(75)))));
+      this.lblDoBGA.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.lblDoBGA.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.lblDoBGA.Font = new System.Drawing.Font("Bahnschrift", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblDoBGA.ForeColor = System.Drawing.Color.WhiteSmoke;
+      this.lblDoBGA.Location = new System.Drawing.Point(323, 616);
+      this.lblDoBGA.Name = "lblDoBGA";
+      this.lblDoBGA.Size = new System.Drawing.Size(144, 34);
+      this.lblDoBGA.TabIndex = 22;
+      this.lblDoBGA.Text = "Action";
+      this.lblDoBGA.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+      // 
+      // lblIoBGA
+      // 
+      this.lblIoBGA.AutoSize = true;
+      this.lblIoBGA.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(214)))), ((int)(((byte)(252)))));
+      this.lblIoBGA.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.lblIoBGA.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.lblIoBGA.Font = new System.Drawing.Font("Bahnschrift", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblIoBGA.ForeColor = System.Drawing.Color.Black;
+      this.lblIoBGA.Location = new System.Drawing.Point(473, 616);
+      this.lblIoBGA.Name = "lblIoBGA";
+      this.lblIoBGA.Size = new System.Drawing.Size(144, 34);
+      this.lblIoBGA.TabIndex = 22;
+      this.lblIoBGA.Text = "Action";
+      this.lblIoBGA.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+      // 
       // CDLG
       // 
       this.CDLG.FullOpen = true;
+      // 
+      // OFD
+      // 
+      this.OFD.AddExtension = false;
+      this.OFD.FileName = "BackgroundImage.png";
+      // 
+      // lblUsingDefaults
+      // 
+      this.lblUsingDefaults.Location = new System.Drawing.Point(130, 687);
+      this.lblUsingDefaults.Name = "lblUsingDefaults";
+      this.lblUsingDefaults.Size = new System.Drawing.Size(24, 24);
+      this.lblUsingDefaults.TabIndex = 22;
       // 
       // FrmColors
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
       this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-      this.ClientSize = new System.Drawing.Size(665, 757);
+      this.ClientSize = new System.Drawing.Size(665, 722);
+      this.Controls.Add(this.lblUsingDefaults);
       this.Controls.Add(this.tableLayoutPanel1);
       this.Controls.Add(this.btDefaults);
       this.Controls.Add(this.btCancel);
@@ -1289,6 +1377,7 @@
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Configure HudBar Colors";
       this.Load += new System.EventHandler(this.FrmColors_Load);
+      this.Shown += new System.EventHandler(this.FrmColors_Shown);
       this.tableLayoutPanel1.ResumeLayout(false);
       this.tableLayoutPanel1.PerformLayout();
       this.ResumeLayout(false);
@@ -1373,5 +1462,11 @@
     private System.Windows.Forms.Label lblDoBG;
     private System.Windows.Forms.Label lblIoBG;
     private System.Windows.Forms.ColorDialog CDLG;
+    private System.Windows.Forms.OpenFileDialog OFD;
+    private System.Windows.Forms.Label label18;
+    private System.Windows.Forms.Label lblRoBGA;
+    private System.Windows.Forms.Label lblDoBGA;
+    private System.Windows.Forms.Label lblIoBGA;
+    private System.Windows.Forms.Label lblUsingDefaults;
   }
 }

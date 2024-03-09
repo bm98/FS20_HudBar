@@ -28,7 +28,7 @@ namespace bm98_Map.Drawing
     ///  we copy refs and do not create new object other than the subitem list
     /// </summary>
     /// <param name="other">The object to create this from</param>
-    public ManagedHookItem( HookItem other )
+    public ManagedHookItem( ManagedHookItem other )
       : base( other )
     {
     }

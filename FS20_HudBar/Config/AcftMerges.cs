@@ -61,7 +61,7 @@ namespace FS20_HudBar.Config
               acft = e[e.Length - 1]; // last element
               if ( acft.Length > 1 ) {
                 // only if we have a name (min 2chars long)
-                _aircraftProfileCat.Add( new ProfileStore( acft, profile, "", "" ) );
+                _aircraftProfileCat.Add( new ProfileItemsStore( acft, profile, "", "" ) );
               }
               break;
             }
@@ -80,7 +80,7 @@ namespace FS20_HudBar.Config
     /// The Aircraft Merging Profiles we have provided
     ///  NOTE: only the Profile item is used, the others are not merged as we don't rearrange things while merging
     /// </summary>
-    private static List<ProfileStore> _aircraftProfileCat = new List<ProfileStore>();
+    private static List<ProfileItemsStore> _aircraftProfileCat = new List<ProfileItemsStore>();
 
     /// <summary>
     /// Add all menuitems to the dropdown menu
@@ -98,7 +98,7 @@ namespace FS20_HudBar.Config
     /// </summary>
     /// <param name="acftName">The profile Name</param>
     /// <returns>The ProfileStore or null</returns>
-    public static ProfileStore GetAircraftProfile( string acftName )
+    public static ProfileItemsStore GetAircraftProfile( string acftName )
     {
       var dp = _aircraftProfileCat.Where(x=> x.Name == acftName );
       if ( dp.Count( ) > 0 ) {

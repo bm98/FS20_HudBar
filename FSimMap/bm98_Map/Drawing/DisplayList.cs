@@ -11,7 +11,6 @@ namespace bm98_Map.Drawing
   /// <summary>
   /// The list of items to paint
   /// </summary>
-//  internal class DisplayList : List<IDrawing>
   internal class DisplayList : ConcurrentDictionary<int, IDrawing>
   {
 
@@ -21,7 +20,9 @@ namespace bm98_Map.Drawing
     /// <param name="item">A Display Item</param>
     public void AddItem( DisplayItem item )
     {
-      this.TryAdd( item.Key, item );
+      if (this.TryAdd( item.Key, item )) return;
+
+      ; // DEBUG STOP
     }
 
     /// <summary>
@@ -31,7 +32,9 @@ namespace bm98_Map.Drawing
     /// <param name="key">The key</param>
     public void RemoveItem( int key )
     {
-      this.TryRemove( key, out IDrawing _ );
+     if ( this.TryRemove( key, out IDrawing _ )) return;
+
+      ; // DEBUG STOP
     }
 
     /// <summary>
@@ -62,7 +65,8 @@ namespace bm98_Map.Drawing
     /// <param name="MapToPixel">Function which converts Coordinates to canvas pixels</param>
     public void Paint( Graphics g, Func<CoordLib.LatLon, Point> MapToPixel )
     {
-      foreach (var i in this.Values) {
+      // the concurrent dict does not return the entries in the added order when enumerating the dict... but line segments prefer to be ordered...
+      foreach (var i in this.Values.OrderBy(k=>k.Key)) {
         i.Paint( g, MapToPixel );
       }
     }

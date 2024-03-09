@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using static FS20_HudBar.GUI.GUI_Colors;
 
 namespace FS20_HudBar.GUI
@@ -17,6 +18,11 @@ namespace FS20_HudBar.GUI
     /// cTor: empty
     /// </summary>
     public GUI_ColorSet( ) { }
+
+    /// <summary>
+    /// True when the ColorSet is empty
+    /// </summary>
+    public bool IsEmpty => this.Count == 0;
 
     /// <summary>
     /// cTor: Copy
@@ -36,6 +42,27 @@ namespace FS20_HudBar.GUI
     {
       return new GUI_ColorSet( this );
     }
+
+    /// <summary>
+    /// Returns true if this equals the other
+    /// </summary>
+    /// <param name="other">A ColorSet</param>
+    /// <returns>True when equal</returns>
+    public bool Equals( GUI_ColorSet other )
+    {
+      if (this.Count != other.Count) return false;
+
+      foreach (var item in other) {
+        if (this.ContainsKey( item.Key )) {
+          if (!this[item.Key].Equals( other[item.Key] )) return false;
+        }
+        else {
+          return false;
+        }
+      }
+      return true;
+    }
+
 
   }
 }

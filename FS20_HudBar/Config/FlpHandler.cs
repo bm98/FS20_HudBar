@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 using FS20_HudBar.Bar;
 using FS20_HudBar.Bar.Items;
+
 using static FS20_HudBar.Config.CProfile;
 
 namespace FS20_HudBar.Config
@@ -21,7 +22,7 @@ namespace FS20_HudBar.Config
   internal class FlpHandler : IDisposable
   {
     // Profile Index (GUI Column) 0...
-    private int m_pIndex = 0; 
+    private int m_pIndex = 0;
     // The managed FlowLayoutPanel
     private FlowLayoutPanel m_flpRef = null;
     // the items handler
@@ -101,9 +102,12 @@ namespace FS20_HudBar.Config
           Enabled = i != LItem.MSFS, // Disable unckecking of MSFS Status
           Checked = m_items.CheckedFor( i ),
           Visible = !BarItems.IsINOP( i ), // hide INOPs
-          BackColor = BreakColorFromEnum( m_items.FlowBreakFor( i ) )
+          BackColor = BreakColorFromEnum( m_items.FlowBreakFor( i ) ),
+          ContextMenu = null, // avoid context menues for items
         };
         // Mouse Handlers
+        cb.MouseEnter += Cb_MouseEnter;
+        cb.MouseLeave += Cb_MouseLeave;
         cb.MouseDown += Cb_MouseDown;
         cb.MouseUp += Cb_MouseUp;
         cb.MouseMove += Cb_MouseMove;
@@ -139,7 +143,6 @@ namespace FS20_HudBar.Config
       // only now layout the FLPanel
       m_flpRef.ResumeLayout( );
     }
-
 
     private void ClearOldControls( )
     {
@@ -200,10 +203,10 @@ namespace FS20_HudBar.Config
     /// Get the items from current FLP and return them as DefaultProfile obj
     /// </summary>
     /// <returns>A filled DefaultProfile</returns>
-    public ProfileStore GetProfileStoreFromFlp( )
+    public ProfileItemsStore GetProfileStoreFromFlp( )
     {
       UpdateFromFlp( );
-      return new ProfileStore( "COPY", m_items.ProfileString( ), m_items.ItemPosString( ), m_items.FlowBreakString( ) );
+      return new ProfileItemsStore( "COPY", m_items.ProfileString( ), m_items.ItemPosString( ), m_items.FlowBreakString( ) );
     }
 
     /// <summary>
@@ -222,7 +225,7 @@ namespace FS20_HudBar.Config
     /// Load and overwrite items from a default profile
     /// </summary>
     /// <param name="defaultProfile">The default profile object</param>
-    public void LoadDefaultProfile( ProfileStore defaultProfile )
+    public void LoadDefaultProfile( ProfileItemsStore defaultProfile )
     {
       if (defaultProfile == null) return; // sanity, defaultProfile does not exist
 
@@ -319,6 +322,12 @@ namespace FS20_HudBar.Config
 
     #region Mouse + Drag and Drop Handling
 
+    /// <summary>
+    /// True when the mouse is over an item
+    /// </summary>
+    public bool MouseOverItem => _overItem;
+
+    private bool _overItem = false;
     // DD vars
     private Rectangle dragBoxFromMouseDown;
     private string dragSourceKey = "";
@@ -329,6 +338,9 @@ namespace FS20_HudBar.Config
     //  final outcome depends on the validity of the move
     private void Cb_DragDrop( object sender, DragEventArgs e )
     {
+      // sanity
+      if (!(sender is CheckBox)) return;
+
       var dropDest = sender as CheckBox;
       // Ensure that the dropped item is at least a CheckBox item
       if (e.Data.GetDataPresent( typeof( CheckBox ) )) {
@@ -354,6 +366,9 @@ namespace FS20_HudBar.Config
     // fired whenever a move over a drop destination is detected
     private void Cb_DragOver( object sender, DragEventArgs e )
     {
+      // sanity
+      if (!(sender is CheckBox)) return;
+
       var dropDest = sender as CheckBox;
       if (!e.Data.GetDataPresent( typeof( CheckBox ) )) {
         e.Effect = DragDropEffects.None; // source is not a checkbox
@@ -382,6 +397,9 @@ namespace FS20_HudBar.Config
 
     private void Cb_GiveFeedback( object sender, GiveFeedbackEventArgs e )
     {
+      // sanity
+      if (!(sender is CheckBox)) return;
+
       var cb = sender as CheckBox;
       if (cb.Name == dragSourceKey) {
         e.UseDefaultCursors = false;
@@ -394,13 +412,15 @@ namespace FS20_HudBar.Config
       }
     }
 
-
     // Handle the Mouse Down Event (we don't get right clicks from a CheckBox)
     private void Cb_MouseDown( object sender, MouseEventArgs e )
     {
+      // sanity
+      if (!(sender is CheckBox)) return;
+
       var cb = sender as CheckBox;
       // RIGHT Button - Cycle the FlowBreak/DivBreak/None when the RIGHT button is down
-      if (e.Button == MouseButtons.Right) {
+      if ((e.Button & MouseButtons.Right) > 0) {
         if ((char)cb.Tag == FlowBreakTag) {
           // change to DB1
           cb.BackColor = GUI.GUI_Colors.c_DB1Col;
@@ -423,7 +443,7 @@ namespace FS20_HudBar.Config
         }
       }
       // LEFT Button - Start to MOVE a CheckBox
-      else if (e.Button == MouseButtons.Left) {
+      else if ((e.Button & MouseButtons.Left) > 0) {
         // cannot move MSFS Status which remains the first item in the FLPanel all the time
         if (cb.Name == m_flpRef.Controls[0].Name) {
           dragSourceKey = "";
@@ -448,8 +468,10 @@ namespace FS20_HudBar.Config
     // fired on release 
     private void Cb_MouseUp( object sender, MouseEventArgs e )
     {
-      var cb = sender as CheckBox;
+      // sanity
+      if (!(sender is CheckBox)) return;
 
+      var cb = sender as CheckBox;
       if (cb.Name == dragSourceKey) {
         // released over the source item
         dragSourceKey = "";
@@ -463,6 +485,9 @@ namespace FS20_HudBar.Config
     //  check if we need to visualize the re-arrange of items
     private void Cb_MouseMove( object sender, MouseEventArgs e )
     {
+      // sanity
+      if (!(sender is CheckBox)) return;
+
       var cb = sender as CheckBox;
       if (cb.Name == dragSourceKey) {
         // moved within the originating Control
@@ -473,6 +498,16 @@ namespace FS20_HudBar.Config
         }
       }
       // moves across other items are handled as DD_Over above
+    }
+
+    private void Cb_MouseLeave( object sender, EventArgs e )
+    {
+      _overItem = false;
+    }
+
+    private void Cb_MouseEnter( object sender, EventArgs e )
+    {
+      _overItem = true;
     }
 
     #endregion

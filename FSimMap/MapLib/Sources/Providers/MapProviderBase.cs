@@ -9,10 +9,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using CoordLib.MercatorTiles;
+
 using DbgLib;
+
 using MapLib.Service;
 
 namespace MapLib.Sources.Providers
@@ -320,6 +323,14 @@ namespace MapLib.Sources.Providers
 
     #region HTTP chores
 
+    #region Throttling
+
+    // A Semaphore to allow limited parallel HTTP usage
+    private Semaphore _httpToken = new Semaphore( 2, 2 ); // 2: may use OSM policy
+
+
+    #endregion
+
     #region Authorization
 
     string _authorization = string.Empty;
@@ -371,6 +382,11 @@ namespace MapLib.Sources.Providers
 
       // Query the Server and convert the replied data (if possible)
       try {
+        // ask for permission to use HTTP
+        //Console.WriteLine($"WaitOne for {mapImageID}" );
+        _httpToken.WaitOne();
+        //Console.WriteLine( $"GotOne for {mapImageID}" );
+
         using (var response = _client.GetAsync( url ).GetAwaiter( ).GetResult( )) {
           // check the response for common status failures
           response.EnsureSuccessStatusCode( );
@@ -399,7 +415,7 @@ namespace MapLib.Sources.Providers
         }
         else if ((ex is WebException) && (ex as WebException).Status == WebExceptionStatus.ProtocolError) {
           var status = ((HttpWebResponse)(ex as WebException).Response).StatusCode;
-          LOG.Log( "MapProviderBase.GetTileImageUsingHttp", "HttpWebResponse Status: {status} ({(int)status})" );
+          LOG.Log( "MapProviderBase.GetTileImageUsingHttp", $"HttpWebResponse Status: {status} ({(int)status})" );
           if ((status == HttpStatusCode.GatewayTimeout) || (status == HttpStatusCode.RequestTimeout)) {
             retry = true;
           }
@@ -407,13 +423,18 @@ namespace MapLib.Sources.Providers
         else if ((ex is WebException) && ((int)((HttpWebResponse)(ex as WebException).Response).StatusCode == 418)) {
           // seems OSM responds with the teapot code when blocking...
           var status = ((HttpWebResponse)(ex as WebException).Response).StatusCode;
-          LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", "HttpWebResponse Status: {status} ({(int)status})" );
+          LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", $"HttpWebResponse Status: {status} ({(int)status})" );
           retry = false; // never retry
         }
         else {
-          LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", "Response Exception:\n{ex}\nURL:${url}" );
+          LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", $"Response Exception:\n{ex}\nURL:${url}" );
           retry = false; // never retry
         }
+      }
+      finally {
+        // free Sema
+        //Console.WriteLine( $"ReleaseOne for {mapImageID}" );
+        _httpToken.Release();
       }
 
       // add a failed Image instead of nothing

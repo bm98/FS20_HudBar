@@ -88,7 +88,10 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = SV.Get<float>( SItem.fGS_Trm_AileronTrim_prct100 ) * 100f;
+        float trim = SV.Get<float>( SItem.fGS_Trm_AileronTrim_prct100 );
+        _value1.Value = trim * 100f;
+        // warn if beyond 90%
+        _value1.ItemBackColor = (Math.Abs( trim ) > 0.9) ? GUI_Colors.ColorType.cWarnBG : GUI_Colors.ColorType.cBG;
       }
     }
 

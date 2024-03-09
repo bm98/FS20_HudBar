@@ -198,46 +198,13 @@ namespace FS20_HudBar.Bar
     // SimVar access
     private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
 
-    /// <summary>
-    /// The currently used profile settings for the Bar
-    /// </summary>
-    public CProfile Profile => _profile;
-    private CProfile _profile = null;     // currently used profile
+    // as given by the caller
+    private Configuration _configRef = null;
 
     /// <summary>
     /// The Configured Hotkeys
     /// </summary>
     public WinHotkeyCat Hotkeys { get; private set; }
-
-    /// <summary>
-    /// Use Keyboard Hook if true
-    /// </summary>
-    public bool KeyboardHook { get; private set; } = false;
-
-    /// <summary>
-    /// Use InGame Hook if true
-    /// </summary>
-    public bool InGameHook { get; private set; } = false;
-
-    /// <summary>
-    /// Use Flight Recorder if true
-    /// </summary>
-    public bool FlightRecorder { get; private set; } = false;
-
-    /// <summary>
-    /// FLT File AutoSave and FlightPlan Handler Enabled
-    /// </summary>
-    public FSimClientIF.FlightPlanMode FltAutoSave { get; private set; } = FSimClientIF.FlightPlanMode.Disabled;
-
-    /// <summary>
-    /// The used VoiceName
-    /// </summary>
-    public string VoiceName { get; private set; } = "";
-
-    /// <summary>
-    /// The used OutputDeviceName
-    /// </summary>
-    public string OutputDeviceName { get; private set; } = "";
 
     /// <summary>
     /// Provide acces to the VoicePack
@@ -257,22 +224,17 @@ namespace FS20_HudBar.Bar
     /// </summary>
     /// <param name="item">A Label item</param>
     /// <returns>True if it is shown</returns>
-    public bool ShowItem( LItem item ) => _profile.IsShowItem( item );
-
-    /// <summary>
-    /// The Current FontSize to use
-    /// </summary>
-    public FontSize FontSize => _profile.FontSize;
+    public bool ShowItem( LItem item ) => _configRef.UsedProfile.IsShowItem( item );
 
     /// <summary>
     /// Placement of the Bar
     /// </summary>
-    public Placement Placement => _profile.Placement;
+    public Placement Placement => _configRef.UsedProfile.Placement;
 
     /// <summary>
     /// Display Kind of the Bar
     /// </summary>
-    public Kind Kind => _profile.Kind;
+    public Kind Kind => _configRef.UsedProfile.Kind;
 
     /// <summary>
     /// The Tooltip control for the FP
@@ -300,7 +262,6 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public Label ProtoValue2Ref { get; private set; }
 
-
     // maintain collections of the created Controls to do the processing
     // One collection contains the actionable interface
     // The second collection the WinForm Control itself (to act on the Control interface)
@@ -320,32 +281,23 @@ namespace FS20_HudBar.Bar
     /// <param name="valueProto">A GUI prototype value, carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="value2Proto">A GUI prototype value type 2, carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="signProto">A GUI prototype icon(Wingdings), carrying fonts, colors etc (set in GUI design mode)</param>
-    /// <param name="cProfile">The current Profile</param>
-    /// <param name="voiceName">The current VoiceName</param>
-    /// <param name="outputDeviceName">The output DeviceName</param>
-    /// <param name="userFonts">User Fonts as ConfigString</param>
-    /// <param name="fRecorder">FlightRecorder Enabled</param>
+    /// <param name="config">The actual configuration obj</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
-                      bool keyboardHook, bool inGameHook, WinHotkeyCat hotkeys,
-                      int autoSave, CProfile cProfile, string voiceName, string outputDeviceName, string userFonts,
-                      bool fRecorder )
+                   WinHotkeyCat hotkeys, Configuration config )
     {
       LOG.Log( "cTor HudBar: Start" );
-      // just save them in the HUD mainly for config purpose
-      _profile = cProfile;
+
+      // use config items here
+      _configRef = config;
+
       Hotkeys = hotkeys.Copy( );
-      KeyboardHook = keyboardHook;
-      InGameHook = inGameHook;
-      FltAutoSave = (FSimClientIF.FlightPlanMode)autoSave;
       // Voice and Sounds
       VoiceEnabled = false; // disable, else we get early talks..
-      VoiceName = voiceName;
-      _ = m_speech.SetVoice( VoiceName );
-      OutputDeviceName = outputDeviceName;
-      m_speech.SetOutputDevice( outputDeviceName );
-      m_ping.SelectOutputDevice( outputDeviceName );
+      _ = m_speech.SetVoice( _configRef.VoiceName );
+      m_speech.SetOutputDevice( _configRef.OutputDeviceName );
+      m_ping.SelectOutputDevice( _configRef.OutputDeviceName );
+      m_voicePack.SetFromConfigString( _configRef.VoiceCalloutProfile );
 
-      FlightRecorder = fRecorder;
       ProtoLabelRef = lblProto;
       ProtoValueRef = valueProto;
       ProtoValue2Ref = value2Proto;
@@ -363,11 +315,11 @@ namespace FS20_HudBar.Bar
 
       // init the Fontprovider from the submitted labels
       LOG.Log( "cTor HudBar: Init Fontprovider" );
-      FONTS = new GUI_Fonts( _profile.Condensed ); // get all fonts from built in
-      FONTS.FromConfigString( userFonts ); // and load from AppSettings
+      FONTS = new GUI_Fonts( _configRef.UsedProfile.Condensed ); // get all fonts from built in
+      FONTS.FromConfigString( _configRef.UsedFontsConfigString ); // and load from Config
 
       // set desired size
-      FONTS.SetFontsize( _profile.FontSize );
+      FONTS.SetFontsize( _configRef.UsedProfile.FontSize );
 
       // and prepare the prototype Controls used below - not really clever but handier to have all label defaults ....
       lblProto.Font = (Font)FONTS.LabelFont.Clone( );   // need to use a Clone, else the Controls throw Parameter Error on Height ?? 
@@ -576,7 +528,10 @@ namespace FS20_HudBar.Bar
       }
 
       // Align the Vertical alignment accross the bar
-      if (_profile.Placement == Placement.Top || _profile.Placement == Placement.Bottom) {
+      if (_configRef.UsedProfile.Placement == Placement.Top
+        || _configRef.UsedProfile.Placement == Placement.TopStack
+        || _configRef.UsedProfile.Placement == Placement.Bottom) {
+
         // Set min size of the labels in order to have them better aligned
         // Using arrow chars gets a larger height than regular ASCII chars (odd autosize behavior)
         // Setting minSize to the Max found height of any at least allows for some hotizontal alignment
@@ -600,17 +555,18 @@ namespace FS20_HudBar.Bar
 
       // Align the Value columns on left and right bound bar or tile
       LOG.Log( $"cTor HudBar: Aligning DI items" );
-      if (_profile.Placement == Placement.Left || _profile.Placement == Placement.Right) {
+      if (_configRef.UsedProfile.Placement == Placement.Left
+        || _configRef.UsedProfile.Placement == Placement.Right) {
         // Determine max width and make them aligned
         int maxLabelWidth = 0;
         int max1ValueWidth = 0; // the Single Value DispItems Value label 
         Queue<int> max1ValueWidthList = new Queue<int>( );
-        foreach (var lItem in Profile.ItemPosList( )) {
+        foreach (var lItem in _configRef.UsedProfile.ItemPosList( )) {
           var dix = DispItem( lItem );
           if (dix != null) {
             maxLabelWidth = (dix.Controls[0].Width > maxLabelWidth) ? dix.Controls[0].Width : maxLabelWidth;
             // collect per column
-            if (Profile.IsBreakItem( lItem )) {
+            if (_configRef.UsedProfile.IsBreakItem( lItem )) {
               max1ValueWidthList.Enqueue( max1ValueWidth );
               max1ValueWidth = 0;
             }
@@ -624,11 +580,11 @@ namespace FS20_HudBar.Bar
 
         // pad the label control to the right to have the value columns aligned
         max1ValueWidth = max1ValueWidthList.Dequeue( );
-        foreach (var lItem in Profile.ItemPosList( )) {
+        foreach (var lItem in _configRef.UsedProfile.ItemPosList( )) {
           var dix = DispItem( lItem );
           if (dix != null) {
             // get the next column width
-            if (Profile.IsBreakItem( lItem )) {
+            if (_configRef.UsedProfile.IsBreakItem( lItem )) {
               max1ValueWidth = max1ValueWidthList.Dequeue( );
             }
             if (dix.Controls.Count == 2 && !(dix.Controls[1] is V_Steps) && !(dix.Controls[1] is V_Text)) {
@@ -774,59 +730,7 @@ namespace FS20_HudBar.Bar
       Hotkeys = hotkeys.Copy( );
     }
 
-    /// <summary>
-    /// Set the current keyboardHook flag communicated by the HUD
-    /// </summary>
-    /// <param name="keyboardHook"></param>
-    public void SetKeyboardHook( bool keyboardHook )
-    {
-      KeyboardHook = keyboardHook;
-    }
-
-    /// <summary>
-    /// Set the current InGame Hook flag communicated by the HUD
-    /// </summary>
-    /// <param name="inGameHook"></param>
-    public void SetInGameHook( bool inGameHook )
-    {
-      InGameHook = inGameHook;
-    }
-
-    /// <summary>
-    /// Set the Flight Recorder enabled flag
-    /// </summary>
-    /// <param name="fRec"></param>
-    public void SetFlightRecorder( bool fRec )
-    {
-      FlightRecorder = fRec;
-    }
-
-    /// <summary>
-    /// Set the current FltAutoSave communicated by the HUD
-    /// </summary>
-    /// <param name="opacity"></param>
-    public void SetFltAutoSave( FSimClientIF.FlightPlanMode autoSave )
-    {
-      FltAutoSave = autoSave;
-    }
-
-    /// <summary>
-    /// Set the current VoiceName communicated by the HUD
-    /// </summary>
-    /// <param name="voiceName"></param>
-    public void SetVoiceName( string voiceName )
-    {
-      VoiceName = voiceName;
-    }
-
-    /// <summary>
-    /// Set the current outputDeviceName communicated by the HUD
-    /// </summary>
-    /// <param name="outputDeviceName"></param>
-    public void SetOutputDeviceName( string outputDeviceName )
-    {
-      OutputDeviceName = outputDeviceName;
-    }
+    // session settings
 
     /// <summary>
     /// Set the Altitude Display to Metric
@@ -861,7 +765,6 @@ namespace FS20_HudBar.Bar
       }
     }
 
-
     #endregion
 
     #region FlowLayout Panel Handling
@@ -879,6 +782,7 @@ namespace FS20_HudBar.Bar
 
       // set the Panel Alignment 
       switch (this.Placement) {
+        case GUI.Placement.TopStack:
         case GUI.Placement.Top: flp.FlowDirection = FlowDirection.LeftToRight; break;
         case GUI.Placement.Bottom: flp.FlowDirection = FlowDirection.LeftToRight; break;
         case GUI.Placement.Left: flp.FlowDirection = FlowDirection.TopDown; break;
@@ -892,7 +796,7 @@ namespace FS20_HudBar.Bar
       // Walk through all DispItems from the Bar
       foreach (LItem i in Enum.GetValues( typeof( LItem ) )) {
         // using the enum index only to count from 0..max items
-        var key = this.Profile.ItemKeyFromPos( (int)i );
+        var key = _configRef.UsedProfile.ItemKeyFromPos( (int)i );
         // The DispItem is a FlowPanel containing the Label and maybe some Values
         var di = this.DispItem( key );
         if (di != null) {
@@ -902,9 +806,9 @@ namespace FS20_HudBar.Bar
             // this takes breaks from not visible items too
             if (registeredBreak == GUI.BreakType.None) {
               // take any
-              registeredBreak = this.Profile.IsBreakItem( key ) ? GUI.BreakType.FlowBreak :
-                                this.Profile.IsDivItem1( key ) ? GUI.BreakType.DivBreak1 :
-                                this.Profile.IsDivItem2( key ) ? GUI.BreakType.DivBreak2 : GUI.BreakType.None;
+              registeredBreak = _configRef.UsedProfile.IsBreakItem( key ) ? GUI.BreakType.FlowBreak :
+                                _configRef.UsedProfile.IsDivItem1( key ) ? GUI.BreakType.DivBreak1 :
+                                _configRef.UsedProfile.IsDivItem2( key ) ? GUI.BreakType.DivBreak2 : GUI.BreakType.None;
             }
             else if (registeredBreak == GUI.BreakType.FlowBreak) {
               // take no further
@@ -912,7 +816,7 @@ namespace FS20_HudBar.Bar
             }
             else {
               // override DivBreaks only with FlowBreaks
-              registeredBreak = this.Profile.IsBreakItem( key ) ? GUI.BreakType.FlowBreak : registeredBreak;
+              registeredBreak = _configRef.UsedProfile.IsBreakItem( key ) ? GUI.BreakType.FlowBreak : registeredBreak;
             }
           }
 
@@ -930,7 +834,7 @@ namespace FS20_HudBar.Bar
               // select Color Type of the separator
               DI_Separator dSep = new DI_Separator( (registeredBreak == GUI.BreakType.DivBreak2) ? GUI_Colors.ColorType.cDivBG2 : GUI_Colors.ColorType.cDivBG1 );
               // need some fiddling to make it fit in either direction
-              if ((this.Placement == GUI.Placement.Bottom) || (this.Placement == GUI.Placement.Top)) {
+              if ((this.Placement == GUI.Placement.Bottom) || (this.Placement == GUI.Placement.Top) || (this.Placement == GUI.Placement.TopStack)) {
                 dSep.Dock = DockStyle.Left;// horizontal Bar
               }
               else {
@@ -941,6 +845,8 @@ namespace FS20_HudBar.Bar
               registeredBreak = GUI.BreakType.None; // reset
             }
             // add the item 
+            di.SetLabelFlowBreak( this.Placement == Placement.TopStack ); // 20240222 added for Blinds mode
+
             flp.Controls.Add( di );
             /* Code to add tooltips to the Label Part of an item - NOT IN USE RIGHT NOW
             if ( !string.IsNullOrEmpty( di.TText ) ) {

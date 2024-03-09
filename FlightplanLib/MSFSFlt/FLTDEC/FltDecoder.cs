@@ -37,7 +37,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     public static FLT FromFile( string fltIniFile )
     {
       // MSFS FLT encoding is iso-8859-1 , don't unquote while decoding
-      var ofp = IniSerializer.FromIniFile<FLT>( fltIniFile, false, MSiniFile.IniEncoding.iso_8859_1 );
+      var ofp = IniSerializer.FromIniFile<FLT>( fltIniFile,  MSiniFile.IniEncoding.iso_8859_1, false);
       if (ofp != null) {
         return ofp;
       }

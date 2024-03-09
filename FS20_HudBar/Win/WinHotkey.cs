@@ -20,7 +20,7 @@ namespace FS20_HudBar.Win
     /// </summary>
     /// <param name="hkString">The hotkey string</param>
     /// <returns>A WinHotkey</returns>
-    public static WinHotkey FromString( string hkString )
+    public static WinHotkey FromConfigString( string hkString )
     {
       // MUST match the ToString below
       var ret=new WinHotkey();
@@ -38,7 +38,7 @@ namespace FS20_HudBar.Win
     /// </summary>
     /// <param name="key">The WinHotkey</param>
     /// <returns>A string of keynames</returns>
-    public static string ToString( WinHotkey key )
+    public static string ToConfigString( WinHotkey key )
     {
       // MUST match the FromString above
       string ret = "";
@@ -68,7 +68,7 @@ namespace FS20_HudBar.Win
     /// <param name="hotkey"></param>
     public WinHotkey( string hotkey )
     {
-      this.AddRange( FromString( hotkey ) );
+      this.AddRange( FromConfigString( hotkey ) );
     }
 
     /// <summary>
@@ -108,10 +108,10 @@ namespace FS20_HudBar.Win
     /// Get; The Hotkey as Text string
     /// </summary>
     public string AsString {
-      get => ToString( this );
+      get => ToConfigString( this );
       set {
         this.Clear( );
-        this.AddRange( FromString( value ) );
+        this.AddRange( FromConfigString( value ) );
       }
     }
 
