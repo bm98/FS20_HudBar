@@ -122,6 +122,9 @@ namespace FShelf
       this.rtbNotes = new System.Windows.Forms.RichTextBox();
       this.btNotesClear = new System.Windows.Forms.Button();
       this.tabConfig = new System.Windows.Forms.TabPage();
+      this.btAiFilterClear = new System.Windows.Forms.Button();
+      this.txAiFilter = new System.Windows.Forms.TextBox();
+      this.cbxCfgShowOtherAcft = new System.Windows.Forms.CheckBox();
       this.cbxCfgAcftWind = new System.Windows.Forms.CheckBox();
       this.btCfgRequestFLT = new System.Windows.Forms.Button();
       this.btCfgMsSelectPlan = new System.Windows.Forms.Button();
@@ -383,7 +386,7 @@ namespace FShelf
       this.aMap.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.aMap.ForeColor = System.Drawing.Color.LightYellow;
       this.aMap.Location = new System.Drawing.Point(3, 54);
-      this.aMap.MapRange = bm98_Map.MapRange.Near;
+      this.aMap.MapRange = bm98_Map.MapRange.XFar;
       this.aMap.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
       this.aMap.MinimumSize = new System.Drawing.Size(600, 640);
       this.aMap.Name = "aMap";
@@ -391,6 +394,8 @@ namespace FShelf
       this.aMap.ShowAptMarks = false;
       this.aMap.ShowMapGrid = false;
       this.aMap.ShowNavaids = false;
+      this.aMap.ShowOtherAircrafts = bm98_Map.AcftAiDisplayMode.None;
+      this.aMap.ShowOtherAircraftsEnabled = true;
       this.aMap.ShowRoute = false;
       this.aMap.ShowTrackedAircraft = false;
       this.aMap.ShowVFRMarks = false;
@@ -1319,6 +1324,9 @@ namespace FShelf
       // tabConfig
       // 
       this.tabConfig.BackColor = System.Drawing.Color.Gainsboro;
+      this.tabConfig.Controls.Add(this.btAiFilterClear);
+      this.tabConfig.Controls.Add(this.txAiFilter);
+      this.tabConfig.Controls.Add(this.cbxCfgShowOtherAcft);
       this.tabConfig.Controls.Add(this.cbxCfgAcftWind);
       this.tabConfig.Controls.Add(this.btCfgRequestFLT);
       this.tabConfig.Controls.Add(this.btCfgMsSelectPlan);
@@ -1357,6 +1365,36 @@ namespace FShelf
       this.tabConfig.TabIndex = 2;
       this.tabConfig.Text = "Config.";
       // 
+      // btAiFilterClear
+      // 
+      this.btAiFilterClear.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btAiFilterClear.Location = new System.Drawing.Point(534, 319);
+      this.btAiFilterClear.Name = "btAiFilterClear";
+      this.btAiFilterClear.Size = new System.Drawing.Size(40, 26);
+      this.btAiFilterClear.TabIndex = 35;
+      this.btAiFilterClear.Text = "Clr";
+      this.btAiFilterClear.UseVisualStyleBackColor = true;
+      this.btAiFilterClear.Click += new System.EventHandler(this.btAiFilterClear_Click);
+      // 
+      // txAiFilter
+      // 
+      this.txAiFilter.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txAiFilter.Location = new System.Drawing.Point(198, 323);
+      this.txAiFilter.Name = "txAiFilter";
+      this.txAiFilter.Size = new System.Drawing.Size(330, 23);
+      this.txAiFilter.TabIndex = 34;
+      // 
+      // cbxCfgShowOtherAcft
+      // 
+      this.cbxCfgShowOtherAcft.AutoSize = true;
+      this.cbxCfgShowOtherAcft.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.cbxCfgShowOtherAcft.Location = new System.Drawing.Point(23, 324);
+      this.cbxCfgShowOtherAcft.Name = "cbxCfgShowOtherAcft";
+      this.cbxCfgShowOtherAcft.Size = new System.Drawing.Size(169, 25);
+      this.cbxCfgShowOtherAcft.TabIndex = 33;
+      this.cbxCfgShowOtherAcft.Text = "Show other aircrafts";
+      this.cbxCfgShowOtherAcft.UseVisualStyleBackColor = true;
+      // 
       // cbxCfgAcftWind
       // 
       this.cbxCfgAcftWind.AutoSize = true;
@@ -1371,7 +1409,7 @@ namespace FShelf
       // btCfgRequestFLT
       // 
       this.btCfgRequestFLT.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCfgRequestFLT.Location = new System.Drawing.Point(125, 450);
+      this.btCfgRequestFLT.Location = new System.Drawing.Point(125, 460);
       this.btCfgRequestFLT.Name = "btCfgRequestFLT";
       this.btCfgRequestFLT.Size = new System.Drawing.Size(96, 46);
       this.btCfgRequestFLT.TabIndex = 31;
@@ -1382,7 +1420,7 @@ namespace FShelf
       // btCfgMsSelectPlan
       // 
       this.btCfgMsSelectPlan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCfgMsSelectPlan.Location = new System.Drawing.Point(23, 450);
+      this.btCfgMsSelectPlan.Location = new System.Drawing.Point(23, 460);
       this.btCfgMsSelectPlan.Name = "btCfgMsSelectPlan";
       this.btCfgMsSelectPlan.Size = new System.Drawing.Size(96, 46);
       this.btCfgMsSelectPlan.TabIndex = 30;
@@ -1394,7 +1432,7 @@ namespace FShelf
       // 
       this.lblCfgMsPlanData.AutoSize = true;
       this.lblCfgMsPlanData.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblCfgMsPlanData.Location = new System.Drawing.Point(329, 464);
+      this.lblCfgMsPlanData.Location = new System.Drawing.Point(329, 474);
       this.lblCfgMsPlanData.Name = "lblCfgMsPlanData";
       this.lblCfgMsPlanData.Size = new System.Drawing.Size(17, 17);
       this.lblCfgMsPlanData.TabIndex = 29;
@@ -1403,7 +1441,7 @@ namespace FShelf
       // btCfgMsLoadPlan
       // 
       this.btCfgMsLoadPlan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCfgMsLoadPlan.Location = new System.Drawing.Point(227, 450);
+      this.btCfgMsLoadPlan.Location = new System.Drawing.Point(227, 460);
       this.btCfgMsLoadPlan.Name = "btCfgMsLoadPlan";
       this.btCfgMsLoadPlan.Size = new System.Drawing.Size(96, 46);
       this.btCfgMsLoadPlan.TabIndex = 27;
@@ -1416,7 +1454,7 @@ namespace FShelf
       this.label29.AutoSize = true;
       this.label29.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label29.ForeColor = System.Drawing.Color.MidnightBlue;
-      this.label29.Location = new System.Drawing.Point(8, 426);
+      this.label29.Location = new System.Drawing.Point(8, 436);
       this.label29.Name = "label29";
       this.label29.Size = new System.Drawing.Size(137, 21);
       this.label29.TabIndex = 26;
@@ -1426,7 +1464,7 @@ namespace FShelf
       // 
       this.lblCfgSbPlanData.AutoSize = true;
       this.lblCfgSbPlanData.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblCfgSbPlanData.Location = new System.Drawing.Point(329, 384);
+      this.lblCfgSbPlanData.Location = new System.Drawing.Point(329, 394);
       this.lblCfgSbPlanData.Name = "lblCfgSbPlanData";
       this.lblCfgSbPlanData.Size = new System.Drawing.Size(17, 17);
       this.lblCfgSbPlanData.TabIndex = 25;
@@ -1435,7 +1473,7 @@ namespace FShelf
       // btCfgSbLoadPlan
       // 
       this.btCfgSbLoadPlan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCfgSbLoadPlan.Location = new System.Drawing.Point(227, 369);
+      this.btCfgSbLoadPlan.Location = new System.Drawing.Point(227, 379);
       this.btCfgSbLoadPlan.Name = "btCfgSbLoadPlan";
       this.btCfgSbLoadPlan.Size = new System.Drawing.Size(96, 46);
       this.btCfgSbLoadPlan.TabIndex = 23;
@@ -1447,7 +1485,7 @@ namespace FShelf
       // 
       this.label25.AutoSize = true;
       this.label25.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label25.Location = new System.Drawing.Point(19, 380);
+      this.label25.Location = new System.Drawing.Point(19, 390);
       this.label25.Name = "label25";
       this.label25.Size = new System.Drawing.Size(63, 21);
       this.label25.TabIndex = 22;
@@ -1458,7 +1496,7 @@ namespace FShelf
       this.txCfgSbPilotID.BackColor = System.Drawing.Color.SteelBlue;
       this.txCfgSbPilotID.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
       this.txCfgSbPilotID.ForeColor = System.Drawing.Color.FloralWhite;
-      this.txCfgSbPilotID.Location = new System.Drawing.Point(89, 374);
+      this.txCfgSbPilotID.Location = new System.Drawing.Point(89, 384);
       this.txCfgSbPilotID.MaxLength = 6;
       this.txCfgSbPilotID.Name = "txCfgSbPilotID";
       this.txCfgSbPilotID.Size = new System.Drawing.Size(113, 33);
@@ -1472,7 +1510,7 @@ namespace FShelf
       this.label22.AutoSize = true;
       this.label22.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label22.ForeColor = System.Drawing.Color.MidnightBlue;
-      this.label22.Location = new System.Drawing.Point(8, 348);
+      this.label22.Location = new System.Drawing.Point(8, 358);
       this.label22.Name = "label22";
       this.label22.Size = new System.Drawing.Size(80, 21);
       this.label22.TabIndex = 20;
@@ -1523,7 +1561,7 @@ namespace FShelf
       this.label15.AutoSize = true;
       this.label15.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label15.ForeColor = System.Drawing.Color.MidnightBlue;
-      this.label15.Location = new System.Drawing.Point(8, 570);
+      this.label15.Location = new System.Drawing.Point(8, 580);
       this.label15.Name = "label15";
       this.label15.Size = new System.Drawing.Size(54, 21);
       this.label15.TabIndex = 15;
@@ -1534,7 +1572,7 @@ namespace FShelf
       this.label11.AutoSize = true;
       this.label11.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label11.ForeColor = System.Drawing.Color.MidnightBlue;
-      this.label11.Location = new System.Drawing.Point(8, 507);
+      this.label11.Location = new System.Drawing.Point(8, 517);
       this.label11.Name = "label11";
       this.label11.Size = new System.Drawing.Size(67, 21);
       this.label11.TabIndex = 15;
@@ -1555,7 +1593,7 @@ namespace FShelf
       // 
       this.cbxCfgPrettyMetar.AutoSize = true;
       this.cbxCfgPrettyMetar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.cbxCfgPrettyMetar.Location = new System.Drawing.Point(23, 537);
+      this.cbxCfgPrettyMetar.Location = new System.Drawing.Point(23, 547);
       this.cbxCfgPrettyMetar.Name = "cbxCfgPrettyMetar";
       this.cbxCfgPrettyMetar.Size = new System.Drawing.Size(186, 25);
       this.cbxCfgPrettyMetar.TabIndex = 9;
@@ -1565,7 +1603,7 @@ namespace FShelf
       // btCfgSelFolder
       // 
       this.btCfgSelFolder.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCfgSelFolder.Location = new System.Drawing.Point(534, 617);
+      this.btCfgSelFolder.Location = new System.Drawing.Point(534, 627);
       this.btCfgSelFolder.Name = "btCfgSelFolder";
       this.btCfgSelFolder.Size = new System.Drawing.Size(40, 26);
       this.btCfgSelFolder.TabIndex = 2;
@@ -1576,7 +1614,7 @@ namespace FShelf
       // txCfgShelfFolder
       // 
       this.txCfgShelfFolder.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txCfgShelfFolder.Location = new System.Drawing.Point(7, 617);
+      this.txCfgShelfFolder.Location = new System.Drawing.Point(7, 627);
       this.txCfgShelfFolder.Name = "txCfgShelfFolder";
       this.txCfgShelfFolder.ReadOnly = true;
       this.txCfgShelfFolder.Size = new System.Drawing.Size(521, 27);
@@ -1597,7 +1635,7 @@ namespace FShelf
       // 
       this.label7.AutoSize = true;
       this.label7.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label7.Location = new System.Drawing.Point(13, 597);
+      this.label7.Location = new System.Drawing.Point(13, 607);
       this.label7.Name = "label7";
       this.label7.Size = new System.Drawing.Size(159, 21);
       this.label7.TabIndex = 7;
@@ -1818,20 +1856,20 @@ namespace FShelf
     private System.Windows.Forms.ComboBox comboCfgRunwayLength;
     private System.Windows.Forms.CheckBox cbxCfgAcftTrack;
     private System.Windows.Forms.CheckBox cbxCfgAcftRange;
-        private System.Windows.Forms.TabPage tabPerf;
-        private System.Windows.Forms.TabPage tabNotes;
-        private System.Windows.Forms.RichTextBox rtbNotes;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Button btNotesClear;
-        private System.Windows.Forms.RichTextBox rtbPerf;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.RadioButton rbKLbs;
-        private System.Windows.Forms.RadioButton rbKg;
-        private System.Windows.Forms.Label lblSimConnectedNotes;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button btPerfRefresh;
-        private System.Windows.Forms.Label lblFacDBMissing;
+    private System.Windows.Forms.TabPage tabPerf;
+    private System.Windows.Forms.TabPage tabNotes;
+    private System.Windows.Forms.RichTextBox rtbNotes;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+    private System.Windows.Forms.Button btNotesClear;
+    private System.Windows.Forms.RichTextBox rtbPerf;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+    private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+    private System.Windows.Forms.RadioButton rbKLbs;
+    private System.Windows.Forms.RadioButton rbKg;
+    private System.Windows.Forms.Label lblSimConnectedNotes;
+    private System.Windows.Forms.PictureBox pictureBox1;
+    private System.Windows.Forms.Button btPerfRefresh;
+    private System.Windows.Forms.Label lblFacDBMissing;
     private System.Windows.Forms.TabPage tabProfile;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
     private System.Windows.Forms.DataGridView dgvProfile;
@@ -1889,5 +1927,8 @@ namespace FShelf
     private System.Windows.Forms.Label label32;
     private System.Windows.Forms.RadioButton rb30sec;
     private System.Windows.Forms.RadioButton rb6sec;
+    private System.Windows.Forms.CheckBox cbxCfgShowOtherAcft;
+    private System.Windows.Forms.TextBox txAiFilter;
+    private System.Windows.Forms.Button btAiFilterClear;
   }
 }

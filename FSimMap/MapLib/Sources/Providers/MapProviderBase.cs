@@ -16,6 +16,8 @@ using CoordLib.MercatorTiles;
 
 using DbgLib;
 
+using dNetBm98;
+
 using MapLib.Service;
 
 namespace MapLib.Sources.Providers
@@ -140,6 +142,12 @@ namespace MapLib.Sources.Providers
       _ = OSM_OpenStreetMap.Instance;
       _ = OpenTopoProvider.Instance;
       _ = StamenTerrainProvider.Instance;
+      // init FAA Charts
+      _ = FAA_VFR_Terminal.Instance;
+      _ = FAA_VFR_Sectional.Instance;
+      _ = FAA_IFR_AreaLow.Instance;
+      _ = FAA_IFR_AreaHigh.Instance;
+      /* Out of service Mar 2024
       // init ChartBundle
       _ = CB_WAC.Instance;
       _ = CB_SEC.Instance;
@@ -147,6 +155,10 @@ namespace MapLib.Sources.Providers
       _ = CB_ENRA.Instance;
       _ = CB_ENRL.Instance;
       _ = CB_ENRH.Instance;
+      */
+      // init CARTO
+      _ = CARTO_Dark.Instance;
+      _ = CARTO_DarkNL.Instance;
       // init ESRI/ARCGIS
       _ = ESRI_Imagery.Instance;
       _ = ESRI_StreetMap.Instance;
@@ -187,22 +199,26 @@ namespace MapLib.Sources.Providers
     public MapImage GetTileImage( LoaderJobWrapper jobWrapper )
     {
       //      Debug.WriteLine( $"MapProviderBase.GetTileImage: Got Request for: {jobWrapper.MapImageID.FullKey}" );
-      if (!_initStatus) throw new InvalidOperationException( "Called before initialized! Aborted" );
+      if (!_initStatus) return null; // throw new InvalidOperationException( "Called before initialized! Aborted" );
 
-      var imageSought = jobWrapper.MapImageID;
-      MapImage img = GetTileImage( imageSought );
-      if (img != null) {
+      var imageIdSought = jobWrapper.MapImageID;
+      MapImage mapImage = GetTileImage( imageIdSought );
+      if (mapImage != null) {
         //        Debug.WriteLine( $"MapProviderBase.GetTileImage: Served from PROVIDER SOURCE - {imageSought.FullKey}" );
-        return img;
+        return mapImage;
       }
       else {
         // usually a provider is the last source .. but then we may have ideas...
         var nextSource = jobWrapper.GetNextSource( );
-        img = nextSource?.GetTileImage( jobWrapper );
-        if (img != null) {
-          // put into this cache or leave it alone
+        mapImage = nextSource?.GetTileImage( jobWrapper );
+        if (mapImage != null) {
+          ;// put into this cache or leave it alone
         }
-        return img;
+        else {
+          ; // DEBUG STOP if final image is null - should be prevented before..
+          mapImage = MapImage.FailedImage( jobWrapper.MapImageID, false ); // failed one
+        }
+        return mapImage;
       }
     }
 
@@ -230,12 +246,12 @@ namespace MapLib.Sources.Providers
     /// <summary>
     /// Minimum level of zoom for this Map
     /// </summary>
-    public int MinZoom { get; protected set; } = 1; // LIMITED  BY POLICY
+    public int MinZoom { get; protected set; } = 5; // DEFAULT LIMITED  BY POLICY
 
     /// <summary>
     /// Maximum level of zoom for this Map
     /// </summary>
-    public int MaxZoom { get; protected set; } = 15; // LIMITED BY POLICY not server (may go down to 17)
+    public int MaxZoom { get; protected set; } = 15; // DEFAULT LIMITED BY POLICY not server (may go down to 17)
 
     /// <summary>
     /// Get; Set: Referer HTTP header.
@@ -263,7 +279,7 @@ namespace MapLib.Sources.Providers
     /// </summary>
     /// <param name="zoom">Desired zoom level</param>
     /// <returns>Zoom level clipped within limits</returns>
-    protected ushort ZoomCheck( ushort zoom ) => (ushort)Math.Min( Math.Max( zoom, MinZoom ), MaxZoom );
+    protected ushort ZoomCheck( ushort zoom ) => (ushort)XMath.Clip( zoom, MinZoom, MaxZoom );
 
 
     #region Abstract Templates
@@ -384,7 +400,7 @@ namespace MapLib.Sources.Providers
       try {
         // ask for permission to use HTTP
         //Console.WriteLine($"WaitOne for {mapImageID}" );
-        _httpToken.WaitOne();
+        _httpToken.WaitOne( );
         //Console.WriteLine( $"GotOne for {mapImageID}" );
 
         using (var response = _client.GetAsync( url ).GetAwaiter( ).GetResult( )) {
@@ -426,6 +442,12 @@ namespace MapLib.Sources.Providers
           LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", $"HttpWebResponse Status: {status} ({(int)status})" );
           retry = false; // never retry
         }
+        else if (ex is HttpRequestException) {
+          // EnsureSuccessStatusCode throws - response code is not in 200-299
+          // likely 404 or similar - provider does not have this tile or can/will not reply
+          LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", $"HttpRequestException: {ex.Message}" );
+          retry = false; // never retry
+        }
         else {
           LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", $"Response Exception:\n{ex}\nURL:${url}" );
           retry = false; // never retry
@@ -434,15 +456,20 @@ namespace MapLib.Sources.Providers
       finally {
         // free Sema
         //Console.WriteLine( $"ReleaseOne for {mapImageID}" );
-        _httpToken.Release();
+        _httpToken.Release( );
       }
 
-      // add a failed Image instead of nothing
-      if (mapImage == null) {
+      if (mapImage != null) {
+        mapImage.ImageSource = ImgSource.Provider;
+        return mapImage;
+      }
+      else {
+        // add a failed Image instead of nothing
         mapImage = MapImage.FailedImage( mapImageID, retry );
+        return mapImage;
       }
 
-      return mapImage;
+
     }
 
     /// <summary>

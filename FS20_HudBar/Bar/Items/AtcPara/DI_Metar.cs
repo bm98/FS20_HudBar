@@ -68,8 +68,8 @@ namespace FS20_HudBar.Bar.Items
     {
       if (SC.SimConnectClient.Instance.IsConnected) {
         _metar.Clear( );
-        _metar.PostMETAR_Request( SV.Get<double>( SItem.dG_Acft_Lat ),
-                                  SV.Get<double>( SItem.dG_Acft_Lon ),
+        _metar.PostMETAR_Request( SV.Get<double>( SItem.dGS_Acft_Lat ),
+                                  SV.Get<double>( SItem.dGS_Acft_Lon ),
                                   SV.Get<float>( SItem.fG_Gps_GTRK_mag_degm ) ); // from current pos along the current track
       }
     }

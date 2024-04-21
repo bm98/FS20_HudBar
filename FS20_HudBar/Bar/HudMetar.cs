@@ -54,7 +54,7 @@ namespace FS20_HudBar.Bar
     /// <param name="metarDatas"></param>
     public void Update( MetarTafDataList metarDatas )
     {
-      var closest = metarDatas.GetClosest( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) );
+      var closest = metarDatas.GetClosest( SV.Get<double>( SItem.dGS_Acft_Lat ), SV.Get<double>( SItem.dGS_Acft_Lon ) );
       if (closest.Valid) {
         MText = closest.Pretty;
         StationText = $"{closest.Data.Station.StationID}";

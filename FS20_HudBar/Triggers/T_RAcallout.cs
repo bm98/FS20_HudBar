@@ -76,15 +76,15 @@ namespace FS20_HudBar.Triggers
         // on ground we disable callouts, this lasts on the way up until we are above our highest RA level
         m_lastTriggered = -1;
       }
-      else if (SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) >= c_detectionRA) {
+      else if (SV.Get<float>( SItem.fGS_Acft_AltAoG_ft ) >= c_detectionRA) {
         // in air and above our detection RA - reset callout sequence
         m_lastTriggered = c_detectionRA; // set this above the initial callout level to start callouts if we get lower later
       }
       else {
         // in air and in the callout range
-        if (SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) < m_lastTriggered) {
+        if (SV.Get<float>( SItem.fGS_Acft_AltAoG_ft ) < m_lastTriggered) {
           // detect only when the current RA is lower than the last called out one
-          DetectStateChange( SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) );
+          DetectStateChange( SV.Get<float>( SItem.fGS_Acft_AltAoG_ft ) );
         }
       }
     }

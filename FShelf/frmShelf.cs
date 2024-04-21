@@ -8,16 +8,29 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
+using Point = System.Drawing.Point;
+using Route = bm98_Map.Data.Route;
+using static FSimClientIF.Sim;
+using static dNetBm98.Units;
+
 using CoordLib;
 using CoordLib.MercatorTiles;
 using CoordLib.Extensions;
 
+using dNetBm98;
+using DbgLib;
+using FSFData;
+
+using FSimClientIF.Modules;
+using FSimClientIF;
+using FSimFacilityIF;
+
 using SC = SimConnectClient;
+using SimConnectClientAdapter;
+
 using bm98_hbFolders;
 using bm98_Map;
 using bm98_Map.Data;
-using FSimFacilityIF;
-using FShelf.Profiles;
 
 using FlightplanLib;
 using FlightplanLib.SimBrief;
@@ -27,17 +40,9 @@ using FlightplanLib.GPX;
 using FlightplanLib.RTE;
 using FlightplanLib.LNM;
 
-using Point = System.Drawing.Point;
-using Route = bm98_Map.Data.Route;
+using FShelf.Profiles;
 using FShelf.FPlans;
-using FSimClientIF.Modules;
-using static FSimClientIF.Sim;
-using FSimClientIF;
-using SimConnectClientAdapter;
-using dNetBm98;
-using static dNetBm98.Units;
-using DbgLib;
-using FSFData;
+using FShelf.LandPerf;
 
 namespace FShelf
 {
@@ -55,7 +60,8 @@ namespace FShelf
     private const float c_raDefault_ft = 1500;
     private const float c_raAirliner_ft = 2500;
 
-    // SimConnect Client Adapter (used only to establish the connection and handle the Online color label)
+    // SimConnect Client Adapter
+    // (!! used only to establish the connection and handle the Online color label !!)
     private SCClient SCAdapter;
 
     // attach the property module - this does not depend on the connection established or not
@@ -75,6 +81,8 @@ namespace FShelf
 
     // data update tracker to allow to pace down the updates towards the user control
     private int _updates;
+    private int _updatesAI;
+
     // comm item with the Mapping user control
     private readonly TrackedAircraftCls _tAircraft = new TrackedAircraftCls( );
 
@@ -103,9 +111,6 @@ namespace FShelf
     // track the last known live location in order to save the proper one
     private Point _lastLiveLocation;
     private Size _lastLiveSize;
-
-    // Touchdown Performance tracker
-    private readonly PerfTracker _perfTracker = new PerfTracker( );
 
     // Profiles
     private readonly ProfileCat _profileCat = new ProfileCat( );
@@ -452,6 +457,7 @@ namespace FShelf
       // handle some Map Events
       aMap.MapCenterChanged += AMap_MapCenterChanged;
       aMap.MapRangeChanged += AMap_MapRangeChanged;
+      aMap.TeleportAircraft += AMap_TeleportAircraft;
 
       // attach FLT save event
       SC.SimConnectClient.Instance.FltSave += Instance_FltSave;
@@ -479,6 +485,7 @@ namespace FShelf
       }
 
     }
+
 
     // form is loaded to get visible
     private void frmShelf_Load( object sender, EventArgs e )
@@ -512,6 +519,7 @@ namespace FShelf
       _txForeColorDefault = txEntry.ForeColor;
 
       // map settings
+      aMap.MapRange = MapRange.Mid;
       aMap.ShowMapGrid = AppSettings.Instance.MapGrid;
       aMap.ShowAirportRange = AppSettings.Instance.AirportRings;
       aMap.ShowRoute = AppSettings.Instance.FlightplanRoute;
@@ -520,11 +528,22 @@ namespace FShelf
       aMap.ShowAptMarks = AppSettings.Instance.AptMarks;
       aMap.ShowTrackedAircraft = AppSettings.Instance.AcftMark;
       aMap.AutoRange = AppSettings.Instance.AutoRange;
+      aMap.ShowOtherAircraftsEnabled = AppSettings.Instance.AcftAIChecked;
+      // make sure we get a valid Enum
+      if (Enum.IsDefined( typeof( AcftAiDisplayMode ), AppSettings.Instance.AcftAI )) {
+        aMap.ShowOtherAircrafts = AppSettings.Instance.AcftAIChecked // must be checked, else set to None
+          ? (AcftAiDisplayMode)AppSettings.Instance.AcftAI : AcftAiDisplayMode.None;
+      }
+      else {
+        aMap.ShowOtherAircrafts = AcftAiDisplayMode.None; // invalid, set default
+      }
+
       // config settings
       cbxCfgAcftRange.Checked = AppSettings.Instance.AcftRange;
       cbxCfgAcftWind.Checked = AppSettings.Instance.AcftWind;
       cbxCfgAcftTrack.Checked = AppSettings.Instance.AcftTrack;
-
+      cbxCfgShowOtherAcft.Checked = AppSettings.Instance.AcftAIChecked;
+      txAiFilter.Text = AppSettings.Instance.AcftAIFilter;
       txCfgSbPilotID.Text = AppSettings.Instance.SbPilotID;
 
       try {// don't ever fail
@@ -549,17 +568,15 @@ namespace FShelf
       _updates = 0;
       LatLon loc = new LatLon( 0, 0, 0 );
       if (SC.SimConnectClient.Instance.IsConnected) {
-        loc.Lat = SV.Get<double>( SItem.dG_Acft_Lat );
-        loc.Lon = SV.Get<double>( SItem.dG_Acft_Lon );
-        loc.Altitude = SV.Get<float>( SItem.fG_Acft_AltMsl_ft );
+        loc.Lat = SV.Get<double>( SItem.dGS_Acft_Lat );
+        loc.Lon = SV.Get<double>( SItem.dGS_Acft_Lon );
+        loc.Altitude = SV.Get<float>( SItem.fGS_Acft_AltMsl_ft );
       }
 
       // create the initial 'Airport' to have something to start with
       aMap.MapCreator.Reset( );
       aMap.MapCreator.SetAirport( aMap.MapCreator.DummyAirport( loc ) );
       aMap.MapCreator.Commit( );
-
-      _perfTracker.Reset( );
 
       // profiles
       InitProfileData( );
@@ -577,6 +594,8 @@ namespace FShelf
         }
         CheckFacilityDB( );
         SCAdapter.Connect( );
+        // Init Landing Performance Tracker
+        _ = FShelf.LandPerf.PerfTracker.Instance;
       }
 
       // Pacer interval 
@@ -616,9 +635,11 @@ namespace FShelf
       timer1.Enabled = false;
 
       // UnRegister DataUpdates
-      if (SC.SimConnectClient.Instance.IsConnected && (_observerID >= 0))
+      if (SC.SimConnectClient.Instance.IsConnected && (_observerID >= 0)) {
         SV.RemoveObserver( _observerID );
+      }
       _observerID = -1;
+
 
       // save last known good form location and size
       if (this.Visible && this.WindowState == FormWindowState.Normal) {
@@ -644,12 +665,18 @@ namespace FShelf
       AppSettings.Instance.AptMarks = aMap.ShowAptMarks;
       AppSettings.Instance.AcftMark = aMap.ShowTrackedAircraft;
       AppSettings.Instance.AutoRange = aMap.AutoRange;
+      AppSettings.Instance.AcftAI = cbxCfgShowOtherAcft.Checked // must be checked, else set None
+        ? (int)aMap.ShowOtherAircrafts
+        : (int)AcftAiDisplayMode.None;
+
       // config settings
       AppSettings.Instance.PrettyMetar = cbxCfgPrettyMetar.Checked;
       AppSettings.Instance.AcftRange = cbxCfgAcftRange.Checked;
       AppSettings.Instance.AcftWind = cbxCfgAcftWind.Checked;
       AppSettings.Instance.AcftTrack = cbxCfgAcftTrack.Checked;
-      AppSettings.Instance.SbPilotID = txCfgSbPilotID.Text;
+      AppSettings.Instance.AcftAIChecked = cbxCfgShowOtherAcft.Checked;
+      AppSettings.Instance.AcftAIFilter = txAiFilter.Text.Trim( );
+      AppSettings.Instance.SbPilotID = txCfgSbPilotID.Text.Trim( );
       //--
       AppSettings.Instance.Save( );
 
@@ -679,7 +706,24 @@ namespace FShelf
         _tAircraft.ShowAircraftWind = cbxCfgAcftWind.Checked;
         _tAircraft.ShowAircraftTrack = cbxCfgAcftTrack.Checked;
         var rwLen = comboCfgRunwayLength.SelectedItem as RwyLenItem;
-        // also update Navaids and Alt Airports (we were disconnected for an unknown time)
+
+        // AI aircrafts
+        var filterListAI = new List<string>( );
+        if (cbxCfgShowOtherAcft.Checked) {
+          SC.SimConnectClient.Instance.AiAcftPoolModule.Enabled = true;
+          aMap.ShowOtherAircraftsEnabled = true;
+          // update the AI acft filter
+          string[] items = txAiFilter.Text.Split( new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries );
+          foreach (var item in items) {
+            filterListAI.Add( item.Trim( ).ToUpperInvariant( ) );
+          }
+        }
+        else {
+          SC.SimConnectClient.Instance.AiAcftPoolModule.Enabled = false;
+          aMap.ShowOtherAircrafts = AcftAiDisplayMode.None;
+          aMap.ShowOtherAircraftsEnabled = false;
+        }
+        aMap.SetOtherAircraftFilter( filterListAI );
 
         // sanity
         if (_dbMissing) {
@@ -695,7 +739,12 @@ namespace FShelf
       }
       else if (tab.SelectedTab == tabPerf) {
         SetPerfContent( );
+        SC.SimConnectClient.Instance.AiAcftPoolModule.Enabled = false; // disable AI tracking if not in Map mode
       }
+      else {
+        SC.SimConnectClient.Instance.AiAcftPoolModule.Enabled = false; // disable AI tracking if not in Map mode
+      }
+
     }
 
     #endregion
@@ -788,6 +837,34 @@ namespace FShelf
       // no action (so far)
     }
 
+    // fires when the user want to teleport the acft
+    private void AMap_TeleportAircraft( object sender, TeleportEventArgs e )
+    {
+      // go to a safe altitude first
+      float msa = MSALib.MSA.Msa_ft( e.Lat, e.Lon, true );
+      float thisMsa = MSALib.MSA.Msa_ft( SV.Get<double>( SItem.dGS_Acft_Lat ), SV.Get<double>( SItem.dGS_Acft_Lon ), true );
+      float gotoAlt = Math.Max( msa, thisMsa ); // clear terrain here and at destination
+      if (e.AltIsMSL) {
+        gotoAlt = Math.Max( gotoAlt, e.Altitude_ft ); // if MSL is asked max again
+      }
+      SV.Set<float>( SItem.fGS_Acft_AltMsl_ft, gotoAlt ); // should be at least clear of this and destination terrain
+
+      // only then move
+      SV.Set<double>( SItem.dGS_Acft_Lat, e.Lat );
+      SV.Set<double>( SItem.dGS_Acft_Lon, e.Lon );
+      // got to asked altitude now
+      if (e.AltIsMSL) {
+        if (e.Altitude_ft != gotoAlt) {
+          // if not there yet
+          SV.Set<float>( SItem.fGS_Acft_AltMsl_ft, e.Altitude_ft );
+        }
+      }
+      else {
+        SV.Set<float>( SItem.fGS_Acft_AltAoG_ft, e.Altitude_ft );
+      }
+    }
+
+
     // return an airport from the DB or null
     private IAirport GetAirport( string aptICAO )
     {
@@ -872,24 +949,22 @@ namespace FShelf
       // sanity
       if (!SC.SimConnectClient.Instance.IsConnected) return; // cannot..
 
-      // track landing performance
-      _perfTracker.Update( );
-
       // TODO: the next two selectors will cause loosing tracking of the Acft, may be update it anyway
       if (!this.Visible) return;  // no need to update while the shelf is not visible ???? TODO decide if or if not cut reporting ????
                                   //if (!(tab.SelectedTab == tabMap)) return;  //don't update while not showing the MapTab - this causes track disruptions when in METAR etc
 
       // Map update pace slowed down to an acceptable CPU load - (native is 100ms)
       if ((_updates++ % 5) == 0) { // 500ms pace - slow enough ?? performance penalty...
+        _tAircraft.AircraftID = SV.Get<string>( SItem.sG_Cfg_AircraftID );
         _tAircraft.OnGround = SV.Get<bool>( SItem.bG_Sim_OnGround );
         _tAircraft.TrueHeading_deg = SV.Get<float>( SItem.fG_Nav_HDG_true_deg );
         _tAircraft.Heading_degm = SV.Get<float>( SItem.fG_Nav_HDG_mag_degm );
-        _tAircraft.Position = new LatLon( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) );
-        _tAircraft.Altitude_ft = SV.Get<float>( SItem.fG_Acft_AltMsl_ft );
+        _tAircraft.Position = new LatLon( SV.Get<double>( SItem.dGS_Acft_Lat ), SV.Get<double>( SItem.dGS_Acft_Lon ), SV.Get<float>( SItem.fGS_Acft_AltMsl_ft ) );
+        _tAircraft.AltitudeMsl_ft = SV.Get<float>( SItem.fGS_Acft_AltMsl_ft );
 
         // limit RA visible to an altitude and if not on ground
         var _raLimit_ft = (SV.Get<EngineType>( SItem.etG_Cfg_EngineType ) == EngineType.Jet) ? c_raAirliner_ft : c_raDefault_ft;
-        var ra_ft = SV.Get<float>( SItem.fG_Acft_AltAoG_ft );
+        var ra_ft = SV.Get<float>( SItem.fGS_Acft_AltAoG_ft );
         _tAircraft.RadioAlt_ft = SV.Get<bool>( SItem.bG_Sim_OnGround ) ? float.NaN
                                                                        : ra_ft <= _raLimit_ft ? ra_ft
                                                                                               : float.NaN;
@@ -908,6 +983,45 @@ namespace FShelf
 
         // update the map
         aMap.UpdateAircraft( _tAircraft );
+
+        // Handle AI aircrafts
+        var SCI = SC.SimConnectClient.Instance;
+        var aiList = new List<ITrackedAircraft>( );
+        if (SCI.AiAcftPoolModule.Enabled) {
+          if ((_updatesAI++ % 1) == 0) { // 1000ms pace - slow enough ?? performance penalty...
+            foreach (var aiAcftID in SCI.AiAcftPoolModule.AiAircrafts) {
+              var srcItem = SCI.AiAcftPoolModule.AiAircraftProps( aiAcftID );
+              if (!srcItem.Valid) continue; // not a valid item
+
+              LatLon lla = new LatLon( srcItem.Lat, srcItem.Lon, srcItem.AltMsl_ft );
+              TcasFlag tc = (srcItem.AltMsl_ft > (_tAircraft.AltitudeMsl_ft + 1000f)) ? TcasFlag.Above
+                    : (srcItem.AltMsl_ft < (_tAircraft.AltitudeMsl_ft - 1000f)) ? TcasFlag.Below
+                    : TcasFlag.Level;
+              if (tc == TcasFlag.Level) {
+                if (lla.DistanceTo( _tAircraft.Position, CoordLib.ConvConsts.EarthRadiusNm ) < 15) {
+                  tc = TcasFlag.ProximityLevel; // within 1000ft and 15nm
+                }
+              }
+              // finally add to tracking list
+              var dstItem = new TrackedAircraftCls( ) {
+                AircraftID = srcItem.Atc_ID,
+                IsHeli = srcItem.IsHeli,
+                TrueHeading_deg = srcItem.HDG_deg,
+                Heading_degm = srcItem.HDG_degm,
+                Position = lla,
+                AltitudeMsl_ft = srcItem.AltMsl_ft,
+                RadioAlt_ft = srcItem.AltRA_ft,
+                Gs_kt = srcItem.GS_kt,
+                Vs_fpm = srcItem.VS_fpm,
+                TCAS = tc,
+                OnGround = srcItem.OnGround,
+              };
+              aiList.Add( dstItem );
+            }
+            aMap.UpdateAircraftsAI( aiList ); // submit
+          }
+        }
+
         // Update Profile page
         UpdateProfileData( );
         // Update Energy page
@@ -1335,6 +1449,8 @@ namespace FShelf
         rtbPerf.Text += $"Not connected - no data available";
         return;
       }
+      var tDdata = PerfTracker.Instance.InitialTD;
+
       bool lbs = rbKLbs.Checked;
       string unit = lbs ? "lbs x 1000" : "kg x 1000";
       float value;
@@ -1377,9 +1493,10 @@ namespace FShelf
       RTF.RBold = true;
       RTF.Write( $"Last Touchdown Data:" ); RTF.WriteLn( );
       RTF.RBold = false;
-      RTF.Write( $"Vertical" ); RTF.WriteTab( $"{_perfTracker.Rate_fpm:#,##0} fpm" ); RTF.WriteLn( );
-      RTF.Write( $"Pitch" ); RTF.WriteTab( $"{_perfTracker.Pitch_deg:##0.0}°" ); RTF.WriteLn( );
-      RTF.Write( $"Bank" ); RTF.WriteTab( $"{_perfTracker.Bank_deg:##0.0}°" ); RTF.WriteLn( );
+      RTF.Write( $"Vertical" ); RTF.WriteTab( $"{tDdata.LandingPerf.TdRate_fpm:#,##0} fpm" ); RTF.WriteLn( );
+      RTF.Write( $"G's" ); RTF.WriteTab( $"{tDdata.LandingPerf.TdGValue:0.00} G" ); RTF.WriteLn( );
+      RTF.Write( $"Pitch" ); RTF.WriteTab( $"{tDdata.LandingPerf.TdPitch_deg:##0.0}°" ); RTF.WriteLn( );
+      RTF.Write( $"Bank" ); RTF.WriteTab( $"{tDdata.LandingPerf.TdBank_deg:##0.0}°" ); RTF.WriteLn( );
 
       RTF.WriteLn( );
       RTF.RBold = true;
@@ -1423,13 +1540,13 @@ namespace FShelf
 
       lblGS_P.Text = $"{_tAircraft.Gs_kt:##0}";
       lblVS_P.Text = $"{_tAircraft.Vs_fpm:#,##0}";
-      lblAlt_P.Text = $"{_tAircraft.Altitude_ft:##,##0}";
+      lblAlt_P.Text = $"{_tAircraft.AltitudeMsl_ft:##,##0}";
       lblIAS_P.Text = $"{_tAircraft.Ias_kt:##0}";
       lblTAS_P.Text = $"{_tAircraft.Tas_kt:##0}";
       lblFPA_P.Text = $"{_tAircraft.Fpa_deg:#0.0}";
       // mark the Row entries
       MarkGS( _tAircraft.Gs_kt );
-      MarkAlt( _tAircraft.Altitude_ft );
+      MarkAlt( _tAircraft.AltitudeMsl_ft );
       MarkFPA( _tAircraft.Fpa_deg );
     }
 
@@ -1464,7 +1581,7 @@ namespace FShelf
       //Maintain E-Table values - using the Data API
       uC_ETable1.SetValues(
         SV.Get<float>( SItem.fG_Acft_TAS_kt ),
-        SV.Get<float>( SItem.fG_Acft_AltMsl_ft ),
+        SV.Get<float>( SItem.fGS_Acft_AltMsl_ft ),
         SV.Get<double>( SItem.dG_Env_Time_absolute_sec )
       );
       // Using Design Constants for Stall Speed
@@ -1484,7 +1601,7 @@ namespace FShelf
       // Disp Labels on top - use the aircraft obj to pull them from
       lblGS_E.Text = $"{_tAircraft.Gs_kt:##0}";
       lblVS_E.Text = $"{_tAircraft.Vs_fpm:#,##0}";
-      lblAlt_E.Text = $"{_tAircraft.Altitude_ft:##,##0}";
+      lblAlt_E.Text = $"{_tAircraft.AltitudeMsl_ft:##,##0}";
       lblIAS_E.Text = $"{_tAircraft.Ias_kt:##0}";
       lblTAS_E.Text = $"{_tAircraft.Tas_kt:##0}";
       lblFPA_E.Text = $"{_tAircraft.Fpa_deg:#0.0}";
@@ -1557,6 +1674,12 @@ namespace FShelf
       }
     }
 
+    // Clear AI filter clicked
+    private void btAiFilterClear_Click( object sender, EventArgs e )
+    {
+      txAiFilter.Text = "";
+    }
+
     // Pilot ID KeyPress
     private void txCfgSbPilotID_KeyPress( object sender, KeyPressEventArgs e )
     {
@@ -1580,7 +1703,7 @@ namespace FShelf
         lblCfgSbPlanData.Text = "loading...";
         // call for a JSON OFP
         _simBrief.PostDocument_Request( txCfgSbPilotID.Text, SimBriefDataFormat.JSON ); // USE HTTP
-        // will return in the CallBack
+                                                                                        // will return in the CallBack
       }
       else {
         lblCfgSbPlanData.Text = "invalid Pilot ID format (->2..7 digit)";

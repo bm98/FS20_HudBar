@@ -26,7 +26,7 @@ namespace MapLib.Sources.DiskCache
 
     // max #tiles to retain in cache (about 25kB per Tile - depends on the source image format)
     private readonly int c_maxRecNumber = DiskCacheMB * 1024 / 25; // ~128MB -> 5120 tiles per Provider
-        // #days to retain cached records
+                                                                   // #days to retain cached records
     private const int c_retentionDays = 100;
 
     private LiteDBCache _cache = new LiteDBCache( );
@@ -49,10 +49,16 @@ namespace MapLib.Sources.DiskCache
       var imageSought = jobWrapper.MapImageID;
       MapImage mapImage = null;
       if (ProviderEnabled) {
-        mapImage = _cache.GetImageFromCache( imageSought.MapProvider, imageSought.TileXY, imageSought.ZoomLevel );
+        try {
+          mapImage = _cache.GetImageFromCache( imageSought.MapProvider, imageSought.TileXY, imageSought.ZoomLevel );
+        }
+        catch {
+          mapImage = null;
+        }
       }
       if (mapImage != null) {
         //        Debug.WriteLine( $"DiskSource.GetTileImage: Served from DISK CACHE - {imageSought.FullKey}" );
+        mapImage.ImageSource = ImgSource.DiskCache;
         return mapImage;
       }
       else {

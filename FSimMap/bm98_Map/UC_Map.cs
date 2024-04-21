@@ -22,7 +22,41 @@ using bm98_Map.UI;
 
 namespace bm98_Map
 {
+  /// <summary>
+  /// Display mode for other aircrafts
+  /// </summary>
+  public enum AcftAiDisplayMode
+  {
+    /// <summary>
+    /// Display of other aircraft is off
+    /// </summary>
+    None = 0,
+    /// <summary>
+    /// Show all aircrafts
+    /// </summary>
+    All,
+    /// <summary>
+    /// Shows filtered aircrafts only
+    /// </summary>
+    Filtered,
+  }
 
+  /// <summary>
+  /// Behavior Mode
+  /// </summary>
+  public enum MapBehavior
+  {
+    /// <summary>
+    /// Map Mode 
+    ///  Airport centric (standard behavior)
+    /// </summary>
+    Map = 0,
+    /// <summary>
+    /// Radar Mode
+    ///  Aircraft centric
+    /// </summary>
+    Radar
+  }
 
   /// <summary>
   /// User Control to draw Maps
@@ -37,6 +71,7 @@ namespace bm98_Map
     // WinForms Invoker
     private readonly dNetBm98.WinFormInvoker _eDispatch;
 
+
     // The Viewport for this Map
     private readonly VPort2 _viewport;
     // our TT instance
@@ -45,12 +80,19 @@ namespace bm98_Map
     // Map Creator Toolings
     private readonly MapCreator _mapCreator;
 
+    // Behavior Mode of the Map display
+    private MapBehavior _mapBehavior = MapBehavior.Map;
+    private MapProvider _mapMapProvider = MapProvider.OSM_OpenStreetMap;
+    private const MapProvider c_radarMapProvider = MapProvider.CARTO_DarkNL;
+
     // Holding a ref to the commited airport here
-    private Airport _airportRef;
+    private Airport _airportRef = Airport.DummyAirport( LatLon.Empty );
     // Holding a ref to the current Navaids
-    private IList<INavaid> _navaidRef;
+    private IList<INavaid> _navaidRef = new List<INavaid>( ); // empty list instead of null;
     // Holding a ref to the current Fixes
-    private IList<IFix> _fixesRef;
+    private IList<IFix> _fixesRef = new List<IFix>( ); // empty list instead of null;
+    // Holding a ref to the current Airports
+    private IList<IAirportDesc> _airportsRef = new List<IAirportDesc>( ); // empty list instead of null;;
 
     // maintains all the visuals of the Airport
     private readonly DisplayListMgr _airportDisplayMgr;
@@ -75,8 +117,10 @@ namespace bm98_Map
     private readonly Color _mrColorOFF;
     private readonly Color _mrColorON = Color.Yellow;
 
+    // button bg color for deco buttons
     private readonly Color _decoBColorOFF;
     private readonly Color _decoBColorON = Color.LimeGreen;
+    private readonly Color _decoBColorALT = Color.FromArgb( 215, 215, 0 ); // alternate color darker yellow
 
     // unit handlers
     private bool _hdgIsTrue = true;
@@ -104,21 +148,31 @@ namespace bm98_Map
     [Category( "Map" )]
     [Description( "The Map Center Tile has changed" )]
     public event EventHandler<MapEventArgs> MapCenterChanged;
+    private void OnMapCenterChanged( LatLon center )
+    {
+      MapCenterChanged?.Invoke( this, new MapEventArgs( center, _mapRangeHandler.MapRange, _mapRangeHandler.ZoomLevel ) );
+    }
+
     /// <summary>
     /// Fired when the map range has changed
     /// </summary>
     [Category( "Map" )]
     [Description( "The Map Range has changed" )]
     public event EventHandler<MapEventArgs> MapRangeChanged;
-
-    private void OnMapCenterChanged( LatLon center )
-    {
-      MapCenterChanged?.Invoke( this, new MapEventArgs( center, _mapRangeHandler.MapRange, _mapRangeHandler.ZoomLevel ) );
-    }
     private void OnMapRangeChanged( )
     {
       MapRangeChanged?.Invoke( this, new MapEventArgs( _viewport.Map.CenterCoord, _mapRangeHandler.MapRange, _mapRangeHandler.ZoomLevel ) );
     }
+
+    /// <summary>
+    /// Fired when the used wants to teleport the aircraft
+    /// </summary>
+    public event EventHandler<TeleportEventArgs> TeleportAircraft;
+    private void OnTeleportAircraft( LatLon latLon, bool altIsMsl, int altitude_ft )
+    {
+      TeleportAircraft?.Invoke( this, new TeleportEventArgs( latLon.Lat, latLon.Lon, altIsMsl, altitude_ft ) );
+    }
+
 
     /// <summary>
     /// Access the MapCreator of this Map
@@ -134,7 +188,7 @@ namespace bm98_Map
     [Description( "Get;Set: the map range" )]
     public MapRange MapRange {
       get => _mapRangeHandler.MapRange;
-      set => _mapRangeHandler.SetMapRange( value );
+      set => _mapRangeHandler.SetMapRange( value ); // this may fail and do nothing if not within current Zoom bounds
     }
 
     /// <summary>
@@ -148,6 +202,21 @@ namespace bm98_Map
         _viewport.AutoRange = value;
         btRangeAuto.ForeColor = value ? _mrColorON : _mrColorOFF;
       }
+    }
+
+    /// <summary>
+    /// Update the tracked AI aircrafts
+    /// </summary>
+    /// <param name="aircraftsAi">List of AI aircrafts</param>
+    public void UpdateAircraftsAI( IList<ITrackedAircraft> aircraftsAi )
+    {
+      // Aircraft Drawing update goes via the AirportDisplayManager object
+      _airportDisplayMgr.UpdateAircraftsAI( aircraftsAi );
+      // Update the View
+      RenderStatic( ); // will only render if needed
+      // Aircraft Sprites are updated on every cycle
+      _airportDisplayMgr.RenderSprite( );
+      _viewport.Redraw( );
     }
 
     /// <summary>
@@ -171,8 +240,8 @@ namespace bm98_Map
       else { lblMTrk.Text = $"TRK : {_aircraftTrack.Trk_degm,6:000}°M"; }
 
       lblAlt.Visible = _aircraftTrack.ShowAlt;
-      if (_altIsFeet) { lblAlt.Text = $"AMSL: {_aircraftTrack.Altitude_ft,6:##,##0} ft"; }
-      else { lblAlt.Text = $"AMSL: {M_From_Ft( _aircraftTrack.Altitude_ft ),6:##,##0} m"; }
+      if (_altIsFeet) { lblAlt.Text = $"AMSL: {_aircraftTrack.AltitudeMsl_ft,6:##,##0} ft"; }
+      else { lblAlt.Text = $"AMSL: {M_From_Ft( _aircraftTrack.AltitudeMsl_ft ),6:##,##0} m"; }
 
       lblRA.Visible = _aircraftTrack.ShowRA;
       if (_altIsFeet) { lblRA.Text = $"RA  : {_aircraftTrack.RadioAlt_ft,6:##,##0} ft"; }
@@ -196,6 +265,10 @@ namespace bm98_Map
 
       // Aircraft Drawing update goes via the AirportDisplayManager object
       _airportDisplayMgr.UpdateAircraft( _aircraftTrack );
+      if (_mapBehavior == MapBehavior.Radar) {
+        _renderStaticNeeded = true;
+      }
+
       // Update the View
       RenderStatic( ); // will only render if needed
       // Aircraft Sprites are updated on every cycle
@@ -211,8 +284,18 @@ namespace bm98_Map
     /// <param name="fixes">List of Fixes to show</param>
     public void SetNavaidList( List<INavaid> navaids, List<IFix> fixes )
     {
-      _navaidRef = navaids;
-      _fixesRef = fixes;
+      if (navaids != null) {
+        _navaidRef = navaids;
+      }
+      else {
+        _navaidRef = new List<INavaid>( ); // empty list instead of null
+      }
+      if (fixes != null) {
+        _fixesRef = fixes;
+      }
+      else {
+        _fixesRef = new List<IFix>( ); // empty list instead of null;
+      }
 
       PopulateNavaids( _navaidRef );
       _airportDisplayMgr.SetNavaidList( _navaidRef, _fixesRef );
@@ -227,7 +310,8 @@ namespace bm98_Map
     /// <param name="airports">List of airports to show</param>
     public void SetAltAirportList( List<IAirportDesc> airports )
     {
-      _airportDisplayMgr.SetAltAirportList( airports );
+      _airportsRef = airports;
+      _airportDisplayMgr.SetAltAirportList( _airportsRef );
       // Trigger Update the View
       _renderStaticNeeded = true;
     }
@@ -356,10 +440,153 @@ namespace bm98_Map
     }
 
     /// <summary>
+    /// True to show the Airport Marks
+    /// </summary>
+    [Category( "Map" )]
+    [Description( "Get;Set: showing other aircrafts" )]
+    public AcftAiDisplayMode ShowOtherAircrafts {
+      get => _airportDisplayMgr.ShowTrackedAircraftAI;
+      set {
+        _airportDisplayMgr.ShowTrackedAircraftAI = value;
+        btTogAcftAi.BackColor = (value == AcftAiDisplayMode.All) ? _decoBColorON
+                              : (value == AcftAiDisplayMode.Filtered) ? _decoBColorALT
+                              : _decoBColorOFF;
+      }
+    }
+
+    /// <summary>
+    /// True to show the Airport Marks
+    /// </summary>
+    [Category( "Map" )]
+    [Description( "Get;Set: showing other aircrafts Enabled" )]
+    public bool ShowOtherAircraftsEnabled {
+      get => btTogAcftAi.Visible;
+      set { btTogAcftAi.Visible = value; }
+    }
+
+    /// <summary>
+    /// Load an filter list for other acfts
+    /// </summary>
+    public void SetOtherAircraftFilter( IList<string> filterList ) => _airportDisplayMgr.SetAcftAiFilter( filterList ); // forward to disp manager
+
+
+    /// <summary>
     /// Returns the current Map Center
     /// </summary>
     /// <returns>A LatLon</returns>
     public LatLon MapCenter( ) => _mapCenterDyn;
+
+    #endregion
+
+    #region Control Behavior
+
+    // set the visibility of all map controls (inputs)
+    private void CtrlVisibility( MapBehavior mode )
+    {
+      switch (mode) {
+        case MapBehavior.Map:
+          // hidden ones first
+          // still available 
+          lblAirport.Visible = true;
+          flpAcftData.Visible = true;
+          btTogGrid.Visible = true; btTogRings.Visible = true;
+          btTogAcftData.Visible = true; btTogShowRoute.Visible = true;
+          btTogNavaids.Visible = true; btTogVFR.Visible = true; btTogApt.Visible = true; btTogAcftAi.Visible = true;
+          btRunway.Visible = true; btTower.Visible = true; btNavaids.Visible = true;
+          btMapProvider.Visible = true;
+          btRangeAuto.Visible = true;
+          btRangeXFar.Visible = true; btRangeFarFar.Visible = true; btRangeFar.Visible = true;
+          btRangeMid.Visible = true; btRangeNear.Visible = true; btRangeClose.Visible = true;
+          btCenterApt.Visible = true; btCenterAircraft.Visible = true;
+          btZoomNorm.Visible = true; btZoomIn.Visible = true; btZoomOut.Visible = true;
+          UpdateCtxMenuText( );
+          this.ContextMenuStrip = ctxMenu;
+          break;
+
+        case MapBehavior.Radar:
+          // hidden ones first
+          btTogGrid.Visible = false;
+          lblAirport.Visible = false;
+          btTogRings.Visible = false;
+          btTogAcftData.Visible = false;
+          btTogShowRoute.Visible = false;
+          btTogVFR.Visible = false;
+          btRangeAuto.Visible = false;
+          btRunway.Visible = false; btTower.Visible = false; btNavaids.Visible = false;
+          btMapProvider.Visible = false;
+          btRangeXFar.Visible = false; btRangeClose.Visible = false;
+          latLonField.Visible = false;
+          teleportField.Visible = false;
+          this.ContextMenuStrip = null;
+          _pnlTower.Visible = false;
+          _pnlNavaids.Visible = false;
+          _pnlApproaches.Visible = false;
+          _pnlRunways.Visible = false;
+
+          // still available 
+          flpAcftData.Visible = true;
+          btTogNavaids.Visible = true;
+          btTogApt.Visible = true;
+          btTogAcftAi.Visible = true;
+          btRangeFarFar.Visible = true; btRangeFar.Visible = true;
+          btRangeMid.Visible = true; btRangeNear.Visible = true;
+          btCenterApt.Visible = true; btCenterAircraft.Visible = true;
+          btZoomNorm.Visible = true; btZoomIn.Visible = true; btZoomOut.Visible = true;
+          break;
+      }
+    }
+
+    // changes the map mode 
+    private void ChangeBehavior( MapBehavior mode, LatLon mapCenter )
+    {
+      _mapBehavior = mode;
+      CtrlVisibility( mode ); // update controls
+
+      // Trigger Update the View
+      _renderStaticNeeded = true;
+
+      switch (mode) {
+        case MapBehavior.Map:
+          _airportDisplayMgr.SetMapBehavior( _mapBehavior );
+          // clear the managed DispItems
+          _airportDisplayMgr.ClearDispItems( );
+          // create the Airports DrawingList
+          _airportDisplayMgr.AddDispItems( _airportRef );
+          // some fiddling with airport and extended handling 
+          UpdateMapCenter( mapCenter );
+          // trigger render - preliminary nothing loaded so far
+          _renderStaticNeeded = true;
+          // load the Map at the selected airport coord
+          MapManager.Instance.SetNewProvider( _mapMapProvider );
+          StartMapLoading( mapCenter );
+          _viewport.SetMouseAction( true );
+          _airportDisplayMgr.UpdateAircraft( _aircraftTrack );
+
+          break;
+
+        case MapBehavior.Radar:
+          _airportDisplayMgr.SetMapBehavior( _mapBehavior );
+          // clear the managed DispItems
+          _airportDisplayMgr.ClearDispItems( );
+          // create the Airports DrawingList
+          _airportDisplayMgr.AddDispItems( _airportRef );
+          // trigger render - preliminary nothing loaded so far
+          _renderStaticNeeded = true;
+          // load the Map at the aircrafts position
+          _mapMapProvider = MapManager.Instance.CurrentProvider; // save current
+          MapManager.Instance.SetNewProvider( c_radarMapProvider ); // switch to radar
+          _mapRangeHandler.SetMapRange( _mapRangeHandler.MapRange ); // validate if possible
+          StartMapLoading( mapCenter );
+          _viewport.SetMouseAction( false );
+          _airportDisplayMgr.UpdateAircraft( _aircraftTrack );
+          break;
+      }
+      // update if available
+      if (_navaidRef != null) _airportDisplayMgr.SetNavaidList( _navaidRef, _fixesRef );
+      if (_airportsRef != null) _airportDisplayMgr.SetAltAirportList( _airportsRef );
+
+    }
+
 
     #endregion
 
@@ -370,7 +597,7 @@ namespace bm98_Map
     {
       var iata = $"({airport.IATA})";
       lblAirport.Text = $"{airport.ICAO,-4} {iata,-6}   {airport.Name}\n"
-        + $"{Dms.ToLat( airport.Coordinate.Lat, "dm", 0 )} {Dms.ToLon( airport.Coordinate.Lon, "dm", 0 )}   {airport.Elevation_ft:####0} ft ({airport.Elevation_m:###0} m)";
+        + $"{Dms.ToLat( airport.Coordinate.Lat, "dm", "", 0 )} {Dms.ToLon( airport.Coordinate.Lon, "dm", "", 0 )}   {airport.Elevation_ft:####0} ft ({airport.Elevation_m:###0} m)";
     }
 
     #region Tower Panel
@@ -532,6 +759,9 @@ namespace bm98_Map
       _pnlNavaids.InitUpdate( );
       _pnlNavaids.ClearItems( );
 
+      // sanity if called with navaids==null
+      if (navaids == null) return;
+
       var navaidsSorted = navaids.Distinct( ).OrderBy( x => x.Ident ).ToList( );
       foreach (var nav in navaidsSorted) {
         if (nav.IsILS) continue; // skip
@@ -582,6 +812,8 @@ namespace bm98_Map
         if (mapProvider != MapProvider.DummyProvider) {
           // change provider
           MapManager.Instance.SetNewProvider( mapProvider );
+          // verify if current zoom is possible - change if needed
+          _mapRangeHandler.SetMapRange( _mapRangeHandler.MapRange ); // try set current, will adjust if needed
           StartMapLoading( _mapCenterDyn );
           _pnlProviders.Visible = false;
         }
@@ -606,10 +838,9 @@ namespace bm98_Map
       // set a new target alt
       _aircraftTrack.TargetAltitude_ft = _airportRef.Elevation_ft;
 
-      // some fiddling with airport and extended handling 
-      UpdateMapCenter( _airportRef.Coordinate );
-      // load the Map
-      StartMapLoading( _airportRef.Coordinate );
+      // Whenever an airport is selected switch to Map Mode
+      // (else there is a competition between tracking the acft and going to the airport)
+      ChangeBehavior( MapBehavior.Map, _airportRef.Coordinate );
 
       PopulateApt( _airportRef );
       PopulateRunways( _airportRef );
@@ -644,6 +875,15 @@ namespace bm98_Map
         // may be something needs to be rendered
         RenderStatic( );
       }
+    }
+
+    // center the map on the aircraft
+    private void CenterOnAcft( )
+    {
+      if (_aircraftTrack.Position.IsEmpty) return;
+
+      UpdateMapCenter( _aircraftTrack.Position );
+      StartMapLoading( _mapCenterDyn );
     }
 
     // start loading of a Map, this will trigger Canvas_LoadComplete events
@@ -702,7 +942,19 @@ namespace bm98_Map
       } );
     }
 
+    private void _viewport_MapMoved( object sender, EventArgs e )
+    {
+      if (latLonField.Visible) {
+        latLonField.Lat = _viewport.ViewCenterLatLon.Lat;
+        latLonField.Lon = _viewport.ViewCenterLatLon.Lon;
+        latLonField.SetMSA( MSALib.MSA.Msa_ft( _viewport.ViewCenterLatLon, true ) );
+      }
+    }
+
+
     #endregion
+
+    #region MapRange Handling
 
     // Indicate the Range button which is active
     private void MapRangeButtonUpdate( MapRange mapRange )
@@ -726,6 +978,8 @@ namespace bm98_Map
       // UpdateMapCenter( center ); // will render if needed  MMMMMMM
       OnMapRangeChanged( ); // signal to owner
     }
+
+    #endregion
 
     /// <summary>
     /// cTor: for the control
@@ -789,9 +1043,16 @@ namespace bm98_Map
       flpAcftData.Location = new Point( 5, lblAirport.Bottom + 5 );
       flpAcftData.AutoSize = true;
 
+      latLonField.Visible = false;
+
+      teleportField.Visible = false;
+      teleportField.Altitude_ft = 2000;
+      teleportField.TeleportPressed += TeleportField_TeleportPressed;
+
       _viewport = new VPort2( pbDrawing, _mapRangeHandler );
       _viewport.LoadComplete += Canvas_LoadComplete;
       _viewport.MapLoading += Canvas_MapLoading;
+      _viewport.MapMoved += _viewport_MapMoved;
 
       // create dummies to have them defined
       _airportRef = Data.Airport.DummyAirport( new LatLon( 0, 0, 0 ) );
@@ -812,11 +1073,13 @@ namespace bm98_Map
       ShowNavaids = false;
       ShowVFRMarks = false;
       ShowAptMarks = false;
+      ShowOtherAircrafts = AcftAiDisplayMode.None;
 
       // all tooltips
       _toolTip = new ToolTip( );
       _toolTip.SetToolTip( btCenterApt, "MAP: Load the original Airport map" );
       _toolTip.SetToolTip( btCenterAircraft, "MAP: Load the map with the aircraft as center location" );
+      _toolTip.SetToolTip( btTogBehavior, "MAP: Load the radar map with the aircraft as center location" );
 
       _toolTip.SetToolTip( btRangeXFar, "RANGE: Load a eXtra Far range map around the current center" );
       _toolTip.SetToolTip( btRangeFarFar, "RANGE: Load a Far, Far range map around the current center" );
@@ -840,6 +1103,7 @@ namespace bm98_Map
       _toolTip.SetToolTip( btTogNavaids, "Toggle navaids display" );
       _toolTip.SetToolTip( btTogVFR, "Toggle VFR marks display" );
       _toolTip.SetToolTip( btTogApt, "Toggle alternate Airport marks display" );
+      _toolTip.SetToolTip( btTogAcftAi, "Toggle other aircraft display" );
 
     }
 
@@ -854,8 +1118,12 @@ namespace bm98_Map
       PopulateFrequencies( Data.Airport.DummyAirport( new LatLon( 0, 0 ) ) );
       PopulateNavaids( new List<INavaid>( ) );
 
-      UpdateAircraft( new Data.TrackedAircraftCls( ) ); // dummy update
+      UpdateCtxMenuText( );
 
+      UpdateAircraft( new Data.TrackedAircraftCls( ) ); // dummy update
+      UpdateAircraftsAI( new List<ITrackedAircraft>( ) { } ); // dummy update
+
+      ChangeBehavior( MapBehavior.Map, _airportRef.Coordinate );
       _viewport.CenterMap( );
 
     }
@@ -933,15 +1201,18 @@ namespace bm98_Map
 
     private void btCenterApt_Click( object sender, EventArgs e )
     {
+      if (_mapBehavior == MapBehavior.Radar) {
+        ChangeBehavior( MapBehavior.Map, _airportRef.Coordinate );
+      }
       OriginalMap( );
     }
 
     private void btCenterAircraft_Click( object sender, EventArgs e )
     {
-      if (_aircraftTrack.Position.IsEmpty) return;
-
-      UpdateMapCenter( _aircraftTrack.Position );
-      StartMapLoading( _mapCenterDyn );
+      if (_mapBehavior == MapBehavior.Radar) {
+        ChangeBehavior( MapBehavior.Map, _aircraftTrack.Position );
+      }
+      CenterOnAcft( );
     }
 
     private void btZoomNorm_Click( object sender, EventArgs e )
@@ -994,6 +1265,11 @@ namespace bm98_Map
       ShowAptMarks = !ShowAptMarks;
     }
 
+    private void btTogAcftAi_Click( object sender, EventArgs e )
+    {
+      ShowOtherAircrafts = _airportDisplayMgr.NextDisplayMode( ShowOtherAircrafts ); // cycle through the modes
+    }
+
     private void lblTHdg_Click( object sender, EventArgs e )
     {
       _hdgIsTrue = !_hdgIsTrue; // toggle
@@ -1040,7 +1316,46 @@ namespace bm98_Map
       _vsIsFpm = _unitIsImp;
     }
 
+    // toggles the Map / Radar mode
+    private void btTogBehavior_Click( object sender, EventArgs e )
+    {
+      if (_mapBehavior == MapBehavior.Map) {
+        ChangeBehavior( MapBehavior.Radar, _aircraftTrack.Position );
+      }
+    }
+
     #endregion
 
+    #region Context Menu
+
+    private void mnuCoord_Click( object sender, EventArgs e )
+    {
+      latLonField.Visible = !latLonField.Visible; // toggle
+      if (latLonField.Visible) {
+        latLonField.Lat = _viewport.ViewCenterLatLon.Lat;
+        latLonField.Lon = _viewport.ViewCenterLatLon.Lon;
+        latLonField.SetMSA( MSALib.MSA.Msa_ft( _viewport.ViewCenterLatLon, true ) );
+      }
+      UpdateCtxMenuText( );
+    }
+
+    private void mnuTeleport_Click( object sender, EventArgs e )
+    {
+      teleportField.Visible = !teleportField.Visible; // toggle
+      UpdateCtxMenuText( );
+    }
+
+    private void TeleportField_TeleportPressed( object sender, EventArgs e )
+    {
+      OnTeleportAircraft( _viewport.ViewCenterLatLon, teleportField.AltMSL, teleportField.Altitude_ft );
+    }
+
+    private void UpdateCtxMenuText( )
+    {
+      mnuCoord.Checked = latLonField.Visible;
+      mnuTeleport.Checked = teleportField.Visible;
+    }
+
+    #endregion
   }
 }

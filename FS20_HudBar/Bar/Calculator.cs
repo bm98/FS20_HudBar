@@ -52,7 +52,7 @@ namespace FS20_HudBar.Bar
         // Update Estimate Calculation with Acf data
         UpdateValues(
               SV.Get<float>( SItem.fG_Acft_GS_kt ),
-              SV.Get<float>( SItem.fG_Acft_AltMsl_ft ),
+              SV.Get<float>( SItem.fGS_Acft_AltMsl_ft ),
               SV.Get<float>( SItem.fG_Acft_VS_ftPmin )
         );
 
@@ -574,7 +574,7 @@ namespace FS20_HudBar.Bar
     /// </summary>
     private static void PosRateUpdate( )
     {
-      float amsl = SV.Get<float>( SItem.fG_Acft_AltMsl_ft );
+      float amsl = SV.Get<float>( SItem.fGS_Acft_AltMsl_ft );
       if (SV.Get<bool>( SItem.bG_Sim_OnGround )) {
         // reset while on ground
         _startAlt_ft = amsl;
@@ -605,7 +605,7 @@ namespace FS20_HudBar.Bar
         bool ga = true;
         ga &= SV.Get<float>( SItem.fG_Flp_Deployment_prct ) > c_GaMinFlaps_prc;
         ga &= SV.Get<float>( SItem.fGS_Thr_Lever_prct ) > c_GaMinThrust_prc;
-        ga &= SV.Get<float>( SItem.fG_Acft_AltAoG_ft ) < c_GaMaxAOG_ft;
+        ga &= SV.Get<float>( SItem.fGS_Acft_AltAoG_ft ) < c_GaMaxAOG_ft;
         ga &= SV.Get<double>( SItem.dG_Env_Time_sec ) > (_triggerTime_sec + c_GaWait_sec); // wait time elapsed
         ga &= SV.Get<GearPosition>( SItem.gpGS_Gear_Position ) == GearPosition.Down;
 

@@ -42,9 +42,11 @@ namespace MapLib
         mstream.Position = 0;
         mapImage = FromStream( mstream, mapImageID );
       }
-      if (mapImage != null) { 
+      // sanity
+      if (mapImage != null) {
         mapImage.IsFailedImage = true;
-        mapImage.ShouldRetry= retry;
+        mapImage.ShouldRetry = retry;
+        mapImage.ImageSource = ImgSource.Resource;
       }
 
       return mapImage;

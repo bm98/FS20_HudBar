@@ -47,7 +47,8 @@ namespace MapLib.Sources.MemCache
         //  mapImage = _memCache.Retrieve( jobWrapper.MapImageID.FullKey );
       }
       if (mapImage != null) {
-//        Debug.WriteLine( $"MemorySource.GetTileImage: Served from MEMORY CACHE - {imageSought.FullKey}" );
+        //        Debug.WriteLine( $"MemorySource.GetTileImage: Served from MEMORY CACHE - {imageSought.FullKey}" );
+        mapImage.ImageSource = ImgSource.MemCache;
         return mapImage;
       }
       else {

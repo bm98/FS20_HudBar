@@ -12,10 +12,14 @@ using bm98_Map.Data;
 
 using CoordLib;
 
+using dNetBm98;
+
 using FSimFacilityIF;
 
 using static bm98_Map.Drawing.FontsAndColors;
-using static bm98_Map.MRH_extensions;
+using bm98_Map.Drawing.DispItems;
+using System.Security.Cryptography;
+using System.Drawing.Drawing2D;
 
 namespace bm98_Map.Drawing
 {
@@ -25,6 +29,70 @@ namespace bm98_Map.Drawing
   /// </summary>
   internal class DisplayListMgr
   {
+    /// <summary>
+    /// Returns the next display mode for AI aircrafts and cycles if at end 
+    /// </summary>
+    /// <param name="current">Current Mode</param>
+    /// <returns></returns>
+    public static AcftAiDisplayMode CycleAcftAiDisplayMode( AcftAiDisplayMode current )
+    {
+      AcftAiDisplayMode nextMode = current + 1;
+      if (Enum.IsDefined( typeof( AcftAiDisplayMode ), nextMode )) { return nextMode; }
+      else { return AcftAiDisplayMode.None; }
+    }
+
+    // *** CLASS 
+
+    #region State Record Def 
+
+    // Internal Display State record
+    private struct StateRecord
+    {
+      // mode how the map behaves 
+      public MapBehavior MapMode;
+
+      // wether or not showing the aircraft 
+      public bool ShowTrackedAcft;
+      // wether or not showing the grid
+      public bool ShowMapGrid;
+      // wether or not showing the scale
+      public bool ShowMapScale;
+      // wether or not showing the airport Range
+      public bool ShowAptRings;
+      // wether or not showing the Navaids
+      public bool ShowNavaids;
+      // wether or not showing the Route
+      public bool ShowRoute;
+      // wether or not showing the VFR Markings
+      public bool ShowVfrMarks;
+      // wether or not showing the Airport (alternates) Marks
+      public bool ShowAptMarks;
+
+      // mode how to show the AI aircrafts
+      public AcftAiDisplayMode ShowTrackedAcftAI;
+      // positive filter list for AI acft
+      public IList<string> AcftAiFilterList;
+
+      // selected runwayIdent 
+      public string SelectedRwy;
+      // selected runwayApproachIdent 
+      public string SelectedRwyApproach;
+      // True if in Map mode
+      public bool IsMap => MapMode == MapBehavior.Map;
+      // True if in Radar mode
+      public bool IsRadar => MapMode == MapBehavior.Radar;
+
+      // returns a deep copy of the argument
+      public static StateRecord Copy( StateRecord other )
+      {
+        StateRecord ret = (StateRecord)other.MemberwiseClone( );
+        ret.AcftAiFilterList = other.AcftAiFilterList.ToList( );
+        return ret;
+      }
+    }
+
+    #endregion
+
     // maximum aircraft track length
     private const int c_maxTrackPoints = 600; // see what works here
 
@@ -33,24 +101,24 @@ namespace bm98_Map.Drawing
     // ref of the ViewPort used to show this Drawings
     private VPort2 _viewportRef;
 
-    // wether or not showing the aircraft 
-    private bool _showTrackedAcft = false;
-    // wether or not showing the grid
-    private bool _showMapGrid = false;
-    // wether or not showing the airport Range
-    private bool _showAptRange = false;
-    // wether or not showing the Navaids
-    private bool _showNavaids = false;
-    // wether or not showing the Route
-    private bool _showRoute = false;
-    // wether or not showing the VFR Markings
-    private bool _showVfrMarks = false;
-    // wether or not showing the Airport (alternates) Marks
-    private bool _showAptMarks = false;
-    // selected runwayIdent 
-    private string _selRunway = "";
-    // selected runwayApproachIdent 
-    private string _selRunwayApproach = "";
+    // display state
+    private StateRecord _state = new StateRecord( ) {
+      MapMode = MapBehavior.Map,
+      ShowTrackedAcft = false,
+      ShowMapGrid = false,
+      ShowMapScale = true, // default on
+      ShowAptRings = false,
+      ShowNavaids = false,
+      ShowRoute = false,
+      ShowVfrMarks = false,
+      ShowAptMarks = false,
+      SelectedRwy = "",
+      SelectedRwyApproach = "",
+      ShowTrackedAcftAI = AcftAiDisplayMode.None,
+      AcftAiFilterList = new List<string>( ),
+    };
+    // stored display state in Map mode
+    private StateRecord _stateMapModeStored = new StateRecord( );
 
     // DisplayManager internal range handler
     private readonly MapRangeHandler _mapRangeHandler;
@@ -63,7 +131,7 @@ namespace bm98_Map.Drawing
     {
       _airportRef = null;
       _viewportRef = viewport;
-      _selRunway = "";
+      _state.SelectedRwy = "";
       _mapRangeHandler = new MapRangeHandler( MapRange.Mid, SetZoomLevel );
     }
 
@@ -72,7 +140,7 @@ namespace bm98_Map.Drawing
     /// </summary>
     public void ClearDispItems( )
     {
-      _selRunway = "";
+      _state.SelectedRwy = "";
       _viewportRef.GProc.Drawings.Clear( ); // release all from airport and related map
     }
 
@@ -87,6 +155,7 @@ namespace bm98_Map.Drawing
       // map grid and scale
       MAP_GRID,
       MAP_SCALE,
+      MAP_CROSE, // compass rose
       // apt circles
       APT_Range,
       // navaid hook
@@ -101,12 +170,15 @@ namespace bm98_Map.Drawing
       APTMARKS,
       // Runways
       RUNWAYS,
+      // tracked AI aircrafts Hook
+      AIRCRAFTS_AI,
       // tracking aircraft
       AIRCRAFT,
-      AIRCRAFT_RANGE,
-      AIRCRAFT_TRACK,
-      AIRCRAFT_WIND,
-      // route
+      AIRCRAFT_RINGS, // range rings around the acft
+      AIRCRAFT_RANGE, // forward range display
+      AIRCRAFT_TRACK, // acft track
+      AIRCRAFT_WIND,  // acft wind arrow
+      // route Hook
       ROUTE,
 
     }
@@ -137,7 +209,7 @@ namespace bm98_Map.Drawing
       // Lat Lon Grid
       var grid = new MapGridItem( ) {
         Key = (int)DItems.MAP_GRID,
-        Active = _showMapGrid,
+        Active = _state.ShowMapGrid,
         TileMatrixRef = _viewportRef.Map,
         Pen = PenScale1,
         TextBrush = BrushScale,
@@ -148,17 +220,27 @@ namespace bm98_Map.Drawing
       // Map Scale
       var scale = new ScaleItem( ) {
         Key = (int)DItems.MAP_SCALE,
-        Active = true, // allways
+        Active = _state.ShowMapScale,
         Pen = PenScale3,
         Font = FtLarger,
         TextBrush = BrushScale,
       };
-      _viewportRef.GProc.Drawings.AddItem( scale );
+      _viewportRef.GProcSprite.Drawings.AddItem( scale );
 
-      // Airport Range
-      var aptRange = new AirportRangeItem( ) {
+      // Map Compass rose
+      var crose = new CRoseItem( ) {
+        Key = (int)DItems.MAP_CROSE,
+        Active = _state.IsRadar,
+        Pen = PenRoseRdr,
+        Font = FtLargest,
+        TextBrush = BrushRoseRdr,
+      };
+      _viewportRef.GProc.Drawings.AddItem( crose );
+
+      // Airport Range Rings
+      var aptRange = new AirportRingsItem( ) {
         Key = (int)DItems.APT_Range,
-        Active = _showAptRange,
+        Active = _state.ShowAptRings,
         CoordPoint = _airportRef.Coordinate,
         Pen = PenAptRange,
         TextBrush = BrushAptRange,
@@ -191,7 +273,7 @@ namespace bm98_Map.Drawing
       // Route Hook (ManagedDrawings but not using managed items)
       var route = new RouteHookItem( ) {
         Key = (int)DItems.ROUTE,
-        Active = _showRoute, // visible at any Range
+        Active = _state.ShowRoute, // visible at any Range
         String = "Route", // only deco for debug
       };
       _viewportRef.GProc.Drawings.AddItem( route );
@@ -221,6 +303,14 @@ namespace bm98_Map.Drawing
       // populate the hook right now - it is static per airport
       AddRunwayDispItems( _airportRef.Runways );
 
+      // Tracked AI aircrafts on the Sprite Processor
+      var aircraftsAI = new ManagedHookItem( ) {
+        Key = (int)DItems.AIRCRAFTS_AI,
+        Active = _state.ShowTrackedAcftAI != AcftAiDisplayMode.None,
+        String = "AI aircrafts", // only deco for debug
+      };
+      _viewportRef.GProcSprite.Drawings.AddItem( aircraftsAI );
+
       // Tracked aircraft on the Sprite Processor
       // will be added only if it does not exist (startup)
       //  else the tracked aircraft is independent from the Airport ones
@@ -237,10 +327,10 @@ namespace bm98_Map.Drawing
 
         var aircraft = new AircraftItem( Properties.Resources.aircraft_mid ) {
           Key = (int)DItems.AIRCRAFT,
-          Active = _showTrackedAcft,
+          Active = _state.ShowTrackedAcft,
           CoordPoint = _airportRef.Coordinate,
           Font = FtLarger,
-          TextBrush = BrushRwNumber,
+          TextBrush = BrushRwNumber, // TODO make a distinct one
           // drawn acft
           Pen = PenAcftOutline, // outline of the shape
         };
@@ -251,24 +341,45 @@ namespace bm98_Map.Drawing
         var aircraftRange = new AcftRangeItem( ) {
           Key = (int)DItems.AIRCRAFT_RANGE,
           Active = false, // init false, will be shown on update if asked for
+          CoordPoint = _airportRef.Coordinate, // will be updated later
           Pen = PenRange3,
           PenTrack = PenRange5,
           TgtPen = PenTRange3,
-          CoordPoint = _airportRef.Coordinate,
         };
         aircraft.SubItemList.AddItem( aircraftRange );
+
+        // Aircraft range rings (sub item of Aircraft)
+        var aircraftRings = new AcftRingsItem( ) {
+          Key = (int)DItems.AIRCRAFT_RINGS,
+          Active = false, // init false, will be shown on update if asked for
+          CoordPoint = _airportRef.Coordinate, // will be updated later
+          Pen = PenAptRange,
+          TextBrush = BrushAptRange,
+          Font = FtLarge,
+        };
+        aircraft.SubItemList.AddItem( aircraftRings );
 
         // Aircraft wind arrow (sub item of Aircraft)
         var aircraftWind = new AcftWindItem( ) {
           Key = (int)DItems.AIRCRAFT_WIND,
           Active = false, // init false, will be shown on update if asked for
-          Pen = PenAcftWind,
-          FillBrush = BrushAcftWind,
+          CoordPoint = _airportRef.Coordinate, // will be updated later
+          Pen = _state.IsMap ? PenAcftWind : PenAcftWindRdr,
+          FillBrush = _state.IsMap ? BrushAcftWind : BrushAcftWindRdr,
+          TextBrush = _state.IsMap ? BrushAcftWind : BrushAcftWindRdr,
           Font = FtSmallest,
-          TextBrush = BrushAcftWind,
-          CoordPoint = _airportRef.Coordinate,
         };
         aircraft.SubItemList.AddItem( aircraftWind );
+      }
+      else {
+        // existing aircraft, update display props for some 
+        var sdi = di.SubItemList.DispItem( (int)DItems.AIRCRAFT_WIND );
+        if (sdi != null) {
+          var acftWind = sdi as AcftWindItem;
+          sdi.Pen = _state.IsMap ? PenAcftWind : PenAcftWindRdr;
+          sdi.FillBrush = _state.IsMap ? BrushAcftWind : BrushAcftWindRdr;
+          sdi.TextBrush = _state.IsMap ? BrushAcftWind : BrushAcftWindRdr;
+        }
       }
 
       ClutterManager( );
@@ -334,7 +445,7 @@ namespace bm98_Map.Drawing
       var rwyList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.RUNWAYS )?.SubItemList;
       if (rwyList != null) {
         foreach (var rwyItem in rwyList.Values) {
-          di = rwyItem as Drawing.RunwayItem;
+          di = rwyItem as RunwayItem;
           di.Font = _mapRangeHandler.IsXFar || _mapRangeHandler.IsFarFar ? null // cannot draw Text at this resolution
             : _mapRangeHandler.IsFar || _mapRangeHandler.IsMid ? FtSmaller
             : FtMid;
@@ -344,19 +455,22 @@ namespace bm98_Map.Drawing
       // disable clutter at XFar
       bool active = !_mapRangeHandler.IsXFar;
       var itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.NAVAIDS );
-      if (itemList != null) itemList.Active = active && _showNavaids;
+      if (itemList != null) itemList.Active = active && _state.ShowNavaids;
 
       itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.WAYPOINTS );
-      if (itemList != null) itemList.Active = active && _showNavaids;
+      if (itemList != null) itemList.Active = active && _state.ShowNavaids;
 
       itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.APTMARKS );
-      if (itemList != null) itemList.Active = active && _showAptMarks;
+      if (itemList != null) itemList.Active = active && _state.ShowAptMarks;
 
       itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.VFRMARKS );
       if (itemList != null) itemList.Active = active; // the hook is only used to show no marks at XFar
 
       itemList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.IFRMARKS );
       if (itemList != null) itemList.Active = active; // the hook is only used to show no marks at XFar
+
+      itemList = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFTS_AI );
+      if (itemList != null) itemList.Active = active && (_state.ShowTrackedAcftAI != AcftAiDisplayMode.None); // the hook is only used to show no marks at XFar
     }
 
     /// <summary>
@@ -375,7 +489,7 @@ namespace bm98_Map.Drawing
       if (_viewportRef.Map.HorPixelMeasure_m != 0) {
         pixelPerNm = 1852f / _viewportRef.Map.HorPixelMeasure_m; // px/m-> px/nm conversion
       }
-      di = _viewportRef.GProc.Drawings.DispItem( (int)DItems.MAP_SCALE );
+      di = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.MAP_SCALE );
       if (di != null) {
         (di as ScaleItem).PixelPerNm = pixelPerNm;
       }
@@ -385,14 +499,41 @@ namespace bm98_Map.Drawing
     #region API Show Decorations
 
     /// <summary>
+    /// True to show the tracked AI aircrafts, false otherwise
+    /// </summary>
+    public AcftAiDisplayMode ShowTrackedAircraftAI {
+      get => _state.ShowTrackedAcftAI;
+      set {
+        _state.ShowTrackedAcftAI = value;
+        var acftAiHook = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFTS_AI );
+        if (acftAiHook != null) acftAiHook.Active = _mapRangeHandler.IsXFar ? false : (value != AcftAiDisplayMode.None); // avoid clutter at XFar
+
+        RenderSprite( );
+        Redraw( );
+      }
+    }
+
+    /// <summary>
+    /// Load an filter list for other acfts
+    /// </summary>
+    public void SetAcftAiFilter( IList<string> filterList )
+    {
+      _state.AcftAiFilterList = filterList.ToList( ); // copy
+    }
+
+
+    /// <summary>
     /// True to show the tracked aircraft, false otherwise
     /// </summary>
     public bool ShowTrackedAircraft {
-      get => _showTrackedAcft;
+      get => _state.ShowTrackedAcft;
       set {
-        _showTrackedAcft = value;
+        _state.ShowTrackedAcft = value;
         var di = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFT );
-        if (di != null) di.Active = _showTrackedAcft;
+        if (di != null) di.Active = _state.ShowTrackedAcft;
+
+        di = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFT_RINGS );
+        if (di != null) di.Active = false; // will be updated when the Aircraft is update, else it's shown for a blink even if not selected
 
         di = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFT_RANGE );
         if (di != null) di.Active = false; // will be updated when the Aircraft is update, else it's shown for a blink even if not selected
@@ -412,12 +553,12 @@ namespace bm98_Map.Drawing
     /// True to show the route, false otherwise
     /// </summary>
     public bool ShowRoute {
-      get => _showRoute;
+      get => _state.ShowRoute;
       set {
-        _showRoute = value;
+        _state.ShowRoute = value;
         var di = _viewportRef.GProc.Drawings.DispItem( (int)DItems.ROUTE );
         if (di == null) return;  // not (yet) defined
-        di.Active = _showRoute;
+        di.Active = _state.ShowRoute;
 
         RenderStatic( );
         Redraw( );
@@ -428,12 +569,12 @@ namespace bm98_Map.Drawing
     /// True to show the map grid, false otherwise
     /// </summary>
     public bool ShowMapGrid {
-      get => _showMapGrid;
+      get => _state.ShowMapGrid;
       set {
-        _showMapGrid = value;
+        _state.ShowMapGrid = value;
         var di = _viewportRef.GProc.Drawings.DispItem( (int)DItems.MAP_GRID );
         if (di == null) return; // not (yet) defined
-        di.Active = _showMapGrid;
+        di.Active = _state.ShowMapGrid;
 
         RenderStatic( );
         Redraw( );
@@ -441,15 +582,30 @@ namespace bm98_Map.Drawing
     }
 
     /// <summary>
+    /// True to show the map scale, false otherwise
+    /// </summary>
+    public bool ShowMapScale {
+      get => _state.ShowMapScale;
+      set {
+        _state.ShowMapScale = value;
+        var di = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.MAP_SCALE );
+        if (di == null) return; // not (yet) defined
+        di.Active = _state.ShowMapScale;
+
+        RenderStatic( );
+        Redraw( );
+      }
+    }
+    /// <summary>
     /// True to show the airport range circles, false otherwise
     /// </summary>
     public bool ShowAiportRange {
-      get => _showAptRange;
+      get => _state.ShowAptRings;
       set {
-        _showAptRange = value;
+        _state.ShowAptRings = value;
         var di = _viewportRef.GProc.Drawings.DispItem( (int)DItems.APT_Range );
         if (di == null) return; // not (yet) defined
-        di.Active = _showAptRange;
+        di.Active = _state.ShowAptRings;
 
         RenderStatic( );
         Redraw( );
@@ -460,16 +616,16 @@ namespace bm98_Map.Drawing
     /// True to show the airport range circles, false otherwise
     /// </summary>
     public bool ShowNavaids {
-      get => _showNavaids;
+      get => _state.ShowNavaids;
       set {
-        _showNavaids = value;
+        _state.ShowNavaids = value;
         // all Navaid items
         var navHook = _viewportRef.GProc.Drawings.DispItem( (int)DItems.NAVAIDS );
-        if (navHook != null) navHook.Active = _mapRangeHandler.IsXFar ? false : _showNavaids; // avoid clutter at XFar
+        if (navHook != null) navHook.Active = _mapRangeHandler.IsXFar ? false : _state.ShowNavaids; // avoid clutter at XFar
 
         // show wyp for the selected runway only
         var wypHook = _viewportRef.GProc.Drawings.DispItem( (int)DItems.WAYPOINTS );
-        if (wypHook != null) wypHook.Active = _mapRangeHandler.IsXFar ? false : _showNavaids; // avoid clutter at XFar
+        if (wypHook != null) wypHook.Active = _mapRangeHandler.IsXFar ? false : _state.ShowNavaids; // avoid clutter at XFar
         // per Wyp now
         RenderStatic( );
         Redraw( );
@@ -480,16 +636,16 @@ namespace bm98_Map.Drawing
     /// True to show the VFR marks, false otherwise
     /// </summary>
     public bool ShowVFRMarks {
-      get => _showVfrMarks;
+      get => _state.ShowVfrMarks;
       set {
-        _showVfrMarks = value;
+        _state.ShowVfrMarks = value;
         // all VFR marks items
         var vfrList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.VFRMARKS )?.SubItemList;
         if (vfrList == null) return; // not (yet) defined
         foreach (var vfrItem in vfrList.Values) {
           var di = vfrItem as RwyVFRMarksItem;
           di.Active = true; // always true
-          di.ShowFullDecoration = _showVfrMarks; // to draw the full painting
+          di.ShowFullDecoration = _state.ShowVfrMarks; // to draw the full painting
         }
         RenderStatic( );
         Redraw( );
@@ -500,13 +656,13 @@ namespace bm98_Map.Drawing
     /// True to show the Airport marks
     /// </summary>
     public bool ShowAptMarks {
-      get => _showAptMarks;
+      get => _state.ShowAptMarks;
       set {
-        _showAptMarks = value;
+        _state.ShowAptMarks = value;
         // all VFR marks items
         var di = _viewportRef.GProc.Drawings.DispItem( (int)DItems.APTMARKS );
         if (di == null) return; // not (yet) defined
-        di.Active = _mapRangeHandler.IsXFar ? false : _showAptMarks; // avoid clutter at XFar
+        di.Active = _mapRangeHandler.IsXFar ? false : _state.ShowAptMarks; // avoid clutter at XFar
 
         RenderStatic( );
         Redraw( );
@@ -542,14 +698,14 @@ namespace bm98_Map.Drawing
           var rwBox = new RwyVFRMarksItem( ) {
             Key = GProc.DispID_Anon( ),
             Active = true, // always, manged by the Hook for XFAR, else it's not even in the DisplayList
-            ShowFullDecoration = _showVfrMarks, // to draw the full painting when VFR is selected
+            ShowFullDecoration = _state.ShowVfrMarks, // to draw the full painting when VFR is selected
             StartID = rwy.Ident,
             Start = rwy.StartCoordinate,
-            StartHeading_degm = rwy.Bearing_degm,
+            StartHeading_degm = rwy.Bearing_deg,
             StartRunwayIdent = rwy.Ident,
             EndID = (otherEnd == null) ? "" : otherEnd.Ident,
             End = (otherEnd == null) ? LatLon.Empty : otherEnd.StartCoordinate,
-            EndHeading_degm = (otherEnd == null) ? float.NaN : otherEnd.Bearing_degm,
+            EndHeading_degm = (otherEnd == null) ? float.NaN : otherEnd.Bearing_deg,
             EndRunwayIdent = (otherEnd == null) ? "" : otherEnd.Ident,
             Lenght = rwy.Length_m,
             Width = rwy.Width_m,
@@ -574,7 +730,45 @@ namespace bm98_Map.Drawing
 
     #endregion
 
-    #region API MapRange
+    #region API Map 
+
+    /// <summary>
+    /// Set the map mode
+    /// </summary>
+    /// <param name="behavior">Map mode</param>
+    public void SetMapBehavior( MapBehavior behavior )
+    {
+      if (_state.MapMode == behavior) return; // already
+      if (behavior == MapBehavior.Map) {
+        _state = StateRecord.Copy( _stateMapModeStored ); // restore the Map state
+        _state.MapMode = behavior;
+        ShowMapGrid = _state.ShowMapGrid;
+        ShowMapScale = _state.ShowMapScale;
+        ShowVFRMarks = _state.ShowVfrMarks;
+        ShowRoute = _state.ShowRoute;
+        ShowAiportRange = _state.ShowAptRings;
+        SetSelectedNavIdRunway( _state.SelectedRwy );
+        SetSelectedNavIdRunwayApproach( _state.SelectedRwyApproach );
+        ShowTrackedAircraft = _state.ShowTrackedAcft;
+      }
+      else if (behavior == MapBehavior.Radar) {
+        _stateMapModeStored = StateRecord.Copy( _state ); // store a copy of the Map state
+        _state.MapMode = behavior;
+        // some behavior is fixed in this mode
+        ShowMapGrid = false;
+        ShowMapScale = false;
+        ShowVFRMarks = false;
+        ShowRoute = false;
+        ShowAiportRange = false;
+        SetSelectedNavIdRunway( "" );
+        SetSelectedNavIdRunwayApproach( "" );
+        ShowTrackedAircraft = true; // force 
+      }
+      var acftAIList = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFTS_AI )?.SubItemList;
+      if (acftAIList != null) {
+        acftAIList.Clear( );
+      }
+    }
 
     /// <summary>
     /// Update the ZoomLevel related drawings
@@ -587,43 +781,187 @@ namespace bm98_Map.Drawing
 
     #endregion
 
+    #region API AI Aircrafts
+
+    /// <summary>
+    /// Returns the next valid Display mode 
+    /// </summary>
+    /// <param name="current">Current display mode</param>
+    /// <returns></returns>
+    public AcftAiDisplayMode NextDisplayMode( AcftAiDisplayMode current )
+    {
+      AcftAiDisplayMode nextMode = CycleAcftAiDisplayMode( current );
+
+      if (nextMode == AcftAiDisplayMode.Filtered && (_state.AcftAiFilterList.Count == 0)) {
+        // dont show filtered if there is no filter
+        nextMode = CycleAcftAiDisplayMode( nextMode );
+      }
+      return nextMode;
+    }
+
+    /// <summary>
+    /// Update all tracked AI aircrafts
+    /// </summary>
+    /// <param name="aircraftsAI">AI Aircraft list</param>
+    public void UpdateAircraftsAI( IList<ITrackedAircraft> aircraftsAI )
+    {
+      // all AI aircraft Sprites
+      var acftList = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFTS_AI )?.SubItemList;
+      if (acftList == null) return; // CANNOT (yet)
+
+      // update exisiting ones and add new ones
+      // mark all visible ones as Alive
+      var changeList = new List<AircraftAiItem>( );
+
+      foreach (var acftSrc in aircraftsAI) {
+        if (_state.ShowTrackedAcftAI == AcftAiDisplayMode.Filtered) {
+          // show filtered
+          if (_state.AcftAiFilterList.Count > 0) {
+            // having a filter
+            if (!_state.AcftAiFilterList.Contains( acftSrc.AircraftID )) continue;  // when a filter is applied include only filtered ones
+          }
+          else {
+            // treat as non filtered
+            if (acftSrc.OnGround) continue; // don't show the ones on ground...
+          }
+        }
+        else if (_state.ShowTrackedAcftAI == AcftAiDisplayMode.All) {
+          // show all
+          if (acftSrc.OnGround) {
+            if (_mapRangeHandler.ZoomLevel <= (int)MapRange.Near) {
+              continue; // don't show the ones on ground...
+            }
+          }
+        }
+        else {
+          // show none
+          continue; // don't add one
+        }
+
+        // prep the display string here
+        // like "↑ 234 / 18" is going up at 23400 ft MSL 180 kt GS 
+        string vs = acftSrc.Vs_fpm > 200 ? "↑" : (acftSrc.Vs_fpm < -200) ? "↓" : " ";
+        string values = $"\n{vs}{XMath.RoundInt( acftSrc.AltitudeMsl_ft, 100 ) / 100:000} {XMath.RoundInt( acftSrc.Gs_kt, 10 ) / 10:00}"; // use values conditionally ??
+        string dispString = $"{acftSrc.AircraftID}{values}";
+        if (acftList.Values.FirstOrDefault( ac => (ac as AircraftAiItem).AircraftID == acftSrc.AircraftID ) is AircraftAiItem dstItem) {
+          // update 
+          dstItem.CoordPoint = acftSrc.Position; // must include AltMsl ft
+          dstItem.Heading = acftSrc.TrueHeading_deg; // THDG to draw on the map
+          dstItem.OnGround = acftSrc.OnGround;
+          dstItem.Alive = true; // mark for later update
+          dstItem.TCAS = acftSrc.TCAS;
+          //          dstItem.TCAS = TcasFlag.ProximityLevel;
+          dstItem.String = dispString;
+        }
+        else {
+          // add new 
+          var aircraft = new AircraftAiItem( Properties.Resources.aircraft_mid ) {
+            Key = GProc.DispID_Anon( ),
+            Active = true, // managed by hook
+            AircraftID = acftSrc.AircraftID,
+            IsHeli = acftSrc.IsHeli,
+            CoordPoint = acftSrc.Position, // must include AltMsl ft
+            Heading = acftSrc.TrueHeading_deg, // THDG to draw on the map
+            OnGround = acftSrc.OnGround,
+            String = dispString,
+            TCAS = acftSrc.TCAS,
+            Alive = true, // mark for later update
+                          // init item drawing properties
+            Font = FtLarge,
+            TextBrush = _state.IsMap ? BrushAcftAiText : BrushAcftAiTextRdr,
+            TextRectFillBrush = _state.IsMap ? BrushAcftAiTextBG : BrushAcftAiTextBGRdr,
+            Pen = _state.IsMap ? PenAcftAiOutline : PenAcftAiOutlineRdr, // outline of the shape
+          };
+          changeList.Add( aircraft ); // temp list else foreach is screwed
+        }
+      }
+      // add when complete
+      foreach (var a in changeList) acftList.AddItem( a );
+      changeList.Clear( );
+
+      // remove where not Alive and reset Alive flag for next round
+      foreach (var acSprite in acftList.Values) {
+        var dstItem = acSprite as AircraftAiItem;
+        if (dstItem.Alive) {
+          dstItem.Alive = false; // reset process flag
+        }
+        else {
+          // not Alive anymore, remove later
+          changeList.Add( dstItem );
+        }
+      }
+      // remove when complete
+      foreach (var a in changeList) acftList.RemoveItem( a.Key );
+      changeList.Clear( );
+    }
+
+    #endregion
+
     #region API Aircraft
 
     /// <summary>
     /// Update the tracked aircraft
     /// </summary>
     /// <param name="aircraft">The internal Aircraft</param>
-    public void UpdateAircraft( Data.TrackedAircraft aircraft )
+    public void UpdateAircraft( TrackedAircraft aircraft )
     {
+      if (_state.MapMode == MapBehavior.Radar) {
+        // SetRadarMap( aircraft.Position, aircraft.TrueHeading_deg );
+        //acftItem.Heading = 0; // force upright
+        _viewportRef.MapHeading = aircraft.TrueHeading_deg;
+        _viewportRef.SetMapCenter( aircraft.Position );
+      }
+      else {
+        _viewportRef.MapHeading = 0;
+      }
+
+      // set compass rose 
+      var di = _viewportRef.GProc.Drawings.DispItem( (int)DItems.MAP_CROSE );
+      if (di != null) {
+        var rose = (di as CRoseItem);
+        rose.CoordPoint = aircraft.Position;
+      }
+
       // set aircraft icon on the sprite level
       var diAcft = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFT );
       if (diAcft == null) return; // CANNOT (yet)
-                                  // set icon
+
+      // set icon
       var acftItem = (diAcft as AircraftItem);
-      acftItem.Active = _showTrackedAcft;
+      acftItem.Active = _state.ShowTrackedAcft;
       acftItem.CoordPoint = aircraft.Position;
       acftItem.Heading = aircraft.TrueHeading_deg;
       acftItem.OnGround = aircraft.OnGround;
+      acftItem.Pen = _state.IsMap ? PenAcftOutline : PenAcftOutlineRdr; // outline of the shape
 
       // set range
-      var di = diAcft.SubItemList.DispItem( (int)DItems.AIRCRAFT_RANGE );
-      if (di == null) return; // CANNOT (yet)
-      var acftRange = (di as AcftRangeItem);
-      // update display of range from aircraft record
-      acftRange.Active = _showTrackedAcft && aircraft.ShowAircraftRange;
-      acftRange.AircraftTrackRef = aircraft;
-      acftRange.CoordPoint = aircraft.Position; // default property is also set (may not be used)
+      di = diAcft.SubItemList.DispItem( (int)DItems.AIRCRAFT_RANGE );
+      if (di != null) {
+        var acftRange = (di as AcftRangeItem);
+        // update display of range from aircraft record
+        acftRange.Active = (_state.MapMode == MapBehavior.Map) && _state.ShowTrackedAcft && aircraft.ShowAircraftRange;
+        acftRange.AircraftTrackRef = aircraft;
+        acftRange.CoordPoint = aircraft.Position; // default property is also set (may not be used)
+      }
+      // set range rings
+      di = diAcft.SubItemList.DispItem( (int)DItems.AIRCRAFT_RINGS );
+      if (di != null) {
+        var acftRings = (di as AcftRingsItem);
+        // update display of range from aircraft record
+        acftRings.Active = aircraft.ShowAircraftRings || (_state.MapMode == MapBehavior.Radar); // for now show in radar mode too
+        acftRings.CoordPoint = aircraft.Position;
+      }
 
       // set wind
       di = diAcft.SubItemList.DispItem( (int)DItems.AIRCRAFT_WIND );
-      if (di == null) return; // CANNOT (yet)
-      var acftWind = (di as AcftWindItem);
-      // update display of range from aircraft record
-      acftWind.Active = _showTrackedAcft && aircraft.ShowAircraftWind;
-      acftWind.WindDir_deg = aircraft.WindDirection_deg;
-      acftWind.String = aircraft.WindSpeedS;
-      acftWind.CoordPoint = aircraft.Position; // default property is also set (may not be used)
-
+      if (di != null) {
+        var acftWind = (di as AcftWindItem);
+        // update display of range from aircraft record
+        acftWind.Active = _state.ShowTrackedAcft && aircraft.ShowAircraftWind;
+        acftWind.WindDir_deg = aircraft.WindDirection_deg;
+        acftWind.String = aircraft.WindSpeedS;
+        acftWind.CoordPoint = aircraft.Position; // default property is also set (may not be used)
+      }
       // set track
       di = _viewportRef.GProcSprite.Drawings.DispItem( (int)DItems.AIRCRAFT_TRACK );
       if (di == null) return; // CANNOT (yet)
@@ -634,8 +972,8 @@ namespace bm98_Map.Drawing
         trackHook.ManagedClear( );
       }
       else {
-        // update display of track from aircraft record
-        trackHook.Active = _showTrackedAcft && aircraft.ShowAircraftTrack;
+        // update display of track from aircraft record - only possible in Map mode
+        trackHook.Active = (_state.MapMode == MapBehavior.Map) && _state.ShowTrackedAcft && aircraft.ShowAircraftTrack;
         // add a new tracking point from the arrived data
         var trackPoint = new AcftTrackItem( ) {
           Key = GProc.DispID_Anon( ),
@@ -722,7 +1060,7 @@ namespace bm98_Map.Drawing
                  : na.IsNDB ? $"{na.Ident}\n{na.Frequ_Hz / 1_000f:###0.0}"      // ICAO / kkkk.n
                  : "",
           Font = FtLarge,
-          TextBrush = BrushNavAid,
+          TextBrush = _state.IsMap ? BrushNavAid : BrushNavAidRdr,
           IsNdbType = na.IsNDB,
           IsWypType = false,
           IsHoldType = false,
@@ -765,7 +1103,7 @@ namespace bm98_Map.Drawing
                     : fix.AltitudeLo_ft < 10 ? $"{fix.IdentOf}"       // ICAO
                     : $"{fix.IdentOf}\n{fix.AltitudeLo_ft:##,##0}",   // ICAO / nnnn   ft
           Font = FtMid,
-          TextBrush = BrushNavAidWyp,
+          TextBrush = _state.IsMap ? BrushNavAidWyp : BrushNavAidWypRdr,
           IsNdbType = false,
           IsWypType = true,
           IsHoldType = fix.IsHold,
@@ -796,9 +1134,10 @@ namespace bm98_Map.Drawing
       // waypoints
       foreach (var navItem in ifrList.Values) {
         var di = navItem as NavaidItem;
-        var aprShow = !string.IsNullOrEmpty( _selRunwayApproach ) && (di.RunwayApproachIdent == _selRunwayApproach); // show none if not selected
-        di.Active = !_mapRangeHandler.IsXFar && (di.RunwayIdent == _selRunway) && aprShow; // show Wyps independent of the Navaids Button
-        di.ShowOutboundTrack = (string.IsNullOrEmpty( _selRunwayApproach ) == false); // track only if an Apr is selected
+        var aprShow = !string.IsNullOrEmpty( _state.SelectedRwyApproach )
+                      && (di.RunwayApproachIdent == _state.SelectedRwyApproach); // show none if not selected
+        di.Active = !_mapRangeHandler.IsXFar && (di.RunwayIdent == _state.SelectedRwy) && aprShow; // show Wyps independent of the Navaids Button
+        di.ShowOutboundTrack = (string.IsNullOrEmpty( _state.SelectedRwyApproach ) == false); // track only if an Apr is selected
       }
     }
 
@@ -808,7 +1147,7 @@ namespace bm98_Map.Drawing
     /// <param name="ident">Runway Ident 'nnd'</param>
     public void SetSelectedNavIdRunway( string ident )
     {
-      _selRunway = ident;
+      _state.SelectedRwy = ident;
       LayouIfrMarkLabels( );
     }
 
@@ -818,7 +1157,7 @@ namespace bm98_Map.Drawing
     /// <param name="aproachName">Approach name (RNAV, ILS ..)</param>
     public void SetSelectedNavIdRunwayApproach( string aproachName )
     {
-      _selRunwayApproach = aproachName;
+      _state.SelectedRwyApproach = aproachName;
       LayouIfrMarkLabels( );
     }
 
@@ -826,7 +1165,7 @@ namespace bm98_Map.Drawing
     /// Set the List of alternate Airports for Rendering
     /// </summary>
     /// <param name="airports"></param>
-    public void SetAltAirportList( List<FSimFacilityIF.IAirportDesc> airports )
+    public void SetAltAirportList( IList<FSimFacilityIF.IAirportDesc> airports )
     {
       // all Alt Apt items
       var aptList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.APTMARKS )?.SubItemList;
@@ -843,7 +1182,7 @@ namespace bm98_Map.Drawing
           CoordPoint = na.Coordinate,
           String = $"{na.Ident}",
           Font = FtMid,
-          TextBrush = BrushNavAidApt,
+          TextBrush = _state.IsMap ? BrushNavAidApt : BrushNavAidAptRdr,
           RunwayIdent = "",
           WypLabelRectangle = new Rectangle( ),
         };
@@ -889,7 +1228,7 @@ namespace bm98_Map.Drawing
           String = rp.IsSIDorSTAR ? $"{rp.ID}\n{rp.AltLimitS}"
                   : (rp.Coordinate.Altitude > 10) ? $"{rp.ID}\n{rp.Coordinate.Altitude:####0}" : $"{rp.ID}",
           Font = FtMid,
-          TextBrush = BrushNavAidApt,
+          TextBrush = _state.IsMap ? BrushNavAidApt : BrushNavAidAptRdr,
           OutboundTrack_deg = rp.OutboundTrueTrack,
           OutboundLatLon = rp.OutboundCoordinate,
           WypLabelRectangle = new Rectangle( ),

@@ -115,7 +115,7 @@ namespace FShelf.AptReport
       var iata = $"{airport.IATA}";
       string title = $"{airport.Ident,-4}  -  {iata,-6}  - {airport.Name}";
       var cmt = new List<string> {
-        $"{Dms.ToLat( airport.Coordinate.Lat, "dm", 0 )} {Dms.ToLon( airport.Coordinate.Lon, "dm", 0 )}"
+        $"{Dms.ToLat( airport.Coordinate.Lat, "dm", "", 0 )} {Dms.ToLon( airport.Coordinate.Lon, "dm", "", 0 )}"
         + $" - {airport.Coordinate.Altitude:##,##0} ft ({M_From_Ft(airport.Coordinate.Altitude):##,##0} m)",
       };
 
@@ -176,7 +176,7 @@ namespace FShelf.AptReport
     {
       var rwString = (runway.Ident == RwALLIdent)
                       ? $"{AptTableGen.HChar( AptTableGen.SpclChar.BULLSEYE )} ALL RW"
-                      : $"{ToDirectionArrow( Dms.CompassPoint( runway.Bearing_degm, 2 ) )} {runway.Ident}"; // outgoing arrow
+                      : $"{ToDirectionArrow( Dms.CompassPoint( runway.Bearing_deg, 2 ) )} {runway.Ident}"; // outgoing arrow
 
       var rwProcData = new RwyProcRowData( ) {
         RwyS = rwString,
@@ -226,10 +226,10 @@ namespace FShelf.AptReport
       }
       var rwString = (runway.Ident == RwALLIdent)
                         ? $"{AptTableGen.HChar( AptTableGen.SpclChar.BULLSEYE )} ALL"
-                        : $"{ToDirectionArrow( Dms.CompassPoint( runway.Bearing_degm, 2 ) )} {runway.Ident}"; // outgoing arrow
+                        : $"{ToDirectionArrow( Dms.CompassPoint( runway.Bearing_deg, 2 ) )} {runway.Ident}"; // outgoing arrow
       var rwyData = new RwyRowData( ) {
         Rwy = rwString,
-        Hdg_deg = runway.Bearing_degm,
+        Hdg_deg = runway.Bearing_deg,
         IlsID = ilsID,
         //IlsFreq_mhz = ilsFreq,
         //IlsGsSlope_deg = ilsSlope,

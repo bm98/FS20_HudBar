@@ -24,12 +24,23 @@ namespace MapLib
     OpenTopo,
     Stamen_Terrain,
 
+    FAA_VFR_Terminal,   // VFR_Terminal
+    FAA_VFR_Sectional,  // VFR_Sectional
+    FAA_IFR_AreaLow,    // IFR_AreaLow
+    FAA_IFR_AreaHigh,   // IFR_AreaHigh
+
+    /* Chartbundle is no longer in service (Mar 2024) replaced with ArcGis FAA maps
     CB_WAC,
     CB_SEC,
     CB_TAC,
     CB_ENRA,
     CB_ENRL,
     CB_ENRH,
+    */
+
+    // used for 'radar' mode
+    CARTO_Dark,
+    CARTO_DarkNL,
 
     ESRI_Imagery,
     ESRI_StreetMap,
@@ -172,13 +183,21 @@ namespace MapLib
     /// </summary>
     public IEnumerable<MapProvider> EnabledProviders => MapProviderBase.ProviderIni.EnabledProviders;
 
+    /// <summary>
+    /// Returns the Minimum supported zoom of the current provider
+    /// </summary>
+    public ushort MinZoom => (ushort)MapProviderBase.GetProviderInstance( _currentProvider ).MinZoom;
+    /// <summary>
+    /// Returns the Maximum supported zoom of the current provider
+    /// </summary>
+    public ushort MaxZoom => (ushort)MapProviderBase.GetProviderInstance( _currentProvider ).MaxZoom;
 
     /// <summary>
     /// Returns the common name for a provider
     /// </summary>
     /// <param name="provider">A provider</param>
     /// <returns>The Name</returns>
-    public string ProviderName(MapProvider provider )
+    public string ProviderName( MapProvider provider )
     {
       return MapProviderBase.ProviderIni.ProviderName( provider );
     }

@@ -13,6 +13,17 @@ using DbgLib;
 namespace MapLib
 {
   /// <summary>
+  /// Track the source of this imate
+  /// </summary>
+  internal enum ImgSource{
+    Unknown=0,
+    MemCache,
+    DiskCache,
+    Provider,
+    Resource, // failed images are streamed from a Resource
+  }
+
+  /// <summary>
   /// Internal Image, encapsulates an Image derived only from Streams
   /// There are no public constructors - Use the static methods to Create and get this StreamImage
   /// 
@@ -70,6 +81,11 @@ namespace MapLib
     protected Image _image = null;
     // The related data stream
     protected MemoryStream _dataStream = null;
+
+    /// <summary>
+    /// Where was the image sourced from
+    /// </summary>
+    public ImgSource ImageSource { get; set; } = ImgSource.Unknown;
 
     /// <summary>
     /// The .Net Image of this MapImage

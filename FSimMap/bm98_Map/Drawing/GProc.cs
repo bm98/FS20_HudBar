@@ -50,8 +50,8 @@ namespace bm98_Map.Drawing
     /// Does all paints 
     /// </summary>
     /// <param name="g">Graphics Context</param>
-    /// <param name="MapToPixel">Function which converts Coordinates to canvas pixels</param>
-    public void Paint( Graphics g, Func<CoordLib.LatLon, Point> MapToPixel )
+    /// <param name="vpRef">Viewport access for paint events</param>
+    public void Paint( Graphics g, IVPortPaint vpRef)
     {
       // protect the incomming GContext from all actions done in our world
       var save = g.BeginContainer( );
@@ -61,7 +61,7 @@ namespace bm98_Map.Drawing
         // very expensive and not really needed
         // g.CompositingQuality = CompositingQuality.HighQuality; 
         foreach (var i in _drawList.Values) {
-          i.Paint( g, MapToPixel );
+          i.Paint( g, vpRef);
         }
       }
       g.EndContainer( save );

@@ -14,7 +14,16 @@ namespace bm98_Map.Data
   public class TrackedAircraftCls : ITrackedAircraft
   {
     /// <summary>
-    /// The LatLon position  (not using the Alt from this element for now)
+    /// The ID of the Aircraft
+    /// </summary>
+    public string AircraftID { get; set; } = "";
+    /// <summary>
+    /// True if it is a Helicopter
+    /// </summary>
+    public bool IsHeli { get; set; } = false;
+
+    /// <summary>
+    /// The LatLonAltMsl position
     /// </summary>
     public LatLon Position { get; set; } = new LatLon( 0, 0, 0 );
 
@@ -31,7 +40,7 @@ namespace bm98_Map.Data
     /// Altitude in feet above mean sea level
     ///  set to float.NaN to hide from display
     /// </summary>
-    public float Altitude_ft { get; set; } = float.NaN;
+    public float AltitudeMsl_ft { get; set; } = float.NaN;
 
     /// <summary>
     /// Radio/Radar Altitude in ft above the grouns
@@ -88,6 +97,13 @@ namespace bm98_Map.Data
     /// Wind Direction in deg (true, chart direction)
     /// </summary>
     public float WindDirection_deg { get; set; } = float.NaN;
+
+    /// <summary>
+    /// Flag if this aircraft is above, below or level with a ref altitude
+    /// ref altitude is usually the users aircraft altitude
+    /// </summary>
+    public TcasFlag TCAS { get; set; } = TcasFlag.Level;
+
     /// <summary>
     /// Flag to indicate the Acft is on Ground
     /// </summary>
@@ -98,6 +114,10 @@ namespace bm98_Map.Data
     /// </summary>
     public bool ShowAircraft { get; set; } = false;
 
+    /// <summary>
+    /// Flag to show or hide the range rings of the icon
+    /// </summary>
+    public bool ShowAircraftRings { get; set; } = false;
     /// <summary>
     /// Flag to show or hide the range indicator of the icon
     /// </summary>

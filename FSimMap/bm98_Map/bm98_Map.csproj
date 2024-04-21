@@ -60,42 +60,48 @@
     <Compile Include="Data\ITrackedAircraft.cs" />
     <Compile Include="Data\Route.cs" />
     <Compile Include="Data\Track.cs" />
+    <Compile Include="Data\TrackedAircraftAI.cs" />
     <Compile Include="Data\TrackedAircraft.cs" />
     <Compile Include="Data\TrackedAircraftCls.cs" />
-    <Compile Include="Drawing\AcftRangeItem.cs" />
-    <Compile Include="Drawing\AcftTrackItem.cs" />
-    <Compile Include="Drawing\AcftWindItem.cs" />
+    <Compile Include="Drawing\DispItems\AcftRangeItem.cs" />
+    <Compile Include="Drawing\DispItems\AcftTrackItem.cs" />
+    <Compile Include="Drawing\DispItems\AcftWindItem.cs" />
+    <Compile Include="Drawing\DispItems\AircraftAiItem.cs" />
+    <Compile Include="Drawing\DispItems\AcftRingsItem.cs" />
+    <Compile Include="Drawing\DispItems\CRoseItem.cs" />
     <Compile Include="Drawing\DisplayListMgr.cs" />
-    <Compile Include="Drawing\AirportRangeItem.cs" />
-    <Compile Include="Drawing\AlternateAptItem.cs" />
-    <Compile Include="Drawing\AptVFRMarksItem.cs" />
-    <Compile Include="Drawing\CanvasItem.cs" />
+    <Compile Include="Drawing\DispItems\AirportRingsItem.cs" />
+    <Compile Include="Drawing\DispItems\AlternateAptItem.cs" />
+    <Compile Include="Drawing\DispItems\AptVFRMarksItem.cs" />
+    <Compile Include="Drawing\DispItems\CanvasItem.cs" />
     <Compile Include="Drawing\ColorScale.cs" />
-    <Compile Include="Drawing\HookItem.cs" />
+    <Compile Include="Drawing\DispItems\HookItem.cs" />
+    <Compile Include="Drawing\IVPortPaint.cs" />
     <Compile Include="Drawing\LabelEngine.cs" />
-    <Compile Include="Drawing\ManagedHookItem.cs" />
-    <Compile Include="Drawing\MapGridItem.cs" />
+    <Compile Include="Drawing\DispItems\ManagedHookItem.cs" />
+    <Compile Include="Drawing\DispItems\MapGridItem.cs" />
     <Compile Include="Drawing\MapImage.cs" />
-    <Compile Include="Drawing\NavaidItem.cs" />
-    <Compile Include="Drawing\RouteHookItem.cs" />
-    <Compile Include="Drawing\RoutePointItem.cs" />
-    <Compile Include="Drawing\RouteSegment.cs" />
-    <Compile Include="Drawing\RouteSegmentMgr.cs" />
-    <Compile Include="Drawing\RunwayItem.cs" />
-    <Compile Include="Drawing\AircraftItem.cs" />
-    <Compile Include="Drawing\ScaleItem.cs" />
-    <Compile Include="Drawing\AcftTargetRangeItem.cs" />
-    <Compile Include="Drawing\RwyVFRMarksItem.cs" />
-    <Compile Include="Drawing\TrackHookItem.cs" />
+    <Compile Include="Drawing\DispItems\NavaidItem.cs" />
+    <Compile Include="Drawing\DispItems\RouteHookItem.cs" />
+    <Compile Include="Drawing\DispItems\RoutePointItem.cs" />
+    <Compile Include="Drawing\DispItems\Routes\RouteSegment.cs" />
+    <Compile Include="Drawing\DispItems\Routes\RouteSegmentMgr.cs" />
+    <Compile Include="Drawing\DispItems\RunwayItem.cs" />
+    <Compile Include="Drawing\DispItems\AircraftItem.cs" />
+    <Compile Include="Drawing\DispItems\ScaleItem.cs" />
+    <Compile Include="Drawing\DispItems\AcftTargetRangeItem.cs" />
+    <Compile Include="Drawing\DispItems\RwyVFRMarksItem.cs" />
+    <Compile Include="Drawing\DispItems\TrackHookItem.cs" />
     <Compile Include="Drawing\VPort2.cs" />
     <Compile Include="Drawing\FontsAndColors.cs" />
     <Compile Include="Drawing\PanelConst.cs" />
     <Compile Include="Data\Facility_Extensions.cs" />
-    <Compile Include="Drawing\DisplayItem.cs" />
+    <Compile Include="Drawing\DispItems\DisplayItem.cs" />
     <Compile Include="Drawing\DisplayList.cs" />
     <Compile Include="Drawing\GProc.cs" />
     <Compile Include="Drawing\IDrawing.cs" />
     <Compile Include="MapRangeHandler.cs" />
+    <Compile Include="TeleportEventArgs.cs" />
     <Compile Include="UI\StripLabel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -117,6 +123,24 @@
       <DependentUpon>UC_Map.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\UC_DMS.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\UC_DMS.Designer.cs">
+      <DependentUpon>UC_DMS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\UC_LatLon.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\UC_LatLon.Designer.cs">
+      <DependentUpon>UC_LatLon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\UC_Teleport.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\UC_Teleport.Designer.cs">
+      <DependentUpon>UC_Teleport.cs</DependentUpon>
+    </Compile>
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +151,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UC_Map.resx">
       <DependentUpon>UC_Map.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\UC_DMS.resx">
+      <DependentUpon>UC_DMS.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\UC_LatLon.resx">
+      <DependentUpon>UC_LatLon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\UC_Teleport.resx">
+      <DependentUpon>UC_Teleport.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -255,6 +288,10 @@
       <Project>{4766e323-833c-42b5-88ed-dafb25e934ef}</Project>
       <Name>FlightplanLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\MSALib\MSALib.csproj">
+      <Project>{ce622111-c19b-49d3-9ae8-9553e255348a}</Project>
+      <Name>MSALib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MapLib\MapLib.csproj">
       <Project>{4f1641bb-ca1f-4aec-84b7-8dc71ba3dbcf}</Project>
       <Name>MapLib</Name>
@@ -274,6 +311,20 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\route_waypoint_end.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aircraft_smallAI.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\radar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\map.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LiteDB">
+      <Version>5.0.17</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

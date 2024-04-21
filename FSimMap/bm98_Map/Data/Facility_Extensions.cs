@@ -77,11 +77,11 @@ namespace bm98_Map
     {
       if (runway.Surface == "WATER") {
         // "COMPASSDIR (hhh°) lenxwidth material"
-        return $"{runway.Ident,-9} ({runway.Bearing_degm:000}°)   {runway.Length_m,4:###0}x{runway.Width_m,-3:##0} m  - {runway.Surface}";
+        return $"{runway.Ident,-9} ({runway.Bearing_deg:000}°)   {runway.Length_m,4:###0}x{runway.Width_m,-3:##0} m  - {runway.Surface}";
       }
       else {
         // "RRR (hhh°) ILS  lenxwidth material"
-        return $"{runway.Ident,-3} ({runway.Bearing_degm:000}°)  {RunwayIlsString( runway, navaids )} {runway.Length_m,4:###0}x{runway.Width_m,-3:##0} m  - {runway.Surface}";
+        return $"{runway.Ident,-3} ({runway.Bearing_deg:000}°)  {RunwayIlsString( runway, navaids )} {runway.Length_m,4:###0}x{runway.Width_m,-3:##0} m  - {runway.Surface}";
       }
     }
 

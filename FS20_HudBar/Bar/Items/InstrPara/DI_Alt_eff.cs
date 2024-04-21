@@ -52,7 +52,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = SV.Get<float>( SItem.fG_Acft_AltMsl_ft );
+        _value1.Value = SV.Get<float>( SItem.fGS_Acft_AltMsl_ft );
       }
     }
 

@@ -5,9 +5,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using BingMapsRESTToolkit;
+
 using CoordLib.MercatorTiles;
 
 namespace MapLib.Sources.Providers
@@ -129,7 +131,7 @@ namespace MapLib.Sources.Providers
     }
 
     // Loads MetaData async - will eventually get loaded
-    private async static void LoadImMetaData( ImageryType imageryType )
+    private async static Task<Resource[]> LoadImMetaData( ImageryType imageryType )
     {
       if (!_metaCache.ContainsKey( imageryType ) && !string.IsNullOrWhiteSpace( BingMapsKey )) {
         // not yet there but we may ask for it..
@@ -160,12 +162,14 @@ namespace MapLib.Sources.Providers
               _metaCache.TryAdd( imageryType, imMeta );
             }
           }
+          return resources;
 
         }
         catch {
           ;  // DEBUG STOP
         }
       }
+      return null;
     }
 
 
@@ -178,7 +182,8 @@ namespace MapLib.Sources.Providers
     {
       // trigger loading async
       if (!_metaCache.ContainsKey( imageryType ) && !string.IsNullOrWhiteSpace( BingMapsKey )) {
-        LoadImMetaData( imageryType );
+        var aw = LoadImMetaData( imageryType );
+        aw.Wait();
       }
       // see if we got one - fails if there is no Key provided  or no info arrived from Bing
       if (_metaCache.TryGetValue( imageryType, out ImMetadata imMetadata )) {

@@ -79,8 +79,6 @@ namespace FS20_HudBar.GUI.Templates.Base
     virtual public GUI_Colors.ColorType ItemForeColor {
       get => m_foreColorType;
       set {
-        if (value == m_foreColorType) return; // already
-
         m_foreColorType = value;
         this.ForeColor = GUI_Colors.ItemColor( m_foreColorType );
       }
@@ -92,8 +90,6 @@ namespace FS20_HudBar.GUI.Templates.Base
     virtual public GUI_Colors.ColorType ItemBackColor {
       get => m_backColorType;
       set {
-        if (value == m_backColorType) return; // already
-
         m_backColorType = value;
         this.BackColor = GUI_Colors.ItemColor( m_backColorType );
       }

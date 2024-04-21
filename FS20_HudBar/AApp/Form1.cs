@@ -532,98 +532,6 @@ namespace FS20_HudBar
       LOG.Log( "frmMain", "Load Configuration" );
       m_config = Configuration.GetFromSettings( );
 
-      /*
-            m_profiles.Add( new CProfile( 1, AS.Profile_1_Name,
-                                             AS.Profile_1, AS.FlowBreak_1, AS.Sequence_1,
-                                             AS.Profile_1_FontSize, AS.Profile_1_Placement,
-                                             AS.Profile_1_Kind, AS.Profile_1_Location,
-                                             AS.Profile_1_Condensed,
-                                             AS.Profile_1_Trans,
-                                             AS.BgImageName_1, AS.BgImageArea_1,
-                                             AS.ProfileFonts_1, AS.ProfileColorsReg_1, AS.ProfileColorsDim_1, AS.ProfileColorsInv_1 ) );
-
-            m_profiles.Add( new CProfile( 2, AS.Profile_2_Name,
-                                             AS.Profile_2, AS.FlowBreak_2, AS.Sequence_2,
-                                             AS.Profile_2_FontSize, AS.Profile_2_Placement,
-                                             AS.Profile_2_Kind, AS.Profile_2_Location,
-                                             AS.Profile_2_Condensed,
-                                             AS.Profile_2_Trans,
-                                             AS.BgImageName_2, AS.BgImageArea_2,
-                                             AS.ProfileFonts_2, AS.ProfileColorsReg_2, AS.ProfileColorsDim_2, AS.ProfileColorsInv_2 ) );
-
-            m_profiles.Add( new CProfile( 3, AS.Profile_3_Name,
-                                             AS.Profile_3, AS.FlowBreak_3, AS.Sequence_3,
-                                             AS.Profile_3_FontSize, AS.Profile_3_Placement,
-                                             AS.Profile_3_Kind, AS.Profile_3_Location,
-                                             AS.Profile_3_Condensed,
-                                             AS.Profile_3_Trans,
-                                             AS.BgImageName_3, AS.BgImageArea_3,
-                                             AS.ProfileFonts_3, AS.ProfileColorsReg_3, AS.ProfileColorsDim_3, AS.ProfileColorsInv_3 ) );
-
-            m_profiles.Add( new CProfile( 4, AS.Profile_4_Name,
-                                             AS.Profile_4, AS.FlowBreak_4, AS.Sequence_4,
-                                             AS.Profile_4_FontSize, AS.Profile_4_Placement,
-                                             AS.Profile_4_Kind, AS.Profile_4_Location,
-                                             AS.Profile_4_Condensed,
-                                             AS.Profile_4_Trans,
-                                             AS.BgImageName_4, AS.BgImageArea_4,
-                                             AS.ProfileFonts_4, AS.ProfileColorsReg_4, AS.ProfileColorsDim_4, AS.ProfileColorsInv_4 ) );
-
-            m_profiles.Add( new CProfile( 5, AS.Profile_5_Name,
-                                             AS.Profile_5, AS.FlowBreak_5, AS.Sequence_5,
-                                             AS.Profile_5_FontSize, AS.Profile_5_Placement,
-                                             AS.Profile_5_Kind, AS.Profile_5_Location,
-                                             AS.Profile_5_Condensed,
-                                             AS.Profile_5_Trans,
-                                             AS.BgImageName_5, AS.BgImageArea_5,
-                                             AS.ProfileFonts_5, AS.ProfileColorsReg_5, AS.ProfileColorsDim_5, AS.ProfileColorsInv_5 ) );
-
-            m_profiles.Add( new CProfile( 6, AS.Profile_6_Name,
-                                             AS.Profile_6, AS.FlowBreak_6, AS.Sequence_6,
-                                             AS.Profile_6_FontSize, AS.Profile_6_Placement,
-                                             AS.Profile_6_Kind, AS.Profile_6_Location,
-                                             AS.Profile_6_Condensed,
-                                             AS.Profile_6_Trans,
-                                             AS.BgImageName_6, AS.BgImageArea_6,
-                                             AS.ProfileFonts_6, AS.ProfileColorsReg_6, AS.ProfileColorsDim_6, AS.ProfileColorsInv_6 ) );
-
-            m_profiles.Add( new CProfile( 7, AS.Profile_7_Name,
-                                             AS.Profile_7, AS.FlowBreak_7, AS.Sequence_7,
-                                             AS.Profile_7_FontSize, AS.Profile_7_Placement,
-                                             AS.Profile_7_Kind, AS.Profile_7_Location,
-                                             AS.Profile_7_Condensed,
-                                             AS.Profile_7_Trans,
-                                             AS.BgImageName_7, AS.BgImageArea_7,
-                                             AS.ProfileFonts_7, AS.ProfileColorsReg_7, AS.ProfileColorsDim_7, AS.ProfileColorsInv_7 ) );
-
-            m_profiles.Add( new CProfile( 8, AS.Profile_8_Name,
-                                             AS.Profile_8, AS.FlowBreak_8, AS.Sequence_8,
-                                             AS.Profile_8_FontSize, AS.Profile_8_Placement,
-                                             AS.Profile_8_Kind, AS.Profile_8_Location,
-                                             AS.Profile_8_Condensed,
-                                             AS.Profile_8_Trans,
-                                             AS.BgImageName_8, AS.BgImageArea_8,
-                                             AS.ProfileFonts_8, AS.ProfileColorsReg_8, AS.ProfileColorsDim_8, AS.ProfileColorsInv_8 ) );
-
-            m_profiles.Add( new CProfile( 9, AS.Profile_9_Name,
-                                             AS.Profile_9, AS.FlowBreak_9, AS.Sequence_9,
-                                             AS.Profile_9_FontSize, AS.Profile_9_Placement,
-                                             AS.Profile_9_Kind, AS.Profile_9_Location,
-                                             AS.Profile_9_Condensed,
-                                             AS.Profile_9_Trans,
-                                             AS.BgImageName_9, AS.BgImageArea_9,
-                                             AS.ProfileFonts_9, AS.ProfileColorsReg_9, AS.ProfileColorsDim_9, AS.ProfileColorsInv_9 ) );
-
-            m_profiles.Add( new CProfile( 10, AS.Profile_10_Name,
-                                             AS.Profile_10, AS.FlowBreak_10, AS.Sequence_10,
-                                             AS.Profile_10_FontSize, AS.Profile_10_Placement,
-                                             AS.Profile_10_Kind, AS.Profile_10_Location,
-                                             AS.Profile_10_Condensed,
-                                             AS.Profile_10_Trans,
-                                             AS.BgImageName_10, AS.BgImageArea_10,
-                                             AS.ProfileFonts_10, AS.ProfileColorsReg_10, AS.ProfileColorsDim_10, AS.ProfileColorsInv_10 ) );
-      */
-
       // last from Setting
       m_config.SetProfile( AS.SelProfile );
       mSelProfile.Text = m_config.UsedProfileName;
@@ -639,9 +547,6 @@ namespace FS20_HudBar
       mAltMetric.CheckState = AS.Altitude_Metric ? CheckState.Checked : CheckState.Unchecked;
       mDistMetric.CheckState = AS.Distance_Metric ? CheckState.Checked : CheckState.Unchecked;
       mShowUnits.CheckState = AS.ShowUnits ? CheckState.Checked : CheckState.Unchecked;
-
-      // Use CoordLib with no blanks as separator
-      CoordLib.Dms.Separator = "";
 
       // ShowUnits and Opacity are set via HUD in InitGUI
       LOG.Log( "frmMain", "Load GUI Forms" );
@@ -747,6 +652,9 @@ namespace FS20_HudBar
       LOG.Log( $"frmMain_Load", "Connect to SimConnectAdapter" );
       // SimConnect
       SCAdapter.Connect( );
+      // Init Landing Performance Tracker
+      _ = FShelf.LandPerf.PerfTracker.Instance;
+
       // Pacer to connect and other repetitive chores
       timer1.Interval = 5000; // try to connect in 5 sec intervals
       timer1.Enabled = true;
@@ -919,204 +827,6 @@ namespace FS20_HudBar
         // Then save all configuration settings
         Configuration.SaveToSettings( m_config );
 
-        /*
-                AS.FRecorder = HUD.FlightRecorder;
-
-                AS.HKShowHide = HUD.Hotkeys.HotkeyString( Hotkeys.Show_Hide );
-                AS.HKProfile1 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_1 );
-                AS.HKProfile2 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_2 );
-                AS.HKProfile3 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_3 );
-                AS.HKProfile4 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_4 );
-                AS.HKProfile5 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_5 );
-                AS.HKProfile6 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_6 );
-                AS.HKProfile7 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_7 );
-                AS.HKProfile8 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_8 );
-                AS.HKProfile9 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_9 );
-                AS.HKProfile10 = HUD.Hotkeys.HotkeyString( Hotkeys.Profile_10 );
-                AS.HKShelf = HUD.Hotkeys.HotkeyString( Hotkeys.FlightBag );
-                AS.HKCamera = HUD.Hotkeys.HotkeyString( Hotkeys.Camera );
-                AS.HKChecklistBox = HUD.Hotkeys.HotkeyString( Hotkeys.ChecklistBox );
-                AS.KeyboardHook = HUD.KeyboardHook;
-                AS.InGameHook = HUD.InGameHook;
-
-                AS.FltAutoSaveATC = (int)HUD.FltAutoSave;
-                AS.VoiceName = HUD.VoiceName;
-                AS.OutputDeviceName = HUD.OutputDeviceName;
-
-                // TODO don't take from live fonts and colors but from a general config setting
-                //  as profiles have their own fonts/color, the current is not what the user wanted to go into general
-                AS.UserFonts = HUD.FontRef.AsConfigString( );
-                AS.UserColorsReg = GUI_Colors.AsConfigString( GUI_Colors.GetColorSet( ColorSet.BrightSet ) );
-                AS.UserColorsDim = GUI_Colors.AsConfigString( GUI_Colors.GetColorSet( ColorSet.DimmedSet ) );
-                AS.UserColorsInv = GUI_Colors.AsConfigString( GUI_Colors.GetColorSet( ColorSet.InverseSet ) );
-
-                AS.SelProfile = m_selProfile;
-                // All Profiles
-                int pIndex = 0; // use an index avoiding copy and paste mishaps...
-                AS.Profile_1_Name = m_profiles[pIndex].PName;
-                AS.Profile_1 = m_profiles[pIndex].ProfileString( );
-                AS.FlowBreak_1 = m_profiles[pIndex].FlowBreakString( );
-                AS.Sequence_1 = m_profiles[pIndex].ItemPosString( );
-                AS.Profile_1_FontSize = (int)m_profiles[pIndex].FontSize;
-                AS.Profile_1_Placement = (int)m_profiles[pIndex].Placement;
-                AS.Profile_1_Kind = (int)m_profiles[pIndex].Kind;
-                AS.Profile_1_Condensed = m_profiles[pIndex].Condensed;
-                AS.Profile_1_Trans = (int)m_profiles[pIndex].Transparency;
-                AS.BgImageName_1 = m_profiles[pIndex].BgImageName;
-                AS.BgImageArea_1 = m_profiles[pIndex].BgImageBorder;
-                AS.ProfileFonts_1 = m_profiles[pIndex].Fonts;
-                AS.ProfileColorsReg_1 = m_profiles[pIndex].ColorReg;
-                AS.ProfileColorsDim_1 = m_profiles[pIndex].ColorDim;
-                AS.ProfileColorsInv_1 = m_profiles[pIndex].ColorInv;
-                pIndex++;
-                AS.Profile_2_Name = m_profiles[pIndex].PName;
-                AS.Profile_2 = m_profiles[pIndex].ProfileString( );
-                AS.FlowBreak_2 = m_profiles[pIndex].FlowBreakString( );
-                AS.Sequence_2 = m_profiles[pIndex].ItemPosString( );
-                AS.Profile_2_FontSize = (int)m_profiles[pIndex].FontSize;
-                AS.Profile_2_Placement = (int)m_profiles[pIndex].Placement;
-                AS.Profile_2_Kind = (int)m_profiles[pIndex].Kind;
-                AS.Profile_2_Condensed = m_profiles[pIndex].Condensed;
-                AS.Profile_2_Trans = (int)m_profiles[pIndex].Transparency;
-                AS.BgImageName_2 = m_profiles[pIndex].BgImageName;
-                AS.BgImageArea_2 = m_profiles[pIndex].BgImageBorder;
-                AS.ProfileFonts_2 = m_profiles[pIndex].Fonts;
-                AS.ProfileColorsReg_2 = m_profiles[pIndex].ColorReg;
-                AS.ProfileColorsDim_2 = m_profiles[pIndex].ColorDim;
-                AS.ProfileColorsInv_2 = m_profiles[pIndex].ColorInv;
-                pIndex++;
-                AS.Profile_3_Name = m_profiles[pIndex].PName;
-                AS.Profile_3 = m_profiles[pIndex].ProfileString( );
-                AS.FlowBreak_3 = m_profiles[pIndex].FlowBreakString( );
-                AS.Sequence_3 = m_profiles[pIndex].ItemPosString( );
-                AS.Profile_3_FontSize = (int)m_profiles[pIndex].FontSize;
-                AS.Profile_3_Placement = (int)m_profiles[pIndex].Placement;
-                AS.Profile_3_Kind = (int)m_profiles[pIndex].Kind;
-                AS.Profile_3_Condensed = m_profiles[pIndex].Condensed;
-                AS.Profile_3_Trans = (int)m_profiles[pIndex].Transparency;
-                AS.BgImageName_3 = m_profiles[pIndex].BgImageName;
-                AS.BgImageArea_3 = m_profiles[pIndex].BgImageBorder;
-                AS.ProfileFonts_3 = m_profiles[pIndex].Fonts;
-                AS.ProfileColorsReg_3 = m_profiles[pIndex].ColorReg;
-                AS.ProfileColorsDim_3 = m_profiles[pIndex].ColorDim;
-                AS.ProfileColorsInv_3 = m_profiles[pIndex].ColorInv;
-                pIndex++;
-                AS.Profile_4_Name = m_profiles[pIndex].PName;
-                AS.Profile_4 = m_profiles[pIndex].ProfileString( );
-                AS.FlowBreak_4 = m_profiles[pIndex].FlowBreakString( );
-                AS.Sequence_4 = m_profiles[pIndex].ItemPosString( );
-                AS.Profile_4_FontSize = (int)m_profiles[pIndex].FontSize;
-                AS.Profile_4_Placement = (int)m_profiles[pIndex].Placement;
-                AS.Profile_4_Kind = (int)m_profiles[pIndex].Kind;
-                AS.Profile_4_Condensed = m_profiles[pIndex].Condensed;
-                AS.Profile_4_Trans = (int)m_profiles[pIndex].Transparency;
-                AS.BgImageName_4 = m_profiles[pIndex].BgImageName;
-                AS.BgImageArea_4 = m_profiles[pIndex].BgImageBorder;
-                AS.ProfileFonts_4 = m_profiles[pIndex].Fonts;
-                AS.ProfileColorsReg_4 = m_profiles[pIndex].ColorReg;
-                AS.ProfileColorsDim_4 = m_profiles[pIndex].ColorDim;
-                AS.ProfileColorsInv_4 = m_profiles[pIndex].ColorInv;
-                pIndex++;
-                AS.Profile_5_Name = m_profiles[pIndex].PName;
-                AS.Profile_5 = m_profiles[pIndex].ProfileString( );
-                AS.FlowBreak_5 = m_profiles[pIndex].FlowBreakString( );
-                AS.Sequence_5 = m_profiles[pIndex].ItemPosString( );
-                AS.Profile_5_FontSize = (int)m_profiles[pIndex].FontSize;
-                AS.Profile_5_Placement = (int)m_profiles[pIndex].Placement;
-                AS.Profile_5_Kind = (int)m_profiles[pIndex].Kind;
-                AS.Profile_5_Condensed = m_profiles[pIndex].Condensed;
-                AS.Profile_5_Trans = (int)m_profiles[pIndex].Transparency;
-                AS.BgImageName_5 = m_profiles[pIndex].BgImageName;
-                AS.BgImageArea_5 = m_profiles[pIndex].BgImageBorder;
-                AS.ProfileFonts_5 = m_profiles[pIndex].Fonts;
-                AS.ProfileColorsReg_5 = m_profiles[pIndex].ColorReg;
-                AS.ProfileColorsDim_5 = m_profiles[pIndex].ColorDim;
-                AS.ProfileColorsInv_5 = m_profiles[pIndex].ColorInv;
-                pIndex++;
-                AS.Profile_6_Name = m_profiles[pIndex].PName;
-                AS.Profile_6 = m_profiles[pIndex].ProfileString( );
-                AS.FlowBreak_6 = m_profiles[pIndex].FlowBreakString( );
-                AS.Sequence_6 = m_profiles[pIndex].ItemPosString( );
-                AS.Profile_6_FontSize = (int)m_profiles[pIndex].FontSize;
-                AS.Profile_6_Placement = (int)m_profiles[pIndex].Placement;
-                AS.Profile_6_Kind = (int)m_profiles[pIndex].Kind;
-                AS.Profile_6_Condensed = m_profiles[pIndex].Condensed;
-                AS.Profile_6_Trans = (int)m_profiles[pIndex].Transparency;
-                AS.BgImageName_6 = m_profiles[pIndex].BgImageName;
-                AS.BgImageArea_6 = m_profiles[pIndex].BgImageBorder;
-                AS.ProfileFonts_6 = m_profiles[pIndex].Fonts;
-                AS.ProfileColorsReg_6 = m_profiles[pIndex].ColorReg;
-                AS.ProfileColorsDim_6 = m_profiles[pIndex].ColorDim;
-                AS.ProfileColorsInv_6 = m_profiles[pIndex].ColorInv;
-                pIndex++;
-                AS.Profile_7_Name = m_profiles[pIndex].PName;
-                AS.Profile_7 = m_profiles[pIndex].ProfileString( );
-                AS.FlowBreak_7 = m_profiles[pIndex].FlowBreakString( );
-                AS.Sequence_7 = m_profiles[pIndex].ItemPosString( );
-                AS.Profile_7_FontSize = (int)m_profiles[pIndex].FontSize;
-                AS.Profile_7_Placement = (int)m_profiles[pIndex].Placement;
-                AS.Profile_7_Kind = (int)m_profiles[pIndex].Kind;
-                AS.Profile_7_Condensed = m_profiles[pIndex].Condensed;
-                AS.Profile_7_Trans = (int)m_profiles[pIndex].Transparency;
-                AS.BgImageName_7 = m_profiles[pIndex].BgImageName;
-                AS.BgImageArea_7 = m_profiles[pIndex].BgImageBorder;
-                AS.ProfileFonts_7 = m_profiles[pIndex].Fonts;
-                AS.ProfileColorsReg_7 = m_profiles[pIndex].ColorReg;
-                AS.ProfileColorsDim_7 = m_profiles[pIndex].ColorDim;
-                AS.ProfileColorsInv_7 = m_profiles[pIndex].ColorInv;
-                pIndex++;
-                AS.Profile_8_Name = m_profiles[pIndex].PName;
-                AS.Profile_8 = m_profiles[pIndex].ProfileString( );
-                AS.FlowBreak_8 = m_profiles[pIndex].FlowBreakString( );
-                AS.Sequence_8 = m_profiles[pIndex].ItemPosString( );
-                AS.Profile_8_FontSize = (int)m_profiles[pIndex].FontSize;
-                AS.Profile_8_Placement = (int)m_profiles[pIndex].Placement;
-                AS.Profile_8_Kind = (int)m_profiles[pIndex].Kind;
-                AS.Profile_8_Condensed = m_profiles[pIndex].Condensed;
-                AS.Profile_8_Trans = (int)m_profiles[pIndex].Transparency;
-                AS.BgImageName_8 = m_profiles[pIndex].BgImageName;
-                AS.BgImageArea_8 = m_profiles[pIndex].BgImageBorder;
-                AS.ProfileFonts_8 = m_profiles[pIndex].Fonts;
-                AS.ProfileColorsReg_8 = m_profiles[pIndex].ColorReg;
-                AS.ProfileColorsDim_8 = m_profiles[pIndex].ColorDim;
-                AS.ProfileColorsInv_8 = m_profiles[pIndex].ColorInv;
-                pIndex++;
-                AS.Profile_9_Name = m_profiles[pIndex].PName;
-                AS.Profile_9 = m_profiles[pIndex].ProfileString( );
-                AS.FlowBreak_9 = m_profiles[pIndex].FlowBreakString( );
-                AS.Sequence_9 = m_profiles[pIndex].ItemPosString( );
-                AS.Profile_9_FontSize = (int)m_profiles[pIndex].FontSize;
-                AS.Profile_9_Placement = (int)m_profiles[pIndex].Placement;
-                AS.Profile_9_Kind = (int)m_profiles[pIndex].Kind;
-                AS.Profile_9_Condensed = m_profiles[pIndex].Condensed;
-                AS.Profile_9_Trans = (int)m_profiles[pIndex].Transparency;
-                AS.BgImageName_9 = m_profiles[pIndex].BgImageName;
-                AS.BgImageArea_9 = m_profiles[pIndex].BgImageBorder;
-                AS.ProfileFonts_9 = m_profiles[pIndex].Fonts;
-                AS.ProfileColorsReg_9 = m_profiles[pIndex].ColorReg;
-                AS.ProfileColorsDim_9 = m_profiles[pIndex].ColorDim;
-                AS.ProfileColorsInv_9 = m_profiles[pIndex].ColorInv;
-                pIndex++;
-                AS.Profile_10_Name = m_profiles[pIndex].PName;
-                AS.Profile_10 = m_profiles[pIndex].ProfileString( );
-                AS.FlowBreak_10 = m_profiles[pIndex].FlowBreakString( );
-                AS.Sequence_10 = m_profiles[pIndex].ItemPosString( );
-                AS.Profile_10_FontSize = (int)m_profiles[pIndex].FontSize;
-                AS.Profile_10_Placement = (int)m_profiles[pIndex].Placement;
-                AS.Profile_10_Kind = (int)m_profiles[pIndex].Kind;
-                AS.Profile_10_Condensed = m_profiles[pIndex].Condensed;
-                AS.Profile_10_Trans = (int)m_profiles[pIndex].Transparency;
-                AS.BgImageName_10 = m_profiles[pIndex].BgImageName;
-                AS.BgImageArea_10 = m_profiles[pIndex].BgImageBorder;
-                AS.ProfileFonts_10 = m_profiles[pIndex].Fonts;
-                AS.ProfileColorsReg_10 = m_profiles[pIndex].ColorReg;
-                AS.ProfileColorsDim_10 = m_profiles[pIndex].ColorDim;
-                AS.ProfileColorsInv_10 = m_profiles[pIndex].ColorInv;
-
-                // Finally Save
-                AS.Save( );
-        */
-
         // Restart the GUI 
         InitGUI( );
       }
@@ -1277,6 +987,17 @@ namespace FS20_HudBar
     {
       if (SC.SimConnectClient.Instance.IsConnected) {
         SC.SimConnectClient.Instance.FlightPlanModule.RequestFlightBackup( );
+      }
+    }
+
+    #endregion
+
+    #region Landing Selector
+
+    private void mManSaveLanding_Click( object sender, EventArgs e )
+    {
+      if (SC.SimConnectClient.Instance.IsConnected) {
+        FShelf.LandPerf.PerfTracker.Instance.WriteLandingImage( );
       }
     }
 

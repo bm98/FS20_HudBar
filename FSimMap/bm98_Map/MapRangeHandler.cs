@@ -27,15 +27,10 @@ namespace bm98_Map
   /// </summary>
   internal class MapRangeHandler
   {
-    // zoom limits
-    private const ushort c_minZoom = 5;
-    private const ushort c_maxZoom = 15;
-
     // master ZoomLevel
-    private ushort _zoomLevel = 12;
+    private ushort _zoomLevel = 11;
     // ZoomLevel change handler (takes the ZoomLevel as argument)
     private Action<ushort> _setZoomLevel;
-
 
     /// <summary>
     /// The MapRange
@@ -85,7 +80,7 @@ namespace bm98_Map
     public MapRangeHandler( MapRange mapRange, Action<ushort> SetZoomLevel )
     {
       _setZoomLevel = SetZoomLevel;
-      _zoomLevel = ZoomFromRange( mapRange ); // init without calling the action
+      _zoomLevel = ValidZoomLevel( ZoomFromRange( mapRange ) ); // init without calling the action
     }
 
     /// <summary>
@@ -94,13 +89,8 @@ namespace bm98_Map
     /// <param name="mapRange">The MapRange</param>
     public void SetMapRange( MapRange mapRange )
     {
-      var zl = ZoomFromRange( mapRange );
-
-      if (zl != _zoomLevel) {
-        // if changed
-        _zoomLevel = zl;
-        _setZoomLevel( _zoomLevel );
-      }
+      var zl = ValidZoomLevel( ZoomFromRange( mapRange ) );
+      SetZoomLevel( zl );
     }
 
     /// <summary>
@@ -111,8 +101,8 @@ namespace bm98_Map
     public bool SetZoomLevel( ushort zoomLevel )
     {
       if (zoomLevel != _zoomLevel) {
-        if (zoomLevel < c_minZoom) return false;
-        if (zoomLevel > c_maxZoom) return false;
+        if (zoomLevel < MapLib.MapManager.Instance.MinZoom) return false;
+        if (zoomLevel > MapLib.MapManager.Instance.MaxZoom) return false;
 
         // if changed
         _zoomLevel = zoomLevel;
@@ -128,7 +118,7 @@ namespace bm98_Map
     /// <returns>True if the level changed</returns>
     public bool IncZoomLevel( )
     {
-     return SetZoomLevel( (ushort)(_zoomLevel + 1) );
+      return SetZoomLevel( (ushort)(_zoomLevel + 1) );
     }
 
     /// <summary>
@@ -143,12 +133,24 @@ namespace bm98_Map
     /// <summary>
     /// True if another zoom in is possible
     /// </summary>
-    public bool CanIncZoomLevel => _zoomLevel < c_maxZoom;
+    public bool CanIncZoomLevel => _zoomLevel < MapLib.MapManager.Instance.MaxZoom;
 
     /// <summary>
     /// True if another zoom out is possible
     /// </summary>
-    public bool CanDecZoomLevel => _zoomLevel > c_minZoom;
+    public bool CanDecZoomLevel => _zoomLevel > MapLib.MapManager.Instance.MinZoom;
+
+    /// <summary>
+    /// Returns a possible Zoomlevel for the proposal
+    /// </summary>
+    /// <param name="proposedZoomLevel">A proposed Zoomlevel</param>
+    /// <returns>A valid Zoomlevel</returns>
+    public ushort ValidZoomLevel( ushort proposedZoomLevel )
+    {
+      if (proposedZoomLevel > MapLib.MapManager.Instance.MaxZoom) return MapLib.MapManager.Instance.MaxZoom;
+      if (proposedZoomLevel < MapLib.MapManager.Instance.MinZoom) return MapLib.MapManager.Instance.MinZoom;
+      return proposedZoomLevel;
+    }
 
   }
 

@@ -146,10 +146,13 @@ namespace FS20_HudBar.GUI
       try {
         //  Font embedding Ref: https://web.archive.org/web/20141224204810/http://bobpowell.net/embedfonts.aspx
         // Load a rather condensed embedded font 
-        Stream fontStream = System.Reflection.Assembly.GetExecutingAssembly( ).GetManifestResourceStream( @"FS20_HudBar.Fonts.ShareTechMono-Regular.ttf" );
-        byte[] fontdata = new byte[fontStream.Length];
-        fontStream.Read( fontdata, 0, (int)fontStream.Length );
-        fontStream.Close( );
+        byte[] fontdata;
+        using (Stream fontStream = System.Reflection.Assembly.GetExecutingAssembly( ).GetManifestResourceStream( @"FS20_HudBar.Fonts.ShareTechMono-Regular.ttf" )) {
+
+          fontdata = new byte[fontStream.Length];
+          fontStream.Read( fontdata, 0, (int)fontStream.Length );
+        }
+
         unsafe {
           fixed (byte* pFontData = fontdata) {
             s_privateFonts.AddMemoryFont( (IntPtr)pFontData, fontdata.Length );

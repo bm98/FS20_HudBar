@@ -111,7 +111,7 @@ namespace FS20_HudBar.Bar.Items
         }
         else {
           // calc straight distance if we don't have an ATC flightplan with waypoints
-          var latLon = new LatLon( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) );
+          var latLon = new LatLon( SV.Get<double>( SItem.dGS_Acft_Lat ), SV.Get<double>( SItem.dGS_Acft_Lon ) );
           _value2.Value = AirportMgr.ArrDistance_nm( latLon );
           _value2.ItemForeColor = cTxInfo;
         }

@@ -150,7 +150,7 @@ namespace DbgLib
         LOG.Info( TagLine( "DGBLog - Init" ) );
         try {
           LOG.Info( $"Debug:       {System.Reflection.Assembly.GetCallingAssembly( ).GetName( )}" );
-          LOG.Info( $"Application: {System.Reflection.Assembly.GetEntryAssembly( ).GetName( )}" );
+          LOG.Info( $"Application: {System.Reflection.Assembly.GetEntryAssembly( )?.GetName( )}" );
         }
         catch { }
       }

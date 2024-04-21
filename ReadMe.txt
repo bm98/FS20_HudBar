@@ -1,5 +1,5 @@
 FS20_HudBar V 0.68 - Build 68 BETA
-(c) M. Burri - 22-Mar-2024
+(c) M. Burri - 22-Apr-2024
 
 Contains files:
 
@@ -86,15 +86,20 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.68-B68
-- RERUN FacilityDataLoader if not already done so after MS/Navigraph updates !!!
+- RERUN FacilityDataLoader mandatory for improved coordinate precision !!!
 
+- Add Landing graphics with data (tooltip on MSFS label)
 - Add New HudBar Placement 'TopStacked' where Label and Value are stacked instead of lined up
 - Add per profile Background image
 - Add per profile Padding (Border) around the HudBar window
 - Add per profile definition of Colors and Fonts
+- Add Other aircraft display in Flight Bag (Enable in Config tab)
 - Update Improve aircraft properties via LVARs incl. B787, B747, Fenix A320 V2 and others
+- Update Configuration dialog handling
 - Update ColorPicker in Config with custom dialog
 - Update Trim values get a warning background if >90% or <-90%
+- Update recording some more data from landings
+- Update Landing records are stored even without using FlightBag (new version V3 file)
 - Update QuickGuides
 
 V 0.67-B67

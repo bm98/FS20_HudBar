@@ -31,6 +31,7 @@
     /// </summary>
     private void InitializeComponent( )
     {
+      this.components = new System.ComponentModel.Container();
       this.lblCopyright = new System.Windows.Forms.Label();
       this.lblAirport = new System.Windows.Forms.Label();
       this.btRangeMid = new System.Windows.Forms.Button();
@@ -49,12 +50,19 @@
       this.lblVS = new System.Windows.Forms.Label();
       this.lblRA = new System.Windows.Forms.Label();
       this.btRangeFarFar = new System.Windows.Forms.Button();
-      this.btTogApt = new System.Windows.Forms.Button();
-      this.btTogVFR = new System.Windows.Forms.Button();
-      this.btTogNavaids = new System.Windows.Forms.Button();
-      this.btTogRings = new System.Windows.Forms.Button();
+      this.lblLoading = new System.Windows.Forms.Label();
+      this.btRangeXFar = new System.Windows.Forms.Button();
+      this.btRangeAuto = new System.Windows.Forms.Button();
+      this.flpDeco = new System.Windows.Forms.FlowLayoutPanel();
       this.btTogGrid = new System.Windows.Forms.Button();
+      this.btTogRings = new System.Windows.Forms.Button();
       this.btTogAcftData = new System.Windows.Forms.Button();
+      this.btTogShowRoute = new System.Windows.Forms.Button();
+      this.btTogNavaids = new System.Windows.Forms.Button();
+      this.btTogVFR = new System.Windows.Forms.Button();
+      this.btTogApt = new System.Windows.Forms.Button();
+      this.btTogAcftAi = new System.Windows.Forms.Button();
+      this.btTogBehavior = new System.Windows.Forms.Button();
       this.btNavaids = new System.Windows.Forms.Button();
       this.btCenterAircraft = new System.Windows.Forms.Button();
       this.btMapProvider = new System.Windows.Forms.Button();
@@ -63,13 +71,18 @@
       this.btRunway = new System.Windows.Forms.Button();
       this.pbDrawing = new System.Windows.Forms.PictureBox();
       this.pbAltLadder = new System.Windows.Forms.PictureBox();
-      this.lblLoading = new System.Windows.Forms.Label();
-      this.btTogShowRoute = new System.Windows.Forms.Button();
-      this.btRangeXFar = new System.Windows.Forms.Button();
-      this.btRangeAuto = new System.Windows.Forms.Button();
+      this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.mnuTeleport = new System.Windows.Forms.ToolStripMenuItem();
+      this.mnuCoord = new System.Windows.Forms.ToolStripMenuItem();
+      this.flpLLTele = new System.Windows.Forms.FlowLayoutPanel();
+      this.teleportField = new bm98_Map.UI.UC_Teleport();
+      this.latLonField = new bm98_Map.UI.UC_LatLon();
       this.flpAcftData.SuspendLayout();
+      this.flpDeco.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pbDrawing)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.pbAltLadder)).BeginInit();
+      this.ctxMenu.SuspendLayout();
+      this.flpLLTele.SuspendLayout();
       this.SuspendLayout();
       // 
       // lblCopyright
@@ -104,6 +117,7 @@
       this.btRangeMid.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btRangeMid.BackColor = System.Drawing.Color.Turquoise;
       this.btRangeMid.CausesValidation = false;
+      this.btRangeMid.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btRangeMid.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btRangeMid.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btRangeMid.ForeColor = System.Drawing.Color.SaddleBrown;
@@ -120,6 +134,7 @@
       this.btRangeNear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btRangeNear.BackColor = System.Drawing.Color.Aquamarine;
       this.btRangeNear.CausesValidation = false;
+      this.btRangeNear.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btRangeNear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btRangeNear.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btRangeNear.ForeColor = System.Drawing.Color.SaddleBrown;
@@ -136,6 +151,7 @@
       this.btRangeClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btRangeClose.BackColor = System.Drawing.Color.Aqua;
       this.btRangeClose.CausesValidation = false;
+      this.btRangeClose.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btRangeClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btRangeClose.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btRangeClose.ForeColor = System.Drawing.Color.SaddleBrown;
@@ -152,6 +168,7 @@
       this.btZoomOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btZoomOut.BackColor = System.Drawing.Color.LavenderBlush;
       this.btZoomOut.CausesValidation = false;
+      this.btZoomOut.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btZoomOut.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btZoomOut.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btZoomOut.ForeColor = System.Drawing.Color.Indigo;
@@ -169,6 +186,7 @@
       this.btZoomIn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btZoomIn.BackColor = System.Drawing.Color.LavenderBlush;
       this.btZoomIn.CausesValidation = false;
+      this.btZoomIn.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btZoomIn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btZoomIn.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btZoomIn.ForeColor = System.Drawing.Color.Indigo;
@@ -186,6 +204,7 @@
       this.btZoomNorm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btZoomNorm.BackColor = System.Drawing.Color.LavenderBlush;
       this.btZoomNorm.CausesValidation = false;
+      this.btZoomNorm.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btZoomNorm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btZoomNorm.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btZoomNorm.ForeColor = System.Drawing.Color.Indigo;
@@ -203,6 +222,7 @@
       this.btRangeFar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btRangeFar.BackColor = System.Drawing.Color.LightSeaGreen;
       this.btRangeFar.CausesValidation = false;
+      this.btRangeFar.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btRangeFar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btRangeFar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btRangeFar.ForeColor = System.Drawing.Color.SaddleBrown;
@@ -335,6 +355,7 @@
       this.btRangeFarFar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btRangeFarFar.BackColor = System.Drawing.Color.Teal;
       this.btRangeFarFar.CausesValidation = false;
+      this.btRangeFarFar.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btRangeFarFar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btRangeFarFar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btRangeFarFar.ForeColor = System.Drawing.Color.SaddleBrown;
@@ -346,74 +367,70 @@
       this.btRangeFarFar.UseVisualStyleBackColor = false;
       this.btRangeFarFar.Click += new System.EventHandler(this.btRangeFarFar_Click);
       // 
-      // btTogApt
+      // lblLoading
       // 
-      this.btTogApt.BackColor = System.Drawing.Color.DarkGray;
-      this.btTogApt.BackgroundImage = global::bm98_Map.Properties.Resources.airport_facility;
-      this.btTogApt.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-      this.btTogApt.CausesValidation = false;
-      this.btTogApt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btTogApt.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btTogApt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
-      this.btTogApt.Location = new System.Drawing.Point(255, 3);
-      this.btTogApt.Name = "btTogApt";
-      this.btTogApt.Size = new System.Drawing.Size(36, 36);
-      this.btTogApt.TabIndex = 24;
-      this.btTogApt.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-      this.btTogApt.UseVisualStyleBackColor = false;
-      this.btTogApt.Click += new System.EventHandler(this.btTogApt_Click);
+      this.lblLoading.AutoSize = true;
+      this.lblLoading.BackColor = System.Drawing.Color.YellowGreen;
+      this.lblLoading.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblLoading.ForeColor = System.Drawing.Color.Black;
+      this.lblLoading.Location = new System.Drawing.Point(308, 3);
+      this.lblLoading.Name = "lblLoading";
+      this.lblLoading.Size = new System.Drawing.Size(105, 17);
+      this.lblLoading.TabIndex = 27;
+      this.lblLoading.Text = "Loading Map ...";
       // 
-      // btTogVFR
+      // btRangeXFar
       // 
-      this.btTogVFR.BackColor = System.Drawing.Color.DarkGray;
-      this.btTogVFR.BackgroundImage = global::bm98_Map.Properties.Resources.vfr;
-      this.btTogVFR.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-      this.btTogVFR.CausesValidation = false;
-      this.btTogVFR.Cursor = System.Windows.Forms.Cursors.Default;
-      this.btTogVFR.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btTogVFR.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btTogVFR.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
-      this.btTogVFR.Location = new System.Drawing.Point(213, 3);
-      this.btTogVFR.Name = "btTogVFR";
-      this.btTogVFR.Size = new System.Drawing.Size(36, 36);
-      this.btTogVFR.TabIndex = 23;
-      this.btTogVFR.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-      this.btTogVFR.UseVisualStyleBackColor = false;
-      this.btTogVFR.Click += new System.EventHandler(this.btTogVFR_Click);
+      this.btRangeXFar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btRangeXFar.BackColor = System.Drawing.Color.DarkSlateGray;
+      this.btRangeXFar.CausesValidation = false;
+      this.btRangeXFar.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.btRangeXFar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btRangeXFar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btRangeXFar.ForeColor = System.Drawing.Color.SaddleBrown;
+      this.btRangeXFar.Location = new System.Drawing.Point(563, 115);
+      this.btRangeXFar.Name = "btRangeXFar";
+      this.btRangeXFar.Size = new System.Drawing.Size(34, 34);
+      this.btRangeXFar.TabIndex = 29;
+      this.btRangeXFar.Text = "XF";
+      this.btRangeXFar.UseVisualStyleBackColor = false;
+      this.btRangeXFar.Click += new System.EventHandler(this.btRangeXFar_Click);
       // 
-      // btTogNavaids
+      // btRangeAuto
       // 
-      this.btTogNavaids.BackColor = System.Drawing.Color.LimeGreen;
-      this.btTogNavaids.BackgroundImage = global::bm98_Map.Properties.Resources.navaids;
-      this.btTogNavaids.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-      this.btTogNavaids.CausesValidation = false;
-      this.btTogNavaids.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btTogNavaids.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btTogNavaids.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
-      this.btTogNavaids.Location = new System.Drawing.Point(171, 3);
-      this.btTogNavaids.Name = "btTogNavaids";
-      this.btTogNavaids.Size = new System.Drawing.Size(36, 36);
-      this.btTogNavaids.TabIndex = 22;
-      this.btTogNavaids.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-      this.btTogNavaids.UseVisualStyleBackColor = false;
-      this.btTogNavaids.Click += new System.EventHandler(this.btTogNavaids_Click);
+      this.btRangeAuto.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btRangeAuto.BackColor = System.Drawing.Color.DeepSkyBlue;
+      this.btRangeAuto.CausesValidation = false;
+      this.btRangeAuto.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.btRangeAuto.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btRangeAuto.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btRangeAuto.ForeColor = System.Drawing.Color.SaddleBrown;
+      this.btRangeAuto.Location = new System.Drawing.Point(563, 57);
+      this.btRangeAuto.Name = "btRangeAuto";
+      this.btRangeAuto.Size = new System.Drawing.Size(34, 34);
+      this.btRangeAuto.TabIndex = 30;
+      this.btRangeAuto.Text = "AR";
+      this.btRangeAuto.UseVisualStyleBackColor = false;
+      this.btRangeAuto.Click += new System.EventHandler(this.btRangeAuto_Click);
       // 
-      // btTogRings
+      // flpDeco
       // 
-      this.btTogRings.BackColor = System.Drawing.Color.DarkGray;
-      this.btTogRings.BackgroundImage = global::bm98_Map.Properties.Resources.rings;
-      this.btTogRings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-      this.btTogRings.CausesValidation = false;
-      this.btTogRings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btTogRings.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btTogRings.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
-      this.btTogRings.Location = new System.Drawing.Point(45, 3);
-      this.btTogRings.Name = "btTogRings";
-      this.btTogRings.Size = new System.Drawing.Size(36, 36);
-      this.btTogRings.TabIndex = 21;
-      this.btTogRings.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-      this.btTogRings.UseVisualStyleBackColor = false;
-      this.btTogRings.Click += new System.EventHandler(this.btTogRings_Click);
+      this.flpDeco.AutoSize = true;
+      this.flpDeco.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.flpDeco.BackColor = System.Drawing.Color.DimGray;
+      this.flpDeco.Controls.Add(this.btTogGrid);
+      this.flpDeco.Controls.Add(this.btTogRings);
+      this.flpDeco.Controls.Add(this.btTogAcftData);
+      this.flpDeco.Controls.Add(this.btTogShowRoute);
+      this.flpDeco.Controls.Add(this.btTogNavaids);
+      this.flpDeco.Controls.Add(this.btTogVFR);
+      this.flpDeco.Controls.Add(this.btTogApt);
+      this.flpDeco.Controls.Add(this.btTogAcftAi);
+      this.flpDeco.Location = new System.Drawing.Point(0, 0);
+      this.flpDeco.Name = "flpDeco";
+      this.flpDeco.Size = new System.Drawing.Size(304, 38);
+      this.flpDeco.TabIndex = 32;
+      this.flpDeco.WrapContents = false;
       // 
       // btTogGrid
       // 
@@ -421,16 +438,35 @@
       this.btTogGrid.BackgroundImage = global::bm98_Map.Properties.Resources.grid;
       this.btTogGrid.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
       this.btTogGrid.CausesValidation = false;
+      this.btTogGrid.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btTogGrid.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btTogGrid.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btTogGrid.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
       this.btTogGrid.Location = new System.Drawing.Point(3, 3);
       this.btTogGrid.Name = "btTogGrid";
-      this.btTogGrid.Size = new System.Drawing.Size(36, 36);
+      this.btTogGrid.Size = new System.Drawing.Size(32, 32);
       this.btTogGrid.TabIndex = 20;
       this.btTogGrid.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       this.btTogGrid.UseVisualStyleBackColor = false;
       this.btTogGrid.Click += new System.EventHandler(this.btTogGrid_Click);
+      // 
+      // btTogRings
+      // 
+      this.btTogRings.BackColor = System.Drawing.Color.DarkGray;
+      this.btTogRings.BackgroundImage = global::bm98_Map.Properties.Resources.rings;
+      this.btTogRings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+      this.btTogRings.CausesValidation = false;
+      this.btTogRings.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.btTogRings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btTogRings.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btTogRings.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
+      this.btTogRings.Location = new System.Drawing.Point(41, 3);
+      this.btTogRings.Name = "btTogRings";
+      this.btTogRings.Size = new System.Drawing.Size(32, 32);
+      this.btTogRings.TabIndex = 21;
+      this.btTogRings.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      this.btTogRings.UseVisualStyleBackColor = false;
+      this.btTogRings.Click += new System.EventHandler(this.btTogRings_Click);
       // 
       // btTogAcftData
       // 
@@ -438,16 +474,126 @@
       this.btTogAcftData.BackgroundImage = global::bm98_Map.Properties.Resources.aircraft_dia;
       this.btTogAcftData.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
       this.btTogAcftData.CausesValidation = false;
+      this.btTogAcftData.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btTogAcftData.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btTogAcftData.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btTogAcftData.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
-      this.btTogAcftData.Location = new System.Drawing.Point(87, 3);
+      this.btTogAcftData.Location = new System.Drawing.Point(79, 3);
       this.btTogAcftData.Name = "btTogAcftData";
-      this.btTogAcftData.Size = new System.Drawing.Size(36, 36);
+      this.btTogAcftData.Size = new System.Drawing.Size(32, 32);
       this.btTogAcftData.TabIndex = 19;
       this.btTogAcftData.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       this.btTogAcftData.UseVisualStyleBackColor = false;
       this.btTogAcftData.Click += new System.EventHandler(this.btTogAcftData_Click);
+      // 
+      // btTogShowRoute
+      // 
+      this.btTogShowRoute.BackColor = System.Drawing.Color.DarkGray;
+      this.btTogShowRoute.BackgroundImage = global::bm98_Map.Properties.Resources.route_waypoint;
+      this.btTogShowRoute.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+      this.btTogShowRoute.CausesValidation = false;
+      this.btTogShowRoute.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.btTogShowRoute.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btTogShowRoute.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btTogShowRoute.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
+      this.btTogShowRoute.Location = new System.Drawing.Point(117, 3);
+      this.btTogShowRoute.Name = "btTogShowRoute";
+      this.btTogShowRoute.Size = new System.Drawing.Size(32, 32);
+      this.btTogShowRoute.TabIndex = 28;
+      this.btTogShowRoute.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      this.btTogShowRoute.UseVisualStyleBackColor = false;
+      this.btTogShowRoute.Click += new System.EventHandler(this.btTogShowRoute_Click);
+      // 
+      // btTogNavaids
+      // 
+      this.btTogNavaids.BackColor = System.Drawing.Color.LimeGreen;
+      this.btTogNavaids.BackgroundImage = global::bm98_Map.Properties.Resources.navaids;
+      this.btTogNavaids.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+      this.btTogNavaids.CausesValidation = false;
+      this.btTogNavaids.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.btTogNavaids.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btTogNavaids.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btTogNavaids.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
+      this.btTogNavaids.Location = new System.Drawing.Point(155, 3);
+      this.btTogNavaids.Name = "btTogNavaids";
+      this.btTogNavaids.Size = new System.Drawing.Size(32, 32);
+      this.btTogNavaids.TabIndex = 22;
+      this.btTogNavaids.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      this.btTogNavaids.UseVisualStyleBackColor = false;
+      this.btTogNavaids.Click += new System.EventHandler(this.btTogNavaids_Click);
+      // 
+      // btTogVFR
+      // 
+      this.btTogVFR.BackColor = System.Drawing.Color.DarkGray;
+      this.btTogVFR.BackgroundImage = global::bm98_Map.Properties.Resources.vfr;
+      this.btTogVFR.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+      this.btTogVFR.CausesValidation = false;
+      this.btTogVFR.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.btTogVFR.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btTogVFR.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btTogVFR.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
+      this.btTogVFR.Location = new System.Drawing.Point(193, 3);
+      this.btTogVFR.Name = "btTogVFR";
+      this.btTogVFR.Size = new System.Drawing.Size(32, 32);
+      this.btTogVFR.TabIndex = 23;
+      this.btTogVFR.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      this.btTogVFR.UseVisualStyleBackColor = false;
+      this.btTogVFR.Click += new System.EventHandler(this.btTogVFR_Click);
+      // 
+      // btTogApt
+      // 
+      this.btTogApt.BackColor = System.Drawing.Color.DarkGray;
+      this.btTogApt.BackgroundImage = global::bm98_Map.Properties.Resources.airport_facility;
+      this.btTogApt.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+      this.btTogApt.CausesValidation = false;
+      this.btTogApt.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.btTogApt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btTogApt.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btTogApt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
+      this.btTogApt.Location = new System.Drawing.Point(231, 3);
+      this.btTogApt.Name = "btTogApt";
+      this.btTogApt.Size = new System.Drawing.Size(32, 32);
+      this.btTogApt.TabIndex = 24;
+      this.btTogApt.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      this.btTogApt.UseVisualStyleBackColor = false;
+      this.btTogApt.Click += new System.EventHandler(this.btTogApt_Click);
+      // 
+      // btTogAcftAi
+      // 
+      this.btTogAcftAi.BackColor = System.Drawing.Color.DarkGray;
+      this.btTogAcftAi.BackgroundImage = global::bm98_Map.Properties.Resources.aircraft_smallAI;
+      this.btTogAcftAi.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+      this.btTogAcftAi.CausesValidation = false;
+      this.btTogAcftAi.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.btTogAcftAi.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btTogAcftAi.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btTogAcftAi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
+      this.btTogAcftAi.Location = new System.Drawing.Point(269, 3);
+      this.btTogAcftAi.Name = "btTogAcftAi";
+      this.btTogAcftAi.Size = new System.Drawing.Size(32, 32);
+      this.btTogAcftAi.TabIndex = 24;
+      this.btTogAcftAi.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      this.btTogAcftAi.UseVisualStyleBackColor = false;
+      this.btTogAcftAi.Click += new System.EventHandler(this.btTogAcftAi_Click);
+      // 
+      // btTogBehavior
+      // 
+      this.btTogBehavior.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btTogBehavior.BackColor = System.Drawing.Color.LightCyan;
+      this.btTogBehavior.BackgroundImage = global::bm98_Map.Properties.Resources.radar;
+      this.btTogBehavior.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+      this.btTogBehavior.CausesValidation = false;
+      this.btTogBehavior.Cursor = System.Windows.Forms.Cursors.Hand;
+      this.btTogBehavior.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btTogBehavior.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btTogBehavior.ForeColor = System.Drawing.Color.Indigo;
+      this.btTogBehavior.Location = new System.Drawing.Point(563, 442);
+      this.btTogBehavior.Name = "btTogBehavior";
+      this.btTogBehavior.Size = new System.Drawing.Size(34, 34);
+      this.btTogBehavior.TabIndex = 31;
+      this.btTogBehavior.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+      this.btTogBehavior.UseVisualStyleBackColor = false;
+      this.btTogBehavior.Click += new System.EventHandler(this.btTogBehavior_Click);
       // 
       // btNavaids
       // 
@@ -456,6 +602,7 @@
       this.btNavaids.BackgroundImage = global::bm98_Map.Properties.Resources.navaid;
       this.btNavaids.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
       this.btNavaids.CausesValidation = false;
+      this.btNavaids.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btNavaids.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btNavaids.Location = new System.Drawing.Point(511, 3);
       this.btNavaids.Name = "btNavaids";
@@ -471,6 +618,7 @@
       this.btCenterAircraft.BackgroundImage = global::bm98_Map.Properties.Resources.aircraft_smaller;
       this.btCenterAircraft.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
       this.btCenterAircraft.CausesValidation = false;
+      this.btCenterAircraft.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btCenterAircraft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btCenterAircraft.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btCenterAircraft.ForeColor = System.Drawing.Color.Indigo;
@@ -489,6 +637,7 @@
       this.btMapProvider.BackgroundImage = global::bm98_Map.Properties.Resources.map_icon;
       this.btMapProvider.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
       this.btMapProvider.CausesValidation = false;
+      this.btMapProvider.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btMapProvider.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btMapProvider.Location = new System.Drawing.Point(557, 3);
       this.btMapProvider.Name = "btMapProvider";
@@ -504,6 +653,7 @@
       this.btCenterApt.BackgroundImage = global::bm98_Map.Properties.Resources.airport_facility;
       this.btCenterApt.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
       this.btCenterApt.CausesValidation = false;
+      this.btCenterApt.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btCenterApt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btCenterApt.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btCenterApt.ForeColor = System.Drawing.Color.Indigo;
@@ -522,6 +672,7 @@
       this.btTower.BackgroundImage = global::bm98_Map.Properties.Resources.tower_255;
       this.btTower.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
       this.btTower.CausesValidation = false;
+      this.btTower.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btTower.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btTower.Location = new System.Drawing.Point(465, 3);
       this.btTower.Name = "btTower";
@@ -537,6 +688,7 @@
       this.btRunway.BackgroundImage = global::bm98_Map.Properties.Resources.runway_alt;
       this.btRunway.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
       this.btRunway.CausesValidation = false;
+      this.btRunway.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btRunway.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btRunway.Location = new System.Drawing.Point(419, 3);
       this.btRunway.Name = "btRunway";
@@ -547,7 +699,7 @@
       // 
       // pbDrawing
       // 
-      this.pbDrawing.BackColor = System.Drawing.Color.LemonChiffon;
+      this.pbDrawing.BackColor = System.Drawing.Color.DimGray;
       this.pbDrawing.BackgroundImage = global::bm98_Map.Properties.Resources.background;
       this.pbDrawing.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
       this.pbDrawing.Location = new System.Drawing.Point(9, 141);
@@ -569,66 +721,69 @@
       this.pbAltLadder.TabStop = false;
       this.pbAltLadder.Visible = false;
       // 
-      // lblLoading
+      // ctxMenu
       // 
-      this.lblLoading.AutoSize = true;
-      this.lblLoading.BackColor = System.Drawing.Color.YellowGreen;
-      this.lblLoading.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblLoading.ForeColor = System.Drawing.Color.Black;
-      this.lblLoading.Location = new System.Drawing.Point(308, 3);
-      this.lblLoading.Name = "lblLoading";
-      this.lblLoading.Size = new System.Drawing.Size(105, 17);
-      this.lblLoading.TabIndex = 27;
-      this.lblLoading.Text = "Loading Map ...";
+      this.ctxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuTeleport,
+            this.mnuCoord});
+      this.ctxMenu.Name = "ctxMenu";
+      this.ctxMenu.Size = new System.Drawing.Size(159, 48);
       // 
-      // btTogShowRoute
+      // mnuTeleport
       // 
-      this.btTogShowRoute.BackColor = System.Drawing.Color.DarkGray;
-      this.btTogShowRoute.BackgroundImage = global::bm98_Map.Properties.Resources.route_waypoint;
-      this.btTogShowRoute.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-      this.btTogShowRoute.CausesValidation = false;
-      this.btTogShowRoute.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btTogShowRoute.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btTogShowRoute.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
-      this.btTogShowRoute.Location = new System.Drawing.Point(129, 3);
-      this.btTogShowRoute.Name = "btTogShowRoute";
-      this.btTogShowRoute.Size = new System.Drawing.Size(36, 36);
-      this.btTogShowRoute.TabIndex = 28;
-      this.btTogShowRoute.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-      this.btTogShowRoute.UseVisualStyleBackColor = false;
-      this.btTogShowRoute.Click += new System.EventHandler(this.btTogShowRoute_Click);
+      this.mnuTeleport.Name = "mnuTeleport";
+      this.mnuTeleport.Size = new System.Drawing.Size(158, 22);
+      this.mnuTeleport.Text = "Teleport Aircraft";
+      this.mnuTeleport.Click += new System.EventHandler(this.mnuTeleport_Click);
       // 
-      // btRangeXFar
+      // mnuCoord
       // 
-      this.btRangeXFar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.btRangeXFar.BackColor = System.Drawing.Color.DarkSlateGray;
-      this.btRangeXFar.CausesValidation = false;
-      this.btRangeXFar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btRangeXFar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btRangeXFar.ForeColor = System.Drawing.Color.SaddleBrown;
-      this.btRangeXFar.Location = new System.Drawing.Point(563, 115);
-      this.btRangeXFar.Name = "btRangeXFar";
-      this.btRangeXFar.Size = new System.Drawing.Size(34, 34);
-      this.btRangeXFar.TabIndex = 29;
-      this.btRangeXFar.Text = "XF";
-      this.btRangeXFar.UseVisualStyleBackColor = false;
-      this.btRangeXFar.Click += new System.EventHandler(this.btRangeXFar_Click);
+      this.mnuCoord.Name = "mnuCoord";
+      this.mnuCoord.Size = new System.Drawing.Size(158, 22);
+      this.mnuCoord.Text = "Coordinates";
+      this.mnuCoord.Click += new System.EventHandler(this.mnuCoord_Click);
       // 
-      // btRangeAuto
+      // flpLLTele
       // 
-      this.btRangeAuto.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.btRangeAuto.BackColor = System.Drawing.Color.DeepSkyBlue;
-      this.btRangeAuto.CausesValidation = false;
-      this.btRangeAuto.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btRangeAuto.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btRangeAuto.ForeColor = System.Drawing.Color.SaddleBrown;
-      this.btRangeAuto.Location = new System.Drawing.Point(563, 57);
-      this.btRangeAuto.Name = "btRangeAuto";
-      this.btRangeAuto.Size = new System.Drawing.Size(34, 34);
-      this.btRangeAuto.TabIndex = 30;
-      this.btRangeAuto.Text = "AR";
-      this.btRangeAuto.UseVisualStyleBackColor = false;
-      this.btRangeAuto.Click += new System.EventHandler(this.btRangeAuto_Click);
+      this.flpLLTele.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.flpLLTele.AutoSize = true;
+      this.flpLLTele.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.flpLLTele.Controls.Add(this.teleportField);
+      this.flpLLTele.Controls.Add(this.latLonField);
+      this.flpLLTele.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+      this.flpLLTele.Location = new System.Drawing.Point(183, 449);
+      this.flpLLTele.Margin = new System.Windows.Forms.Padding(0);
+      this.flpLLTele.Name = "flpLLTele";
+      this.flpLLTele.Size = new System.Drawing.Size(374, 140);
+      this.flpLLTele.TabIndex = 35;
+      this.flpLLTele.WrapContents = false;
+      // 
+      // teleportField
+      // 
+      this.teleportField.Altitude_ft = 0;
+      this.teleportField.AltMSL = true;
+      this.teleportField.BackColor = System.Drawing.Color.PaleGoldenrod;
+      this.teleportField.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.teleportField.ForeColor = System.Drawing.Color.Black;
+      this.teleportField.Location = new System.Drawing.Point(0, 0);
+      this.teleportField.Margin = new System.Windows.Forms.Padding(0);
+      this.teleportField.Name = "teleportField";
+      this.teleportField.Size = new System.Drawing.Size(374, 70);
+      this.teleportField.TabIndex = 34;
+      // 
+      // latLonField
+      // 
+      this.latLonField.BackColor = System.Drawing.Color.DarkKhaki;
+      this.latLonField.DegMode = true;
+      this.latLonField.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.latLonField.ForeColor = System.Drawing.Color.Black;
+      this.latLonField.Lat = 0D;
+      this.latLonField.Location = new System.Drawing.Point(0, 70);
+      this.latLonField.Lon = 0D;
+      this.latLonField.Margin = new System.Windows.Forms.Padding(0);
+      this.latLonField.Name = "latLonField";
+      this.latLonField.Size = new System.Drawing.Size(374, 70);
+      this.latLonField.TabIndex = 33;
       // 
       // UC_Map
       // 
@@ -636,17 +791,14 @@
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(16)))));
       this.CausesValidation = false;
+      this.ContextMenuStrip = this.ctxMenu;
+      this.Controls.Add(this.flpLLTele);
+      this.Controls.Add(this.flpDeco);
+      this.Controls.Add(this.btTogBehavior);
       this.Controls.Add(this.btRangeAuto);
       this.Controls.Add(this.btRangeXFar);
-      this.Controls.Add(this.btTogShowRoute);
       this.Controls.Add(this.lblLoading);
       this.Controls.Add(this.btRangeFarFar);
-      this.Controls.Add(this.btTogApt);
-      this.Controls.Add(this.btTogVFR);
-      this.Controls.Add(this.btTogNavaids);
-      this.Controls.Add(this.btTogRings);
-      this.Controls.Add(this.btTogGrid);
-      this.Controls.Add(this.btTogAcftData);
       this.Controls.Add(this.btNavaids);
       this.Controls.Add(this.btCenterAircraft);
       this.Controls.Add(this.btMapProvider);
@@ -675,8 +827,11 @@
       this.Load += new System.EventHandler(this.UC_Map_Load);
       this.flpAcftData.ResumeLayout(false);
       this.flpAcftData.PerformLayout();
+      this.flpDeco.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)(this.pbDrawing)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.pbAltLadder)).EndInit();
+      this.ctxMenu.ResumeLayout(false);
+      this.flpLLTele.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -720,5 +875,14 @@
     private System.Windows.Forms.Button btRangeXFar;
     private System.Windows.Forms.Label lblMTrk;
     private System.Windows.Forms.Button btRangeAuto;
+    private System.Windows.Forms.Button btTogAcftAi;
+    private System.Windows.Forms.Button btTogBehavior;
+    private System.Windows.Forms.FlowLayoutPanel flpDeco;
+    private System.Windows.Forms.ContextMenuStrip ctxMenu;
+    private System.Windows.Forms.ToolStripMenuItem mnuCoord;
+    private System.Windows.Forms.ToolStripMenuItem mnuTeleport;
+    private UI.UC_LatLon latLonField;
+    private UI.UC_Teleport teleportField;
+    private System.Windows.Forms.FlowLayoutPanel flpLLTele;
   }
 }

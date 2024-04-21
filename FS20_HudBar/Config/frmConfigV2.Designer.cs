@@ -38,6 +38,8 @@
       this.asdasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.checkBox1 = new System.Windows.Forms.CheckBox();
       this.panel1 = new System.Windows.Forms.Panel();
+      this.btProfileColors = new System.Windows.Forms.Button();
+      this.btProfileFonts = new System.Windows.Forms.Button();
       this.txBgFileBorderP1 = new System.Windows.Forms.TextBox();
       this.txP1 = new System.Windows.Forms.TextBox();
       this.btBgFile = new System.Windows.Forms.Button();
@@ -87,8 +89,7 @@
       this.btAccept = new System.Windows.Forms.Button();
       this.btCancel = new System.Windows.Forms.Button();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
-      this.btProfileFonts = new System.Windows.Forms.Button();
-      this.btProfileColors = new System.Windows.Forms.Button();
+      this.btTestVoice = new System.Windows.Forms.Button();
       this.tlpMain.SuspendLayout();
       this.tlpProfile.SuspendLayout();
       this.flpP1.SuspendLayout();
@@ -227,6 +228,28 @@
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(738, 128);
       this.panel1.TabIndex = 0;
+      // 
+      // btProfileColors
+      // 
+      this.btProfileColors.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btProfileColors.Location = new System.Drawing.Point(626, 46);
+      this.btProfileColors.Name = "btProfileColors";
+      this.btProfileColors.Size = new System.Drawing.Size(106, 32);
+      this.btProfileColors.TabIndex = 60;
+      this.btProfileColors.Text = "Profile Colors...";
+      this.btProfileColors.UseVisualStyleBackColor = true;
+      this.btProfileColors.Click += new System.EventHandler(this.btProfileColors_Click);
+      // 
+      // btProfileFonts
+      // 
+      this.btProfileFonts.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btProfileFonts.Location = new System.Drawing.Point(626, 8);
+      this.btProfileFonts.Name = "btProfileFonts";
+      this.btProfileFonts.Size = new System.Drawing.Size(106, 32);
+      this.btProfileFonts.TabIndex = 39;
+      this.btProfileFonts.Text = "Profile Fonts...";
+      this.btProfileFonts.UseVisualStyleBackColor = true;
+      this.btProfileFonts.Click += new System.EventHandler(this.btProfileFonts_Click);
       // 
       // txBgFileBorderP1
       // 
@@ -667,6 +690,7 @@
       // 
       this.panel2.BackColor = System.Drawing.Color.Gainsboro;
       this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+      this.panel2.Controls.Add(this.btTestVoice);
       this.panel2.Controls.Add(this.label6);
       this.panel2.Controls.Add(this.btColors);
       this.panel2.Controls.Add(this.btFonts);
@@ -812,27 +836,16 @@
       this.timer1.Interval = 5000;
       this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
       // 
-      // btProfileFonts
+      // btTestVoice
       // 
-      this.btProfileFonts.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btProfileFonts.Location = new System.Drawing.Point(626, 8);
-      this.btProfileFonts.Name = "btProfileFonts";
-      this.btProfileFonts.Size = new System.Drawing.Size(106, 32);
-      this.btProfileFonts.TabIndex = 39;
-      this.btProfileFonts.Text = "Profile Fonts...";
-      this.btProfileFonts.UseVisualStyleBackColor = true;
-      this.btProfileFonts.Click += new System.EventHandler(this.btProfileFonts_Click);
-      // 
-      // btProfileColors
-      // 
-      this.btProfileColors.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btProfileColors.Location = new System.Drawing.Point(626, 46);
-      this.btProfileColors.Name = "btProfileColors";
-      this.btProfileColors.Size = new System.Drawing.Size(106, 32);
-      this.btProfileColors.TabIndex = 60;
-      this.btProfileColors.Text = "Profile Colors...";
-      this.btProfileColors.UseVisualStyleBackColor = true;
-      this.btProfileColors.Click += new System.EventHandler(this.btProfileColors_Click);
+      this.btTestVoice.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btTestVoice.Location = new System.Drawing.Point(7, 83);
+      this.btTestVoice.Name = "btTestVoice";
+      this.btTestVoice.Size = new System.Drawing.Size(82, 19);
+      this.btTestVoice.TabIndex = 60;
+      this.btTestVoice.Text = "Test Voice";
+      this.btTestVoice.UseVisualStyleBackColor = true;
+      this.btTestVoice.Click += new System.EventHandler(this.btTestVoice_Click);
       // 
       // frmConfigV2
       // 
@@ -936,5 +949,6 @@
     private System.Windows.Forms.Label label6;
     private System.Windows.Forms.Button btProfileColors;
     private System.Windows.Forms.Button btProfileFonts;
+    private System.Windows.Forms.Button btTestVoice;
   }
 }

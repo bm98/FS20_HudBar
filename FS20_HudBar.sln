@@ -60,6 +60,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightplanLib", "Flightplan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bm98_hbFolders", "bm98_hbFolders\bm98_hbFolders.csproj", "{6C729D4D-FE93-4794-8320-AF00C90D016D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSALib", "MSALib\MSALib.csproj", "{CE622111-C19B-49D3-9AE8-9553E255348A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -220,6 +222,14 @@ Global
 		{6C729D4D-FE93-4794-8320-AF00C90D016D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C729D4D-FE93-4794-8320-AF00C90D016D}.Release|x64.ActiveCfg = Release|Any CPU
 		{6C729D4D-FE93-4794-8320-AF00C90D016D}.Release|x64.Build.0 = Release|Any CPU
+		{CE622111-C19B-49D3-9AE8-9553E255348A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE622111-C19B-49D3-9AE8-9553E255348A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE622111-C19B-49D3-9AE8-9553E255348A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CE622111-C19B-49D3-9AE8-9553E255348A}.Debug|x64.Build.0 = Debug|Any CPU
+		{CE622111-C19B-49D3-9AE8-9553E255348A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE622111-C19B-49D3-9AE8-9553E255348A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE622111-C19B-49D3-9AE8-9553E255348A}.Release|x64.ActiveCfg = Release|Any CPU
+		{CE622111-C19B-49D3-9AE8-9553E255348A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

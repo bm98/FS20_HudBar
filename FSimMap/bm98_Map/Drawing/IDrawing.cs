@@ -21,7 +21,7 @@ namespace bm98_Map.Drawing
     /// The Paint Method
     /// </summary>
     /// <param name="g">Graphics Context</param>
-    /// <param name="MapToPixel">Function which converts Coordinates to canvas pixels</param>
-    void Paint( Graphics g, Func<CoordLib.LatLon, Point> MapToPixel );
+    /// <param name="vpRef">Viewport access for paint events</param>
+    void Paint( Graphics g, IVPortPaint vpRef );
   }
 }

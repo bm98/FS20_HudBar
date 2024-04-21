@@ -50,7 +50,10 @@ namespace MapLib.Sources.Providers
 
       // supports server in the URL
       char letter = "abc"[Tools.GetServerNum( mapImageID.TileXY, 3 )];
-      string url = MakeTileImageUrl( mapImageID.TileXY, mapImageID.ZoomLevel, Convert.ToString( letter ), "" );
+      ushort z = ZoomCheck( mapImageID.ZoomLevel );
+      if (z != mapImageID.ZoomLevel) { return null; } // not allowed 
+
+      string url = MakeTileImageUrl( mapImageID.TileXY, z, Convert.ToString( letter ), "" );
       return base.GetTileImageUsingHttp( url, mapImageID );
     }
 

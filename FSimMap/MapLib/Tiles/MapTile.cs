@@ -366,8 +366,13 @@ namespace MapLib.Tiles
               MapImage?.Dispose( );
               MapImage = mapImage;
             }
-            LoadingStatus = (mapImage.IsFailedImage) ? ImageLoadingStatus.LoadFailed : ImageLoadingStatus.LoadComplete;
-            OnLoadComplete( MapImage.MapImageID.FullKey, Tools.ToTrackKey( MapImage.MapImageID, _version ), false );
+            LoadingStatus = (mapImage.IsFailedImage && mapImage.ShouldRetry) ? ImageLoadingStatus.LoadFailed : ImageLoadingStatus.LoadComplete;
+            Debug.WriteLine( $"DEB: Tile: {TrackKey} src <{mapImage.ImageSource}> stat: is failed <{mapImage.IsFailedImage}> retry <{mapImage.ShouldRetry}> " );
+            if (MapImage.MapImageID != MapImageID) {
+              ; // DEBUG ONLY - shall not happen..
+              throw new Exception( "MapImageID does not match" );
+            }
+            OnLoadComplete( FullKey, TrackKey, false );
             // if we had concurrent loading and updating - see if there is an update needed now
             //   UpdateTile( );
             return;
@@ -379,7 +384,7 @@ namespace MapLib.Tiles
       // failed case
       LOG.LogError( "MapTile.OnDone", $"Could not get the image: {TrackKey}" );
       LoadingStatus = ImageLoadingStatus.LoadFailed;
-      OnLoadComplete( MapImageID.FullKey, Tools.ToTrackKey( MapImage.MapImageID, _version ), true );
+      OnLoadComplete( FullKey, TrackKey, true );
     }
 
     /// <summary>

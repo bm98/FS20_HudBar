@@ -63,6 +63,16 @@ namespace FShelf.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Aircraft_Icon_blue {
+            get {
+                object obj = ResourceManager.GetObject("Aircraft_Icon_blue", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap airport_facility {
             get {
                 object obj = ResourceManager.GetObject("airport_facility", resourceCulture);
@@ -96,6 +106,16 @@ namespace FShelf.Properties {
         internal static System.Drawing.Bitmap e_table_02 {
             get {
                 object obj = ResourceManager.GetObject("e_table_02", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Runway_top {
+            get {
+                object obj = ResourceManager.GetObject("Runway_top", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

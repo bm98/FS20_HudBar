@@ -56,7 +56,10 @@ namespace MapLib.Sources.Providers
       if (!this.ProviderEnabled) return null;
 
       // supports server in the URL
-      string url = MakeTileImageUrl( mapImageID.TileXY, mapImageID.ZoomLevel, "", "" );
+      ushort z = ZoomCheck( mapImageID.ZoomLevel );
+      if (z != mapImageID.ZoomLevel) { return null; } // not allowed 
+
+      string url = MakeTileImageUrl( mapImageID.TileXY, z, "", "" );
       return base.GetTileImageUsingHttp( url, mapImageID );
     }
 

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using bm98_Map.Drawing.DispItems;
+
 namespace bm98_Map.Drawing
 {
   /// <summary>
@@ -32,7 +34,7 @@ namespace bm98_Map.Drawing
     /// <param name="key">The key</param>
     public void RemoveItem( int key )
     {
-     if ( this.TryRemove( key, out IDrawing _ )) return;
+      if (this.TryRemove( key, out IDrawing _ )) return;
 
       ; // DEBUG STOP
     }
@@ -62,12 +64,12 @@ namespace bm98_Map.Drawing
     /// Does all paints 
     /// </summary>
     /// <param name="g">Graphics Context</param>
-    /// <param name="MapToPixel">Function which converts Coordinates to canvas pixels</param>
-    public void Paint( Graphics g, Func<CoordLib.LatLon, Point> MapToPixel )
+    /// <param name="vpRef">Viewport access for paint events</param>
+    public void Paint( Graphics g, IVPortPaint vpRef )
     {
       // the concurrent dict does not return the entries in the added order when enumerating the dict... but line segments prefer to be ordered...
-      foreach (var i in this.Values.OrderBy(k=>k.Key)) {
-        i.Paint( g, MapToPixel );
+      foreach (var i in this.Values.OrderBy( k => k.Key )) {
+        i.Paint( g, vpRef );
       }
     }
 

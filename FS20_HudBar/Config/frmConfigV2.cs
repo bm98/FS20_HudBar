@@ -511,7 +511,10 @@ namespace FS20_HudBar.Config
     // test speech triggered
     private void cbxVoice_MouseClick( object sender, MouseEventArgs e )
     {
-      if (cbxVoice.DroppedDown) return;
+    }
+
+    private void btTestVoice_Click( object sender, EventArgs e )
+    {
       _speech.SetVoice( cbxVoice.SelectedItem.ToString( ) );
       _speech.SaySynched( 100 );
     }
@@ -912,7 +915,6 @@ namespace FS20_HudBar.Config
     {
       this.BringToFront( ); // to reveal the Config Dialog, workaround issue with window stacks
     }
-
 
   }
 }

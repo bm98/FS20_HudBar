@@ -14,9 +14,7 @@ using static dNetBm98.XSize;
 using CoordLib;
 using MapLib;
 using MapLib.Tiles;
-using static System.Windows.Forms.AxHost;
 using System.Threading;
-using System.Security.Cryptography;
 using System.Drawing.Imaging;
 using System.Collections.Concurrent;
 using DbgLib;
@@ -39,7 +37,7 @@ namespace bm98_Map.Drawing
   ///  in View.Paint the Canvas is drawn to the View with Scaling and Translation (Zoom and Move)
   ///  
   /// </summary>
-  internal class VPort2 : IDisposable
+  internal class VPort2 : IVPortPaint, IDisposable
   {
     // A logger
     private static readonly IDbg LOG = Dbg.Instance.GetLogger(
@@ -57,6 +55,8 @@ namespace bm98_Map.Drawing
     private const float c_scaleMin = 1.0f; // below we use Tiles from the Range above the current one
     // output control
     private readonly Control _view = null;
+    // wether mouse move and zoom is enabled or not
+    private bool _mouseActionEnabled = true;
 
     // The Map (will have a constant size)
     // odd tile numbers are preferred as we get a center Tile
@@ -65,6 +65,7 @@ namespace bm98_Map.Drawing
     // The drawing canvas (will need the same size as the TileMatrix)
     private readonly Bitmap _canvasStatic = null; // static map and world
     private readonly Bitmap _canvas = null; // final canvas, i.e. static + sprites
+    private readonly Matrix _canvasMatrix = new Matrix( ); // heading transformation of the content
 
     // scaling applied to the canvas drawing (ratio of matrix height/with vs. drawn width)
     private readonly float c_drawScale = 1f;
@@ -151,6 +152,12 @@ namespace bm98_Map.Drawing
     }
 
     /// <summary>
+    /// Fired when the map was moved around
+    /// </summary>
+    internal event EventHandler<EventArgs> MapMoved;
+    private void OnMapMoved( )=> MapMoved?.Invoke( this, EventArgs.Empty );
+
+    /// <summary>
     /// The Map 
     /// </summary>
     public TileMatrix Map => _tileMatrix;
@@ -165,9 +172,20 @@ namespace bm98_Map.Drawing
     public GProc GProcSprite => _gProcSprite;
 
     /// <summary>
-    /// The native size of the map in drawing pixels
+    /// The rectangle mapped from the drawing canvas into the Viewport View
     /// </summary>
-    public Size NativeMapPixelSize => _tileMatrix.MatrixSize_pixel;
+    public Rectangle ViewPortView => new Rectangle( new Point( (int)_transformMat.OffsetX, (int)_transformMat.OffsetY ), _view.ClientSize.Multiply( 1 / _drawFactor ) );
+
+    /// <summary>
+    /// Size of the Viewport drawing area in pixel
+    ///  also the native size of the map in drawing pixels
+    /// </summary>
+    public Size CanvasSize => _tileMatrix.MatrixSize_pixel;
+    /// <summary>
+    /// Size of the output View (control client size)
+    /// </summary>
+    public Size ViewportSize => _view.ClientSize;
+
 
     /// <summary>
     /// Start loading of the map
@@ -183,13 +201,9 @@ namespace bm98_Map.Drawing
       // as the Matrix may have different properties - recalc the draw scaling
       RecalcViewportScaling( );
 
-      var matrixPixLL = _tileMatrix.MapToMatrixPixel( coordOnCenterTile );
-      var vpPixLL = MatrixPixelToVPixel( matrixPixLL );
-      vpPixLL.Multiply( _drawFactor ); // scale to the current client viewport size
-      Point shift = new Point( (int)(_view.ClientRectangle.Width / 2) - vpPixLL.X, (int)(_view.ClientRectangle.Height / 2) - vpPixLL.Y );
-      //shift.Offset( _tileMatrix.MatrixWidth_pixel / 2, _tileMatrix.MatrixHeight_pixel / 2 );
-      CheckAndSetCanvasOrigin( shift );
+      CenterViewportOn( coordOnCenterTile );
     }
+
 
     /// <summary>
     /// Move the Map to the Center of the View and make it 1:1
@@ -197,6 +211,29 @@ namespace bm98_Map.Drawing
     public void CenterMap( )
     {
       ZoomNorm_low( );
+    }
+
+    /// <summary>
+    /// Get;Set the Heading the map
+    /// </summary>
+    public float MapHeading { get; set; }
+
+    /// <summary>
+    /// Set the Center of the map
+    /// </summary>
+    /// <param name="center">The Center of the map</param>
+    public void SetMapCenter( LatLon center )
+    {
+      CenterViewportOn( center );
+    }
+
+    /// <summary>
+    /// Allow or disallow mouse movement and zoom
+    /// </summary>
+    /// <param name="enabled"></param>
+    public void SetMouseAction( bool enabled )
+    {
+      _mouseActionEnabled = enabled;
     }
 
     /// <summary>
@@ -243,17 +280,32 @@ namespace bm98_Map.Drawing
     // Renders the static drawings on the base Canvas
     private void RenderStatic_low( )
     {
+
       lock (_canvas) {
+        // Set world transform of graphics object to translate.
+        _canvasMatrix.Reset( );
+        if (MapHeading != 0) {
+          var mp = MapToCanvasPixel( ViewCenterLatLon );
+          if (MapHeading != 0) {
+            _canvasMatrix.Translate( mp.X, mp.Y );
+            _canvasMatrix.Rotate( -MapHeading );
+            _canvasMatrix.Translate( -mp.X, -mp.Y );
+          }
+        }
+
         // render static parts
         using (var g = Graphics.FromImage( _canvasStatic )) {
-          GProc.Paint( g, MapToCanvasPixel );
+          g.Clear( Color.Black ); // does this well??
+          g.Transform = _canvasMatrix;
+          GProc.Paint( g, this );
         }
-        // update the sprites an complete the canvas
+        // update the sprites and complete the canvas
         using (var g = Graphics.FromImage( _canvas )) {
           // base is the static canvas
           g.DrawImageUnscaled( _canvasStatic, 0, 0 );
+          g.Transform = _canvasMatrix;
           // paint dynamic items to _canvas
-          GProcSprite.Paint( g, MapToCanvasPixel );
+          GProcSprite.Paint( g, this );
         }
       }
     }
@@ -265,8 +317,9 @@ namespace bm98_Map.Drawing
         using (var g = Graphics.FromImage( _canvas )) {
           // base is the static canvas
           g.DrawImageUnscaled( _canvasStatic, 0, 0 );
+          g.Transform = _canvasMatrix;
           // paint dynamic items to _canvas
-          GProcSprite.Paint( g, MapToCanvasPixel );
+          GProcSprite.Paint( g, this );
         }
       }
     }
@@ -366,7 +419,7 @@ namespace bm98_Map.Drawing
       if (e.MatrixComplete) {
         // complete but may have failed tiles
         if (_tileMatrix.HasFailedTiles) {
-         LOG.Log( "VPort2._tileMatrix_LoadComplete","HasFaileTiles - about to reload failed ones" );
+          LOG.Log( "VPort2._tileMatrix_LoadComplete", "HasFaileTiles - about to reload failed ones" );
           _tileMatrix.LoadFailedTiles( );
         }
         // need to render the map with new content
@@ -377,7 +430,7 @@ namespace bm98_Map.Drawing
         // not yet complete
         if (e.LoadFailed) {
           // Single tile load failed
-          LOG.Log( "VPort2._tileMatrix_LoadComplete","LoadFailed" );
+          LOG.Log( "VPort2._tileMatrix_LoadComplete", "LoadFailed" );
           OnLoadComplete( e ); // is reported
         }
         else {
@@ -404,10 +457,10 @@ namespace bm98_Map.Drawing
     public Point MapToCanvasPixel( LatLon coordPoint )
     {
       if (!coordPoint.IsEmpty) {
-        return _tileMatrix.MapToMatrixPixel( coordPoint ); // matrix and ccanvas are the same dimension
+        return _tileMatrix.MapToMatrixPixel( coordPoint ); // matrix and canvas are the same dimension
       }
       else {
-        return new Point( -999, -999 );
+        return new Point( -9999, -9999 );
       }
     }
 
@@ -514,7 +567,9 @@ namespace bm98_Map.Drawing
       _moveMat.Reset( );
       // _canvas translation (_moveMat will be used by other methods too)
       _moveMat.Translate( txPoint.X, txPoint.Y );
+
       // combine the Move and Zoom into _transformMat used by Paint
+      _transformMat.Dispose( );
       _transformMat = _moveMat.Clone( );
       _transformMat.Multiply( _toScaleMat, MatrixOrder.Append );
 
@@ -523,6 +578,8 @@ namespace bm98_Map.Drawing
         OnMapLoading( ); // some loading will happen
         RenderStatic( );
       }
+      OnMapMoved( );
+
     }
 
     /// <summary>
@@ -546,10 +603,12 @@ namespace bm98_Map.Drawing
         _toScaleMat.Scale( sFactor, sFactor, MatrixOrder.Append );
         _scaleMult = _toScaleMat.Elements[0]; // retrieve the exact applied scale
 
+        _fromScaleMat.Dispose( );
         _fromScaleMat = _toScaleMat.Clone( );
         _fromScaleMat.Invert( );
       }
       // combine the Move and Zoom into _transformMat used by Paint
+      _transformMat.Dispose( );
       _transformMat = _moveMat.Clone( );
       _transformMat.Multiply( _toScaleMat, MatrixOrder.Append );
     }
@@ -581,7 +640,7 @@ namespace bm98_Map.Drawing
 
 
     /// <summary>
-    /// Caclulate the coordinate of the map Point in the Viewport
+    /// Calculate the coordinate of the map Point in the Viewport
     /// </summary>
     /// <returns>Viewport LatLon for the point</returns>
     private LatLon ViewportCoord( Point vpPoint )
@@ -606,6 +665,20 @@ namespace bm98_Map.Drawing
     }
 
     /// <summary>
+    /// Center on the coordinate
+    /// </summary>
+    /// <param name="coordOnCenterTile">Center Coord</param>
+    private void CenterViewportOn( LatLon coordOnCenterTile )
+    {
+      var matrixPixLL = _tileMatrix.MapToMatrixPixel( coordOnCenterTile );
+      var vpPixLL = MatrixPixelToVPixel( matrixPixLL );
+      vpPixLL.Multiply( _drawFactor ); // scale to the current client viewport size
+      Point shift = new Point( (int)(_view.ClientRectangle.Width / 2) - vpPixLL.X, (int)(_view.ClientRectangle.Height / 2) - vpPixLL.Y );
+      //shift.Offset( _tileMatrix.MatrixWidth_pixel / 2, _tileMatrix.MatrixHeight_pixel / 2 );
+      CheckAndSetCanvasOrigin( shift );
+    }
+
+    /// <summary>
     /// Caclulate the actual center coordinate of the map in the Viewport
     /// </summary>
     /// <returns>Current Viewport center LatLon</returns>
@@ -615,11 +688,27 @@ namespace bm98_Map.Drawing
     }
 
 
-    // map a matrix point to the VPort Pixel Point
-    private Point MatrixPixelToVPixel( Point matrixPoint )
+    /// <summary>
+    /// Map a Canvas (matrix) point to the VPort Pixel Point
+    /// </summary>
+    /// <param name="matrixPoint">A Canvas pixel</param>
+    /// <returns>A ViewPort point</returns>
+    public Point MatrixPixelToVPixel( Point matrixPoint )
     {
       PointF[] c = new PointF[1] { matrixPoint };
       _fromScaleMat.TransformPoints( c ); // get pixels
+      return Point.Round( c[0] );
+    }
+
+    /// <summary>
+    /// Map a VPort Pixel Point to the Canvas (matrix) point
+    /// </summary>
+    /// <param name="vPoint">A ViewPort pointl</param>
+    /// <returns>A Canvas pixel</returns>
+    public Point VPixelToMatrixPixel( Point vPoint )
+    {
+      PointF[] c = new PointF[1] { vPoint };
+      _toScaleMat.TransformPoints( c ); // get matrix point
       return Point.Round( c[0] );
     }
 
@@ -807,6 +896,8 @@ namespace bm98_Map.Drawing
     // Mouse Wheel capture
     private void _view_MouseWheel( object sender, MouseEventArgs e )
     {
+      if (!_mouseActionEnabled) return;
+
       if (e.Delta < 0) {
         ZoomOut_low( e.Location );
       }
@@ -837,7 +928,8 @@ namespace bm98_Map.Drawing
     // fires when the mouse button is pressed
     private void _view_MouseDown( object sender, MouseEventArgs e )
     {
-      if ((e.Button & MouseButtons.Left) > 0) {
+      // mouse down triggers only when MoveEnabled
+      if (_mouseActionEnabled && ((e.Button & MouseButtons.Left) > 0)) {
         _mouseStart = e.Location;
         _mapStart = new PointF( _moveMat.OffsetX, _moveMat.OffsetY );
 
@@ -1018,10 +1110,11 @@ namespace bm98_Map.Drawing
       }
       e.Graphics.EndContainer( save );
 
-      // small red center cross
-      e.Graphics.DrawLine( Pens.Red, _view.Width / 2 - 10, _view.Height / 2, _view.Width / 2 + 10, _view.Height / 2 );
-      e.Graphics.DrawLine( Pens.Red, _view.Width / 2, _view.Height / 2 - 10, _view.Width / 2, _view.Height / 2 + 10 );
-
+      // small red center cross to help with mouse movement
+      if (_mouseActionEnabled) {
+        e.Graphics.DrawLine( Pens.Red, _view.Width / 2 - 10, _view.Height / 2, _view.Width / 2 + 10, _view.Height / 2 );
+        e.Graphics.DrawLine( Pens.Red, _view.Width / 2, _view.Height / 2 - 10, _view.Width / 2, _view.Height / 2 + 10 );
+      }
       // need some more Paints to make it fully opaque
       if (repaint) {
         // add while not enough
@@ -1083,6 +1176,7 @@ namespace bm98_Map.Drawing
           _fromScaleMat?.Dispose( );
           _moveMat?.Dispose( );
           _transformMat?.Dispose( );
+          _canvasMatrix?.Dispose( );
           _canvasStatic?.Dispose( );
           _canvas?.Dispose( );
           _drawnCanvas?.Dispose( );

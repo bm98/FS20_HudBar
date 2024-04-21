@@ -10,8 +10,6 @@ namespace bm98_hbFolders
 {
   /// <summary>
   /// HudBar Apps - Folders Used
-  ///  TODO - change the setting filename below
-  ///  TODO - may be change the namespace
   /// </summary>
   public static class Folders
   {
@@ -24,6 +22,8 @@ namespace bm98_hbFolders
     private const string c_HudBarDbFolder = "db";
     private const string c_HudBarCacheFolder = "cache";
     private const string c_HudBarSettingsFolder = "settings";
+    private const string c_HudBarLandingsFolder = "landings";
+
     // MyDocuments folder
     private static readonly string c_MyDocuments = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
 
@@ -34,8 +34,14 @@ namespace bm98_hbFolders
     private static string _genAptDBPath = ""; // will hold the final path
     private static string _genAptDBFile = ""; // complete path and file
 
+    // settings
     private static string _settingsPath = ""; // will hold the final path
     private static string _settingsFile = ""; // complete path and file
+
+    // landings
+    private const string c_HudBarLandingsFile = "TouchDownLogV3.csv";
+    private static string _landingsPath = ""; // will hold the final path
+    private static string _landingsFile = ""; // complete path and file
 
     // cache
     private static string _cachePath = ""; // will hold the final path
@@ -46,7 +52,7 @@ namespace bm98_hbFolders
     /// <summary>
     /// Initialize all HudBar files and locations 
     /// </summary>
-    public static void InitStorage(string appSettingsFilename )
+    public static void InitStorage( string appSettingsFilename )
     {
       // main 
       _hudBarDocs = Path.Combine( c_MyDocuments, c_HudBarFolder );
@@ -85,6 +91,19 @@ namespace bm98_hbFolders
       }
       _settingsFile = Path.Combine( _settingsPath, appSettingsFilename );
 
+      // landings
+      _landingsPath = Path.Combine( _hudBarDocs, c_HudBarLandingsFolder );
+      try {
+        // make sure the settings path exists - but never fail..
+        if (!Directory.Exists( _landingsPath )) {
+          Directory.CreateDirectory( _landingsPath );
+        }
+      }
+      catch (Exception ex) {
+        _landingsPath = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
+      }
+      _landingsFile = Path.Combine( _landingsPath, c_HudBarLandingsFile );
+
       // caches 
       _cachePath = Path.Combine( _hudBarDocs, c_HudBarCacheFolder );
       try {
@@ -119,6 +138,16 @@ namespace bm98_hbFolders
     /// Path to Settings files
     /// </summary>
     public static string SettingsPath => _settingsPath;
+
+    /// <summary>
+    /// Path to Landings files
+    /// </summary>
+    public static string LandingsPath => _landingsPath;
+
+    /// <summary>
+    /// Path to the Landings CSV file
+    /// </summary>
+    public static string LandingsFile => _landingsFile;
 
     /// <summary>
     /// GenAptDB File with path

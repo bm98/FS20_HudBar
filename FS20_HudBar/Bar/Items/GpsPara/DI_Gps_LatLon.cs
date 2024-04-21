@@ -59,8 +59,8 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = (float)SV.Get<double>( SItem.dG_Acft_Lat ); // use Sim property, to be available when no GPS is installed
-        _value2.Value = (float)SV.Get<double>( SItem.dG_Acft_Lon ); // use Sim property, to be available when no GPS is installed
+        _value1.Value = (float)SV.Get<double>( SItem.dGS_Acft_Lat ); // use Sim property, to be available when no GPS is installed
+        _value2.Value = (float)SV.Get<double>( SItem.dGS_Acft_Lon ); // use Sim property, to be available when no GPS is installed
       }
     }
 

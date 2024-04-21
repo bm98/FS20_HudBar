@@ -71,7 +71,7 @@ namespace FS20_HudBar.Bar.Items
           _cpMeter.Stop( );
         }
         else {
-          _cpMeter.Start( new LatLon( SV.Get<double>( SItem.dG_Acft_Lat ), SV.Get<double>( SItem.dG_Acft_Lon ) ),
+          _cpMeter.Start( new LatLon( SV.Get<double>( SItem.dGS_Acft_Lat ), SV.Get<double>( SItem.dGS_Acft_Lon ) ),
                       SV.Get<double>( SItem.dG_Env_Time_zulu_sec ) );
         }
       }
@@ -83,7 +83,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if ( this.Visible ) {
-        var latLon = new LatLon( SV.Get<double>( SItem.dG_Acft_Lat), SV.Get<double>( SItem.dG_Acft_Lon));
+        var latLon = new LatLon( SV.Get<double>( SItem.dGS_Acft_Lat), SV.Get<double>( SItem.dGS_Acft_Lon));
         _cpMeter.Lapse( latLon, SV.Get<double>( SItem.dG_Env_Time_zulu_sec));
         _value1.Value = _cpMeter.Duration;
         _value2.Value = (float)_cpMeter.Distance;

@@ -177,6 +177,24 @@ namespace FShelf
       set { this["AcftTrack"] = value; }
     }
 
+    [DefaultSettingValue( "False" )]
+    public bool AcftAIChecked {
+      get { return (bool)this["AcftAIChecked"]; }
+      set { this["AcftAIChecked"] = value; }
+    }
+
+    [DefaultSettingValue( "0" )]
+    public int AcftAI {
+      get { return (int)this["AcftAI"]; }
+      set { this["AcftAI"] = value; }
+    }
+
+    [DefaultSettingValue( "" )]
+    public string AcftAIFilter {
+      get { return (string)this["AcftAIFilter"]; }
+      set { this["AcftAIFilter"] = value; }
+    }
+
     [DefaultSettingValue( "0" )]
     public int MinRwyLengthCombo {
       get { return (int)this["MinRwyLengthCombo"]; }

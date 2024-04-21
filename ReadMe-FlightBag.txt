@@ -1,5 +1,5 @@
-FS20_FlightBag V 0.67 - Build 67 BETA
-(c) M. Burri - 10-Nov-2023
+FS20_FlightBag V 0.68 - Build 68 BETA
+(c) M. Burri - 22-Mar-2024
 
 Contains files:
 
@@ -72,6 +72,13 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.68-B68
+- RERUN FacilityDataLoader if not already done so after MS/Navigraph updates !!!
+
+- Add Other aircraft display in Flight Bag
+- Update Improve aircraft properties via LVARs incl. B787, B747, Fenix A320 V2 and others
+- Update QuickGuides
 
 V 0.67-B67
 - RERUN FacilityDataLoader !!!
