@@ -37,6 +37,7 @@ namespace FS20_HudBar
       // TODO REMOVE FOR FINAL TEST AND RELEASE
       // Init the Folders Utility with our AppSettings File
       Folders.InitStorage( "HudBarAppSettings-NEXT.json" );
+//      Folders.InitStorage( "HudBarAppSettings.json" );
 #else
       // Init the Folders Utility with our AppSettings File
       Folders.InitStorage( "HudBarAppSettings.json" );

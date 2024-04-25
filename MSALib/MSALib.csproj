@@ -44,6 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="Endianess.cs" />
     <Compile Include="MSA.cs" />
     <Compile Include="MSAdata0_5Deg.cs" />

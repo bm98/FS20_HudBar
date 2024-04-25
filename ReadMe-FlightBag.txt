@@ -1,5 +1,5 @@
 FS20_FlightBag V 0.68 - Build 68 BETA
-(c) M. Burri - 22-Mar-2024
+(c) M. Burri - 22-Apr-2024
 
 Contains files:
 
@@ -74,9 +74,12 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.68-B68
-- RERUN FacilityDataLoader if not already done so after MS/Navigraph updates !!!
+- RERUN FacilityDataLoader mandatory for improved coordinate precision !!!
 
-- Add Other aircraft display in Flight Bag
+- Add Other aircraft display in Flight Bag (Enable in Config tab)
+- Add 'Radar' View map display
+- Add Coordinate window
+- Add Teleport feature
 - Update Improve aircraft properties via LVARs incl. B787, B747, Fenix A320 V2 and others
 - Update QuickGuides
 

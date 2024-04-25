@@ -42,6 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Checklist.ico = Checklist.ico
 		FlightBag.ico = FlightBag.ico
 		HudBar.ico = HudBar.ico
+		SolutionInfo.cs = SolutionInfo.cs
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FS20_FlightBag", "FS20_FlightBag\FS20_FlightBag.csproj", "{AA8069F5-89D4-4390-877E-5F8E56190144}"

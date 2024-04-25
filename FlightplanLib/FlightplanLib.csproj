@@ -56,6 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="FileLink.cs" />
     <Compile Include="FlightPlan.cs" />
     <Compile Include="GPX\GPXpln.cs" />

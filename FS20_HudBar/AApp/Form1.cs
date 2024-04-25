@@ -548,6 +548,27 @@ namespace FS20_HudBar
       mDistMetric.CheckState = AS.Distance_Metric ? CheckState.Checked : CheckState.Unchecked;
       mShowUnits.CheckState = AS.ShowUnits ? CheckState.Checked : CheckState.Unchecked;
 
+      // Setup the screen the bar/tile is attached to
+      // bugfix- set m_barScreen before it is used....
+      m_barScreenNumber = AS.ScreenNumber;
+      m_barScreen = null;
+      // Find and hold the Primary Screen
+      Screen[] screens = Screen.AllScreens;
+      m_mainScreen = screens[0];
+      // now get the Primary one and the stored one
+      for (int scIndex = 0; scIndex < screens.Length; scIndex++) {
+        if (screens[scIndex].Primary) {
+          m_mainScreen = screens[scIndex];
+        }
+        if (scIndex == m_barScreenNumber) {
+          m_barScreen = screens[scIndex];
+        }
+      }
+      // did not find the stored screen ?? disconnected, changed ??
+      if (m_barScreen == null) {
+        m_barScreen = m_mainScreen; // to main
+      }
+
       // ShowUnits and Opacity are set via HUD in InitGUI
       LOG.Log( "frmMain", "Load GUI Forms" );
       m_frmGui = new frmGui {
@@ -590,26 +611,6 @@ namespace FS20_HudBar
       LOG.Log( "frmMain", "Load Shelf" );
       m_shelf = new FShelf.frmShelf( Program.Instance );
       UpdateShelfSettings( ); // needed for transition to new AppSettings concept
-
-      // Setup the screen the bar/tile is attached to
-      m_barScreenNumber = AS.ScreenNumber;
-      m_barScreen = null;
-      // Find and hold the Primary Screen
-      Screen[] screens = Screen.AllScreens;
-      m_mainScreen = screens[0];
-      // now get the Primary one and the stored one
-      for (int scIndex = 0; scIndex < screens.Length; scIndex++) {
-        if (screens[scIndex].Primary) {
-          m_mainScreen = screens[scIndex];
-        }
-        if (scIndex == m_barScreenNumber) {
-          m_barScreen = screens[scIndex];
-        }
-      }
-      // did not find the stored screen ?? disconnected, changed ??
-      if (m_barScreen == null) {
-        m_barScreen = m_mainScreen; // to main
-      }
 
       LOG.Log( "frmMain", "Init Form Done" );
     }

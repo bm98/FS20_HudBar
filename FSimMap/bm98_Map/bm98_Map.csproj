@@ -55,6 +55,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\SolutionInfo.cs">
+      <Link>SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="Data\Airport.cs" />
     <Compile Include="Data\AverageCls.cs" />
     <Compile Include="Data\ITrackedAircraft.cs" />

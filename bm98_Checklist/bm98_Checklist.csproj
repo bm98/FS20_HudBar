@@ -66,6 +66,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="FontProvider.cs" />
     <Compile Include="Json\Checklist.cs" />
     <Compile Include="Json\ChecklistCat.cs" />

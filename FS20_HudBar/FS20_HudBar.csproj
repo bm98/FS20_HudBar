@@ -123,6 +123,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="AApp\AppSettings.cs" />
     <Compile Include="AApp\AppSettingsV2.cs" />
     <Compile Include="AApp\AppSettingsUpgrade.cs" />

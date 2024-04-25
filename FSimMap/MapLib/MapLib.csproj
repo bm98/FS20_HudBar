@@ -51,6 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\SolutionInfo.cs">
+      <Link>SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="LoadCompleteEventArgs.cs" />
     <Compile Include="MapImage.cs" />
     <Compile Include="MSiniHelper\IniItem.cs" />

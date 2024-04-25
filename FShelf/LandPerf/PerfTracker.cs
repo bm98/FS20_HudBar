@@ -16,6 +16,7 @@ using FSimClientIF.Modules;
 using FSimFacilityIF;
 using System.Diagnostics;
 using System.Drawing;
+using DbgLib;
 
 namespace FShelf.LandPerf
 {
@@ -26,6 +27,11 @@ namespace FShelf.LandPerf
   /// </summary>
   public sealed class PerfTracker
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // Singleton var
     private static readonly Lazy<PerfTracker> lazy = new Lazy<PerfTracker>( ( ) => new PerfTracker( ) );
 
@@ -220,7 +226,7 @@ namespace FShelf.LandPerf
       if (apt != null) {
         pd.AirportIdent = apt.Ident;
 
-        IRunway rwy = GetRunway( apt, acftPos, perfData.TdGTRK_degm );
+        IRunway rwy = GetRunway( apt, acftPos, perfData.TdGTRK_deg );
         if (rwy != null) {
           pd.RunwayIdent = rwy.Ident;
           pd.RunwayBearing_deg = rwy.Bearing_deg;
@@ -276,6 +282,7 @@ namespace FShelf.LandPerf
                     + $"{lPerf.TdCount};";
 
           sw.WriteLine( log );
+          LOG.Log( $"PerfTracker.WriteTouchDownV3 - <{log}>" );
         }
       }
       catch { }
@@ -286,40 +293,47 @@ namespace FShelf.LandPerf
     private IAirport GetAirport( LatLon acftPos )
     {
       using (var _db = new FSFData.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
-        if (!_db.Open( Folders.GenAptDBFile )) return null; // no db available
-
+        if (!_db.Open( Folders.GenAptDBFile )) {
+          LOG.LogError( $"PerfTracker.GetAirport - No Apt found: DB file not available" );
+          return null; // no db available
+        }
         var apt = _db.DbReader.GetAirport_ByLatLon( acftPos );
+        LOG.Log( $"PerfTracker.GetAirport - EVAL airport as <{((apt == null) ? "not found" : apt.Ident)}>" );
         return apt;
       }
     }
 
     // return a possible runway or null
-    private IRunway GetRunway( IAirport apt, LatLon acftPos, float gtrk_degm )
+    private IRunway GetRunway( IAirport apt, LatLon acftPos, float gtrk_deg )
     {
       // sanity 
       if (apt == null) return null;
 
       // runways where the bearing of the RW start towards the acft matches about the ground track
 
-      // select runways with bearing of the track
-      var possibleRwyList = apt.Runways.Where( rw => dNetBm98.XMath.AboutEqual( rw.Bearing_deg, gtrk_degm, 15 ) ); // +- 7.5 deg
-      //Debug.WriteLine( $"PerfTracker.GetRunway - EVAL from <{possibleRwyList.Count( )}> possible runways" );
+      // select runways with bearing of the track (detecting landings across 60m wide to 230+m dist)
+      var possibleRwyList = apt.Runways.Where( rw => dNetBm98.XMath.AboutEqual( rw.Bearing_deg, gtrk_deg, 15 ) ); // +- 15 deg
+      LOG.Log( $"PerfTracker.GetRunway - EVAL from <{possibleRwyList.Count( )}> possible runways" );
       if (possibleRwyList.Count( ) == 0) {
+        LOG.Log( $"  no Runway found for apt <{apt.Ident}> gtrk <{gtrk_deg:000}> " );
         return null; // no match
       }
       if (possibleRwyList.Count( ) == 1) {
+        LOG.Log( $"  One Runway found for apt <{apt.Ident}> gtrk <{gtrk_deg:000}> - {possibleRwyList.FirstOrDefault( ).Ident} " );
         return possibleRwyList.FirstOrDefault( ); // one match
       }
 
-      // select from parallel runways the one where rw-start and acft pos lineup with the runway
+      // select from parallel runways the one where rw-start-1000m and acft pos lineup with the runway
       var selectedRwyList = possibleRwyList.Where( rw =>
-        dNetBm98.XMath.AboutEqual( rw.StartCoordinate.DestinationPoint( -1000, rw.Bearing_deg ).BearingTo( acftPos ), rw.Bearing_deg, 9 ) ); // +- 4.5 deg
-      //Debug.WriteLine( $"PerfTracker.GetRunway - EVAL from <{selectedRwyList.Count( )}> selected runways" );
+        dNetBm98.XMath.AboutEqual( rw.StartCoordinate.DestinationPoint( -1000, rw.Bearing_deg ).BearingTo( acftPos ), rw.Bearing_deg, 9 ) ); // +- 9 deg
+      LOG.Log( $"PerfTracker.GetRunway - EVAL from <{selectedRwyList.Count( )}> selected runways" );
 
       if (selectedRwyList.Count( ) == 0) {
+        LOG.Log( $"  no Runway matched for apt <{apt.Ident}> gtrk <{gtrk_deg:000}> " );
         return default; // no match
       }
       if (selectedRwyList.Count( ) == 1) {
+        LOG.Log( $"  One Runway matched for apt <{apt.Ident}> gtrk <{gtrk_deg:000}> - {selectedRwyList.FirstOrDefault( ).Ident} " );
         return selectedRwyList.FirstOrDefault( ); // one match
       }
 
@@ -334,6 +348,7 @@ namespace FShelf.LandPerf
           dist = d;
         }
       }
+      LOG.Log( $"  Returned closest Runway for apt <{apt.Ident}> gtrk <{gtrk_deg:000}> - {rwy.Ident} " );
       return rwy;
     }
 

@@ -1,5 +1,5 @@
-FS20_HudBar V 0.68 - Build 68 BETA
-(c) M. Burri - 22-Apr-2024
+FS20_HudBar V 0.69 - Build 69 BETA
+(c) M. Burri - 26-Apr-2024
 
 Contains files:
 
@@ -26,6 +26,7 @@ FSimFacilityIF.dll          MS facility database interface definition
 FSimIF.dll                  Generic FSim interface definition
 MapLib.dll                  Mapping library
 FlightplanLib.dll           Flightplan library
+MSALib.dll                  MSA altitudes library
 MetarLib.dll                METAR access library
 PingLib.dll                 An audio lib using Win10 Audio facilities
 SettingsLib.dll             Application settings persistence library
@@ -85,6 +86,9 @@ github@mail.burri-web.org
 
 Changelog:
 
+V 0.69-B69
+- Fix Startup Problem with Bar type HudBar
+
 V 0.68-B68
 - RERUN FacilityDataLoader mandatory for improved coordinate precision !!!
 
@@ -93,13 +97,19 @@ V 0.68-B68
 - Add per profile Background image
 - Add per profile Padding (Border) around the HudBar window
 - Add per profile definition of Colors and Fonts
-- Add Other aircraft display in Flight Bag (Enable in Config tab)
-- Update Improve aircraft properties via LVARs incl. B787, B747, Fenix A320 V2 and others
 - Update Configuration dialog handling
 - Update ColorPicker in Config with custom dialog
 - Update Trim values get a warning background if >90% or <-90%
 - Update recording some more data from landings
 - Update Landing records are stored even without using FlightBag (new version V3 file)
+- Update Improve aircraft properties via LVARs incl. B787, B747, Fenix A320 V2 and others
+
+  FlightBag updates:
+- Add Other aircraft display in Flight Bag (Enable in Config tab)
+- Add 'Radar' View map display
+- Add Coordinate window
+- Add Teleport feature
+
 - Update QuickGuides
 
 V 0.67-B67

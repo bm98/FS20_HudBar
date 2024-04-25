@@ -48,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="JMDEC\J_Clouds.cs" />
     <Compile Include="JMDEC\J_Metar.cs" />
     <Compile Include="JMDEC\J_MetarEntry.cs" />
