@@ -1369,7 +1369,7 @@ namespace FS20_HudBar
       if (SC.SimConnectClient.Instance.IsConnected) {
         // Voice is disabled when a new HUD is created, so enable if not yet done
         // The timer is enabled after InitGUI - so this one is always 5 sec later which should avoid some of the early talking..
-        HUD.VoiceEnabled = true;
+        HudBar.VoiceEnabled = true;
         // Check and Resize at this pace to fit the contents in case some layout changes made it not fitting anymore
         // this is due to long texts or changes in the visibility of items coming in by the SimConnect Data processing in the DI items
         SynchGUISize( );

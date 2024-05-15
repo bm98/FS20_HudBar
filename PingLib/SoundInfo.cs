@@ -41,11 +41,11 @@ namespace PingLib
     /// Woodblock (Tone 0 -> Silence)
     /// </summary>
     Wood_1,
+    */
     /// <summary>
     /// Bell - about 3 sec per Tone (Tone 0 -> Silence)
     /// </summary>
     Bell_1,
-    */
     /// <summary>
     /// Triangle Wave with glide 0.3 sec segments
     ///  Notes: 

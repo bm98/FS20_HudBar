@@ -63,6 +63,16 @@ namespace PingLib.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] Bell1_VBR50Q48kHz {
+            get {
+                object obj = ResourceManager.GetObject("Bell1_VBR50Q48kHz", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Silence_VBR50Q48kHz {
             get {
                 object obj = ResourceManager.GetObject("Silence_VBR50Q48kHz", resourceCulture);

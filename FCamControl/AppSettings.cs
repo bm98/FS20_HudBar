@@ -107,6 +107,12 @@ namespace FCamControl
       set { this["CameraSlotFolder7"] = value; }
     }
 
+    [DefaultSettingValue( "" )]
+    public string MSFS_KeyConfiguration {
+      get { return (string)this["MSFS_KeyConfiguration"]; }
+      set { this["MSFS_KeyConfiguration"] = value; }
+    }
+
 
     #endregion
 

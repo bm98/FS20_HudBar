@@ -8,13 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using System.Numerics;
+using dNetBm98.Win;
 using bm98_hbFolders;
 using FSimClientIF;
+using FSimClientIF.Modules;
 using SC = SimConnectClient;
 using static FSimClientIF.Sim;
-using FSimClientIF.Modules;
-using System.Numerics;
 using SimConnectClientAdapter;
+using FS20_CamControl;
+using System.Threading;
 
 namespace FCamControl
 {
@@ -23,6 +26,12 @@ namespace FCamControl
   /// </summary>
   public partial class frmCamera : Form
   {
+    // this forms size
+    private Size c_FormSize = new Size( 457, 684 );
+    private Point c_pnlBaseLocation = new Point( 3, 340 );
+    private Point c_pnlDroneLocation = new Point( 3, 191 );
+    private Point c_pnl6DofLocation = new Point( 3, 191 );
+
     // SimConnect Client Adapter (used only to establish the connection and handle the Online color label)
     private SCClient SCAdapter;
 
@@ -66,11 +75,16 @@ namespace FCamControl
     private int _droneValueUpdate = 0; // trigger delayed update to Sim
     private float _droneMovement = 4;  // initial values as the sim has them
     private float _droneRotation = 50; // initial values as the sim has them
+    private float _droneZoom = 50; // initial values as the sim has them
 
     // requested cam settings
     private int _camUpdateRequested = 0; // trigger delayed update to Sim
     private CameraSetting _camSettingRequested = CameraSetting.NONE;
     private int _camIndexRequested = 0;
+
+    // Custom Cams
+    private CustomCamController _customCamController = null;
+    private MSFS_KeyCat _msfs_Keys = null;
 
     // 6DOF items
     private static readonly Vector3 c_cam6dDefaultPos = new Vector3( ) { X = 20f, Y = 20f, Z = 20f };
@@ -89,6 +103,9 @@ namespace FCamControl
 
     // track the last known live location in order to save the proper one
     private Point _lastLiveLocation;
+
+    // invoker for ready signal
+    private WinFormInvoker _flyByInvoker;
 
     /// <summary>
     /// Set true  when run in standalone mode
@@ -116,31 +133,16 @@ namespace FCamControl
 
     #endregion
 
-    /// <summary>
-    /// Checks if a Point is visible on any screen
-    /// </summary>
-    /// <param name="point">The Location to check</param>
-    /// <returns>True if visible</returns>
-    private static bool IsOnScreen( Point point )
-    {
-      Screen[] screens = Screen.AllScreens;
-      foreach (Screen screen in screens) {
-        if (screen.WorkingArea.Contains( point )) {
-          return true;
-        }
-      }
-      return false;
-    }
 
-    // Knuth hash
-    private static UInt64 CalculateHash( string read )
+    // true when the cam CANNOT be used
+    private bool Inop( )
     {
-      UInt64 hashedValue = 3074457345618258791ul;
-      for (int i = 0; i < read.Length; i++) {
-        hashedValue += read[i];
-        hashedValue *= 3074457345618258799ul;
-      }
-      return hashedValue;
+      // use only if in flight or pause
+      return
+        !(
+        (SC.SimConnectClient.Instance.ClientState == MSFS_State.InFlight)
+      || (SC.SimConnectClient.Instance.ClientState == MSFS_State.ActivePause)
+      );
     }
 
     // Updates the SmartCam Target list if needed (something has changed)
@@ -160,7 +162,7 @@ namespace FCamControl
         list.Add( string.IsNullOrEmpty( s ) ? "---" : $"{ttClass}-{s}" );
       }
       // if changed - load the list into the ListBox
-      var tgtHash = CalculateHash( string.Concat( list ) );
+      var tgtHash = dNetBm98.Utilities.KnuthHash( string.Concat( list ) );
       if (tgtHash != _smartTargetHash) {
         lbxSmartTargets.Items.Clear( );
         foreach (var s in list) lbxSmartTargets.Items.Add( s );
@@ -190,8 +192,28 @@ namespace FCamControl
 
       InitializeComponent( );
 
+      // set this form size from Dev Size
+      this.Size = c_FormSize;
+
       this.ShowInTaskbar = true;
       this.MinimizeBox = true;
+
+      pnlBase.Visible = true;
+      pnlBase.Location = c_pnlBaseLocation;
+
+      pnl6Dof.Visible = false;
+      pnl6Dof.Location = c_pnl6DofLocation;
+
+      pnlDrone.Visible = false;
+      pnlDrone.Location = c_pnlDroneLocation;
+
+      // Keys and controllers
+      _msfs_Keys = new MSFS_KeyCat( );
+      _msfs_Keys.FromConfigString( AppSettings.Instance.MSFS_KeyConfiguration ); // will load defaults and then settings
+      _customCamController = new CustomCamController( _msfs_Keys );
+
+      _flyByInvoker = new WinFormInvoker( btFlyByFire );
+
 
       // Load Lists and Catalogs
       _btMode = new Dictionary<CameraSetting, ModeButton>( ) {
@@ -246,7 +268,7 @@ namespace FCamControl
 
       _tooltip.SetToolTip( btInstrumentView, "Instrument Views - use Index buttons" );
       _tooltip.SetToolTip( btShowcase, "Showcase Views - use Index buttons" );
-      _tooltip.SetToolTip( btCustomView, "Custom Views - cannot yet use Index buttons" );
+      _tooltip.SetToolTip( btCustomView, "Custom Views - use Index buttons 1..10" );
 
       _tooltip.SetToolTip( btCockpitQuick, "Cockpit Quick Views - Index 1..8" );
       _tooltip.SetToolTip( btExternalQuick, "External Quick Views - Index 1..8" );
@@ -257,6 +279,16 @@ namespace FCamControl
       _tooltip.SetToolTip( cbxDroneLock, "Drone locks to the target" );
       _tooltip.SetToolTip( tbMove, "Drone movement speed" );
       _tooltip.SetToolTip( tbRotate, "Drone rotation speed" );
+      _tooltip.SetToolTip( tbZoom, "Drone zoom (field of view)" );
+      _tooltip.SetToolTip( btDroneRecover, "Drone - Recover default position" );
+
+      _tooltip.SetToolTip( btFlyByDroneReset, "FlyBy - Reset position" );
+      _tooltip.SetToolTip( btFlyByFollow, "FlyBy - Follow aircraft" );
+      _tooltip.SetToolTip( btFlyByPrep, "FlyBy - Go into cam position" );
+      _tooltip.SetToolTip( btFlyByFire, "FlyBy - Release and fly by" );
+      _tooltip.SetToolTip( cbAbove, "FlyBy - Set position above" );
+      _tooltip.SetToolTip( cbBelow, "FlyBy - Set position below" );
+      _tooltip.SetToolTip( cbLeftSide, "FlyBy - Set position left of aircraft, else right" );
 
       _tooltip.SetToolTip( bt6DOF, "6DOF View - numeric controls" );
 
@@ -274,7 +306,7 @@ namespace FCamControl
     {
       // Init GUI
       this.Location = AppSettings.Instance.CameraLocation;
-      if (!IsOnScreen( Location )) {
+      if (!dNetBm98.Utilities.IsOnScreen( Location )) {
         Location = new Point( 20, 20 );
       }
       _lastLiveLocation = Location;
@@ -376,12 +408,9 @@ namespace FCamControl
     /// </summary>
     private void timer1_Tick( object sender, EventArgs e )
     {
-      /*
-      // Call SimConnect if needed and Standalone
-      if (Standalone && --_simConnectTrigger <= 0) {
-        SimConnectPacer( );
-      }
-      */
+      // inhibit when not in flight
+      pnlMain.Enabled = !Inop( );
+      lblInop.Visible = Inop( );
 
       // prevent concurrency issues with control settings
       if (_updating) return;
@@ -399,15 +428,40 @@ namespace FCamControl
         if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) == CameraSetting.ShCase_Drone) {
           SV.Set( SItem.fGS_Cam_Drone_movespeed, _droneMovement );
           SV.Set( SItem.fGS_Cam_Drone_rotspeed, _droneRotation );
+          SV.Set( SItem.fGS_Cam_Drone_zoomlevel, _droneZoom );
         }
       }
       // sometimes the cam needs to be enforced - so try again if needed
       if (_camUpdateRequested > 0) {
         _camUpdateRequested--;
-        SwitchCamera_low( _camSettingRequested, _camIndexRequested, _cam6dPositionRequested, _cam6dGimbalRequested );
+        SwitchCamera_low( _camSettingRequested, _camIndexRequested, _cam6dPositionRequested, _cam6dGimbalRequested, false );
       }
     }
 
+    // Sometimes the Drone cam does not reset to behind the acft
+    // This should fix it...
+    private void RecoverDroneResetPosition( )
+    {
+      // Switch to Ext Quick View if not there 
+      if (_actSetting != CameraSetting.Ext_Default) {
+        SwitchCamera( CameraSetting.Ext_Default, 0 );
+      }
+      // and Reset this Cam
+      btResetView_Click( this, EventArgs.Empty );
+      // and to previous Setting if not there
+      if (_prevSetting != CameraSetting.Ext_Default) {
+        SwitchCamera( _prevSetting, _prevIndex );
+      }
+    }
+
+
+    // set all slots to passive
+    private void RecoverButtonSlots( )
+    {
+      foreach (var bt in _btIndex) {
+        bt.BackColor = c_vPassive;
+      }
+    }
 
     /// <summary>
     /// Handle Data Arrival from Sim
@@ -421,13 +475,42 @@ namespace FCamControl
 
       _updating = true;
 
+      // ViewMode Buttons
+      CameraSetting curSetting = SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting );
+      _btMode[_prevSetting].Button.BackColor = c_vPassive;
+      if (curSetting != CameraSetting.NONE) {
+        _prevSetting = _actSetting;
+        _actSetting = curSetting;
+        _btMode[_actSetting].Button.BackColor = c_vActive;
+      }
+      // _actSetting is valid now
+
       // Index Buttons (_prevIndex SHALL never be out of range...)
-      _btIndex[_prevIndex].BackColor = c_vPassive;
-      if (SV.Get<int>( SItem.iGS_Cam_Viewindex ) < _btIndex.Count) {
+      int curViewIndex = SV.Get<int>( SItem.iGS_Cam_Viewindex );
+      if ((_prevIndex < 0) || (_prevIndex >= _btIndex.Count)) {
+        RecoverButtonSlots( );
+      }
+      else {
+        _btIndex[_prevIndex].BackColor = c_vPassive;
+      }
+
+      if (curViewIndex < _btIndex.Count) {
         _prevIndex = _actIndex;
-        _actIndex = SV.Get<int>( SItem.iGS_Cam_Viewindex );
+        _actIndex = curViewIndex;
+
+        if (_actSetting == CameraSetting.Cockpit_Custom) {
+          // custom views don't set the view Index
+          _actIndex = _customCamController.LastSlotIndex; // valid while setting it from here...
+        }
+        else {
+          _customCamController.ClearLastSlotIndex( ); // must clear when no longer in custom mode
+        }
+        // finally illuminate the selected one
         _btIndex[_actIndex].BackColor = c_vActive;
       }
+      // _actIndex is valid now
+
+      // get the max index for the views available
       var vt = SV.Get<CameraViewType>( SItem.cvtG_Cam_Viewtype );
       switch (vt) {
         case CameraViewType.Unknown_default: SetIndexEnabled( SV.Get<int>( SItem.iG_Cam_Viewindex_max_default ) ); break;
@@ -439,15 +522,7 @@ namespace FCamControl
         default: SetIndexEnabled( SV.Get<int>( SItem.iG_Cam_Viewindex_max_default ) ); break;
       }
 
-      // ViewMode Buttons
-      _btMode[_prevSetting].Button.BackColor = c_vPassive;
-      if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) != CameraSetting.NONE) {
-        _prevSetting = _actSetting;
-        _actSetting = SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting );
-        _btMode[_actSetting].Button.BackColor = c_vActive;
-      }
-
-      // Drone 
+      // Drone mode states
       cbxDroneLock.CheckState = SV.Get<bool>( SItem.bGS_Cam_Drone_locked ) ? CheckState.Checked : CheckState.Unchecked;
       cbxDroneFollow.CheckState = SV.Get<bool>( SItem.bGS_Cam_Drone_follow ) ? CheckState.Checked : CheckState.Unchecked;
       // rot and move have their own Sim behavior - will reset at times
@@ -456,27 +531,27 @@ namespace FCamControl
       // _droneXY is restored when switching back to DroneView _droneXY is set via Slider or here
       // Rot Mov == 0 is problematic as nothing moves and is likely overlooked
 
+      // Drone sliders
       if (!_mouseDown) {
         // prevent changes while changing the sliders
         tbMove.Value = (int)SV.Get<float>( SItem.fGS_Cam_Drone_movespeed );
         tbRotate.Value = (int)SV.Get<float>( SItem.fGS_Cam_Drone_rotspeed );
+        tbZoom.Value = (int)SV.Get<float>( SItem.fGS_Cam_Drone_zoomlevel );
         if (_droneMovement < 2) _droneMovement = tbMove.Value; // init or don't stay at 0
         if (_droneRotation < 2) _droneRotation = tbRotate.Value; // init or don't stay at 0
       }
-      if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) == CameraSetting.ShCase_Drone) {
+      // illluminate 'no move' settings of the sliders
+      if (_actSetting == CameraSetting.ShCase_Drone) {
         lblDroneMove.ForeColor = (_droneMovement < 2) ? Color.Orange : pnlDroneSlider.ForeColor;
         lblDroneRot.ForeColor = (_droneRotation < 2) ? Color.Orange : pnlDroneSlider.ForeColor;
-        pnlDroneSlider.BackColor = Color.FromArgb( 46, 69, 97 ); // pnlDrone.BackColor;- transparent, does not work...
-        cbxDroneFollow.Enabled = true;
-        cbxDroneLock.Enabled = true;
-      }
-      else {
-        pnlDroneSlider.BackColor = this.BackColor; // Window Back
-        cbxDroneFollow.Enabled = false;
-        cbxDroneLock.Enabled = false;
       }
 
-      // SmartTarget 
+      // handle Custom Camera setting
+      if (_actSetting == CameraSetting.Cockpit_Custom) {
+        SetIndexEnabled( 10 );
+      }
+
+      // SmartTarget, illuminate the selected one
       if (SV.Get<bool>( SItem.bGS_Cam_Smart_active )) {
         txSmartTargetType.Text = $"{SV.Get<CameraTargetType>( SItem.cttG_Cam_Smart_targettype )}";
         txSmartTargetName.Text = SV.Get<string>( SItem.sG_Cam_Smart_targetname_selected );
@@ -493,8 +568,12 @@ namespace FCamControl
       }
       PopulateSmartTargets( ); // new targets to show
 
-      // 6D cam
-      uc6Entry.Visible = (_actSetting == CameraSetting.Cam_6DOF);
+      // base Panel
+      pnlBase.Visible = !((_actSetting == CameraSetting.Cam_6DOF) || (_actSetting == CameraSetting.ShCase_Drone));
+      // 6D cam Panel
+      pnl6Dof.Visible = (_actSetting == CameraSetting.Cam_6DOF);
+      // Drone/FlyBy Panel
+      pnlDrone.Visible = (_actSetting == CameraSetting.ShCase_Drone);
 
       _updating = false;
     }
@@ -563,9 +642,14 @@ namespace FCamControl
       var bt = sender as Button;
       var index = _btIndex.FindIndex( x => x.Name == bt.Name );
       if (index >= 0) {
-        // Cam Index Selectors
-        SV.Set( SItem.iGS_Cam_Viewindex, index );
-        _btMode[SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting )].ViewIndex = index; // save the last selected for later use
+        if (_actSetting == CameraSetting.Cockpit_Custom) {
+          _customCamController.SendSlot( index ); // slots are 0..9, aka CustomSLot 1..9,0
+        }
+        else {
+          // Cam Index Selectors
+          SV.Set( SItem.iGS_Cam_Viewindex, index );
+        }
+        _btMode[_actSetting].ViewIndex = index; // save the last selected per setting for later use
 
       }
       else {
@@ -621,10 +705,27 @@ namespace FCamControl
           _prevSmartTarget = selected;
         }
         else {
-          SV.Set( SItem.bGS_Cam_Smart_active, false );
-          _prevSmartTarget = 99;
+          DisableSmartTarget( );
         }
       }
+    }
+
+    // disables the smart targeting, True if it was needed
+    private bool DisableSmartTarget( )
+    {
+      if (SV.Get<bool>( SItem.bGS_Cam_Smart_active )) {
+        SV.Set( SItem.bGS_Cam_Smart_active, false );
+        _prevSmartTarget = 99;
+        return true;
+      }
+      return false;
+    }
+
+    // try recover the drone default position
+    private void btDroneRecover_Click( object sender, EventArgs e )
+    {
+      // this is called from Drone view only (button is not avail elsewhere)
+      RecoverDroneResetPosition( );
     }
 
     private void cbxDroneLock_CheckedChanged( object sender, EventArgs e )
@@ -665,6 +766,17 @@ namespace FCamControl
       SV.Set( SItem.fGS_Cam_Drone_rotspeed, _droneRotation );
     }
 
+    private void tbZoom_ValueChanged( object sender, EventArgs e )
+    {
+      // sanity
+      if (!SC.SimConnectClient.Instance.IsConnected) return;
+      if (_updating) return;
+
+      _droneZoom = tbZoom.Value;
+      SV.Set( SItem.fGS_Cam_Drone_zoomlevel, _droneZoom );
+    }
+
+
     private bool _mouseDown = false;
     private void tbMove_MouseDown( object sender, MouseEventArgs e )
     {
@@ -686,6 +798,16 @@ namespace FCamControl
       _mouseDown = false;
     }
 
+    private void tbZoom_MouseDown( object sender, MouseEventArgs e )
+    {
+      _mouseDown = true;
+    }
+
+    private void tbZoom_MouseUp( object sender, MouseEventArgs e )
+    {
+      _mouseDown = false;
+    }
+
     #endregion
 
     #region Cam Switcher
@@ -697,7 +819,8 @@ namespace FCamControl
     /// <param name="viewIndex">The CamView Index</param>
     /// <param name="position">6DOF Position</param>
     /// <param name="gimbal">6DOF Gimbal</param>
-    private void SwitchCamera_low( CameraSetting setting, int viewIndex, Vector3 position, Vector3 gimbal )
+    /// <param name="initial">Set false when retrying, initial must be true</param>
+    private void SwitchCamera_low( CameraSetting setting, int viewIndex, Vector3 position, Vector3 gimbal, bool initial = true )
     {
       // sanity
       if (!SC.SimConnectClient.Instance.IsConnected) return;
@@ -705,16 +828,45 @@ namespace FCamControl
       _btMode[setting].ViewIndex = viewIndex; // save preset default
       if (SV.Get<CameraSetting>( SItem.csetGS_Cam_Actual_setting ) != setting) {
         // change if not already there
-        SV.Set( SItem.bGS_Cam_Smart_active, false );
+
+        // NOTE: all patches and recoveries are only performed on the initial call, not retries
+
+        // need to disable smart if it was active
+        if (initial && DisableSmartTarget( )) {
+          // nasty wait until the Sim has settled the disable
+          // otherwise the Cam Reset position is messed up when leaving the SmartMode without settling
+          Thread.Sleep( 250 );
+        }
+
+        if (initial && (setting == CameraSetting.ShCase_Drone)) {
+          // to recover the Drone reset pos, Switch to Ext View if not there 
+          if (_actSetting != CameraSetting.Ext_Default) {
+            SV.Set( SItem.csetGS_Cam_Actual_setting, CameraSetting.Ext_Default );
+          }
+          // and Reset this Cam
+          SV.Set( SItem.S_Cam_Actual_reset, true );
+          // another nasty wait until the Sim has settled the reset
+          Thread.Sleep( 250 );
+        }
+
+        // now switch to the new cam
         SV.Set( SItem.csetGS_Cam_Actual_setting, setting );
       }
+
       // Set the ViewIndex
-      if (setting != CameraSetting.Cockpit_Custom) {
-        // custom cams don't have a ViewIndex
+      if (setting == CameraSetting.Cockpit_Custom) {
+        // custom cam needs help via keyboard
+        if (initial) {
+          _customCamController.SendSlot( viewIndex );
+        }
+      }
+      else {
+        // others can use the API
         SV.Set( SItem.iGS_Cam_Viewindex, viewIndex );
       }
+
       // Set the 6DOF
-      if (setting == CameraSetting.Cam_6DOF) {
+      if (initial && (setting == CameraSetting.Cam_6DOF)) {
         Set6DOFcam( position, gimbal );
         uc6Entry.Position = position;
         uc6Entry.Gimbal = gimbal;
@@ -738,9 +890,11 @@ namespace FCamControl
       // set requested cam props
       _camSettingRequested = setting;
       _camIndexRequested = viewIndex;
-      _cam6dPositionRequested = position;
-      _cam6dGimbalRequested = gimbal;
-      _camUpdateRequested = c_triggerUpdate;
+      if (setting == CameraSetting.Cam_6DOF) {
+        _cam6dPositionRequested = position;
+        _cam6dGimbalRequested = gimbal;
+      }
+      _camUpdateRequested = (setting != CameraSetting.Cockpit_Custom) ? c_triggerUpdate : 0; // no retrigger for CustomCam
       // switch cam
       SwitchCamera_low( _camSettingRequested, _camIndexRequested, _cam6dPositionRequested, _cam6dGimbalRequested );
     }
@@ -755,7 +909,7 @@ namespace FCamControl
       // set requested cam props
       _camSettingRequested = setting;
       _camIndexRequested = viewIndex;
-      _camUpdateRequested = c_triggerUpdate;
+      _camUpdateRequested = (setting != CameraSetting.Cockpit_Custom) ? c_triggerUpdate : 0; // no retrigger for CustomCam
       // switch cam
       SwitchCamera_low( _camSettingRequested, _camIndexRequested, _cam6dPositionRequested, _cam6dGimbalRequested );
     }
@@ -794,6 +948,131 @@ namespace FCamControl
 
     #endregion
 
+    #region FlyBy  / TODO CLEANUP once it works a bit
+
+    // controller to perform flyby's
+    private FlyByController _flyByController;
+
+    private void btFlyByPrep_Click( object sender, EventArgs e )
+    {
+      btFlyByFire.Visible = false;
+      lblFlyByCountdown.Visible = true;
+      lblFlyByCountdown.Text = "...";
+      lblFlyByFailed.Visible = false;
+
+      if (_flyByController == null) {
+        _flyByController = new FlyByController( _msfs_Keys );
+        _flyByController.FlyByReadyProgress += _flyBy_FlyByReady;
+      }
+      float dist = FlyByController.DistFromPercent( tbFlyByDist.Value );
+      if (!_flyByController.Prepare( dist, cbLeftSide.Checked, cbAbove.Checked, cbBelow.Checked )) {
+        // prepare failed
+        lblFlyByFailed.Visible = true;
+      }
+    }
+
+    // called from controller when ready to fire
+    private void _flyBy_FlyByReady( object sender, FlyByControllerEventArgs e )
+    {
+      _flyByInvoker.HandleEvent( ( ) => {
+        btFlyByFire.Visible = e.Ready;
+        lblFlyByCountdown.Visible = !e.Ready;
+        lblFlyByCountdown.Text = $"DON'T CLICK\nwait.. {e.Remaining_ms / 1000f:#0.0}";
+      } );
+
+    }
+
+    private void btFlyByFire_Click( object sender, EventArgs e )
+    {
+      if (_flyByController == null) return;
+
+      _flyByController.Fire( );
+      btFlyByFire.Visible = false;
+      lblFlyByCountdown.Visible = false;
+    }
+
+    private void btDroneReset_Click( object sender, EventArgs e )
+    {
+      // essentially only reset
+      btResetView_Click( sender, e );
+    }
+
+    // set Follow mode
+    private void btFollow_Click( object sender, EventArgs e )
+    {
+      if (!SC.SimConnectClient.Instance.IsConnected) return;
+
+      SV.Set<bool>( SItem.bGS_Cam_Drone_follow, true );
+    }
+
+    private void tbFlyByDist_ValueChanged( object sender, EventArgs e )
+    {
+    }
+
+    private void tbFlyByDist_Scroll( object sender, EventArgs e )
+    {
+      // reset checked when used
+      rbStage0.Checked = false;
+      rbStage1.Checked = false;
+      rbStage2.Checked = false;
+      rbStage3.Checked = false;
+    }
+
+    private void tbFlyByDist_MouseDown( object sender, MouseEventArgs e )
+    {
+      _mouseDown = true;
+    }
+
+    private void tbFlyByDist_MouseUp( object sender, MouseEventArgs e )
+    {
+      _mouseDown = false;
+    }
+
+    private void cbAbove_CheckedChanged( object sender, EventArgs e )
+    {
+      if (cbAbove.Checked) {
+        cbBelow.Checked = false;
+      }
+    }
+
+    private void cbBelow_CheckedChanged( object sender, EventArgs e )
+    {
+      if (cbBelow.Checked) {
+        cbAbove.Checked = false;
+      }
+    }
+
+    private void rbStage0_CheckedChanged( object sender, EventArgs e )
+    {
+      if (rbStage0.Checked) {
+        tbFlyByDist.Value = FlyByController.DistToPercent( FlyByController.DistOfStage_nm( 0 ) );
+      }
+    }
+
+    private void rbStage1_CheckedChanged( object sender, EventArgs e )
+    {
+      if (rbStage1.Checked) {
+        tbFlyByDist.Value = FlyByController.DistToPercent( FlyByController.DistOfStage_nm( 1 ) );
+      }
+    }
+
+    private void rbStage2_CheckedChanged( object sender, EventArgs e )
+    {
+      if (rbStage2.Checked) {
+        tbFlyByDist.Value = FlyByController.DistToPercent( FlyByController.DistOfStage_nm( 2 ) );
+      }
+    }
+
+    private void rbStage3_CheckedChanged( object sender, EventArgs e )
+    {
+      if (rbStage3.Checked) {
+        tbFlyByDist.Value = FlyByController.DistToPercent( FlyByController.DistOfStage_nm( 3 ) );
+      }
+    }
+
+    #endregion
+
+
     #region SimConnectClient chores
 
     // establishing event
@@ -817,6 +1096,38 @@ namespace FCamControl
         SV.RemoveObserver( _observerID );
         _observerID = -1;
       }
+    }
+
+    #endregion
+
+    #region Key Configs
+
+    private frmKeyConfig _keyConfig;
+
+    private void btConfig_Click( object sender, EventArgs e )
+    {
+      _keyConfig = new frmKeyConfig( );
+      // load current keys
+      _keyConfig.LoadKeyDict( _msfs_Keys );
+
+      if (_keyConfig.ShowDialog( this ) == DialogResult.OK) {
+        // accept keys
+        _msfs_Keys = new MSFS_KeyCat( _keyConfig.MSFS_Keys );
+        // Reload controllers
+        _customCamController?.LoadSlotsFromCatalog( _msfs_Keys );
+        _flyByController?.ReloadKeyCatalog( _msfs_Keys );
+
+        // Save Config
+        AppSettings.Instance.MSFS_KeyConfiguration = _msfs_Keys.ToConfigString( );
+        AppSettings.Instance.Save( );
+      }
+
+      _keyConfig.Dispose( );
+    }
+
+    private void lblSimConnected_DoubleClick( object sender, EventArgs e )
+    {
+      btConfig_Click( sender, e );
     }
 
     #endregion

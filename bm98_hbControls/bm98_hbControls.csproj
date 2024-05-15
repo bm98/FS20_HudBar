@@ -78,6 +78,12 @@
     <Compile Include="UC_BiScale.Designer.cs">
       <DependentUpon>UC_BiScale.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_LedBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_LedBar.Designer.cs">
+      <DependentUpon>UC_LedBar.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_Scale.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -134,6 +140,9 @@
     <EmbeddedResource Include="UC_BiScale.resx">
       <DependentUpon>UC_BiScale.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UC_LedBar.resx">
+      <DependentUpon>UC_LedBar.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UC_Scale.resx">
       <DependentUpon>UC_Scale.cs</DependentUpon>
     </EmbeddedResource>
@@ -155,6 +164,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Inop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LED-BarElement_off.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LED-BarElement_on.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

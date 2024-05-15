@@ -144,7 +144,7 @@ namespace FS20_HudBar.GUI.Templates.Base
       if (string.IsNullOrEmpty( m_unit ))
         return defaultString;
 
-      return defaultString + (m_showUnit ? $"{m_unit,-3}" : ""); // right aling the unit with 3 chars
+      return defaultString + (m_showUnit ? $"{m_unit,-4}" : ""); // right aling the unit with 4 chars
     }
 
     /// <summary>
@@ -224,12 +224,12 @@ namespace FS20_HudBar.GUI.Templates.Base
 
     private void Control_MouseEnter( object sender, EventArgs e )
     {
-      if (m_scrollable) dNetBm98.WinUser.PushAndSetForeground( this );
+      if (m_scrollable) dNetBm98.Win.WinUser.PushAndSetForeground( this );
     }
 
     private void Control_MouseLeave( object sender, EventArgs e )
     {
-      if (m_scrollable) dNetBm98.WinUser.PopForeground( );
+      if (m_scrollable) dNetBm98.Win.WinUser.PopForeground( );
     }
 
   }

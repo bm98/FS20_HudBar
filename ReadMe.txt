@@ -1,5 +1,5 @@
-FS20_HudBar V 0.69 - Build 69 BETA
-(c) M. Burri - 26-Apr-2024
+FS20_HudBar V 0.70 - Build 70 BETA
+(c) M. Burri - 20-May-2024
 
 Contains files:
 
@@ -13,6 +13,7 @@ bm98_Checklist.dll          UserControl for displaying the Checklist Box
 bm98_hb_Controls.dll        UserControls for displaying graphs
 bm98_Map.dll                Mapping display library
 bm98_AColorPicker.dll       A custom Color Picker Dialog
+bm98_XControls.dll          UserControls for displaying LEDs
 BM98CH_WasmClient.dll       WASM Module client to get LVars
 CoordLib.dll                Coord. handling library
 DbgLib.dll                  Debug helper
@@ -85,6 +86,13 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.70-B70
+- Add Reminder/Alert items
+- Add FlyBy feature in Camera Window
+- Add Use Custom Cameras in Camera Window
+- Fix Camera 6DOF Pitch direction
+- Update QuickGuides
 
 V 0.69-B69
 - Fix Startup Problem with Bar type HudBar

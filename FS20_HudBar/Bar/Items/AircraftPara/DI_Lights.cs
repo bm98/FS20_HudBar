@@ -65,7 +65,7 @@ namespace FS20_HudBar.Bar.Items
           lightsInt |= (int)V_Lights.Lights.Taxi;
           _value1.ItemForeColor = cTxWarn;
         }
-        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Landing_L ) == CmdMode.On) {
+        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Landing ) == CmdMode.On) {
           lightsInt |= (int)V_Lights.Lights.Landing;
           _value1.ItemForeColor = cTxWarn;
         }

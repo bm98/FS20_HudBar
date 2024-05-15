@@ -210,6 +210,10 @@ namespace FS20_HudBar.Bar.Items
 
     NAV1_OBS,    // NAV1 OBS/Course
     NAV2_OBS,    // NAV2 OBS/Course
+
+    USR_ALERT_1, // Alert set by user No1
+    USR_ALERT_2, // Alert set by user No2
+    USR_ALERT_3, // Alert set by user No3
   }
 
 
@@ -579,6 +583,14 @@ namespace FS20_HudBar.Bar.Items
     M_Elapsed3,   // Time elapsed since start of CP3
     M_Dist3,      // Distance from CP3
 
+    // User Alerts
+    USR_ALERT_1,  // Alert set by user No1
+    USR_ALED_1,   // Led of Alert
+    USR_ALERT_2,  // Alert set by user No2
+    USR_ALED_2,   // Led of Alert
+    USR_ALERT_3,  // Alert set by user No3
+    USR_ALED_3,   // Led of Alert
+
     ENR_WP,       // Enroute time for this WP sec
     ENR_TOTAL,    // Enroute time for this flight sec
 
@@ -635,7 +647,7 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     /// <param name="item">The item to check</param>
     /// <returns>True when INOP - no longer in use</returns>
-    public static bool IsINOP(LItem item)
+    public static bool IsINOP( LItem item )
     {
       return item == LItem.A_ETRIM;
     }

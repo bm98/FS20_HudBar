@@ -1,5 +1,5 @@
-FS20_CamControl V 0.65 - Build 66 BETA
-(c) M. Burri - 22-Aug-2023
+FS20_CamControl V 0.70 - Build 70 BETA
+(c) M. Burri - 20-May-2024
 
 Contains files:
 
@@ -39,6 +39,12 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.70-B70
+- Add FlyBy feature in Camera Window
+- Add Use Custom Cameras in Camera Window
+- Fix Camera 6DOF Pitch direction
+- Update QuickGuide
 
 V 0.65-B66
 - Add 6DOF Camera

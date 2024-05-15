@@ -103,8 +103,8 @@ namespace FS20_HudBar.Config
     {
       clbVoice.Items.Clear( );
       foreach (Callouts ce in Enum.GetValues( typeof( Callouts ) )) {
-        var idx = clbVoice.Items.Add( HudBarRef.VoicePack.TriggerCat[ce].Name );
-        clbVoice.SetItemChecked( idx, HudBarRef.VoicePack.TriggerCat[ce].Enabled );
+        var idx = clbVoice.Items.Add( HudBar.VoicePack.TriggerCat[ce].Name );
+        clbVoice.SetItemChecked( idx, HudBar.VoicePack.TriggerCat[ce].Enabled );
       }
     }
 
@@ -526,7 +526,7 @@ namespace FS20_HudBar.Config
       if (!initDone) return; // don't talk at startup
 
       // Test when checked
-      HudBarRef.VoicePack.TriggerCat[(Callouts)clbVoice.SelectedIndex].Test( _speech );
+      HudBar.VoicePack.TriggerCat[(Callouts)clbVoice.SelectedIndex].Test( _speech );
     }
 
     // output device selected

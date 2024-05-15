@@ -30,8 +30,7 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// Start the Meter with parameters
     /// </summary>
-    /// <param name="lat">Latitude</param>
-    /// <param name="lon">Longitude</param>
+    /// <param name="latLon">LatLon of this position</param>
     /// <param name="sec">SimSeconds since Zulu 00:00</param>
     public void Start( LatLon latLon, double sec )
     {
@@ -44,10 +43,13 @@ namespace FS20_HudBar.Bar
     /// Lapse the Meter for readout
     ///  takes care of midnight change over but not further days
     /// </summary>
-    /// <param name="latLon">Latitude, Longitude</param>
+    /// <param name="latLon">LatLon of this position</param>
     /// <param name="sec">SimSeconds since Zulu 00:00</param>
     public void Lapse( LatLon latLon, double sec )
     {
+      // sanity
+      if (!Started) throw new InvalidOperationException("Meter is not started"); // don't lapse if not started
+
       m_lapseLatLon = latLon;
       m_lapseSec = sec;
       // could be crossing midnight .. but we don't cover another day...

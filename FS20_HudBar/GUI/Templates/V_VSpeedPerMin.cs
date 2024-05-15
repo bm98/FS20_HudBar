@@ -28,9 +28,9 @@ namespace FS20_HudBar.GUI.Templates
       Text = UnitString( RightAlign( m_default ) );
     }
 
-    private string c_up = "↑";
-    private string c_do = "↓";
-    private string c_flat = " ";
+    private const string c_up = "↑";
+    private const string c_do = "↓";
+    private const string c_flat = " ";
 
     protected override void SetAltitude_Metric( )
     {

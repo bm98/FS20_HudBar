@@ -22,6 +22,7 @@ using FS20_HudBar.Config;
 using FSimClientIF.Modules;
 using static FSimClientIF.Sim;
 using FSimClientIF;
+using PingLib;
 
 namespace FS20_HudBar.Bar
 {
@@ -49,22 +50,40 @@ namespace FS20_HudBar.Bar
     /// </summary>
     public static FlightPlan AtcFlightPlan => FltPlanMgr.FlightPlan;
 
-    // voice and sounds
-    private static readonly PingLib.Loops m_ping = new PingLib.Loops( ); // Ping, Tone=0 will be Silence
-    private static readonly PingLib.SoundBite _silentLoop = new PingLib.SoundBite( PingLib.Melody.Silence, 0, 0, 0f ); // Use this Sound to set to Silence
+    // voice and sounds  - static, will never be disposed
+    private static readonly PingLib.Loops m_ping = new PingLib.Loops( ); // Ping, Sound looping, Tone=0 will be Silence
+    private static readonly PingLib.Sounds m_sound = new PingLib.Sounds( ); // Sound, single event, Tone=0 will be Silence
+
+    // Use this Sound to set to Silence for Looped sounds
+    private static readonly PingLib.SoundBite _silentLoop = new PingLib.SoundBite( PingLib.Melody.Silence, 0, 0, 0f );
 
     /// <summary>
-    /// The Ping Library
+    /// The Ping Loop Library
     /// </summary>
     public static PingLib.Loops PingLoop => m_ping;
 
+    /// <summary>
+    /// The Ping Sound Library
+    /// </summary>
+    public static PingLib.Sounds PingSound => m_sound;
+
+
     // the sound to play - set as loop samples with .6 sec playtime (at speed=1)
     // samples are high 0.45, lo 0.75 
-    private static readonly PingLib.SoundBitePitched _soundLoop = new PingLib.SoundBitePitched( PingLib.Melody.TSynth3, 0, 0.75f, 0, 0.2f, 1f ); // Use this Sound to ping
+    private static readonly PingLib.SoundBitePitched _soundLoop
+      = new PingLib.SoundBitePitched( PingLib.Melody.TSynth3, 0, 0.75f, 0, 0.2f, 1f ); // Use this Sound to ping
     /// <summary>
     /// The Ping Sound
     /// </summary>
     public static PingLib.SoundBitePitched LoopSound => _soundLoop;
+
+    // An alert chime: 2 bright bell rings
+    private static readonly PingLib.SoundBite _soundChime
+      = new SoundBite( Melody.Bell_1, 45, 1.2f, 2, 0.2f, 2f ); // rate=2 to play and end it faster, volume is lowered
+    /// <summary>
+    /// The Chime Sound
+    /// </summary>
+    public static PingLib.SoundBite ChimeSound => _soundChime;
 
     /// <summary>
     /// The Speech Library
@@ -74,6 +93,19 @@ namespace FS20_HudBar.Bar
 
     // Voice Output Package
     private static readonly HudVoice m_voicePack = new HudVoice( m_speech );
+
+    /// <summary>
+    /// Provide acces to the VoicePack
+    /// </summary>
+    public static HudVoice VoicePack => m_voicePack;
+
+    /// <summary>
+    /// Enable or disable the Voice Out
+    /// </summary>
+    public static bool VoiceEnabled {
+      get => m_speech.Enabled;
+      set => m_speech.Enabled = value;
+    }
 
 
     // Descriptive Configuration GUI label names to match the BarItems LItem Enum (sequence does not matter)
@@ -186,6 +218,7 @@ namespace FS20_HudBar.Bar
       {LItem.DEPARR, DI_DepArr.Desc },
 
       {LItem.M_TIM_DIST1, DI_M_TimDist1.Desc },{LItem.M_TIM_DIST2, DI_M_TimDist2.Desc }, {LItem.M_TIM_DIST3, DI_M_TimDist3.Desc },
+      {LItem.USR_ALERT_1,DI_UserAlert.Desc },  {LItem.USR_ALERT_2,DI_UserAlert2.Desc },  {LItem.USR_ALERT_3,DI_UserAlert3.Desc },
 
       {LItem.THR_LEV, DI_Thr_LEV.Desc },      {LItem.MIX_LEV, DI_Mix_LEV.Desc }, {LItem.PROP_LEV, DI_Prop_LEV.Desc },
       {LItem.TBRAKE, DI_ToeBrakes.Desc },
@@ -205,19 +238,6 @@ namespace FS20_HudBar.Bar
     /// The Configured Hotkeys
     /// </summary>
     public WinHotkeyCat Hotkeys { get; private set; }
-
-    /// <summary>
-    /// Provide acces to the VoicePack
-    /// </summary>
-    public HudVoice VoicePack => m_voicePack;
-
-    /// <summary>
-    /// Enable or disable the Voice Out
-    /// </summary>
-    public bool VoiceEnabled {
-      get => m_speech.Enabled;
-      set => m_speech.Enabled = value;
-    }
 
     /// <summary>
     /// Returns the Show state of an item
@@ -296,6 +316,7 @@ namespace FS20_HudBar.Bar
       _ = m_speech.SetVoice( _configRef.VoiceName );
       m_speech.SetOutputDevice( _configRef.OutputDeviceName );
       m_ping.SelectOutputDevice( _configRef.OutputDeviceName );
+      m_sound.SelectOutputDevice( _configRef.OutputDeviceName );
       m_voicePack.SetFromConfigString( _configRef.VoiceCalloutProfile );
 
       ProtoLabelRef = lblProto;
@@ -506,6 +527,10 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_M_TimDist1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_M_TimDist2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_M_TimDist3( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      // ALERTS
+      m_dispItems.AddDisp( new DI_UserAlert1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_UserAlert2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_UserAlert3( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       // Controls
       m_dispItems.AddDisp( new DI_Thr_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Mix_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );

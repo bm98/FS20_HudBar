@@ -69,7 +69,7 @@ namespace bm98_Map
   public partial class UC_Map : UserControl
   {
     // WinForms Invoker
-    private readonly dNetBm98.WinFormInvoker _eDispatch;
+    private readonly dNetBm98.Win.WinFormInvoker _eDispatch;
 
 
     // The Viewport for this Map
@@ -996,7 +996,7 @@ namespace bm98_Map
       lblLoading.Visible = false;
 
       // a handler
-      _eDispatch = new dNetBm98.WinFormInvoker( this );
+      _eDispatch = new dNetBm98.Win.WinFormInvoker( this );
       // map range handler
       _mapRangeHandler = new MapRangeHandler( MapRange.Mid, SetZoomLevel );
 

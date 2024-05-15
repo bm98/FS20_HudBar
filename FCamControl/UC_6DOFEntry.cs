@@ -139,7 +139,7 @@ namespace FCamControl
         // catch where ACos cannot be evaluated and gets NaN
         pitch = -90f; // pitch angle 0 is in plane (not north up)
       }
-      UpdateNum( numP, -pitch );
+      UpdateNum( numP, pitch );
     }
 
     // look outside
@@ -154,7 +154,7 @@ namespace FCamControl
         // Left side
         UpdateNum( numH, -90 );
       }
-      UpdateNum( numP, 15 );
+      UpdateNum( numP, -15 );
     }
 
     private void cbxLockAcftView_CheckedChanged( object sender, EventArgs e )

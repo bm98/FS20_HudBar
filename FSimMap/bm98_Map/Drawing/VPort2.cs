@@ -908,12 +908,12 @@ namespace bm98_Map.Drawing
 
     private void _view_MouseLeave( object sender, EventArgs e )
     {
-      dNetBm98.WinUser.PopForeground( );
+      dNetBm98.Win.WinUser.PopForeground( );
     }
 
     private void _view_MouseEnter( object sender, EventArgs e )
     {
-      dNetBm98.WinUser.PushAndSetForeground( _view );
+      dNetBm98.Win.WinUser.PushAndSetForeground( _view );
     }
 
     #endregion
@@ -993,7 +993,7 @@ namespace bm98_Map.Drawing
     private Thread _bgRefreshThread;
     private AutoResetEvent _bgSignal;
     // WinForm Invoker
-    private dNetBm98.WinFormInvoker _eDispatch;
+    private dNetBm98.Win.WinFormInvoker _eDispatch;
     // repaint event queue
     private readonly ConcurrentQueue<bool> _paintQueue = new ConcurrentQueue<bool>( );
 
@@ -1002,7 +1002,7 @@ namespace bm98_Map.Drawing
     {
       _imageAttributes.SetColorMatrix( _blendMatrix );
       _bgSignal = new AutoResetEvent( false );
-      _eDispatch = new dNetBm98.WinFormInvoker( control );
+      _eDispatch = new dNetBm98.Win.WinFormInvoker( control );
       _bgRefreshThread = new Thread( BG_Refresher ) { IsBackground = true }; // killed on exit
       _bgContinueProcess = true;
       _bgRefreshThread.Start( );

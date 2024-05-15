@@ -195,12 +195,12 @@ namespace FS20_HudBar.GUI.Templates.Base
 
     private void Control_MouseEnter( object sender, EventArgs e )
     {
-      if (m_scrollable) dNetBm98.WinUser.PushAndSetForeground( this );
+      if (m_scrollable) dNetBm98.Win.WinUser.PushAndSetForeground( this );
     }
 
     private void Control_MouseLeave( object sender, EventArgs e )
     {
-      if (m_scrollable) dNetBm98.WinUser.PopForeground( );
+      if (m_scrollable) dNetBm98.Win.WinUser.PopForeground( );
     }
 
 

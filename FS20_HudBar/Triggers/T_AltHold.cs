@@ -14,7 +14,7 @@ namespace FS20_HudBar.Triggers
 {
   /// <summary>
   /// ALT Hold Trigger: a binary trigger where ALT Hold Active => True, else=> False
-  ///  ALT hold can be the Set Alt or the current Alt dependin whether it is
+  ///  ALT hold can be the Set Alt or the current Alt depending whether it is
   ///   triggered by the ALT capture or manually hitting the ALT hold.
   /// 
   ///  One need to add BinaryEventProc for True and False

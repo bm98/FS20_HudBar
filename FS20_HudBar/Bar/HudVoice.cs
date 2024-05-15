@@ -30,6 +30,7 @@ namespace FS20_HudBar.Bar
     Rotate,
     Spoilers,
     PositiveRate,
+    Alerts,
     // ADD NEW ITEMS ONLY AT THE END - App Settings is according to this sequence
   }
 
@@ -99,6 +100,7 @@ namespace FS20_HudBar.Bar
     private T_IAS_Rotate v_rotate;
     private T_Spoilers v_spoilers;
     private T_PositiveRate v_positiveRate;
+    private T_Alert v_alerts;
 
     /// <summary>
     /// Provide the list of installed Voice Triggers
@@ -127,7 +129,7 @@ namespace FS20_HudBar.Bar
       v_rotate = new T_IAS_Rotate( speaker ); m_triggerCat.Add( Callouts.Rotate, v_rotate );
       v_spoilers = new T_Spoilers( speaker ); m_triggerCat.Add( Callouts.Spoilers, v_spoilers );
       v_positiveRate = new T_PositiveRate( speaker ); m_triggerCat.Add( Callouts.PositiveRate, v_positiveRate );
-
+      v_alerts = new T_Alert( speaker ); m_triggerCat.Add( Callouts.Alerts, v_alerts );
       // load from settings
       SetFromConfigString( AsConfigString( ConfigList( ) ) ); // all off
     }

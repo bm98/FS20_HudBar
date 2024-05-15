@@ -234,6 +234,15 @@
     <Compile Include="Bar\Items\AircraftPara\DI_HTrim.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_UserAlert3.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_UserAlert2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_UserAlert1.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\RadioPara\DI_Nav2_Course.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -313,6 +322,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\RadioPara\DI_Com2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Bar\Items\SimPara\DI_UserAlert.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Bar\Items\SimPara\DI_Text.cs">
@@ -611,6 +623,7 @@
     <Compile Include="Bar\Items\EnvPara\DI_Wind_XY.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\TimeMeter.cs" />
     <Compile Include="Bar\ValueItemCat.cs" />
     <Compile Include="Bar\CPointMeter.cs" />
     <Compile Include="Config\AcftMerges.cs" />
@@ -694,6 +707,9 @@
     <Compile Include="GUI\Templates\A_FPA.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="GUI\Templates\A_LEDbar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="GUI\Templates\A_Surfaces.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -719,6 +735,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Templates\V_Clock.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Templates\V_AlertValue.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Templates\V_Flow_kgh.cs">
@@ -897,6 +916,7 @@
     <Compile Include="Triggers\Base\TriggerBand.cs" />
     <Compile Include="Triggers\Base\TriggerBase.cs" />
     <Compile Include="Triggers\Base\TriggerBinary.cs" />
+    <Compile Include="Triggers\T_Alert.cs" />
     <Compile Include="Triggers\T_AltHold.cs" />
     <Compile Include="Triggers\T_Brakes.cs" />
     <Compile Include="Triggers\T_Flaps.cs" />

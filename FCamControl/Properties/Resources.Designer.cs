@@ -63,6 +63,16 @@ namespace FCamControl.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _6dof_bg {
+            get {
+                object obj = ResourceManager.GetObject("_6dof_bg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap background {
             get {
                 object obj = ResourceManager.GetObject("background", resourceCulture);
@@ -83,6 +93,46 @@ namespace FCamControl.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap dronecam_bg {
+            get {
+                object obj = ResourceManager.GetObject("dronecam_bg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FollowIcon {
+            get {
+                object obj = ResourceManager.GetObject("FollowIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ResetIcon {
+            get {
+                object obj = ResourceManager.GetObject("ResetIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RunIcon {
+            get {
+                object obj = ResourceManager.GetObject("RunIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Target_Next_Escort {
             get {
                 object obj = ResourceManager.GetObject("Target_Next_Escort", resourceCulture);
@@ -96,6 +146,16 @@ namespace FCamControl.Properties {
         internal static System.Drawing.Bitmap Target_Next_Tower {
             get {
                 object obj = ResourceManager.GetObject("Target_Next_Tower", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TargetIcon {
+            get {
+                object obj = ResourceManager.GetObject("TargetIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

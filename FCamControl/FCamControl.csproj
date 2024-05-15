@@ -87,11 +87,29 @@
       <Link>SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Support\MSFS_Key.cs" />
+    <Compile Include="Support\MSFS_KeyCat.cs" />
+    <Compile Include="Support\CountdownTimer.cs" />
+    <Compile Include="Support\CustomCamController.cs" />
+    <Compile Include="Support\FlyByController.cs" />
+    <Compile Include="Support\FlyByControllerEventArgs.cs" />
     <Compile Include="frmCamera.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmCamera.Designer.cs">
       <DependentUpon>frmCamera.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Support\FrmHotkey.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Support\FrmHotkey.Designer.cs">
+      <DependentUpon>FrmHotkey.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Support\frmKeyConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Support\frmKeyConfig.Designer.cs">
+      <DependentUpon>frmKeyConfig.cs</DependentUpon>
     </Compile>
     <Compile Include="ModeButton.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -102,11 +120,18 @@
     <Compile Include="Slot.cs" />
     <Compile Include="SlotCat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Support\WinHotkey.cs" />
     <Compile Include="UC_6DOFEntry.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UC_6DOFEntry.Designer.cs">
       <DependentUpon>UC_6DOFEntry.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_Hotkey.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_Hotkey.Designer.cs">
+      <DependentUpon>UC_Hotkey.cs</DependentUpon>
     </Compile>
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
@@ -115,12 +140,21 @@
       <DependentUpon>frmCamera.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Support\FrmHotkey.resx">
+      <DependentUpon>FrmHotkey.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Support\frmKeyConfig.resx">
+      <DependentUpon>frmKeyConfig.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_6DOFEntry.resx">
       <DependentUpon>UC_6DOFEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_Hotkey.resx">
+      <DependentUpon>UC_Hotkey.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +182,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Target-Next-Tower.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dronecam_bg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\6dof_bg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RunIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ResetIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TargetIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FollowIcon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

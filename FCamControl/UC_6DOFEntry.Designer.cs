@@ -123,7 +123,7 @@
             0,
             0,
             65536});
-      this.numP.Location = new System.Drawing.Point(175, 60);
+      this.numP.Location = new System.Drawing.Point(164, 60);
       this.numP.Maximum = new decimal(new int[] {
             180,
             0,
@@ -147,7 +147,7 @@
             0,
             0,
             65536});
-      this.numH.Location = new System.Drawing.Point(239, 7);
+      this.numH.Location = new System.Drawing.Point(230, 7);
       this.numH.Maximum = new decimal(new int[] {
             180,
             0,
@@ -194,7 +194,7 @@
       this.btViewOut.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
       this.btViewOut.Cursor = System.Windows.Forms.Cursors.Hand;
       this.btViewOut.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btViewOut.Location = new System.Drawing.Point(373, 7);
+      this.btViewOut.Location = new System.Drawing.Point(356, 7);
       this.btViewOut.Name = "btViewOut";
       this.btViewOut.Size = new System.Drawing.Size(55, 55);
       this.btViewOut.TabIndex = 7;
@@ -218,8 +218,8 @@
       // 
       // UC_6DOFEntry
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+      this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(54)))), ((int)(((byte)(78)))), ((int)(((byte)(120)))));
       this.BackgroundImage = global::FCamControl.Properties.Resources.Cam6DOF;
       this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
       this.Controls.Add(this.cbxLockAcftView);
@@ -232,7 +232,7 @@
       this.Controls.Add(this.numX);
       this.DoubleBuffered = true;
       this.Name = "UC_6DOFEntry";
-      this.Size = new System.Drawing.Size(441, 132);
+      this.Size = new System.Drawing.Size(424, 132);
       ((System.ComponentModel.ISupportInitialize)(this.numX)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numZ)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numY)).EndInit();
