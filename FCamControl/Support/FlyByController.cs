@@ -25,13 +25,16 @@ namespace FS20_CamControl
   /// <summary>
   /// Manages the FlyBy Cam
   /// </summary>
-  internal class FlyByController
+  internal sealed class FlyByController
   {
     // attach the property module - this does not depend on the connection established or not
     private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
 
+    // support to calculate the FlyBy key press directions and times
+    // NOTE for now the calibration is off by 2 (i.e. 1nm here is ~0.5 in the Sim)
+    //  TODO recalibrate and update the numbers here
     private const float c_minDist_nm = 0.1f;
-    private const float c_maxDist_nm = 2f;
+    private const float c_maxDist_nm = 1f;
 
     // Window to send Keystrokes
     private const string c_SimWindowTitle = "Microsoft Flight Simulator";
@@ -49,24 +52,26 @@ namespace FS20_CamControl
     //  Base values are defined for DroneSpeed = 12 (0..100)
     // keyDuration_ms = dist_nm * c_msPerNm / (DroneSpeed/12)
 
-    // milliseconds key press per nm at DroneSpeed = 10
-    private const float c_msPerNm = 35_000;
+    // milliseconds key press per nm at DroneSpeed = 12 (Sim 30)
+    private const float c_msPerNm = 60_000;
 
 
-    // stage 1: Runway 1nm
+    // stage 1: Runway 0.5nm
     // stage 2: 100 kt GS - 1.7 nm / Min; 0.02 nm / sec 
     // stage 3: 250 kt GS - 4.2 nm / Min; 0.07 nm / sec
     // stage 4: 400 kt GS - 6.7 nm / Min; 0.1 nm / sec
-    private static readonly float[] c_nmOut = new float[4] { 1f, 0.35f, 0.875f, 1.4f }; // with calibrated drone speed
+    private static readonly float[] c_nmOut = new float[4] { 0.5f, 0.15f, 0.4f, 0.7f }; // with calibrated drone speed
 
-    // 0..max
-    private WinKbdSender _kbd;
-    private CountdownTimer _kbdTimer;
-    private bool _preparing = false;
-
-    private JobRunner _jobRunner;
-
+    // key mapping, will be loaded from Settings
     private MSFS_KeyCat _msfsKeyCatalog;
+    private Camera _camera = null;
+
+    // Runs the FlyBy Prep
+    private JobRunner _jobRunner;
+    private bool _preparing = false;
+    // handles the FireButton visibility
+    private CountdownTimer _kbdTimer;
+
 
     /// <summary>
     /// Event fired every 100ms and when FlyBy is ready to fire
@@ -75,21 +80,24 @@ namespace FS20_CamControl
     private void OnFlyByReady( int remaining_ms ) => FlyByReadyProgress?.Invoke( this, new FlyByControllerEventArgs( remaining_ms <= 0, remaining_ms ) );
 
     /// <summary>
-    /// cTor:
+    /// cTor: V2
     /// </summary>
-    public FlyByController( MSFS_KeyCat msfsKeyCatalog )
+    public FlyByController( MSFS_KeyCat msfsKeyCatalog, Camera camera )
     {
       _msfsKeyCatalog = new MSFS_KeyCat( msfsKeyCatalog ); // maintain a copy of the catalog
+      _camera = camera;
 
       _jobRunner = new JobRunner( );
-
-      _kbd = new WinKbdSender( );
 
       _kbdTimer = new CountdownTimer( );
       _kbdTimer.Progress += _kbdTimer_Progress;
 
     }
 
+    /// <summary>
+    /// Reload the KeyCatalog after changes
+    /// </summary>
+    /// <param name="msfsKeyCatalog">The Catalog to load</param>
     public void ReloadKeyCatalog( MSFS_KeyCat msfsKeyCatalog )
     {
       _msfsKeyCatalog = new MSFS_KeyCat( msfsKeyCatalog ); // maintain a copy of the catalog
@@ -133,7 +141,7 @@ namespace FS20_CamControl
     // using the current VS and GS
     private double VertDistance( double distance_nm )
     {
-      var vs_mPsec = Units.Mps_From_Ftpm( SV.Get<float>( SItem.fG_Acft_VS_ftPmin ) );
+      var vs_mPsec = Units.Mps_From_Ftpm( SV.Get<float>( SItem.fG_Acft_VS_Avg_ftPmin ) );
       var gs_mPsec = Units.Mps_From_Kt( SV.Get<float>( SItem.fG_Acft_GS_kt ) );
       if (gs_mPsec < 0.01) return 0;
 
@@ -148,12 +156,13 @@ namespace FS20_CamControl
     ///   CAM MUST BE IN DRONE CAM MODE ALREADY - no check 
     /// </summary>
     /// <param name="stage">Fly Stage 0..Max</param>
+    /// <param name="rightSide">True to look from right side</param>
     /// <param name="leftSide">True to look from left, else from right side</param>
     /// <param name="above">True to look from above (has prio over below)</param>
     /// <param name="below">True to look from below</param>
-    public bool Prepare( int stage, bool leftSide, bool above, bool below )
+    public bool Prepare( int stage, bool rightSide, bool leftSide, bool above, bool below )
     {
-      return Prepare( DistOfStage_nm( stage ), leftSide, above, below );
+      return Prepare( DistOfStage_nm( stage ), rightSide, leftSide, above, below );
     }
 
     /// <summary>
@@ -161,16 +170,18 @@ namespace FS20_CamControl
     ///   CAM MUST BE IN DRONE CAM MODE ALREADY - no check 
     /// </summary>
     /// <param name="dist_nm">Cam distance</param>
-    /// <param name="leftSide">True to look from left, else from right side</param>
+    /// <param name="rightSide">True to look from right side</param>
+    /// <param name="leftSide">True to look from left side</param>
     /// <param name="above">True to look from above (has prio over below)</param>
     /// <param name="below">True to look from below</param>
-    public bool Prepare( float dist_nm, bool leftSide, bool above, bool below )
+    public bool Prepare( float dist_nm, bool rightSide, bool leftSide, bool above, bool below )
     {
       // sanity
-      if (_kbd.IsBusy) return false;
+      if (_camera == null) return false;
+      if (_preparing) return false;
 
-      if (dist_nm < 0.1f) dist_nm = 0.1f;
-      if (dist_nm > 2f) dist_nm = 2f;
+      if (dist_nm < 0.01f) dist_nm = 0.01f;
+      if (dist_nm > 1f) dist_nm = 1f;
 
       _preparing = true;
 
@@ -194,11 +205,23 @@ namespace FS20_CamControl
       var vTime = VertDistance( dist_nm ) * c_msPerNm / ((float)c_droneSpeed_LatVert / (float)c_droneSpeedCalibrated);
       vTime += above ? c_vertTime_ms : below ? -c_vertTime_ms : 0;
       // move direction, ignore when <50ms key pulse
+      if ((vTime < 0) && SV.Get<bool>( SItem.bG_Sim_OnGround )) {
+        vTime = 0; // only above
+      }
       var goUp = vTime > 50;
       var goDn = vTime < -50;
       vTime = Math.Abs( vTime ); // time is positive for the delay
 
-      var delay = 0;
+      // try to preserve values after Jobs
+      int dMoveSpeed = _camera.CameraAPI.CamValueAPI.DroneMoveSpeed;
+      int dRotSpeed = _camera.CameraAPI.CamValueAPI.DroneRotSpeed;
+      int dZoom =  _camera.CameraAPI.CamValueAPI.ZoomLevel;
+
+      // jobs need to add dynamic arguments with the job,
+      // static ones can be sourced from the module as the job execution is very local in time
+      // no changes of the static args are expected during running the job queue
+
+      var delay = 0; // summarize the runtime on the fly
 
       _jobRunner.AddJob( new JobObj( ( ) => {
         ResetDroneCam( ); // should be in Follow mode just behind the aircraft, Lock mode is OFF, DroneSpeed is 30
@@ -207,94 +230,77 @@ namespace FS20_CamControl
       delay += 2000;
       Thread.Yield( );
 
-      _jobRunner.AddJob( new JobObj( ( ) => {
+      _jobRunner.AddJob( new JobObj<int>( ( int speedArg ) => {
         SetDroneLockMode( true );
         Thread.Sleep( 250 ); // Wait until settled
-        SetDroneSpeed( lonSpeed );
+        SetDroneMoveSpeed( speedArg );
         Thread.Sleep( 250 ); // Wait until settled
-      }, "Set Drone Lock and Longitudinal Speed" ) );
+      }, lonSpeed, "Set Drone Lock and Longitudinal Speed" ) );
       delay += 2 * 250;
       Thread.Yield( );
 
-      _jobRunner.AddJob( new JobObj( ( ) => {
+      _jobRunner.AddJob( new JobObj<int>( ( int timeArg ) => {
         var kbd = new WinKbdSender( );
-        kbd.AddStroke( _msfsKeyCatalog[FS_Key.DrMoveForward].AsStroke( (int)wTime ) );
-        kbd.RunStrokes( c_SimWindowTitle, blocking: true );
+        kbd.AddStroke( _msfsKeyCatalog[FS_Key.DrMoveForward].AsStroke( timeArg ) ); // assume key const while running the job
+        kbd.RunStrokes( c_SimWindowTitle, blocking: true ); // const
         kbd.Dispose( );
-        /*
-        WinUser.SendKey( Keys.W, true, c_SimWindowTitle );
-        Thread.Sleep( (int)wTime);
-        WinUser.SendKey( Keys.W, false, c_SimWindowTitle );
-        */
-      }, "Move Drone Forward" ) );
+      }, (int)wTime, "Move Drone Forward" ) );
       delay += (int)wTime;
       Thread.Yield( );
 
       _jobRunner.AddJob( new JobObj( ( ) => {
-        SetDroneSpeed( c_droneSpeed_LatVert );
+        SetDroneMoveSpeed( c_droneSpeed_LatVert ); // const
         Thread.Sleep( 200 ); // Wait until settled
       }, "Set Drone Speed Lateral and Vertical" ) );
       delay += 200;
       Thread.Yield( );
 
-      _jobRunner.AddJob( new JobObj( ( ) => {
-        if (leftSide) {
+      // as we look towards the aircraft now the Left and Right side are inversed 
+      // hence moving left to view it from the right side and vica versa
+      _jobRunner.AddJob( new JobObj<bool, bool, int>( ( bool leftArg, bool rightArg, int timeArg ) => {
+        if (leftArg) {
+          // takes prio over right
           var kbd = new WinKbdSender( );
-          kbd.AddStroke( _msfsKeyCatalog[FS_Key.DrMoveRight].AsStroke( (int)lTime ) );
-          kbd.RunStrokes( c_SimWindowTitle, blocking: true );
+          kbd.AddStroke( _msfsKeyCatalog[FS_Key.DrMoveRight].AsStroke( timeArg ) ); // assume key const while running the job
+          kbd.RunStrokes( c_SimWindowTitle, blocking: true ); // const
           kbd.Dispose( );
-          /*
-          Thread.Sleep( 50 );
-          WinUser.SendKey( Keys.D, true, c_SimWindowTitle );
-          Thread.Sleep( (int)lTime );
-          WinUser.SendKey( Keys.D, false, c_SimWindowTitle );
-          */
         }
-        else {
+        else if (rightArg) {
           var kbd = new WinKbdSender( );
-          kbd.AddStroke( _msfsKeyCatalog[FS_Key.DrMoveLeft].AsStroke( (int)lTime ) );
-          kbd.RunStrokes( c_SimWindowTitle, blocking: true );
+          kbd.AddStroke( _msfsKeyCatalog[FS_Key.DrMoveLeft].AsStroke( timeArg ) ); // assume key const while running the job
+          kbd.RunStrokes( c_SimWindowTitle, blocking: true ); // const
           kbd.Dispose( );
-          /*
-          Thread.Sleep( 50 );
-          WinUser.SendKey( Keys.A, true, c_SimWindowTitle );
-          Thread.Sleep( (int)lTime );
-          WinUser.SendKey( Keys.A, false, c_SimWindowTitle );
-          */
         }
-      }, "Move Drone lateral" ) );
-      delay += lTime;
+      }, leftSide, rightSide, lTime, "Move Drone lateral" ) );
+      delay += (leftSide || rightSide) ? lTime : 0;
       Thread.Yield( );
 
-      _jobRunner.AddJob( new JobObj( ( ) => {
-        if (vTime > 40) {
-          if (goUp) {
+      _jobRunner.AddJob( new JobObj<bool, bool, int>( ( upArg, dnArg, timeArg ) => {
+        if (timeArg > 40) {
+          if (upArg) {
+            // takes prio over down
             var kbd = new WinKbdSender( );
-            kbd.AddStroke( _msfsKeyCatalog[FS_Key.DrMoveUp].AsStroke( (int)vTime ) );
-            kbd.RunStrokes( c_SimWindowTitle, blocking: true );
+            kbd.AddStroke( _msfsKeyCatalog[FS_Key.DrMoveUp].AsStroke( timeArg ) ); // assume key const while running the job
+            kbd.RunStrokes( c_SimWindowTitle, blocking: true ); // const
             kbd.Dispose( );
-            /*
-            Thread.Sleep( 50 );
-            WinUser.SendKey( Keys.R, true, c_SimWindowTitle );
-            Thread.Sleep( (int)vTime );
-            WinUser.SendKey( Keys.R, false, c_SimWindowTitle );
-            */
           }
-          else if (goDn) {
+          else if (dnArg) {
             var kbd = new WinKbdSender( );
-            kbd.AddStroke( _msfsKeyCatalog[FS_Key.DrMoveDown].AsStroke( (int)vTime ) );
-            kbd.RunStrokes( c_SimWindowTitle, blocking: true );
+            kbd.AddStroke( _msfsKeyCatalog[FS_Key.DrMoveDown].AsStroke( timeArg ) ); // assume key const while running the job
+            kbd.RunStrokes( c_SimWindowTitle, blocking: true ); // const
             kbd.Dispose( );
-            /*
-            Thread.Sleep( 50 );
-            WinUser.SendKey( Keys.F, true, c_SimWindowTitle );
-            Thread.Sleep( (int)vTime );
-            WinUser.SendKey( Keys.F, false, c_SimWindowTitle );
-            */
           }
         }
-      }, "Move Drone vertical" ) );
-      delay += (int)vTime;
+      }, goUp, goDn, (int)vTime, "Move Drone vertical" ) );
+      delay += (goUp || goDn) ? (int)vTime : 0;
+      Thread.Yield( );
+
+      _jobRunner.AddJob( new JobObj<int, int, int>( ( int moveArg, int rotArg, int zoomArg ) => {
+
+        SetDroneMoveSpeed( moveArg );
+        SetDroneRotSpeed( rotArg );
+        SetDroneZoom( zoomArg );
+      }, dMoveSpeed, dRotSpeed, dZoom, "Recover Drone Speeds" ) );
       Thread.Yield( );
 
       _kbdTimer.Duration_ms = delay + 200; // 200 ms overhead
@@ -312,42 +318,36 @@ namespace FS20_CamControl
       if (_preparing) return;
 
       // release Follow Mode
-      SetDroneFollowMode( false );
+      _camera?.CameraAPI.CamRequestAPI.RequestDroneFollow( false );
     }
 
 
-    private void SetDroneSpeed( int dSpeed )
+    private void SetDroneMoveSpeed( int dSpeed )
     {
-      // sanity
-      if (!SC.SimConnectClient.Instance.IsConnected) return;
-      if (dSpeed < 10) dSpeed = 10;
-      if (dSpeed > 100) dSpeed = 100;
-
-      SV.Set( SItem.fGS_Cam_Drone_movespeed, (float)dSpeed );
+      _camera?.CameraAPI.CamRequestAPI.RequestDroneMoveSpeed( dSpeed, untracked: true );
+    }
+    private void SetDroneRotSpeed( int dSpeed )
+    {
+      _camera?.CameraAPI.CamRequestAPI.RequestDroneRotSpeed( dSpeed, untracked: true );
+    }
+    private void SetDroneZoom( int dZoom )
+    {
+      _camera?.CameraAPI.CamRequestAPI.RequestZoomLevel( dZoom, untracked: true );
     }
 
     private void SetDroneLockMode( bool mode )
     {
-      // sanity
-      if (!SC.SimConnectClient.Instance.IsConnected) return;
-
-      SV.Set( SItem.bGS_Cam_Drone_locked, mode );
+      _camera?.CameraAPI.CamRequestAPI.RequestDroneLock( mode );
     }
 
     private void SetDroneFollowMode( bool mode )
     {
-      // sanity
-      if (!SC.SimConnectClient.Instance.IsConnected) return;
-
-      SV.Set( SItem.bGS_Cam_Drone_follow, mode );
+      _camera?.CameraAPI.CamRequestAPI.RequestDroneFollow( mode );
     }
 
     private void ResetDroneCam( )
     {
-      // sanity
-      if (!SC.SimConnectClient.Instance.IsConnected) return;
-
-      SV.Set( SItem.S_Cam_Actual_reset, true );
+      _camera?.CameraAPI.CamRequestAPI.RequestResetCamera( );
     }
 
 

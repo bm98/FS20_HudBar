@@ -40,12 +40,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Steps( signProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond, OnDataArrival ); // once per sec
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 1), OnDataArrival ); // once per sec
     }
 
     /// <summary>
@@ -57,13 +52,13 @@ namespace FS20_HudBar.Bar.Items
         if (SV.Get<bool>( SItem.bG_Gear_Retractable )) {
           _value1.Step =
               (SV.Get<GearPosition>( SItem.gpGS_Gear_Position ) == GearPosition.Down)
-              ? Steps.Down
+              ? Steps.DownOK
               : ((SV.Get<GearPosition>( SItem.gpGS_Gear_Position ) == GearPosition.Up)
-                  ? Steps.Up
+                  ? Steps.UpOK
                   : Steps.Unk);
         }
         else {
-          _value1.Step = Steps.Down;
+          _value1.Step = Steps.DownOK;
         }
       }
     }

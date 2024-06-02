@@ -28,22 +28,25 @@ namespace FCamControl
     /// </summary>
     public static SlotCat[] SlotFolders => _slotFolders;
 
-
     /// <summary>
-    /// Init the SlotFolders 
+    /// Init the SlotFolders with a Button Handler and a Camera V2
     /// </summary>
-    public static void InitSlotFolders( List<Button> buttons, Action<CameraSetting, int, Vector3, Vector3> switchCam )
+    public static void InitSlotFolders( ButtonHandler buttonHandler, Camera camera )
     {
       for (int i = 0; i < _slotFolders.Length; i++) {
         _slotFolders[i] = new SlotCat( (uint)i );
         // create an empty slot for each button
         uint slotNo = 0;
-        foreach (var slotButton in buttons) {
-          _slotFolders[i].Add( slotNo++, slotButton, switchCam );
+        foreach (var slotButton in buttonHandler.HandledButtonList) {
+          _slotFolders[i].Add( slotNo++, slotButton, camera );
         }
       }
     }
 
+    /// <summary>
+    /// Set the SlotFolder active
+    /// </summary>
+    /// <param name="slotFolder">A slot folder index0..max</param>
     public static void SetActiveSlotFolder( uint slotFolder )
     {
       // sanity
@@ -51,10 +54,10 @@ namespace FCamControl
 
       // disable all - may optimise to only disable Current...
       for (int i = 0; i < _slotFolders.Length; i++) {
-        _slotFolders[i].SetEState( false );
+        _slotFolders[i].EnableFolderSlots( false );
       }
       // set active Folder
-      _slotFolders[slotFolder].SetEState( true );
+      _slotFolders[slotFolder].EnableFolderSlots( true );
       CurrentSlotFolder = _slotFolders[slotFolder];
     }
 
@@ -64,10 +67,19 @@ namespace FCamControl
     private int _slotFolderNo = -1;
     private List<Slot> _slots = new List<Slot>( );
 
-    // Declare the delegate (if using non-generic pattern).
-    public delegate void SlotSavedEventHandler( object sender, EventArgs e );
-    public event SlotSavedEventHandler SlotSaved;
+    /// <summary>
+    /// Fired when a Slot is saved
+    /// </summary>
+    public event EventHandler<EventArgs> SlotSaved;
+    /// <summary>
+    /// Fired when a Slot is cleared
+    /// </summary>
+    public event EventHandler<EventArgs> SlotCleared;
 
+    /// <summary>
+    /// cTor:
+    /// </summary>
+    /// <param name="slotFolderNo">Number of slotfolders to support</param>
     public SlotCat( uint slotFolderNo )
     {
       _slotFolderNo = (int)slotFolderNo;
@@ -79,37 +91,40 @@ namespace FCamControl
     public int SlotFolderNo => _slotFolderNo;
 
     /// <summary>
-    /// Add an Item
+    /// Add an Item with Camera V2
     /// </summary>
     /// <param name="slotNo">This SlotNo</param>
     /// <param name="button">The Managed Button of this Slot</param>
-    /// <param name="switchCam">Camera Switch Method</param>
-    private void Add( uint slotNo, Button button, Action<CameraSetting, int, Vector3, Vector3> switchCam )
+    /// <param name="camera">Camera</param>
+    private void Add( uint slotNo, HandledButton button, Camera camera )
     {
-      var slot = new Slot( (uint)_slotFolderNo, slotNo, button, switchCam );
+      var slot = new Slot( (uint)_slotFolderNo, slotNo, button, camera );
       slot.SlotSaved += slot_SlotSaved;
+      slot.SlotCleared += slot_SlotCleared;
       _slots.Add( slot );
     }
 
     /// <summary>
-    /// Set the Slot Enabled or Disabled
+    /// Set the Slots of this Folder Enabled or Disabled
     /// </summary>
     /// <param name="enabled">True to set Enabled</param>
-    public void SetEState( bool enabled )
+    public void EnableFolderSlots( bool enabled )
     {
       foreach (var s in _slots) {
         s.Enabled = enabled;
-        if (enabled) { s.MaintainButtonState( ); } // visuals
+        if (enabled) {
+          s.MaintainButtonState( ); 
+        } // visuals
       }
     }
 
     /// <summary>
     /// Trigger a SlotSave for the next Click
     /// </summary>
-    public void ExpectSlotSave( Vector3 position, Vector3 gimbal )
+    public void ExpectSlotSave( )
     {
       foreach (var s in _slots) {
-        s.ExpectSlotSave( position, gimbal );
+        s.ExpectSlotSave( );
       }
     }
 
@@ -123,6 +138,26 @@ namespace FCamControl
       }
     }
 
+    /// <summary>
+    /// Trigger a SlotClear for the next Click
+    /// </summary>
+    public void ExpectSlotClear( )
+    {
+      foreach (var s in _slots) {
+        s.ExpectSlotClear( );
+      }
+    }
+
+    /// <summary>
+    /// Cancel a SlotClear for the next Click
+    /// </summary>
+    public void CancelSlotClear( )
+    {
+      foreach (var s in _slots) {
+        s.CancelSlotClear( );
+      }
+    }
+
     // Handle slot is saved by one
     private void slot_SlotSaved( object sender, EventArgs e )
     {
@@ -130,26 +165,39 @@ namespace FCamControl
       SlotSaved?.Invoke( this, new EventArgs( ) ); // let the user know
     }
 
+    private void slot_SlotCleared( object sender, EventArgs e )
+    {
+      CancelSlotClear( );
+      SlotCleared?.Invoke( this, new EventArgs( ) ); // let the user know
+    }
+
     // AppSettings Tools
 
     /// <summary>
     /// Get; Set: The AppSetting string for this Item
+    ///   returns a folder setting string for all Slots of this folder
+    /// 
+    /// Get to save retrieve the setting string to store it in Settings
+    /// Set to load from Settings - will load all Folder Slots from the Setting string
     /// </summary>
-    public string AppSettingString {
+    public string FolderSettingString {
       get {
         string setting = "";
+        // get all slot settings into one folder setting string
         foreach (var s in _slots) {
-          setting += $"{s.AppSettingString}";
+          setting += $"{s.SlotSettingString}";
         }
         return setting;
       }
       set {
+        // retrieves all valid slot entries from the setting string
         var matches = Slot.SlotMatches( value );
+        // load each slot with values
         foreach (Match match in matches) {
           string s = match.Value;
           var slotNo = Slot.SlotNo( s );
           if ((slotNo >= 0) && (slotNo < _slots.Count)) {
-            _slots[slotNo].AppSettingString = s;
+            _slots[slotNo].SlotSettingString = s;
           }
         }
       }

@@ -53,12 +53,7 @@ namespace FS20_HudBar.Bar.Items
       _value3 = new V_DmeDist( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival );
     }
 
     /// <summary>

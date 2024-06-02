@@ -234,6 +234,9 @@
     <Compile Include="Bar\Items\AircraftPara\DI_HTrim.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Bar\Items\CtrlPara\DI_THook.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Bar\Items\SimPara\DI_UserAlert3.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -50,12 +50,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_GForce( value2Proto ) { ItemForeColor = cTxDim };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival );
     }
 
     private void DI_Gforce_MM_ButtonClicked( object sender, ClickedEventArgs e )

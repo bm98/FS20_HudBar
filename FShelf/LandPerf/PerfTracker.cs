@@ -46,7 +46,7 @@ namespace FShelf.LandPerf
     private PerfTracker( )
     {
       LPM = SC.SimConnectClient.Instance.LandingPerformanceModule;
-      _observerID = LPM.AddObserver( "PerfTracker", 1, OnDataArrival ); // get every landing event
+      _observerID = LPM.AddObserver( "PerfTracker", 1, OnDataArrival, null ); // get every landing event
     }
 
 

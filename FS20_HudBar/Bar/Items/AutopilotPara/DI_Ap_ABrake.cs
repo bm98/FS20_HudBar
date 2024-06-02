@@ -59,12 +59,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Text( value2Proto ) { ItemForeColor = cTxDim, Text = c_aSkid };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival );
     }
 
     private void _value1_Click( object sender, EventArgs e )

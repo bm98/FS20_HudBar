@@ -41,12 +41,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Steps( signProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
     }
 
     /// <summary>
@@ -54,11 +49,11 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private Steps FlapsState {
       get {
-        if (!SC.SimConnectClient.Instance.IsConnected) return Steps.Up; // cannot calculate anything
+        if (!SC.SimConnectClient.Instance.IsConnected) return Steps.UpOK; // cannot calculate anything
 
         int fi = SV.Get<int>( SItem.iGS_Flp_HandleIndex );
         if (fi == 0) {
-          return Steps.Up;
+          return Steps.UpOK;
         }
         else if (fi == SV.Get<int>( SItem.iG_Flp_FlapsPositions_num )) {
           return Steps.PEnd;
@@ -85,7 +80,7 @@ namespace FS20_HudBar.Bar.Items
         else if (fi == 7) {
           return Steps.P7;
         }
-        return Steps.Up;
+        return Steps.UpOK;
       }
     }
 

@@ -80,9 +80,11 @@ namespace FS20_HudBar.GUI.Templates
           case Steps.Unk:
             this.Text = c_Unk; this.ItemForeColor = GUI_Colors.ColorType.cWarn; break;
 
-          case Steps.Up:
-            this.Text = c_Up; this.ItemForeColor = GUI_Colors.ColorType.cOK;  break;
-          case Steps.Down:
+          case Steps.UpOK:
+            this.Text = c_Up; this.ItemForeColor = GUI_Colors.ColorType.cOK; break;
+          case Steps.UpInfo:
+            this.Text = c_Up; this.ItemForeColor = GUI_Colors.ColorType.cInfo; break;
+          case Steps.DownOK:
             this.Text = c_Dn; this.ItemForeColor = GUI_Colors.ColorType.cOK;  break;
 
           case Steps.P1:

@@ -121,29 +121,107 @@
   <data name="background" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\background.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="bt6DOF" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bt6DOF.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="bt6DOF_LookDown" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bt6DOF_LookDown.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btClose" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btClose.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btCockpitQuick" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btCockpitQuick.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btCustomView" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btCustomView.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btDrone" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btDrone.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btExternal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btExternal.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btExternalQuick" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btExternalQuick.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btFO" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btFO.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btFollow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btFollow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btFromAbove" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btFromAbove.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btFromBelow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btFromBelow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btFromLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btFromLeft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btFromRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btFromRight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btInstrumentView" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btInstrumentView.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btLanding" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btLanding.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btLock" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btLock.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btPilot" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btPilot.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btShowcase" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btShowcase.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Cam6DOF" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Cam6DOF.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Cam6DOF_V2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Cam6DOF_V2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="camBackgroundV2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\camBackgroundV2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="camBackgroundV2_darker" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\camBackgroundV2-darker.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="camDroneBackgroundV2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\camDroneBackgroundV2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CameraBt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CameraBt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CamIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CamIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="dronecam_bg" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\dronecam_bg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FollowIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\FollowIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="FlagBt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FlagBt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ResetIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ResetIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="PinBt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PinBt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="RunIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RunIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="TargetIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\TargetIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="ResetBt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ResetBt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Target_Next_Escort" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Target-Next-Escort.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Target_Next_Tower" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Target-Next-Tower.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UpArrowBt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\UpArrowBt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="YokeBt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\YokeBt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="_6dof_bg" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\6dof_bg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

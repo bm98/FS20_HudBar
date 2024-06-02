@@ -89,9 +89,11 @@ Changelog:
 
 V 0.70-B70
 - Add Reminder/Alert items
-- Add FlyBy feature in Camera Window
-- Add Use Custom Cameras in Camera Window
-- Fix Camera 6DOF Pitch direction
+- Add Tail Hook/Arrester item
+- Add FlyBy feature in Camera App
+- Add Use Custom Cameras in Camera App
+- Fix Camera 6DOF Pitch direction (changed in one of the SU updates)
+- Update Camera App is completely redone (see quickguide)
 - Update QuickGuides
 
 V 0.69-B69

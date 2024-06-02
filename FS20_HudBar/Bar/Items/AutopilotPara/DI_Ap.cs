@@ -42,12 +42,8 @@ namespace FS20_HudBar.Bar.Items
       var item = VItem.AP;
       _label = new B_Text( item, value2Proto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += DI_Ap_ButtonClicked;
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+
+      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
     }
 
     private void DI_Ap_ButtonClicked( object sender, ClickedEventArgs e )

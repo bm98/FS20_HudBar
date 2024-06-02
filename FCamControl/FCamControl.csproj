@@ -87,18 +87,46 @@
       <Link>SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="CheckedButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Support\ButtonHandler.cs" />
+    <Compile Include="Camera.cs" />
+    <Compile Include="frmCameraV2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmCameraV2.Designer.cs">
+      <DependentUpon>frmCameraV2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Support\HandledButton.cs" />
+    <Compile Include="State\AState.cs" />
+    <Compile Include="State\AState_CockpitView.cs" />
+    <Compile Include="State\AState_ExternalView.cs" />
+    <Compile Include="State\ConcreteStates\State_CloseView.cs" />
+    <Compile Include="State\ConcreteStates\State_LandingView.cs" />
+    <Compile Include="State\ConcreteStates\State_CoPilotView.cs" />
+    <Compile Include="State\ConcreteStates\State_PilotView.cs" />
+    <Compile Include="State\ConcreteStates\State_InstrumentIndexed.cs" />
+    <Compile Include="State\ConcreteStates\State_CockpitQuick.cs" />
+    <Compile Include="State\ConcreteStates\State_CustomCamera.cs" />
+    <Compile Include="State\ConcreteStates\State_ExternalFree.cs" />
+    <Compile Include="State\ConcreteStates\State_ExternalQuick.cs" />
+    <Compile Include="State\ConcreteStates\State_DOF6.cs" />
+    <Compile Include="State\ConcreteStates\State_Drone.cs" />
+    <Compile Include="State\ConcreteStates\State_ExternalIndexed.cs" />
+    <Compile Include="State\ConcreteStates\State_None.cs" />
+    <Compile Include="State\Context.cs" />
+    <Compile Include="State\ICameraRequests.cs" />
+    <Compile Include="State\ICameraEvents.cs" />
+    <Compile Include="State\ICameraValues.cs" />
+    <Compile Include="State\StateFactory.cs" />
+    <Compile Include="State\StateTransitionEventArgs.cs" />
     <Compile Include="Support\MSFS_Key.cs" />
     <Compile Include="Support\MSFS_KeyCat.cs" />
     <Compile Include="Support\CountdownTimer.cs" />
     <Compile Include="Support\CustomCamController.cs" />
     <Compile Include="Support\FlyByController.cs" />
     <Compile Include="Support\FlyByControllerEventArgs.cs" />
-    <Compile Include="frmCamera.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmCamera.Designer.cs">
-      <DependentUpon>frmCamera.cs</DependentUpon>
-    </Compile>
     <Compile Include="Support\FrmHotkey.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -111,7 +139,6 @@
     <Compile Include="Support\frmKeyConfig.Designer.cs">
       <DependentUpon>frmKeyConfig.cs</DependentUpon>
     </Compile>
-    <Compile Include="ModeButton.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -121,11 +148,17 @@
     <Compile Include="SlotCat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\WinHotkey.cs" />
-    <Compile Include="UC_6DOFEntry.cs">
+    <Compile Include="UC_6DOFPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UC_6DOFEntry.Designer.cs">
-      <DependentUpon>UC_6DOFEntry.cs</DependentUpon>
+    <Compile Include="UC_6DOFPanel.Designer.cs">
+      <DependentUpon>UC_6DOFPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_DronePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_DronePanel.Designer.cs">
+      <DependentUpon>UC_DronePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_Hotkey.cs">
       <SubType>UserControl</SubType>
@@ -133,12 +166,23 @@
     <Compile Include="UC_Hotkey.Designer.cs">
       <DependentUpon>UC_Hotkey.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_SlotsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_SlotsPanel.Designer.cs">
+      <DependentUpon>UC_SlotsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_ViewsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_ViewsPanel.Designer.cs">
+      <DependentUpon>UC_ViewsPanel.cs</DependentUpon>
+    </Compile>
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="frmCamera.resx">
-      <DependentUpon>frmCamera.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="frmCameraV2.resx">
+      <DependentUpon>frmCameraV2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Support\FrmHotkey.resx">
       <DependentUpon>FrmHotkey.cs</DependentUpon>
@@ -150,11 +194,20 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="UC_6DOFEntry.resx">
-      <DependentUpon>UC_6DOFEntry.cs</DependentUpon>
+    <EmbeddedResource Include="UC_6DOFPanel.resx">
+      <DependentUpon>UC_6DOFPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_DronePanel.resx">
+      <DependentUpon>UC_DronePanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_Hotkey.resx">
       <DependentUpon>UC_Hotkey.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_SlotsPanel.resx">
+      <DependentUpon>UC_SlotsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_ViewsPanel.resx">
+      <DependentUpon>UC_ViewsPanel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -190,16 +243,94 @@
     <None Include="Resources\6dof_bg.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\RunIcon.png" />
+    <None Include="Resources\CamIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ResetIcon.png" />
+    <None Include="Resources\UpArrowBt.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\TargetIcon.png" />
+    <None Include="Resources\PinBt.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\FollowIcon.png" />
+    <None Include="Resources\CameraBt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ResetBt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FlagBt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\YokeBt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btLock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btFollow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btFromRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btFromLeft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btFromAbove.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btFromBelow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btPilot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btLanding.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btFO.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bt6DOF_LookDown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btDrone.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btShowcase.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btInstrumentView.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btExternal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btCustomView.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\camBackgroundV2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\camBackgroundV2-darker.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bt6DOF.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btCockpitQuick.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btExternalQuick.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Cam6DOF_V2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\camDroneBackgroundV2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btClose.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

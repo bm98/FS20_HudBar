@@ -55,14 +55,8 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond / 2, OnDataArrival ); // twice per sec
+      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival ); // twice per sec
     }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
-    }
-
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
       if ( SC.SimConnectClient.Instance.IsConnected ) {

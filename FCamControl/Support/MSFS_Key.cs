@@ -20,6 +20,7 @@ namespace FCamControl
     DrMoveRight,
     DrMoveUp,
     DrMoveDown,
+    DrToggleControls,
 
     CustCam1, CustCam2, CustCam3, CustCam4, CustCam5, CustCam6, CustCam7, CustCam8, CustCam9, CustCam0
     // ADD NEW ONES AT THE END !!!!
@@ -31,6 +32,15 @@ namespace FCamControl
   /// </summary>
   internal class MSFS_Key
   {
+    /// <summary>
+    /// Window to send Keystrokes
+    /// </summary>
+    public const string c_SimWindowTitle = "Microsoft Flight Simulator";
+    /// <summary>
+    /// Regular Key Press time
+    /// </summary>
+    public const int c_KeyDelay = 50; // ms
+
     /// <summary>
     /// The descriptive name
     /// </summary>

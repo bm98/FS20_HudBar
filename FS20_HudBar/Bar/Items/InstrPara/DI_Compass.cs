@@ -47,12 +47,7 @@ namespace FS20_HudBar.Bar.Items
       _comp = new A_WindArrow( ) { BorderStyle = BorderStyle.FixedSingle, AutoSizeWidth = true, ItemForeColor = cInfo };
       this.AddItem( _comp ); vCat.AddLbl( item, _comp );
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival );
     }
 
     /// <summary>

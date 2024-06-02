@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+
 using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
@@ -56,12 +57,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
 
       this.IsEngineItem = true;
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
     }
 
     /// <summary>

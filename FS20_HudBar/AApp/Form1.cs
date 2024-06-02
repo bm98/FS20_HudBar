@@ -90,7 +90,7 @@ namespace FS20_HudBar
     private FShelf.frmShelf m_shelf;
 
     // Camera Selector
-    private FCamControl.frmCamera m_camera;
+    private FCamControl.frmCameraV2 m_camera;
 
     // Checklist Box
     private FChecklistBox.frmChecklistBox m_checklistBox;
@@ -599,7 +599,7 @@ namespace FS20_HudBar
 
       // Setup the Camera
       LOG.Log( "frmMain", "Load Camera" );
-      m_camera = new FCamControl.frmCamera( Program.Instance );
+      m_camera = new FCamControl.frmCameraV2( Program.Instance );
       UpdateCamSettings( ); // needed for transition to new AppSettings concept
 
       // Setup the Checklist Box
@@ -1316,7 +1316,7 @@ namespace FS20_HudBar
       LOG.Log( $"SCAdapter", "Establishing now" );
     }
 
-    // connect event
+    // connect event - ASYNC CALL, GUI changes need to be invoked on this form
     private void SCAdapter_Connected( object sender, EventArgs e )
     {
       HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cTxInfo;
@@ -1328,7 +1328,7 @@ namespace FS20_HudBar
       // enable game hooks if newly connected and desired
       SetupInGameHook( AppSettingsV2.Instance.InGameHook );
       // Set Engines 
-      flp.SetEnginesVisible( SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num ) );
+      this.Invoke( (MethodInvoker)delegate { flp.SetEnginesVisible( SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num ) ); } );
 
       LOG.Log( $"SCAdapter", "Connected now" );
     }
@@ -1357,7 +1357,12 @@ namespace FS20_HudBar
     /// </summary>
     private void Instance_DataArrived( object sender, FSimClientIF.ClientDataArrivedEventArgs e )
     {
-      UpdateGUI( e.DataRefName );
+      if ( this.InvokeRequired) {
+        this.Invoke( (MethodInvoker)delegate { UpdateGUI( e.DataRefName ); } );
+      }
+      else {
+        UpdateGUI( e.DataRefName );
+      }
     }
 
     /// <summary>

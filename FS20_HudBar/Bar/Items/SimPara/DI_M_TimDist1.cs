@@ -55,12 +55,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond / 2, OnDataArrival ); // twice per sec
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival ); // twice per sec
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
@@ -84,10 +79,13 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         var latLon = new LatLon( SV.Get<double>( SItem.dGS_Acft_Lat ), SV.Get<double>( SItem.dGS_Acft_Lon ) );
+        if (_cpMeter.Started ) { 
         _cpMeter.Lapse( latLon, SV.Get<double>( SItem.dG_Env_Time_zulu_sec ) );
+        }
         _value1.Value = _cpMeter.Duration;
         _value2.Value = (float)_cpMeter.Distance;
         this.ColorType.ItemBackColor = _cpMeter.Started ? cLiveBG : cActBG;
+
       }
     }
 

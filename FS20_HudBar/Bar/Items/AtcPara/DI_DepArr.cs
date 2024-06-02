@@ -49,13 +49,9 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_ICAO( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond, OnDataArrival ); // once per sec
+      AddObserver( Short, (int)(DataArrival_perSecond / 1), OnDataArrival ); // once per sec
     }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
-    }
+
 
     private void _label_MouseClick( object sender, MouseEventArgs e )
     {

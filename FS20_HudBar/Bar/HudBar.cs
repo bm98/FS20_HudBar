@@ -221,7 +221,7 @@ namespace FS20_HudBar.Bar
       {LItem.USR_ALERT_1,DI_UserAlert.Desc },  {LItem.USR_ALERT_2,DI_UserAlert2.Desc },  {LItem.USR_ALERT_3,DI_UserAlert3.Desc },
 
       {LItem.THR_LEV, DI_Thr_LEV.Desc },      {LItem.MIX_LEV, DI_Mix_LEV.Desc }, {LItem.PROP_LEV, DI_Prop_LEV.Desc },
-      {LItem.TBRAKE, DI_ToeBrakes.Desc },
+      {LItem.TBRAKE, DI_ToeBrakes.Desc },     {LItem.THOOK, DI_THook.Desc },
       {LItem.A320THR, DI_A320Throttle.Desc },
       {LItem.SURF_ANI, DI_SurfacesGraph.Desc },
     };
@@ -538,6 +538,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_SurfacesGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_A320Throttle( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ToeBrakes( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_THook( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
 
       LOG.Log( $"cTor HudBar: {m_dispItems.Count} items loaded" );
 

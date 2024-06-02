@@ -40,12 +40,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Alt( valueProto ) { ItemForeColor = cTxRA };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
     }
 
     /// <summary>
@@ -54,7 +49,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        
+
         if (SV.Get<float>( SItem.fGS_Acft_AltAoG_ft ) <= Calculator.RA_Limit_ft) {
           this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bG_Sim_OnGround ) ? cTxActive : cTxLabel;
           _value1.Value = SV.Get<float>( SItem.fGS_Acft_AltAoG_ft );

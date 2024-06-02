@@ -101,7 +101,7 @@ namespace FS20_HudBar.Triggers.Base
     {
       // not registered
       if (m_observerID < 1) {
-        var obsID = module.AddObserver( m_name, 2, callback );
+        var obsID = module.AddObserver( m_name, 2, callback, null );
         m_observerID = (obsID > 0) ? obsID : m_observerID;
       }
     }

@@ -41,12 +41,7 @@ namespace FS20_HudBar.Bar.Items
       _scale1 = new A_Scale( ) { Minimum = 0, Maximum = 100, AlertEnabled = false, ItemForeColor = cStep };
       this.AddItem( _scale1 ); vCat.AddLbl( item, _scale1 );
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
     }
 
     /// <summary>

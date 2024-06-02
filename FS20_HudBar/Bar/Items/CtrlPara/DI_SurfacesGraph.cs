@@ -41,12 +41,7 @@ namespace FS20_HudBar.Bar.Items
       _surf1 = new A_Surfaces( ) { };
       this.AddItem( _surf1 ); vCat.AddLbl( item, _surf1 );
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
     }
 
     /// <summary>

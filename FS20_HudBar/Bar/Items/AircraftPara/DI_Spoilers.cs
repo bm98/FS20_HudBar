@@ -44,12 +44,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Steps( signProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
     }
 
     private void _label_ButtonClicked( object sender, EventArgs e )
@@ -72,7 +67,7 @@ namespace FS20_HudBar.Bar.Items
         float sp = SV.Get<float>( SItem.fGS_Flp_SpoilerHandle_position_prct );
 
         if (sp < 0.05) {
-          return Steps.Up;
+          return Steps.UpOK;
         }
         else if (sp < 0.15) {
           return Steps.P1;

@@ -214,6 +214,7 @@ namespace FS20_HudBar.Bar.Items
     USR_ALERT_1, // Alert set by user No1
     USR_ALERT_2, // Alert set by user No2
     USR_ALERT_3, // Alert set by user No3
+    THOOK,       // Tail Hook
   }
 
 
@@ -629,6 +630,8 @@ namespace FS20_HudBar.Bar.Items
 
     TBRAKE_LEFT,   // Left Toe Brakes
     TBRAKE_RIGHT,  // Right Toe Brakes
+
+    THOOK,         // Tail Hook Handle
 
     E1_A320THR,    // A320 Throttle
     E2_A320THR,    // A320 Throttle

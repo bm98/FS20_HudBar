@@ -31,6 +31,10 @@ namespace FCamControl
        new WinHotkey(new WKeys[]{ WKeys.R } ), new WinHotkey( new WKeys[]{ WKeys.R } ) )},
      {FS_Key.DrMoveDown,     new MSFS_Key("TRANSLATE DRONE DOWN",
        new WinHotkey( new WKeys[]{ WKeys.F } ), new WinHotkey( new WKeys[]{ WKeys.F } ) )},
+
+     {FS_Key.DrToggleControls,     new MSFS_Key("TOGGLE CONTROLS",
+       new WinHotkey( new WKeys[]{ WKeys.C } ), new WinHotkey( new WKeys[]{ WKeys.C } ) )},
+
      {FS_Key.CustCam1,       new MSFS_Key("LOAD CUSTOM CAMERA 1",
        new WinHotkey(new WKeys[]{ WKeys.LMenu, WKeys.D1 }), new WinHotkey( new WKeys[]{ WKeys.LMenu, WKeys.D1 } ) )},
      {FS_Key.CustCam2,       new MSFS_Key("LOAD CUSTOM CAMERA 2",

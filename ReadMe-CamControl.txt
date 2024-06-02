@@ -41,9 +41,10 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.70-B70
-- Add FlyBy feature in Camera Window
-- Add Use Custom Cameras in Camera Window
-- Fix Camera 6DOF Pitch direction
+- Add FlyBy feature in Camera App
+- Add Use Custom Cameras in Camera App
+- Fix Camera 6DOF Pitch direction (changed in one of the SU updates)
+- Update Camera App is completely redone (see quickguide)
 - Update QuickGuide
 
 V 0.65-B66

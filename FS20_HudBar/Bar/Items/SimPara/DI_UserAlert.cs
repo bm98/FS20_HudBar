@@ -347,12 +347,6 @@ namespace FS20_HudBar.Bar.Items
     }
     */
 
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
-    }
-
     // handles value change of the target value
     protected void _value1_MouseWheel( object sender, MouseEventArgs e )
     {

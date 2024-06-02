@@ -51,13 +51,9 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond, OnDataArrival ); // once per sec
+      AddObserver( Short, (int)(DataArrival_perSecond / 1), OnDataArrival ); // once per sec
     }
     // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
-    }
 
     private void _metar_MetarDataEvent( object sender, MetarLib.MetarTafDataEventArgs e )
     {

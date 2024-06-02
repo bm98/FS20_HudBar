@@ -62,12 +62,7 @@ namespace FS20_HudBar.Bar.Items
       _value2.Click += _value2_Click;
       _value2.Cursor = Cursors.Hand;
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
     }
 
     private void _value1_Click( object sender, EventArgs e )

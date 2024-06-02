@@ -50,12 +50,7 @@ namespace FS20_HudBar.Bar.Items
       _value3 = new V_ICAO( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
-      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond, OnDataArrival ); // once per sec
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 1), OnDataArrival ); // once per sec
     }
 
     /// <summary>
@@ -63,18 +58,18 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
+      if (this.Visible) {
         // if we have an ATC FlightPlan show ATC assignments
-        if ( HudBar.AtcFlightPlan.HasFlightPlan ) {
+        if (HudBar.AtcFlightPlan.HasFlightPlan) {
           // ATC Alt Hdg NextWYP
-            _value1.Value = HudBar.AtcFlightPlan.AssignedAlt;
-            _value2.Value = HudBar.AtcFlightPlan.AssignedHdg;
-            _value3.Text = HudBar.AtcFlightPlan.NextWypIdent;
+          _value1.Value = HudBar.AtcFlightPlan.AssignedAlt;
+          _value2.Value = HudBar.AtcFlightPlan.AssignedHdg;
+          _value3.Text = HudBar.AtcFlightPlan.NextWypIdent;
         }
         else {
-            _value1.Value = null;
-            _value2.Value = null;
-            _value3.Text = "";
+          _value1.Value = null;
+          _value2.Value = null;
+          _value3.Text = "";
         }
 
       }

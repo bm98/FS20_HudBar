@@ -18,11 +18,15 @@ namespace FS20_HudBar.GUI
     /// <summary>
     /// Up and OK (Gear, Flaps)
     /// </summary>
-    Up,
+    UpOK,
+    /// <summary>
+    /// Up and Info
+    /// </summary>
+    UpInfo,
     /// <summary>
     /// Down and OK (Gear)
     /// </summary>
-    Down,
+    DownOK,
     /// <summary>
     /// Positional Levels (Flaps, Spoiler)
     /// </summary>

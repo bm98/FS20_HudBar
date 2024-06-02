@@ -397,7 +397,7 @@ namespace FShelf
     {
       // register DataUpdates if in shared mode and if not yet done 
       if (!Standalone && SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
-        _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
+        _observerID = SV.AddObserver( _observerName, 2, OnDataArrival, this );
       }
 
       if (tab.SelectedTab == tabPerf) {
@@ -610,7 +610,7 @@ namespace FShelf
       this.timer1.Enabled = true;
       // register DataUpdates if in shared mode and if not yet done 
       if (!Standalone && SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
-        _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
+        _observerID = SV.AddObserver( _observerName, 2, OnDataArrival, this );
       }
     }
 
@@ -1836,7 +1836,7 @@ namespace FShelf
 
       // register DataUpdates if not done 
       if (SC.SimConnectClient.Instance.IsConnected && _observerID < 0) {
-        _observerID = SV.AddObserver( _observerName, 2, OnDataArrival );
+        _observerID = SV.AddObserver( _observerName, 2, OnDataArrival, this );
       }
     }
 

@@ -367,7 +367,7 @@ namespace MapLib.Tiles
               MapImage = mapImage;
             }
             LoadingStatus = (mapImage.IsFailedImage && mapImage.ShouldRetry) ? ImageLoadingStatus.LoadFailed : ImageLoadingStatus.LoadComplete;
-            Debug.WriteLine( $"DEB: Tile: {TrackKey} src <{mapImage.ImageSource}> stat: is failed <{mapImage.IsFailedImage}> retry <{mapImage.ShouldRetry}> " );
+//            Debug.WriteLine( $"DEB: Tile: {TrackKey} src <{mapImage.ImageSource}> stat: is failed <{mapImage.IsFailedImage}> retry <{mapImage.ShouldRetry}> " );
             if (MapImage.MapImageID != MapImageID) {
               ; // DEBUG ONLY - shall not happen..
               throw new Exception( "MapImageID does not match" );

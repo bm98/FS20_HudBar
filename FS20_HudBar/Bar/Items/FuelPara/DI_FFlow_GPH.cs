@@ -57,12 +57,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
 
       this.IsEngineItem = true;
-      m_observerID = SV.AddObserver( Short, (int)DataArrival_perSecond/2, OnDataArrival ); // twice per sec
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival ); // twice per sec
     }
 
     /// <summary>

@@ -40,7 +40,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_RAaudio( valueProto, HudBar.SpeechLib ) { ItemForeColor = cTxRA };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      m_observerID = SV.AddObserver( Short, 1, OnDataArrival );
+      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
     }
     // Disconnect from updates
     protected override void UnregisterDataSource( )

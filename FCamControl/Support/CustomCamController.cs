@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using dNetBm98;
 using dNetBm98.Win;
 
 using static dNetBm98.Win.WinKbdSender;
@@ -15,19 +14,15 @@ namespace FCamControl
   /// Custom Camera Controller
   ///  fakes Keyboard hits to switch the cam
   /// </summary>
-  internal class CustomCamController
+  internal sealed class CustomCamController
   {
 
-    // Window to send Keystrokes
-    private const string c_SimWindowTitle = "Microsoft Flight Simulator";
-
-    private const int c_keyDelay = 50; // ms
     private int _lastSlot = 0;
 
     // slots 0..9 (Slot1..Slot10)
     private KbdStroke[] _slots = new KbdStroke[10];
 
-    private WinKbdSender _kbd;
+    private WinKbdSender _kbd = null;
 
     /// <summary>
     /// The last selected Slot
@@ -41,21 +36,21 @@ namespace FCamControl
     /// <summary>
     /// (Re)-Load the MSFS Keys
     /// </summary>
-    /// <param name="msfsKeyCatalog"></param>
-    public void LoadSlotsFromCatalog( MSFS_KeyCat msfsKeyCatalog )
+    /// <param name="msfsKeyCatalog">Key Catalog</param>
+    public void ReloadKeyCatalog( MSFS_KeyCat msfsKeyCatalog )
     {
       // load slots 1..9,0
       int idx = 0;
-      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam1].AsStroke( c_keyDelay );
-      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam2].AsStroke( c_keyDelay );
-      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam3].AsStroke( c_keyDelay );
-      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam4].AsStroke( c_keyDelay );
-      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam5].AsStroke( c_keyDelay );
-      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam6].AsStroke( c_keyDelay );
-      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam7].AsStroke( c_keyDelay );
-      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam8].AsStroke( c_keyDelay );
-      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam9].AsStroke( c_keyDelay );
-      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam0].AsStroke( c_keyDelay );
+      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam1].AsStroke( MSFS_Key.c_KeyDelay );
+      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam2].AsStroke( MSFS_Key.c_KeyDelay );
+      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam3].AsStroke( MSFS_Key.c_KeyDelay );
+      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam4].AsStroke( MSFS_Key.c_KeyDelay );
+      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam5].AsStroke( MSFS_Key.c_KeyDelay );
+      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam6].AsStroke( MSFS_Key.c_KeyDelay );
+      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam7].AsStroke( MSFS_Key.c_KeyDelay );
+      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam8].AsStroke( MSFS_Key.c_KeyDelay );
+      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam9].AsStroke( MSFS_Key.c_KeyDelay );
+      _slots[idx++] = msfsKeyCatalog[FS_Key.CustCam0].AsStroke( MSFS_Key.c_KeyDelay );
     }
 
     /// <summary>
@@ -64,7 +59,7 @@ namespace FCamControl
     public CustomCamController( MSFS_KeyCat msfsKeyCatalog )
     {
       // load slots 1..9,0
-      LoadSlotsFromCatalog( msfsKeyCatalog );
+      ReloadKeyCatalog( msfsKeyCatalog );
 
       _kbd = new WinKbdSender( );
     }
@@ -84,7 +79,7 @@ namespace FCamControl
       _lastSlot = slot;
 
       _kbd.AddStroke( _slots[slot] );
-      _kbd.RunStrokes( c_SimWindowTitle, blocking: false );
+      _kbd.RunStrokes( MSFS_Key.c_SimWindowTitle, blocking: false );
     }
 
 

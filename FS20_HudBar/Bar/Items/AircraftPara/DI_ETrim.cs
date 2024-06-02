@@ -51,12 +51,7 @@ namespace FS20_HudBar.Bar.Items
       _label.Scrollable = true;
       _label.Cursor = Cursors.SizeNS;
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
-    }
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
+      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
     }
 
     private void _label_MouseWheel( object sender, MouseEventArgs e )

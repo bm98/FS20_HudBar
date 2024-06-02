@@ -63,7 +63,7 @@
       // 
       this.btAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btAccept.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btAccept.Location = new System.Drawing.Point(440, 636);
+      this.btAccept.Location = new System.Drawing.Point(440, 663);
       this.btAccept.Name = "btAccept";
       this.btAccept.Size = new System.Drawing.Size(83, 40);
       this.btAccept.TabIndex = 4;
@@ -75,7 +75,7 @@
       // 
       this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btCancel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCancel.Location = new System.Drawing.Point(569, 636);
+      this.btCancel.Location = new System.Drawing.Point(569, 663);
       this.btCancel.Name = "btCancel";
       this.btCancel.Size = new System.Drawing.Size(83, 40);
       this.btCancel.TabIndex = 5;
@@ -96,7 +96,7 @@
       // frmKeyConfig
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-      this.ClientSize = new System.Drawing.Size(664, 688);
+      this.ClientSize = new System.Drawing.Size(664, 715);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.btCancel);
       this.Controls.Add(this.btAccept);

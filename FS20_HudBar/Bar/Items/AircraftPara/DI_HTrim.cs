@@ -65,15 +65,8 @@ namespace FS20_HudBar.Bar.Items
       _value2.Scrollable = true;
       _value2.Cursor = Cursors.NoMoveVert;
 
-      m_observerID = SV.AddObserver( Short, 2, OnDataArrival );
+      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival);
     }
-
-    // Disconnect from updates
-    protected override void UnregisterDataSource( )
-    {
-      UnregisterObserver_low( SV ); // use the generic one
-    }
-
 
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
     {

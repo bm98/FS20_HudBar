@@ -1,5 +1,4 @@
-﻿using FS20_HudBar.Bar;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -10,7 +9,6 @@ using System.Windows.Forms;
 using SC = SimConnectClient;
 using FS20_HudBar.GUI;
 using FSimClientIF.Modules;
-using FS20_HudBar.GUI.Templates.Base;
 
 namespace FS20_HudBar.Bar.Items.Base
 {
@@ -68,9 +66,27 @@ namespace FS20_HudBar.Bar.Items.Base
     protected int m_observerID = 0;
 
     /// <summary>
-    /// Unregister from the DataSource(s) if needed
+    /// Generic Add Observer to observe the SimVar Module 
+    /// it will request with an invokeTarget of 'this'
+    /// and populate the observerID
     /// </summary>
-    protected virtual void UnregisterDataSource( ) { }
+    /// <param name="itemId">An Item ID string</param>
+    /// <param name="interval_perSecond">An interval to receive updates</param>
+    /// <param name="onDataArrival">The Action to perform if data arrives</param>
+    protected void AddObserver( string itemId, int interval_perSecond, Action<string> onDataArrival )
+    {
+      m_observerID = SV.AddObserver( itemId, interval_perSecond, onDataArrival, this ); // once per sec
+    }
+
+    /// <summary>
+    /// Generic Unregister from the DataSource(s) 
+    /// will unregister from SimVar module
+    /// Else overwrite it
+    /// </summary>
+    protected virtual void UnregisterDataSource( )
+    {
+      UnregisterObserver_low( SV );
+    }
 
     // generic unregister method
     protected void UnregisterObserver_low( IModule module )
