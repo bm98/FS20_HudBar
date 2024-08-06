@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using FlightplanLib;
+using FlightplanLib.Flightplan;
 using FlightplanLib.MSFSPln;
 using FlightplanLib.MSFSFlt;
 using FlightplanLib.SimBrief;
@@ -142,9 +142,8 @@ namespace FShelf.FPlans
     /// (acts on the valid plan)
     /// </summary>
     /// <param name="destLocation">The destination Folder</param>
-    /// <param name="asPDF">True to save as PDF else as Image</param>
     /// <returns>An empty string or an error string when not successfull</returns>
-    public string GetAndSaveDocuments( string destLocation, bool asPDF )
+    public string GetAndSaveDocuments( string destLocation )
     {
       var sb = new StringBuilder( );
       if (!Directory.Exists( destLocation )) {
@@ -152,8 +151,8 @@ namespace FShelf.FPlans
       }
       else {
         if (IsSbPlan) {
-          // Load Shelf Docs
-          if (!_sbDocLoader.LoadDocuments( FlightPlan, destLocation, asPDF )) {
+          // Load Shelf Docs from Simbrief
+          if (!_sbDocLoader.LoadDocuments( FlightPlan, destLocation )) {
             sb.AppendLine( "FP document is currently in use, could not change it" );
           }
         }
@@ -172,10 +171,11 @@ namespace FShelf.FPlans
         else if (IsLnmPLN) {
           ; // nothing
         }
-        // the plan as table 
+
+        // the plan as table for all sources
         var fpTable = new FlightPlanTable( );
         if (!fpTable.SaveDocument( FlightPlan, destLocation )) {
-          sb.AppendLine( "FP document is currently in use, could not change it" );
+          sb.AppendLine( "FP table is currently in use, could not change it" );
         }
       }
 

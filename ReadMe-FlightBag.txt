@@ -1,5 +1,5 @@
-FS20_FlightBag V 0.68 - Build 68 BETA
-(c) M. Burri - 22-Apr-2024
+FS20_FlightBag V 0.70 - Build 70 BETA
+(c) M. Burri - 12-Aug-2024
 
 Contains files:
 
@@ -8,33 +8,33 @@ FS20_FlightBag.exe               The program
 .\DemoBag                   Contains some images to showcase the Flight Bag
 
 - All libraries below MUST be in the same folder as the Exe file
-FShelf.dll                  Shelf WinForms library
 bm98_Album.dll              A UserControl for displaying images
+bm98_hb_Folders.dll         Unified Folder manager
+bm98_Html.dll               Library and Wrapper for HTML to PDF/Image conversion
 bm98_Map.dll                Mapping display library
+bm98_VProfile.dll           UserControl for displaying VProfiles
+BM98CH_WasmClient.dll       WASM Module client to get LVars
+CoordLib.dll                A coord. handling library
+dNetBm98                    Tools for .Net and WinForms
 MapLib.dll                  Mapping library
 FlightplanLib.dll           Flightplan library
+FShelf.dll                  Shelf WinForms library
 MetarLib.dll                A METAR access library
-CoordLib.dll                A coord. handling library
-SettingsLib.dll             Application settings persistence library
-SimBriefLib.dll             SimBrief service library
-dNetBm98                    Tools for .Net and WinForms
 FSimClientIF.dll            Generic FSim Client interface definition
 FSimIF.dll                  Generic FSim interface definition
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
 SimConnectClientAdapter.dll Connection wrapper
 FSimFacilityIF.dll          MS facility database interface definition
-FSFData.dll					MS facility database access library
-BM98CH_WasmClient.dll       WASM Module client to get LVars
+FSFDataLib.dll              MS facility database access library
+SettingsLib.dll             Application settings persistence library
 NLog.config.OFF             Logging config file / remove .OFF to enable logging
 
 3rd Party:
 BingMapsRESTToolkit.dll     Microsoft provided library for accessing Bing Map data
 LiteDB.dll                  3rd party data management library
 NLog.dll                    3rd party logging library
-HtmlRenderer.dll            3rd party HTML formatting library
-HtmlRenderer.WinForms.dll   3rd party HTML formatting library
-HtmlRenderer.PdfSharp.dll   3rd party PDF formatting wrapper
-PdfSharp.dll				3rd party PDF formatting library
+TuesPechkin.dll             3rd party HTML formatting library wrapper /replaces HtmlRenderer
+TuesPechkin.Wkhtmltox.Win64.dll 3rd party HTML formatting library /replaces HtmlRenderer
 PdfiumViewer.dll			3rd party PDF renderer library
 
 From MSFS2020 Developer Kit for convenience included:
@@ -72,6 +72,17 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.70-B70
+- Please UPDATE the WASM Module (from BM98CH_DataConnector_Wasm-V0.5.zip) !!!
+
+- Add VProfile display in FlightBag - Maps Tab
+- Add Support for some prettier Simbrief Flightplan types (LIDO, ACA, EZY, SWA, UAL2018)
+- Add Support to include Simbrief images in Flightplan PDF
+- Update Improverd Flightplan decoding from ext. formats
+- Update PDF/IMG Converter for Shelf replaced with WkHtmlToX library
+- Update WASM Module to V0.5 (according to SDK advice)
+- Update QuickGuides
 
 V 0.68-B68
 - RERUN FacilityDataLoader mandatory for improved coordinate precision !!!

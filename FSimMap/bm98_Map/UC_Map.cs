@@ -12,6 +12,7 @@ using System.Diagnostics;
 using FSimFacilityIF;
 using static FSimFacilityIF.Extensions;
 using static dNetBm98.Units;
+using static dNetBm98.XString;
 using CoordLib;
 using CoordLib.Extensions;
 using MapLib;
@@ -19,6 +20,8 @@ using MapLib;
 using bm98_Map.Drawing;
 using bm98_Map.Data;
 using bm98_Map.UI;
+using bm98_VProfile;
+using FlightplanLib.Flightplan;
 
 namespace bm98_Map
 {
@@ -93,12 +96,15 @@ namespace bm98_Map
     private IList<IFix> _fixesRef = new List<IFix>( ); // empty list instead of null;
     // Holding a ref to the current Airports
     private IList<IAirportDesc> _airportsRef = new List<IAirportDesc>( ); // empty list instead of null;;
+    // Holding a ref to the current Flightplan
+    private FlightPlan _flightPlanRef = new FlightPlan( );
+
 
     // maintains all the visuals of the Airport
     private readonly DisplayListMgr _airportDisplayMgr;
 
     // internal Aircraft Data Tracking obj
-    private readonly TrackedAircraft _aircraftTrack = new TrackedAircraft( );
+    private readonly TrackedAircraft _trackedAircraft = new TrackedAircraft( );
 
     // Center of the Map (airport) when loaded
     // private LatLon _airportCoord = new LatLon( );
@@ -210,6 +216,9 @@ namespace bm98_Map
     /// <param name="aircraftsAi">List of AI aircrafts</param>
     public void UpdateAircraftsAI( IList<ITrackedAircraft> aircraftsAi )
     {
+      // sanity
+      if (aircraftsAi == null) return;
+
       // Aircraft Drawing update goes via the AirportDisplayManager object
       _airportDisplayMgr.UpdateAircraftsAI( aircraftsAi );
       // Update the View
@@ -226,47 +235,97 @@ namespace bm98_Map
     /// <param name="trackedAircraft">The tracked aircraft properties</param>
     public void UpdateAircraft( ITrackedAircraft trackedAircraft )
     {
+      // sanity
+      if (trackedAircraft == null) return;
+
       // update our internal _aircraftTracker from the delivered one
-      _aircraftTrack.Update( trackedAircraft );
+      _trackedAircraft.Update( trackedAircraft );
 
       // Aircraft Labels, hide if the value is float.NaN (ex Heading)
       // data label are 4 chars, number fields 6 chars to align vert. !!
       lblTHdg.Visible = true;
-      if (_hdgIsTrue) { lblTHdg.Text = $"THDG: {_aircraftTrack.TrueHeading_deg,6:000}°"; }
-      else { lblTHdg.Text = $"HDG : {_aircraftTrack.Heading_degm,6:000}°M"; }
+      if (_hdgIsTrue) { lblTHdg.Text = $"THDG: {_trackedAircraft.TrueHeading_deg,6:000}°"; }
+      else { lblTHdg.Text = $"HDG : {_trackedAircraft.Heading_degm,6:000}°M"; }
 
-      lblMTrk.Visible = _aircraftTrack.ShowMTRK;
-      if (_trkIsTrue) { lblMTrk.Text = $"TTRK: {_aircraftTrack.TrueTrk_deg,6:000}°"; }
-      else { lblMTrk.Text = $"TRK : {_aircraftTrack.Trk_degm,6:000}°M"; }
+      lblMTrk.Visible = _trackedAircraft.ShowMTRK;
+      if (_trkIsTrue) { lblMTrk.Text = $"TTRK: {_trackedAircraft.TrueTrk_deg,6:000}°"; }
+      else { lblMTrk.Text = $"TRK : {_trackedAircraft.Trk_degm,6:000}°M"; }
 
-      lblAlt.Visible = _aircraftTrack.ShowAlt;
-      if (_altIsFeet) { lblAlt.Text = $"AMSL: {_aircraftTrack.AltitudeMsl_ft,6:##,##0} ft"; }
-      else { lblAlt.Text = $"AMSL: {M_From_Ft( _aircraftTrack.AltitudeMsl_ft ),6:##,##0} m"; }
+      lblAlt.Visible = _trackedAircraft.ShowAlt;
+      if (_altIsFeet) { lblAlt.Text = $"AMSL: {_trackedAircraft.AltitudeMsl_ft,6:##,##0} ft"; }
+      else { lblAlt.Text = $"AMSL: {M_From_Ft( _trackedAircraft.AltitudeMsl_ft ),6:##,##0} m"; }
 
-      lblRA.Visible = _aircraftTrack.ShowRA;
-      if (_altIsFeet) { lblRA.Text = $"RA  : {_aircraftTrack.RadioAlt_ft,6:##,##0} ft"; }
-      else { lblRA.Text = $"RA  : {M_From_Ft( _aircraftTrack.RadioAlt_ft ),6:##,##0} m"; }
+      lblRA.Visible = _trackedAircraft.ShowRA;
+      if (_altIsFeet) { lblRA.Text = $"RA  : {_trackedAircraft.RadioAlt_ft,6:##,##0} ft"; }
+      else { lblRA.Text = $"RA  : {M_From_Ft( _trackedAircraft.RadioAlt_ft ),6:##,##0} m"; }
 
-      lblIAS.Visible = _aircraftTrack.ShowIas;
-      if (_speedIsKt) { lblIAS.Text = $"IAS : {_aircraftTrack.Ias_kt,6:#,##0} kt"; }
-      else { lblIAS.Text = $"IAS : {Kmh_From_Kt( _aircraftTrack.Ias_kt ),6:#,##0} km/h"; }
+      lblIAS.Visible = _trackedAircraft.ShowIas;
+      if (_speedIsKt) { lblIAS.Text = $"IAS : {_trackedAircraft.Ias_kt,6:#,##0} kt"; }
+      else { lblIAS.Text = $"IAS : {Kmh_From_Kt( _trackedAircraft.Ias_kt ),6:#,##0} km/h"; }
 
-      lblGS.Visible = _aircraftTrack.ShowGs;
-      if (_speedIsKt) { lblGS.Text = $"GS  : {_aircraftTrack.Gs_kt,6:#,##0} kt"; }
-      else { lblGS.Text = $"GS  : {Kmh_From_Kt( _aircraftTrack.Gs_kt ),6:#,##0} km/h"; }
+      lblGS.Visible = _trackedAircraft.ShowGs;
+      if (_speedIsKt) { lblGS.Text = $"GS  : {_trackedAircraft.Gs_kt,6:#,##0} kt"; }
+      else { lblGS.Text = $"GS  : {Kmh_From_Kt( _trackedAircraft.Gs_kt ),6:#,##0} km/h"; }
 
-      lblVS.Visible = _aircraftTrack.ShowVs;
-      if (_vsIsFpm) { lblVS.Text = $"V/S : {_aircraftTrack.Vs_fpm,6:+#,##0;-#,##0;---} fpm"; }
-      else { lblVS.Text = $"V/S : {Mps_From_Ftpm( _aircraftTrack.Vs_fpm ),6:+#0.0;-#0.0;---} m/s"; }
+      lblVS.Visible = _trackedAircraft.ShowVs;
+      if (_vsIsFpm) { lblVS.Text = $"V/S : {_trackedAircraft.Vs_fpm,6:+#,##0;-#,##0;---} fpm"; }
+      else { lblVS.Text = $"V/S : {Mps_From_Ftpm( _trackedAircraft.Vs_fpm ),6:+#0.0;-#0.0;---} m/s"; }
 
       // set windspeed string for the Sprite if not default
       if (_speedIsKt) { } // default
-      else { _aircraftTrack.WindSpeedS = $"{Mps_From_Kt( _aircraftTrack.WindSpeed_kt ):#0.0}m/s"; }
+      else { _trackedAircraft.WindSpeedS = $"{Mps_From_Kt( _trackedAircraft.WindSpeed_kt ):#0.0}m/s"; }
 
       // Aircraft Drawing update goes via the AirportDisplayManager object
-      _airportDisplayMgr.UpdateAircraft( _aircraftTrack );
+      _airportDisplayMgr.UpdateAircraft( _trackedAircraft );
       if (_mapBehavior == MapBehavior.Radar) {
         _renderStaticNeeded = true;
+      }
+
+      // Update VProfile Props
+      if (vpProfile.Visible) {
+        // Create a List of Points starting from the NextPoint of the current DispRoute
+        var wypList = new List<UC_VProfile.UC_VProfilePropsRoutepoint>( );
+        var nextRp = Waypoint.Empty;
+        double dist = 0;
+        // evaluate where we are within the current DispRoute
+        _flightPlanRef.TrackAircraft( _trackedAircraft.Position );
+        nextRp = _flightPlanRef.NextRoutePoint;
+
+        if (nextRp.IsValid) {
+          // having a valid NextPoint...
+          // subtract distance traveled from Prev to Next Point for the VProfile
+          dist = nextRp.InboundDistance_nm - _flightPlanRef.DistTraveled_nm;
+          var nextWyp = new UC_VProfile.UC_VProfilePropsRoutepoint( ) {
+            Ident = nextRp.Ident.LeftString( 5 ),
+            Distance_nm = dist,
+            TargetAlt_ft = nextRp.TargetAltitude_ft,
+          };
+          wypList.Add( nextWyp );
+
+          // capture further Wyps along the DispRoute
+          nextRp = _flightPlanRef.GetWaypoint( nextRp.Index + 1 );
+          while (nextRp.IsValid) {
+            dist += nextRp.InboundDistance_nm;
+            nextWyp = new UC_VProfile.UC_VProfilePropsRoutepoint( ) {
+              Ident = nextRp.Ident.LeftString( 5 ),
+              Distance_nm = dist,
+              TargetAlt_ft = nextRp.TargetAltitude_ft,
+            };
+            wypList.Add( nextWyp );
+            // next round
+            nextRp = _flightPlanRef.GetWaypoint( nextRp.Index + 1 );
+          }
+        }
+        // create the VProfile Props with current data
+        var vpProps = new UC_VProfile.UC_VProfileProps( ) {
+          ALT_ft = _trackedAircraft.AltitudeIndicated_ft,
+          GS_kt = _trackedAircraft.Gs_kt,
+          VS_fpm = _trackedAircraft.Vs_fpm,
+          FPA_deg = _trackedAircraft.Fpa_deg,
+          WaypointList = wypList,
+        };
+        // and update the Control
+        vpProfile.UpdatePanelProps( vpProps );
       }
 
       // Update the View
@@ -284,12 +343,14 @@ namespace bm98_Map
     /// <param name="fixes">List of Fixes to show</param>
     public void SetNavaidList( List<INavaid> navaids, List<IFix> fixes )
     {
+      // sanity
       if (navaids != null) {
         _navaidRef = navaids;
       }
       else {
         _navaidRef = new List<INavaid>( ); // empty list instead of null
       }
+
       if (fixes != null) {
         _fixesRef = fixes;
       }
@@ -310,19 +371,53 @@ namespace bm98_Map
     /// <param name="airports">List of airports to show</param>
     public void SetAltAirportList( List<IAirportDesc> airports )
     {
-      _airportsRef = airports;
+      // sanity
+      if (airports != null) {
+        _airportsRef = airports;
+      }
+      else {
+        _airportsRef = new List<IAirportDesc>( );
+      }
+
       _airportDisplayMgr.SetAltAirportList( _airportsRef );
       // Trigger Update the View
       _renderStaticNeeded = true;
     }
 
     /// <summary>
-    /// To set the Route plotted on the Map
+    /// To set the Flightplan plotted on the Map
+    /// 
+    /// The Route is  part of the various Flightplan types and 
+    ///   May or may not include artificial Wyps (from MS or Simbrief etc)
+    ///   May or may not include Approach Wyps,
+    ///   May or may not include Airport Wyps
     /// </summary>
-    /// <param name="route">A route Obj</param>
-    public void SetRoute( Route route )
+    /// <param name="flightplan">A Flightplan Obj</param>
+    public void SetFlightplan( FlightPlan flightplan )
     {
-      _airportDisplayMgr.SetRoute( route );
+      // sanity
+      if (flightplan == null) return;
+
+      _flightPlanRef = flightplan;
+
+      // init visualization of the route in the map
+      _airportDisplayMgr.SetFlightplan( flightplan );
+
+      // Set when already selected and the selected destination
+      if (_airportRef.ICAO == flightplan.Destination.Icao_Ident.ICAO) {
+        _flightPlanRef?.SetSelectedRunwayApproachID(
+          _airportDisplayMgr.GetSelectedNavIdRunway( ),
+          _airportDisplayMgr.GetSelectedNavIdRunwayApproach( )
+        );
+      }
+      else {
+        _flightPlanRef?.SetSelectedRunwayApproachID( "", "" );
+      }
+      // Extend route with Approach if one is selected
+      _flightPlanRef?.ExtendWithApproach( _fixesRef );
+      // init route tracking from the current position
+      _flightPlanRef?.TrackAircraft( _trackedAircraft.Position );
+
       // Trigger Update the View
       _renderStaticNeeded = true;
     }
@@ -560,7 +655,7 @@ namespace bm98_Map
           MapManager.Instance.SetNewProvider( _mapMapProvider );
           StartMapLoading( mapCenter );
           _viewport.SetMouseAction( true );
-          _airportDisplayMgr.UpdateAircraft( _aircraftTrack );
+          _airportDisplayMgr.UpdateAircraft( _trackedAircraft );
 
           break;
 
@@ -578,7 +673,7 @@ namespace bm98_Map
           _mapRangeHandler.SetMapRange( _mapRangeHandler.MapRange ); // validate if possible
           StartMapLoading( mapCenter );
           _viewport.SetMouseAction( false );
-          _airportDisplayMgr.UpdateAircraft( _aircraftTrack );
+          _airportDisplayMgr.UpdateAircraft( _trackedAircraft );
           break;
       }
       // update if available
@@ -699,10 +794,18 @@ namespace bm98_Map
       if (!(label.Tag is string)) {
         // clear selected approach
         _airportDisplayMgr.SetSelectedNavIdRunwayApproach( "" ); // show all
+        _flightPlanRef?.SetSelectedRunwayApproachID( "", "" ); // clear route extension
       }
       else {
         var approachName = label.Tag as string;
         _airportDisplayMgr.SetSelectedNavIdRunwayApproach( approachName );
+        // Set Approach extension
+        _flightPlanRef?.SetSelectedRunwayApproachID(
+          _airportDisplayMgr.GetSelectedNavIdRunway( ),
+          _airportDisplayMgr.GetSelectedNavIdRunwayApproach( )
+        );
+        // Extend route with Approach if one is selected
+        _flightPlanRef?.ExtendWithApproach( _fixesRef );
       }
       // render and redraw
       RenderStatic( true );
@@ -713,6 +816,10 @@ namespace bm98_Map
     {
       // sanity
       if (!(sender is Label)) return;
+
+      // Clear route extension
+      _flightPlanRef?.ClearExtension( );
+
       _pnlApproaches.Visible = false;
       var label = sender as Label;
       if (!(label.Tag is IRunway)) {
@@ -722,6 +829,7 @@ namespace bm98_Map
         PopulateRunwayApproaches( null ); // unselected
         _airportDisplayMgr.SetSelectedNavIdRunway( "" );
         _airportDisplayMgr.SetSelectedNavIdRunwayApproach( "" );
+        _flightPlanRef?.SetSelectedRunwayApproachID( "", "" );
       }
       else {
         // get this pair
@@ -730,6 +838,7 @@ namespace bm98_Map
         // IFR Waypoint
         _airportDisplayMgr.SetSelectedNavIdRunway( pair.First( ).Ident );
         _airportDisplayMgr.SetSelectedNavIdRunwayApproach( "" );
+        _flightPlanRef?.SetSelectedRunwayApproachID( "", "" );
         // populate approaches
         PopulateRunwayApproaches( pair.First( ) );
       }
@@ -767,10 +876,10 @@ namespace bm98_Map
         if (nav.IsILS) continue; // skip
         if (string.IsNullOrEmpty( nav.Ident )) continue;  // seen some??
 
-        double distance_nm = _aircraftTrack.Position.DistanceTo( nav.Coordinate, ConvConsts.EarthRadiusNm );
+        double distance_nm = _trackedAircraft.Position.DistanceTo( nav.Coordinate, ConvConsts.EarthRadiusNm );
         if (distance_nm > (nav.Range_nm * 1.1)) continue; // range + 10% else cannot be received at the airport
         string rsiS = dNetBm98.Utilities.RSI( distance_nm, nav.Range_nm );
-        string dir = Dms.CompassPoint( _aircraftTrack.Position.BearingTo( nav.Coordinate ), 2 );
+        string dir = Dms.CompassPoint( _trackedAircraft.Position.BearingTo( nav.Coordinate ), 2 );
 
         _pnlNavaids.AddItem( nav.VorNdbNameString( dir, distance_nm, rsiS ).PadRight( 63 ), null, false );
       }
@@ -836,15 +945,17 @@ namespace bm98_Map
       // create the Airports DrawingList
       _airportDisplayMgr.AddDispItems( _airportRef );
       // set a new target alt
-      _aircraftTrack.TargetAltitude_ft = _airportRef.Elevation_ft;
+      _trackedAircraft.TargetAltitude_ft = _airportRef.Elevation_ft;
 
       // Whenever an airport is selected switch to Map Mode
       // (else there is a competition between tracking the acft and going to the airport)
       ChangeBehavior( MapBehavior.Map, _airportRef.Coordinate );
 
+      // init from new airport
       PopulateApt( _airportRef );
       PopulateRunways( _airportRef );
       PopulateFrequencies( _airportRef );
+      _flightPlanRef?.SetSelectedRunwayApproachID( "", "" ); // clears
 
       // trigger render - preliminary nothing loaded so far
       _renderStaticNeeded = true;
@@ -880,9 +991,9 @@ namespace bm98_Map
     // center the map on the aircraft
     private void CenterOnAcft( )
     {
-      if (_aircraftTrack.Position.IsEmpty) return;
+      if (_trackedAircraft.Position.IsEmpty) return;
 
-      UpdateMapCenter( _aircraftTrack.Position );
+      UpdateMapCenter( _trackedAircraft.Position );
       StartMapLoading( _mapCenterDyn );
     }
 
@@ -1018,19 +1129,23 @@ namespace bm98_Map
       _pnlRunways.ItemClicked += RunwayLabel_Click;
       _pnlRunways.EmptyClicked += _pnlRunways_EmptyClicked;
       this.Controls.Add( _pnlRunways );
+      this.Controls.SetChildIndex( _pnlRunways, this.Controls.Count - 4 );
 
       _pnlApproaches = new StripPanel( new Size( 290, 200 ), "Runway - Approaches" ) { Location = new Point( 5, 50 ) }; // only X matters
       _pnlApproaches.ItemClicked += ApproachLabel_Click;
       _pnlApproaches.EmptyClicked += _pnlApproaches_EmptyClicked;
       this.Controls.Add( _pnlApproaches );
+      this.Controls.SetChildIndex( _pnlApproaches, this.Controls.Count - 4 );
 
       _pnlTower = new StripPanel( new Size( 550, 500 ), "Airport - Frequencies" ) { Location = new Point( 5, 50 ) }; // only X matters
       _pnlTower.EmptyClicked += _pnlTower_EmptyClicked;
       this.Controls.Add( _pnlTower );
+      this.Controls.SetChildIndex( _pnlTower, this.Controls.Count - 4 );
 
       _pnlNavaids = new StripPanel( new Size( 550, 500 ), "Navaids in Range" ) { Location = new Point( 5, 50 ) };
       _pnlNavaids.EmptyClicked += _pnlNavaids_EmptyClicked;
       this.Controls.Add( _pnlNavaids );
+      this.Controls.SetChildIndex( _pnlNavaids, this.Controls.Count - 4 );
 
       _pnlProviders = new StripPanel( new Size( 290, 360 ), "Map Providers", new Font( this.Font.FontFamily, 10f, FontStyle.Bold ) ) {
         Anchor = AnchorStyles.Top | AnchorStyles.Right,
@@ -1038,6 +1153,7 @@ namespace bm98_Map
       };
       _pnlProviders.ItemClicked += ProviderLabel_Click;
       this.Controls.Add( _pnlProviders );
+      this.Controls.SetChildIndex( _pnlProviders, this.Controls.Count - 4 );
 
       flpAcftData.Visible = false;
       flpAcftData.Location = new Point( 5, lblAirport.Bottom + 5 );
@@ -1048,6 +1164,8 @@ namespace bm98_Map
       teleportField.Visible = false;
       teleportField.Altitude_ft = 2000;
       teleportField.TeleportPressed += TeleportField_TeleportPressed;
+
+      vpProfile.Visible = false;
 
       _viewport = new VPort2( pbDrawing, _mapRangeHandler );
       _viewport.LoadComplete += Canvas_LoadComplete;
@@ -1111,8 +1229,7 @@ namespace bm98_Map
     {
       PopulateMapProviders( );
       pbDrawing.Dock = DockStyle.Fill;
-      lblCopyright.SendToBack( );
-      pbDrawing.SendToBack( );
+
       // init empty to have them properly located
       PopulateRunways( Data.Airport.DummyAirport( new LatLon( 0, 0 ) ) );
       PopulateFrequencies( Data.Airport.DummyAirport( new LatLon( 0, 0 ) ) );
@@ -1126,6 +1243,10 @@ namespace bm98_Map
       ChangeBehavior( MapBehavior.Map, _airportRef.Coordinate );
       _viewport.CenterMap( );
 
+      // maintain a defined stack of controls (SendToBack seems not to work properly)
+      //this.Controls.SetChildIndex( vpProfile, this.Controls.Count - 1-2 );
+      //this.Controls.SetChildIndex( lblCopyright, this.Controls.Count - 1-1 );
+      //this.Controls.SetChildIndex( pbDrawing, this.Controls.Count - 1 );
     }
 
     #region Button EventHandlers
@@ -1210,7 +1331,7 @@ namespace bm98_Map
     private void btCenterAircraft_Click( object sender, EventArgs e )
     {
       if (_mapBehavior == MapBehavior.Radar) {
-        ChangeBehavior( MapBehavior.Map, _aircraftTrack.Position );
+        ChangeBehavior( MapBehavior.Map, _trackedAircraft.Position );
       }
       CenterOnAcft( );
     }
@@ -1320,7 +1441,7 @@ namespace bm98_Map
     private void btTogBehavior_Click( object sender, EventArgs e )
     {
       if (_mapBehavior == MapBehavior.Map) {
-        ChangeBehavior( MapBehavior.Radar, _aircraftTrack.Position );
+        ChangeBehavior( MapBehavior.Radar, _trackedAircraft.Position );
       }
     }
 
@@ -1350,12 +1471,20 @@ namespace bm98_Map
       OnTeleportAircraft( _viewport.ViewCenterLatLon, teleportField.AltMSL, teleportField.Altitude_ft );
     }
 
+    private void mnuVProfile_Click( object sender, EventArgs e )
+    {
+      vpProfile.Visible = !vpProfile.Visible; // toggle
+      UpdateCtxMenuText( );
+    }
+
     private void UpdateCtxMenuText( )
     {
       mnuCoord.Checked = latLonField.Visible;
       mnuTeleport.Checked = teleportField.Visible;
+      mnuVProfile.Checked = vpProfile.Visible;
     }
 
     #endregion
+
   }
 }

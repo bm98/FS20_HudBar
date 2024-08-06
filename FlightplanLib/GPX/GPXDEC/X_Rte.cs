@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using CoordLib;
 using FSimFacilityIF;
 using static FSimFacilityIF.Extensions;
+using FlightplanLib.Flightplan;
 using bm98_hbFolders;
 
 namespace FlightplanLib.GPX.GPXDEC
@@ -48,7 +49,8 @@ namespace FlightplanLib.GPX.GPXDEC
     [XmlIgnore]
     public bool IsValid {
       get {
-        if (WaypointCat.Count == 0) return false;
+        if (WaypointCat == null) return false;
+        if (WaypointCat.Count <= 0) return false;
         PostProc( );
         InsertProcedures( );
         return true;

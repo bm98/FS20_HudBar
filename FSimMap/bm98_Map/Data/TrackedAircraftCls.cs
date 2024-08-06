@@ -43,6 +43,11 @@ namespace bm98_Map.Data
     public float AltitudeMsl_ft { get; set; } = float.NaN;
 
     /// <summary>
+    /// Indicated Altitude
+    /// </summary>
+    public float AltitudeIndicated_ft { get; set; } = float.NaN;
+
+    /// <summary>
     /// Radio/Radar Altitude in ft above the grouns
     ///  set to float.NaN to hide from display
     /// </summary>

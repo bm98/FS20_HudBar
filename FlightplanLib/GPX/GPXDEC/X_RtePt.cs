@@ -198,7 +198,7 @@ namespace FlightplanLib.GPX.GPXDEC
     /// </summary>
     [XmlIgnore]
     public string ApproachSuffix => ApproachProcRef.SuffixOf( );
-        /// <summary>
+    /// <summary>
     /// Approach Waypoint Sequence (1..)
     /// </summary>
     [XmlIgnore]
@@ -268,7 +268,7 @@ namespace FlightplanLib.GPX.GPXDEC
         case "USER":
           var idUcase = id.ToUpperInvariant( );
           if (string.IsNullOrEmpty( idUcase )) return WaypointTyp.COR;
-          if (idUcase.StartsWith( "RW" )) return WaypointTyp.RWY;
+          if (idUcase.StartsWith( "RW" ) && !idUcase.Contains( "+" )) return WaypointTyp.RWY; // seen RW22+3
           return WaypointTyp.USR;
         case "VOR": return WaypointTyp.VOR;
         default: return WaypointTyp.OTH;

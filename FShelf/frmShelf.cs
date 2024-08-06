@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using System.IO;
 
 using Point = System.Drawing.Point;
-using Route = bm98_Map.Data.Route;
 using static FSimClientIF.Sim;
 using static dNetBm98.Units;
 
@@ -32,7 +31,6 @@ using bm98_hbFolders;
 using bm98_Map;
 using bm98_Map.Data;
 
-using FlightplanLib;
 using FlightplanLib.SimBrief;
 using FlightplanLib.MSFSPln;
 using FlightplanLib.MSFSFlt;
@@ -196,24 +194,6 @@ namespace FShelf
       }
     }
 
-
-    // translate the FlightPlan to a Route obj for Map Use
-    private static Route GetRouteFromPlan( FlightPlan plan )
-    {
-      var route = new Route( );
-      if (!plan.IsValid) return route;
-
-      foreach (var fix in plan.Waypoints) {
-        if (fix.HideInMap( )) continue; // not to be shown
-
-        route.AddRoutePoint(
-          new RoutePoint( fix.Ident7, fix.LatLonAlt_ft, fix.WaypointType, fix.InboundTrueTrk, fix.OutboundTrueTrk,
-                          fix.IsSID, fix.IsSTAR, fix.IsAirway, fix.AltLimitS( ) )
-         );
-      }
-      route.RecalcTrack( ); // as we have no Out Tracks
-      return route;
-    }
 
     private static void DebSaveRouteString( string content, string ext )
     {
@@ -828,7 +808,7 @@ namespace FShelf
       aMap.SetAltAirportList( AltAirportList( e.CenterCoordinate, rwLen.Length_m ) );
 
       // (re)set the route from the plan in use
-      aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+      aMap.SetFlightplan( _flightPlan.FlightPlan );
     }
 
     // fires when the Map Range has changed
@@ -926,8 +906,7 @@ namespace FShelf
 
         var aptReport = new AptReport.AptReportTable( );
         aptReport.SaveDocument( _airport, _navaidList, _fixList,
-                            Path.Combine( AppSettings.Instance.ShelfFolder, Folders.AptReportSubfolder ),
-                            true );
+                            Path.Combine( AppSettings.Instance.ShelfFolder, Folders.AptReportSubfolder ) );
       }
     }
 
@@ -961,6 +940,7 @@ namespace FShelf
         _tAircraft.Heading_degm = SV.Get<float>( SItem.fG_Nav_HDG_mag_degm );
         _tAircraft.Position = new LatLon( SV.Get<double>( SItem.dGS_Acft_Lat ), SV.Get<double>( SItem.dGS_Acft_Lon ), SV.Get<float>( SItem.fGS_Acft_AltMsl_ft ) );
         _tAircraft.AltitudeMsl_ft = SV.Get<float>( SItem.fGS_Acft_AltMsl_ft );
+        _tAircraft.AltitudeIndicated_ft = SV.Get<float>( SItem.fG_Acft_Altimeter_ft );
 
         // limit RA visible to an altitude and if not on ground
         var _raLimit_ft = (SV.Get<EngineType>( SItem.etG_Cfg_EngineType ) == EngineType.Jet) ? c_raAirliner_ft : c_raDefault_ft;
@@ -1138,9 +1118,9 @@ namespace FShelf
         }
 
         // Set Map Route
-        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        aMap.SetFlightplan( _flightPlan.FlightPlan );
         // Load Shelf Docs
-        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, true ); // as PDF
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgSbPlanData.Text = err;
 
       }
@@ -1205,9 +1185,9 @@ namespace FShelf
         }
 
         // Set Map Route
-        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        aMap.SetFlightplan( _flightPlan.FlightPlan );
         // Load Shelf Docs
-        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, false );
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
       }
     }
@@ -1265,9 +1245,9 @@ namespace FShelf
         }
 
         // Set Map Route
-        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        aMap.SetFlightplan( _flightPlan.FlightPlan );
         // Load Shelf Docs
-        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, false );
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
       }
       else {
@@ -1323,9 +1303,9 @@ namespace FShelf
         }
 
         // Set Map Route
-        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        aMap.SetFlightplan( _flightPlan.FlightPlan );
         // Load Shelf Docs
-        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, false );
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
       }
     }
@@ -1377,9 +1357,9 @@ namespace FShelf
         }
 
         // Set Map Route
-        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        aMap.SetFlightplan( _flightPlan.FlightPlan );
         // Load Shelf Docs
-        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, false );
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
       }
     }
@@ -1431,9 +1411,9 @@ namespace FShelf
         }
 
         // Set Map Route
-        aMap.SetRoute( GetRouteFromPlan( _flightPlan.FlightPlan ) );
+        aMap.SetFlightplan( _flightPlan.FlightPlan );
         // Load Shelf Docs
-        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder, false );
+        var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
       }
     }

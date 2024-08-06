@@ -11,6 +11,9 @@ using DbgLib;
 using CoordLib;
 using FSimFacilityIF;
 
+using FlightplanLib.Flightplan;
+
+
 namespace FlightplanLib.MSFSFlt.FLTDEC
 {
   /// <summary>
@@ -150,7 +153,7 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
       if (match.Success) {
         ret.Region = match.Groups["reg"].Success ? match.Groups["reg"].Value.Trim( ) : "";
         ret.SourceIdent = match.Groups["name"].Value.Trim( );
-        ret.Name = Formatter.CleanB21SoaringName( ret.SourceIdent ); // get a native name if it is decorated with B21 stuff
+        ret.Name = Formatter.CleanName( ret.SourceIdent ); // get a native name if it is decorated with B21 stuff
 
         // exclude MSFS ones that are not to be reported
         if (c_ignoreWP.Contains( ret.Name )) return null; // we don't collect this one

@@ -65,6 +65,10 @@ namespace bm98_Map.Data
     /// </summary>
     float AltitudeMsl_ft { get; }
     /// <summary>
+    /// Indicated Altitude
+    /// </summary>
+    float AltitudeIndicated_ft { get; }
+    /// <summary>
     /// Radio/Radar Altitude in ft above the grouns
     ///  set to float.NaN to hide from display
     /// </summary>

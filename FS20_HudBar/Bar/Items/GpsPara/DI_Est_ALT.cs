@@ -50,21 +50,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
-          float tgtAlt = SV.Get<float>( SItem.fG_Gps_WYP_alt_ft );
-          // Estimates use WYP ALT if >0 (there is no distinction if a WYP ALT is given - it is 0 if not)
-          ColorType estCol = cTxEst;
-          if (tgtAlt == 0) {
-            // use Set Alt if WYP ALT is zero (see comment above)
-            tgtAlt = SV.Get<float>( SItem.fGS_Ap_ALT_setting_ft );
-            estCol = cTxSet;
-          }
-          _value1.Value = Calculator.AltitudeAtTgt( SV.Get<float>( SItem.fG_Gps_WYP_dist_nm ) );
-          _value1.ItemForeColor = estCol;
-        }
-        else {
-          _value1.Value = null; // cannot if we don't have a WYP to aim at
-        }
+        _value1.Value = Calculator.AltitudeAtTgt( SV.Get<float>( SItem.fG_Gps_WYP_dist_nm ) );
       }
     }
 

@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using FlightplanLib;
-using FlightplanLib.LNM.LNMDEC;
 using FSimFacilityIF;
+
+using FlightplanLib.Flightplan;
 
 namespace FShelf.FPlans
 {
-
-
   /// <summary>
   /// Extend the Waypoint for Shelf use
   /// </summary>
@@ -39,41 +37,53 @@ namespace FShelf.FPlans
     }
 
     /// <summary>
-    /// Descriptive Name of this Item
+    /// True when this item should be used for the Route
     /// </summary>
-    public static string ProcDescription( this Waypoint _w )
+    public static bool UseForRoute( this Waypoint _w )
     {
-      return _w.IsSTAR ? $"STAR {_w.STAR_Ident}"
-            : _w.IsSID ? $"SID {_w.SID_Ident}"
-            : _w.IsAirway ? $"via Awy {_w.Airway_Ident}"
-            : _w.IsAPR ?
-              (_w.WaypointType == WaypointTyp.RWY) ? ""
-              : (_w.WaypointUsage == UsageTyp.MAPR) ? $"MAPR"
-                  : (_w.WaypointUsage == UsageTyp.HOLD) ? $"MAPR Hold"
-                  : $"APR {_w.ApproachName}"
-            : _w.IsDecorated ? $"{_w.IdentDecoration}"
-            : "";
+      // selector is here rather than in the Display Section
+      if (_w.WaypointType == WaypointTyp.APT) return false; // kill Airports
+      if (_w.WaypointUsage == UsageTyp.HOLD) return false; // kill Holds
+      if ((_w.WaypointUsage == UsageTyp.MAPR) && (_w.WaypointType != WaypointTyp.RWY)) return false; // kill MAPR but not Runway
+
+      return true;
     }
 
+    /*
     /// <summary>
-    /// An Alt Limit String, derived from values
+    /// Returns the Wyp Target altitude
     /// </summary>
-    public static string AltLimitS( this Waypoint _w )
+    /// <param name="_w">A Waypoint</param>
+    /// <returns>An Altitude or NaN</returns>
+    public static float AltTarget_ft( this Waypoint _w )
     {
-      string a;
-      if (_w.AltitudeHi_ft == _w.AltitudeLo_ft) {
-        // =15'000
-        a = float.IsNaN( _w.AltitudeLo_ft ) || (_w.AltitudeLo_ft < 1) ? "" : $"{_w.AltitudeLo_ft:##,##0}";
+      // input alt can be NaN or 0 if not defined or not set - we cannot use both of them
+      // make it NaN if it was <=0
+      float aLo =
+        (float.IsNaN( _w.AltitudeLimitLo_ft ) || (_w.AltitudeLimitLo_ft <= 0)) ? float.NaN : _w.AltitudeLimitLo_ft;
+      float aHi =
+        (float.IsNaN( _w.AltitudeLimitHi_ft ) || (_w.AltitudeLimitHi_ft <= 0)) ? float.NaN : _w.AltitudeLimitHi_ft;
+      float altTarget_ft =
+        (double.IsNaN( _w.LatLonAlt_ft.Altitude ) || (_w.LatLonAlt_ft.Altitude <= 0))
+        ? float.NaN
+        : (float)_w.LatLonAlt_ft.Altitude; // Wyp alt is default when available
+
+      if (float.IsNaN( aLo ) && float.IsNaN( aHi )) {
+        // both undef, remains default
       }
-      else {
-        // /8'000
-        a = float.IsNaN( _w.AltitudeLo_ft ) || (_w.AltitudeLo_ft < 1) ? "" : $"{_w.AltitudeLo_ft:##,##0}";
-        // 15'000/  OR 15'000/8'000
-        a = (float.IsNaN( _w.AltitudeHi_ft ) || (_w.AltitudeHi_ft < 1) ? "" : $"{_w.AltitudeHi_ft:##,##0}") + "/" + a;
+      else if (!(float.IsNaN( aLo ) || float.IsNaN( aHi ))) {
+        // both defined
+        altTarget_ft = (aLo + aHi) / 2f; // between
       }
-      return a;
+      else if (!float.IsNaN( aLo )) {
+        altTarget_ft = aLo;
+      }
+      else if (!float.IsNaN( aHi )) {
+        altTarget_ft = aHi;
+      }
+
+      return altTarget_ft;
     }
-
-
+    */
   }
 }

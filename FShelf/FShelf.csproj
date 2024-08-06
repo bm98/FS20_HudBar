@@ -70,26 +70,6 @@
     <Reference Include="FSimIF">
       <HintPath>..\..\..\Redist\FSimIF.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlRenderer, Version=1.5.0.6, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Redist\HtmlRenderer.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlRenderer.PdfSharp, Version=1.5.0.6, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Redist\HtmlRenderer.PdfSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlRenderer.WinForms, Version=1.5.0.6, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Redist\HtmlRenderer.WinForms.dll</HintPath>
-    </Reference>
-    <Reference Include="PdfSharp, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Redist\PdfSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="PdfSharp.Charting, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Redist\PdfSharp.Charting.dll</HintPath>
-    </Reference>
     <Reference Include="SimConnectClient">
       <HintPath>..\..\..\Redist\SimConnectClient.dll</HintPath>
     </Reference>
@@ -121,9 +101,7 @@
     <Compile Include="Energy\UC_ETable.Designer.cs">
       <DependentUpon>UC_ETable.cs</DependentUpon>
     </Compile>
-    <Compile Include="FPlans\FlightPlanTable.cs" />
     <Compile Include="FPlans\FpWrapper.cs" />
-    <Compile Include="FPlans\FPTableGen.cs" />
     <Compile Include="FPlans\WypExtensions.cs" />
     <Compile Include="frmShelf.cs">
       <SubType>Form</SubType>
@@ -148,7 +126,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RTFformatter.cs" />
-    <Compile Include="FPlans\SbDocLoader.cs" />
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +152,10 @@
     <ProjectReference Include="..\bm98_hbFolders\bm98_hbFolders.csproj">
       <Project>{6c729d4d-fe93-4794-8320-af00c90d016d}</Project>
       <Name>bm98_hbFolders</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\bm98_Html\bm98_Html.csproj">
+      <Project>{afb45ef1-b6e9-49cb-a904-b9af2d710ac3}</Project>
+      <Name>bm98_Html</Name>
     </ProjectReference>
     <ProjectReference Include="..\DbgLib\DbgLib.csproj">
       <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>

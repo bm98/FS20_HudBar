@@ -17,15 +17,21 @@ namespace bm98_hbFolders
 #pragma warning disable CS0168 // Variable is declared but never used
     // settings
 
-    // HudBar file locations in MyDocuments
-    private const string c_HudBarFolder = @"MSFS_HudBarSave";
+    // MyDocuments folder
+    private static readonly string c_MyDocuments = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
+    // User Temp folder
+    private static readonly string c_UserTemp = Path.GetTempPath( );
+
+    // HudBar file folders in MyDocuments
+    private const string c_HudBarFolder = "MSFS_HudBarSave";
     private const string c_HudBarDbFolder = "db";
     private const string c_HudBarCacheFolder = "cache";
     private const string c_HudBarSettingsFolder = "settings";
     private const string c_HudBarLandingsFolder = "landings";
 
-    // MyDocuments folder
-    private static readonly string c_MyDocuments = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
+    // Temp file folder in UserTemp
+    private const string c_HudBarTemp = "HudBar";
+
 
     // Path to MyDocuments\ ...
     private static string _hudBarDocs = "";
@@ -48,6 +54,17 @@ namespace bm98_hbFolders
 
     // Shelf
     private static string c_AptReportSubfolder = "Airport Reports"; // where the Airport reports will go
+    private static string c_FPlanPDF = "@.FlightPlan.pdf";
+    private static string c_FPlanPNG = "@.FlightPlan.png";
+    private static string c_FPlanJPG = "@.FlightPlan.jpg";
+    private static string c_FTablePNG = "@.FlightTable.png";
+
+
+    // temp
+    private static string _tempFiles = "";
+
+    // flag
+    private static bool _initialized = false;
 
     /// <summary>
     /// Initialize all HudBar files and locations 
@@ -65,6 +82,19 @@ namespace bm98_hbFolders
       catch (Exception ex) {
         _hudBarDocs = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
       }
+
+      // temp
+      _tempFiles = Path.Combine( c_UserTemp, c_HudBarTemp );
+      try {
+        // make sure the database path exists - but never fail..
+        if (!Directory.Exists( _tempFiles )) {
+          Directory.CreateDirectory( _tempFiles );
+        }
+      }
+      catch (Exception ex) {
+        _tempFiles = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
+      }
+
       // database
       _genAptDBPath = Path.Combine( _hudBarDocs, c_HudBarDbFolder );
       try {
@@ -115,54 +145,91 @@ namespace bm98_hbFolders
       catch (Exception ex) {
         _cachePath = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
       }
+
+      _initialized = true;
     }
 
 #pragma warning restore CS0168 // Variable is declared but never used
     #endregion
 
+    // will reply the string if initialized, else throw
+    private static string InitChecked( string reply )
+    {
+      // sanity
+      if (!_initialized) throw new InvalidOperationException( "The Object must be initialized before use (bm98_hbFolders.Folders)" );
+
+      return reply;
+    }
 
     /// <summary>
     /// Returns the Path to save files for the User
     /// </summary>
     /// <returns>A path</returns>
-    public static string UserFilePath => _hudBarDocs;
+    public static string UserFilePath => InitChecked( _hudBarDocs );
+    /// <summary>
+    /// Returns the Path to save temp files for the User
+    /// </summary>
+    /// <returns>A path</returns>
+    public static string UserTempPath => InitChecked( _tempFiles );
+
     /// <summary>
     /// Path to DB files
     /// </summary>
-    public static string DBPath => _genAptDBPath;
+    public static string DBPath => InitChecked( _genAptDBPath );
     /// <summary>
     /// Path to Cache files
     /// </summary>
-    public static string CachePath => _cachePath;
+    public static string CachePath => InitChecked( _cachePath );
     /// <summary>
     /// Path to Settings files
     /// </summary>
-    public static string SettingsPath => _settingsPath;
+    public static string SettingsPath => InitChecked( _settingsPath );
 
     /// <summary>
     /// Path to Landings files
     /// </summary>
-    public static string LandingsPath => _landingsPath;
+    public static string LandingsPath => InitChecked( _landingsPath );
 
     /// <summary>
     /// Path to the Landings CSV file
     /// </summary>
-    public static string LandingsFile => _landingsFile;
+    public static string LandingsFile => InitChecked( _landingsFile );
 
     /// <summary>
     /// GenAptDB File with path
     /// </summary>
-    public static string GenAptDBFile => _genAptDBFile;
+    public static string GenAptDBFile => InitChecked( _genAptDBFile );
     /// <summary>
     /// Settings file + path 
     /// NOTE: Set the app specific Settings File Name 
     /// </summary>
-    public static string SettingsFile => _settingsFile;
+    public static string SettingsFile => InitChecked( _settingsFile );
+
+
+    // SHELF items (Shelf path is in AppSettings)
 
     /// <summary>
-    /// Airport Reports Shelf Subfolder
+    /// Airport Reports Shelf Subfolder (Shelf folder is in AppSettings)
     /// </summary>
     public static string AptReportSubfolder => c_AptReportSubfolder;
+
+    /// <summary>
+    /// Flightplan PDF Filename in Shelf (Shelf folder is in AppSettings)
+    /// </summary>
+    public static string FPlanPDF_FileName => c_FPlanPDF;
+    /// <summary>
+    /// Flightplan JPG Filename in Shelf (Shelf folder is in AppSettings)
+    /// </summary>
+    public static string FPlanPNG_FileName => c_FPlanPNG;
+    /// <summary>
+    /// Flightplan JPG Filename in Shelf (Shelf folder is in AppSettings)
+    /// </summary>
+    public static string FPlanJPG_FileName => c_FPlanJPG;
+    /// <summary>
+    /// Flightplan Table PNG Filename in Shelf (Shelf folder is in AppSettings)
+    /// </summary>
+    public static string FTablePNG_FileName => c_FTablePNG;
+
 
   }
 }

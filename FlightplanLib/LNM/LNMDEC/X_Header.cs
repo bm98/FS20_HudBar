@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+
 using dNetBm98;
+
+using FlightplanLib.Flightplan;
 
 namespace FlightplanLib.LNM.LNMDEC
 {

@@ -158,12 +158,12 @@ namespace FlightplanLib.MSFSPln.PLNDEC
     /// Clean ID of the Waypoint - removed all known decorations
     /// </summary>
     [XmlIgnore]
-    public string Wyp_Ident => Formatter.CleanB21SoaringName( ID );
+    public string Wyp_Ident => Formatter.CleanName( ID );
     /// <summary>
     /// Get the Decoration for soaring waypoints
     /// </summary>
     [XmlIgnore]
-    public string Wyp_Deco => Formatter.GetB21SoaringDecoration( ID );
+    public string Wyp_Deco => Formatter.GetDecoration( ID );
 
     /// <summary>
     /// Returns a Runway ident like RW22 or RW12R etc. RW00 if not provided from the source

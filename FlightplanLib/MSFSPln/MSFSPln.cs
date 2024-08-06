@@ -6,10 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CoordLib;
+
 using FSimFacilityIF;
-using FlightplanLib.MSFSPln.PLNDEC;
 using static FSimFacilityIF.Extensions;
 using FSFData;
+
+using FlightplanLib.Flightplan;
+using FlightplanLib.MSFSPln.PLNDEC;
 
 namespace FlightplanLib.MSFSPln
 {
@@ -58,6 +61,7 @@ namespace FlightplanLib.MSFSPln
       // create waypoints 
       // DepApt and RW is usually provided - don't create new ones
       var wypList = new WaypointList( );
+      bool isDeparture = false; // messy tracking if departure is processed
 
       // create the initial WypList from the PLN
       foreach (var fix in msfsPlan.FlightPlan.WaypointCat) {
@@ -72,14 +76,25 @@ namespace FlightplanLib.MSFSPln
         if (plan.HasApproach && fix.RunwayIdent == plan.Destination.Runway_Ident
               && fix.WaypointType == WaypointTyp.RWY) continue; // ignore Dest Runway- will be inserted by Approach Extension later
 
-        var wyp = new Waypoint( ) {
+        // try to find out if we are on departure or not...
+        isDeparture = false;
+        if (fix.IcaoRec.ICAO_Ident == plan.Origin.Icao_Ident.ICAO
+              && fix.WaypointType == WaypointTyp.APT) isDeparture = true;
+        if (fix.RunwayIdent == plan.Origin.Runway_Ident
+              && fix.WaypointType == WaypointTyp.RWY) isDeparture = true;
+        if (fix.IsSID) isDeparture = true; // SID is also departure..
+
+        var wyp = new Flightplan.Waypoint( ) {
           WaypointType = fix.WaypointType,
           WaypointUsage = fix.UsageType,
+          OnDeparture = isDeparture,
           SourceIdent = fix.ID,
-          Name = fix.Wyp_Ident,
+          CommonName = fix.Wyp_Ident,
           LatLonAlt_ft = new LatLon( fix.Lat, fix.Lon, fix.AltitudeRounded_ft ),
           Airway_Ident = fix.Airway_Ident,
           Icao_Ident = new IcaoRec( ) { ICAO = fix.IcaoRec.ICAO_Ident, Region = fix.IcaoRec.Region, AirportRef = fix.IcaoRec.AirportCode, },
+          SID_Ident = fix.IsSID ? fix.SID_Ident : "",
+          STAR_Ident = fix.IsSTAR ? fix.STAR_Ident : "",
           Stage = "", // TODO not avail, need to calculate this
         };
         wypList.Add( wyp );
@@ -89,7 +104,7 @@ namespace FlightplanLib.MSFSPln
       if (plan.HasSTAR) wypList = wypList.Merge( plan.Destination.ExpandSTAR( ) );
       if (plan.HasApproach) wypList.AddRangeNoPairs( plan.Destination.ExpandAPR( ) );
 
-      plan.Waypoints = wypList;
+      plan.AddWaypointRange( wypList );
       // create Plan Doc HTML
       //  NA
       // create Download Images

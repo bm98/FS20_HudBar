@@ -20,6 +20,7 @@ using static bm98_Map.Drawing.FontsAndColors;
 using bm98_Map.Drawing.DispItems;
 using System.Security.Cryptography;
 using System.Drawing.Drawing2D;
+using FlightplanLib.Flightplan;
 
 namespace bm98_Map.Drawing
 {
@@ -1152,6 +1153,12 @@ namespace bm98_Map.Drawing
     }
 
     /// <summary>
+    /// Returns the selected Runway name
+    /// </summary>
+    /// <returns>An Runway name or empty</returns>
+    public string GetSelectedNavIdRunway( ) => _state.SelectedRwy;
+
+    /// <summary>
     /// Set the WaypointCat for the selected Runway and Approach
     /// </summary>
     /// <param name="aproachName">Approach name (RNAV, ILS ..)</param>
@@ -1160,6 +1167,12 @@ namespace bm98_Map.Drawing
       _state.SelectedRwyApproach = aproachName;
       LayouIfrMarkLabels( );
     }
+
+    /// <summary>
+    /// Returns the selected approach name
+    /// </summary>
+    /// <returns>An approach name or empty</returns>
+    public string GetSelectedNavIdRunwayApproach( ) => _state.SelectedRwyApproach;
 
     /// <summary>
     /// Set the List of alternate Airports for Rendering
@@ -1195,15 +1208,17 @@ namespace bm98_Map.Drawing
 
     #region API Route
 
+
     /// <summary>
-    /// To set the Route plotted on the Map
+    /// To set the Flightplan plotted on the Map (replaces Route)
     /// </summary>
-    /// <param name="route">A route Obj</param>
-    public void SetRoute( Route route )
+    /// <param name="flightplan">A Flightplan Obj</param>
+    public void SetFlightplan( FlightPlan flightplan )
     {
       // sanity
-      if (route == null) return; // fatal programm error..
-      if (route.RoutePointCat.Count < 3) return; // not enough points in route
+      if (flightplan == null) return; // fatal programm error..
+      if (!flightplan.IsValid) return; // invalid
+      if (flightplan.Waypoints.Count( ) < 3) return; // not enough points in plan
 
       // all Route items
       var routeList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.ROUTE )?.SubItemList;
@@ -1213,24 +1228,24 @@ namespace bm98_Map.Drawing
       routeList.Clear( );
 
       // make all
-      foreach (var rp in route.RoutePointCat) {
-        var bm = rp.OutboundCoordinate.IsEmpty ? Properties.Resources.route_waypoint_end : Properties.Resources.route_waypoint;
+      foreach (var rp in flightplan.Waypoints) {
+        var bm = rp.OutboundLatLonAlt.IsEmpty ? Properties.Resources.route_waypoint_end : Properties.Resources.route_waypoint;
         var rtPoint = new RoutePointItem( bm ) {
           Key = GProc.DispID_Anon( ),
-          Active = true, // always true, we are using the ManagedHook
+          Active = !rp.HiddenInMap, // always true, we are using the ManagedHook
           SegmentMgr = segMgr,
-          Pen = rp.OutboundApt ? PenRouteApt
-                  : rp.OutboundSID ? PenRouteSid
-                  : rp.OutboundSTAR ? PenRouteSid
-                  : rp.OutboundAirway ? PenRouteAwy
+          Pen = rp.OutboundIsApt ? PenRouteApt
+                  : rp.OutboundIsSID ? PenRouteSid
+                  : rp.OutboundIsSTAR ? PenRouteSid
+                  : rp.OutboundIsAirway ? PenRouteAwy
                   : PenRoute, // select line pen, Apt has prio over Sid
-          CoordPoint = rp.Coordinate,
-          String = rp.IsSIDorSTAR ? $"{rp.ID}\n{rp.AltLimitS}"
-                  : (rp.Coordinate.Altitude > 10) ? $"{rp.ID}\n{rp.Coordinate.Altitude:####0}" : $"{rp.ID}",
+          CoordPoint = rp.LatLonAlt_ft,
+          String = rp.IsProc ? $"{rp.Ident}\n{rp.AltitudeLimitS}"
+                  : (rp.LatLonAlt_ft.Altitude > 10) ? $"{rp.Ident}\n{rp.LatLonAlt_ft.Altitude:####0}" : $"{rp.Ident}",
           Font = FtMid,
           TextBrush = _state.IsMap ? BrushNavAidApt : BrushNavAidAptRdr,
-          OutboundTrack_deg = rp.OutboundTrueTrack,
-          OutboundLatLon = rp.OutboundCoordinate,
+          OutboundTrack_deg = rp.OutboundTrueTrk,
+          OutboundLatLon = rp.OutboundLatLonAlt,
           WypLabelRectangle = new Rectangle( ),
         };
         rtPoint.StringFormat.LineAlignment = StringAlignment.Near;

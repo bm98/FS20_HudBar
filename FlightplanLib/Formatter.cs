@@ -18,10 +18,15 @@ using static FSimFacilityIF.Extensions;
 
 using FSFData;
 
+using FlightplanLib.Flightplan;
+using System.Xml.Linq;
+
 namespace FlightplanLib
 {
   /// <summary>
-  /// Generic De-Serializer helpers
+  /// Generic Helpers
+  /// 
+  ///   Restricted for library internal use
   /// </summary>
   internal class Formatter
   {
@@ -33,11 +38,38 @@ namespace FlightplanLib
     #region STATIC TOOLS
 
     /// <summary>
+    /// true when an alt value is >0
+    /// </summary>
+    /// <param name="altitude">An altitude as double</param>
+    /// <returns>True when >0 </returns>
+    public static bool ValidAlt( double altitude ) => !(double.IsNaN( altitude ) || altitude <= 0.0);
+    /// <summary>
+    /// true when an alt value is invalid
+    /// </summary>
+    /// <param name="altitude">An altitude as long</param>
+    /// <returns>True when invalid </returns>
+    public static bool InvalidAlt( double altitude ) => !ValidAlt( altitude );
+
+    /// <summary>
+    /// true when an alt value is >0
+    /// </summary>
+    /// <param name="altitude">An altitude as double</param>
+    /// <returns>True when >0 </returns>
+    public static bool ValidAlt( long altitude ) => altitude > 0;
+    /// <summary>
+    /// true when an alt value is invalid
+    /// </summary>
+    /// <param name="altitude">An altitude as long</param>
+    /// <returns>True when invalid </returns>
+    public static bool InvalidAlt( long altitude ) => !ValidAlt( altitude );
+
+
+    /// <summary>
     /// Returns the value in the string or NaN
     /// </summary>
     /// <param name="valueS">A value String</param>
     /// <returns>The value or NaN</returns>
-    internal static double GetValue( string valueS )
+    public static double GetValue( string valueS )
     {
       if (double.TryParse( valueS, out double result )) return result;
       return double.NaN;
@@ -48,7 +80,7 @@ namespace FlightplanLib
     /// </summary>
     /// <param name="worldPosition">An LLA string</param>
     /// <returns>A LatLon</returns>
-    internal static LatLon ToLatLon( string worldPosition )
+    public static LatLon ToLatLon( string worldPosition )
     {
       LatLon ll = LatLon.Empty;
       if (LLA.TryParseLLA( worldPosition, out var lat, out var lon, out var alt )) {
@@ -60,6 +92,92 @@ namespace FlightplanLib
       return ll;
     }
 
+    /// <summary>
+    /// Clean from potential Ident decorations
+    /// </summary>
+    /// <param name="decoratedName">A potentialy decorated name</param>
+    /// <returns></returns>
+    public static string CleanName( string decoratedName )
+    {
+      Match match = c_wpGPX.Match( decoratedName );
+      if (match.Success) {
+        return CleanNameGPX( decoratedName );
+      }
+      match = c_wpB21.Match( decoratedName );
+      if (match.Success) {
+        return CleanB21SoaringName( decoratedName );
+      }
+      return decoratedName.TrimEnd( ); ; // no matches
+    }
+
+    /// <summary>
+    /// Get the decorations from the Waypoint ID
+    /// </summary>
+    /// <param name="decoratedName">Possibly a decorated name</param>
+    /// <returns>A string</returns>
+    public static string GetDecoration( string decoratedName )
+    {
+      Match match = c_wpGPX.Match( decoratedName );
+      if (match.Success) {
+        return GetGPXDecoration( decoratedName );
+      }
+      match = c_wpB21.Match( decoratedName );
+      if (match.Success) {
+        return GetB21SoaringDecoration( decoratedName );
+      }
+      // seems a regular name
+      return "";
+    }
+
+    #region LNM GPX decorations
+
+    // LNM Has potentially added distances e.g. RW22+3 i.e. RW22 +3nm out
+    private readonly static Regex c_wpGPX =
+  new Regex( @"^(?<name>RW[^\+]*)(?<dist>(\+)\d{1,3})",
+        RegexOptions.Compiled );
+
+    /// <summary>
+    /// Clean from potential GPX Ident decorations
+    /// </summary>
+    /// <param name="gpxName">A potentialy decorated name</param>
+    /// <returns></returns>
+    private static string CleanNameGPX( string gpxName )
+    {
+      Match match = c_wpGPX.Match( gpxName );
+      if (match.Success) {
+        if (match.Groups["name"].Success) {
+          return match.Groups["name"].Value.TrimEnd( );
+        }
+      }
+      // seems a regular name
+      return gpxName.TrimEnd( );
+    }
+
+    /// <summary>
+    /// Get the decorations from the Waypoint ID
+    /// </summary>
+    /// <param name="gpxName">Possibly a LNM GPX Waypoint name</param>
+    /// <returns>A string</returns>
+    private static string GetGPXDecoration( string gpxName )
+    {
+      // decoration see above
+      Match match = c_wpGPX.Match( gpxName );
+      if (match.Success) {
+        var deco = "";
+        if (match.Groups["dist"].Success) { deco += $"{match.Groups["dist"].Value} nm "; }
+        return deco;
+      }
+      // seems a regular name
+      return "";
+    }
+
+    #endregion
+
+    #region B21 Soaring Waypoint decorations
+
+    private readonly static Regex c_wpB21 =
+      new Regex( @"^(?<start_end>\*)?(?<name>([^\+])*)(?<elevation>(\+|-)\d{1,5})(?<maxAlt>\|\d{1,5})?(?<minAlt>\/\d{1,5})?(?<radius>x\d{1,5})?",
+        RegexOptions.Compiled );
 
     /// <summary>
     /// The B21 Soaring engine uses tagged names for the Task Management
@@ -75,7 +193,7 @@ namespace FlightplanLib
     /// </summary>
     /// <param name="b21name">Possibly a B21 Task Waypoint name</param>
     /// <returns>A string</returns>
-    internal static string CleanB21SoaringName( string b21name )
+    private static string CleanB21SoaringName( string b21name )
     {
       Match match = c_wpB21.Match( b21name );
       if (match.Success) {
@@ -86,15 +204,12 @@ namespace FlightplanLib
       // seems a regular name
       return b21name.TrimEnd( );
     }
-    private readonly static Regex c_wpB21 =
-      new Regex( @"^(?<start_end>\*)?(?<name>([^\+])*)(?<elevation>(\+|-)\d{1,5})(?<maxAlt>\|\d{1,5})?(?<minAlt>\/\d{1,5})?(?<radius>x\d{1,5})?" );
-
     /// <summary>
     /// Get the decorations from the Waypoint ID
     /// </summary>
     /// <param name="b21name">Possibly a B21 Task Waypoint name</param>
     /// <returns>A string</returns>
-    internal static string GetB21SoaringDecoration( string b21name )
+    private static string GetB21SoaringDecoration( string b21name )
     {
       // decoration see above
       Match match = c_wpB21.Match( b21name );
@@ -110,6 +225,7 @@ namespace FlightplanLib
       // seems a regular name
       return "";
     }
+    #endregion
 
     #endregion
 
@@ -120,16 +236,18 @@ namespace FlightplanLib
     /// </summary>
     /// <param name="loc">A location</param>
     /// <param name="addRw">True to add the Runway</param>
+    /// <param name="onDeparture">True when on departure, false when on arrival</param>
     /// <returns>List of Waypoints</returns>
-    public static WaypointList ExpandLocationAptRw( Location loc, bool addRw )
+    public static WaypointList ExpandLocationAptRw( Location loc, bool addRw, bool onDeparture )
     {
       var wypList = new WaypointList( );
       if (!loc.LatLonAlt_ft.IsEmpty) {
         // add an 'Airport' 
-        var wyp = new Waypoint( ) {
+        var wyp = new Flightplan.Waypoint( ) {
           WaypointType = WaypointTyp.APT,
+          OnDeparture = onDeparture,
           SourceIdent = loc.Icao_Ident.ICAO,
-          Name = loc.Name,
+          CommonName = loc.Name,
           LatLonAlt_ft = loc.LatLonAlt_ft,
           Icao_Ident = loc.Icao_Ident,
           RunwayNumber_S = loc.RunwayNumber_S,
@@ -138,10 +256,11 @@ namespace FlightplanLib
         wypList.Add( wyp );
         // add an Airport WYP Runway if we know it
         if (addRw && !loc.RunwayLatLonAlt_ft.IsEmpty) {
-          wyp = new Waypoint( ) {
+          wyp = new Flightplan.Waypoint( ) {
             WaypointType = WaypointTyp.RWY,
+            OnDeparture = onDeparture,
             SourceIdent = loc.Runway_Ident,
-            Name = loc.Runway_Ident,
+            CommonName = loc.Runway_Ident,
             LatLonAlt_ft = loc.RunwayLatLonAlt_ft,
             Icao_Ident = new IcaoRec( ) { ICAO = loc.Runway_Ident, Region = loc.Icao_Ident.Region, AirportRef = loc.Icao_Ident.ICAO },
             RunwayNumber_S = loc.RunwayNumber_S,
@@ -159,18 +278,20 @@ namespace FlightplanLib
     /// <param name="loc">A location</param>
     /// <param name="addRw">True to add the Runway</param>
     /// <param name="aprProcRef">Approach ProcRef or empty</param>
+    /// <param name="onDeparture">True when on departure, false when on arrival</param>
     /// <returns>List of Waypoints</returns>
-    public static WaypointList ExpandLocationRwApt( Location loc, bool addRw, string aprProcRef )
+    public static WaypointList ExpandLocationRwApt( Location loc, bool addRw, string aprProcRef, bool onDeparture )
     {
       var wypList = new WaypointList( );
       if (!loc.LatLonAlt_ft.IsEmpty) {
         // add an Airport WYP Runway if we know it
-        Waypoint wyp;
+        Flightplan.Waypoint wyp;
         if (addRw && !loc.RunwayLatLonAlt_ft.IsEmpty) {
-          wyp = new Waypoint( ) {
+          wyp = new Flightplan.Waypoint( ) {
             WaypointType = WaypointTyp.RWY,
+            OnDeparture = onDeparture,
             SourceIdent = loc.Runway_Ident,
-            Name = loc.Runway_Ident,
+            CommonName = loc.Runway_Ident,
             LatLonAlt_ft = loc.RunwayLatLonAlt_ft,
             Icao_Ident = new IcaoRec( ) { ICAO = loc.Runway_Ident, Region = loc.Icao_Ident.Region, AirportRef = loc.Icao_Ident.ICAO },
             RunwayNumber_S = loc.RunwayNumber_S,
@@ -179,10 +300,11 @@ namespace FlightplanLib
           wypList.Add( wyp );
         }
         // add an 'Airport' 
-        wyp = new Waypoint( ) {
+        wyp = new Flightplan.Waypoint( ) {
           WaypointType = WaypointTyp.APT,
+          OnDeparture = onDeparture,
           SourceIdent = loc.Icao_Ident.ICAO,
-          Name = loc.Name,
+          CommonName = loc.Name,
           LatLonAlt_ft = loc.LatLonAlt_ft,
           Icao_Ident = loc.Icao_Ident,
           ApproachTypeS = aprProcRef.ProcOf( ),
@@ -269,15 +391,16 @@ namespace FlightplanLib
       // create Waypoint
       foreach (var sWyp in srcWyps) {
         if (sWyp.WYP == default) continue; // ignore where we did not find a Waypoint for the Fix
-        var wyp = new Waypoint( ) {
+        var wyp = new Flightplan.Waypoint( ) {
           WaypointType = sWyp.WYP.WaypointType,
           WaypointUsage = sWyp.WaypointUsage,
+          OnDeparture = true,
           SourceIdent = sWyp.WYP.Ident,
-          Name = sWyp.WYP.Ident,
+          CommonName = sWyp.WYP.Ident,
           LatLonAlt_ft = sWyp.WYP.Coordinate,
           Icao_Ident = new IcaoRec( ) { ICAO = sWyp.WYP.Ident, Region = sWyp.WYP.Region },
-          AltitudeLo_ft = sWyp.AltitudeLo_ft,
-          AltitudeHi_ft = sWyp.AltitudeHi_ft,
+          AltitudeLimitLo_ft = sWyp.AltitudeLo_ft,
+          AltitudeLimitHi_ft = sWyp.AltitudeHi_ft,
           RunwayNumber_S = sid.RunwayIdent.RwNumberOf( ),
           RunwayDesignation = sid.RunwayIdent.RwDesignationOf( ),
           SID_Ident = ProcS( sid.Ident, transition ),
@@ -308,15 +431,16 @@ namespace FlightplanLib
       // create Waypoint
       foreach (var sWyp in srcWyps) {
         if (sWyp.WYP == default) continue; // ignore where we did not find a Waypoint for the Fix
-        var wyp = new Waypoint( ) {
+        var wyp = new Flightplan.Waypoint( ) {
           WaypointType = sWyp.WYP.WaypointType,
           WaypointUsage = sWyp.WaypointUsage,
+          OnDeparture = false,
           SourceIdent = sWyp.WYP.Ident,
-          Name = sWyp.WYP.Ident,
+          CommonName = sWyp.WYP.Ident,
           LatLonAlt_ft = sWyp.WYP.Coordinate,
           Icao_Ident = new IcaoRec( ) { ICAO = sWyp.WYP.Ident, Region = sWyp.WYP.Region },
-          AltitudeLo_ft = sWyp.AltitudeLo_ft,
-          AltitudeHi_ft = sWyp.AltitudeHi_ft,
+          AltitudeLimitLo_ft = sWyp.AltitudeLo_ft,
+          AltitudeLimitHi_ft = sWyp.AltitudeHi_ft,
           RunwayNumber_S = star.RunwayIdent.RwNumberOf( ),
           RunwayDesignation = star.RunwayIdent.RwDesignationOf( ),
           STAR_Ident = ProcS( star.Ident, transition ),
@@ -363,15 +487,16 @@ namespace FlightplanLib
 
           foreach (var sWyp in txWyps.Value) {
             if (sWyp.WYP == default) continue; // ignore where we did not find a Waypoint for the Fix
-            var wyp = new Waypoint( ) {
+            var wyp = new Flightplan.Waypoint( ) {
               WaypointType = sWyp.WYP.WaypointType,
               WaypointUsage = sWyp.WaypointUsage,
+              OnDeparture = false,
               SourceIdent = sWyp.WYP.Ident,
-              Name = sWyp.WYP.Ident,
+              CommonName = sWyp.WYP.Ident,
               LatLonAlt_ft = sWyp.WYP.Coordinate,
               Icao_Ident = new IcaoRec( ) { ICAO = sWyp.WYP.Ident, Region = sWyp.WYP.Region },
-              AltitudeLo_ft = sWyp.AltitudeLo_ft,
-              AltitudeHi_ft = sWyp.AltitudeHi_ft,
+              AltitudeLimitLo_ft = sWyp.AltitudeLo_ft,
+              AltitudeLimitHi_ft = sWyp.AltitudeHi_ft,
               RunwayNumber_S = apr.RunwayIdent.RwNumberOf( ),
               RunwayDesignation = apr.RunwayIdent.RwDesignationOf( ),
               ApproachTypeS = apr.NavType.ToString( ),
@@ -400,15 +525,16 @@ namespace FlightplanLib
           wypList.Remove( wypList.Last( ) );// remove last
         }
         // create the Wyp
-        var wyp = new Waypoint( ) {
+        var wyp = new Flightplan.Waypoint( ) {
           WaypointType = sWyp.WYP.WaypointType,
           WaypointUsage = sWyp.WaypointUsage,
+          OnDeparture = false,
           SourceIdent = sWyp.WYP.Ident,
-          Name = sWyp.WYP.Ident,
+          CommonName = sWyp.WYP.Ident,
           LatLonAlt_ft = sWyp.WYP.Coordinate,
           Icao_Ident = new IcaoRec( ) { ICAO = sWyp.WYP.Ident, Region = sWyp.WYP.Region },
-          AltitudeLo_ft = sWyp.AltitudeLo_ft,
-          AltitudeHi_ft = sWyp.AltitudeHi_ft,
+          AltitudeLimitLo_ft = sWyp.AltitudeLo_ft,
+          AltitudeLimitHi_ft = sWyp.AltitudeHi_ft,
           RunwayNumber_S = apr.RunwayIdent.RwNumberOf( ),
           RunwayDesignation = apr.RunwayIdent.RwDesignationOf( ),
           ApproachTypeS = apr.NavType.ToString( ),

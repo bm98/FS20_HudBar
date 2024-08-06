@@ -124,13 +124,7 @@
   <data name="Silence_VBR50Q48kHz" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sounds\Silence_VBR50Q48kHz.wma;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="TSynth2_VBR50Q48kHz" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Sounds\TSynth2_VBR50Q48kHz.wma;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="TSynth3_VBR50Q48kHz" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sounds\TSynth3_VBR50Q48kHz.wma;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="TSynth_VBR50Q48kHz" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Sounds\TSynth_VBR50Q48kHz.wma;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

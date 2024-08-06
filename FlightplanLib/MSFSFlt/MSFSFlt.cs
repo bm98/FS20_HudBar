@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using System.IO;
 
 using CoordLib;
-using FlightplanLib.MSFSFlt.FLTDEC;
+
 using static FSimFacilityIF.Extensions;
 using FSimFacilityIF;
-using bm98_hbFolders;
 using FSFData;
+
+using FlightplanLib.Flightplan;
+using FlightplanLib.MSFSFlt.FLTDEC;
 
 namespace FlightplanLib.MSFSFlt
 {
@@ -72,9 +74,9 @@ namespace FlightplanLib.MSFSFlt
       if (loc == null) return new FlightPlan( ); // cannot proceed without Destination, return an empty plan
 
       // create waypoints
-      Waypoint prevWyp = new Waypoint( );
+      Flightplan.Waypoint prevWyp = new Flightplan.Waypoint( );
 
-      var wypList = new List<Waypoint>( );
+      var wypList = new List<Flightplan.Waypoint>( );
       foreach (var fixKey in msfsPlan.Used_Waypoints.Keys) {
         var fix = msfsPlan.Waypoint( fixKey );
         // create Waypoint, omit invalid ones
@@ -101,48 +103,42 @@ namespace FlightplanLib.MSFSFlt
         // add an end runway Wyp before the Airport
         // add a start runway Wyp
         if (fix.WaypointType == WaypointTyp.APT && fix.Ident == plan.Origin.Icao_Ident.ICAO) {
-          wypList.AddRange( Formatter.ExpandLocationAptRw( plan.Origin, true ) );
+          wypList.AddRange( Formatter.ExpandLocationAptRw( plan.Origin, true, onDeparture: true ) );
         }
         else if (fix.WaypointType == WaypointTyp.APT && fix.Ident == plan.Destination.Icao_Ident.ICAO) {
-          wypList.AddRange( Formatter.ExpandLocationRwApt( plan.Destination, true, fix.ApproachProcRef ) );
+          wypList.AddRange( Formatter.ExpandLocationRwApt( plan.Destination, true, fix.ApproachProcRef, onDeparture: false ) );
         }
         else {
-          bool addWyp = true;
-          if (fix.Ident == prevWyp.Ident) {
-            // same as before... 
-            if (fix.AltitudeRounded_ft > 0) {
-              // prefer the one with Altitude Information
-              wypList.Remove( prevWyp ); // remove the previous one
-            }
-            else {
-              addWyp = false; // omit this one
-            }
+          // add regular Wyp
+          var wyp = new Flightplan.Waypoint( ) {
+            WaypointType = fix.WaypointType,
+            SourceIdent = fix.SourceIdent,
+            CommonName = fix.Ident,
+            LatLonAlt_ft = new LatLon( fix.Lat, fix.Lon, fix.Altitude_ft ),
+            AltitudeLimitLo_ft = altLo,
+            AltitudeLimitHi_ft = altHi,
+            Icao_Ident = new IcaoRec( ) { ICAO = fix.Ident, Region = fix.Region, AirportRef = fix.Airport, },
+            Airway_Ident = fix.Airway_Ident,
+            SID_Ident = fix.SID_Ident,
+            STAR_Ident = fix.STAR_Ident,
+            ApproachTypeS = fix.ApproachType,
+            ApproachSuffix = fix.ApproachSuffix,
+            RunwayNumber_S = fix.RwNumber_S,
+            RunwayDesignation = fix.RwDesignation,
+          };
+
+          // same as before ? ... 
+          if (wyp.Equals( prevWyp )) {
+            wyp.Merge( prevWyp );
+            wypList.Remove( prevWyp ); // remove the previous one
           }
-          if (addWyp) {
-            // add regular Wyp
-            var wyp = new Waypoint( ) {
-              WaypointType = fix.WaypointType,
-              SourceIdent = fix.SourceIdent,
-              Name = fix.Ident,
-              LatLonAlt_ft = new LatLon( fix.Lat, fix.Lon, fix.Altitude_ft ),
-              AltitudeLo_ft = altLo,
-              AltitudeHi_ft = altHi,
-              Icao_Ident = new IcaoRec( ) { ICAO = fix.Ident, Region = fix.Region, AirportRef = fix.Airport, },
-              Airway_Ident = fix.Airway_Ident,
-              SID_Ident = fix.SID_Ident,
-              STAR_Ident = fix.STAR_Ident,
-              ApproachTypeS = fix.ApproachType,
-              ApproachSuffix = fix.ApproachSuffix,
-              RunwayNumber_S = fix.RwNumber_S,
-              RunwayDesignation = fix.RwDesignation,
-            };
-            wypList.Add( wyp );
-            // carry on
-            prevWyp = wyp;
-          }
+          wypList.Add( wyp );
+          // carry on
+          prevWyp = wyp;
         }
       }
-      plan.Waypoints = wypList;
+      plan.AddWaypointRange( wypList );
+
       // create Plan Doc HTML
       //  NA
       // create Download Images

@@ -10,6 +10,7 @@ using CoordLib.Extensions;
 using FSimFacilityIF;
 using FSFData;
 
+using FlightplanLib.Flightplan;
 
 using static FSimFacilityIF.Extensions;
 
@@ -256,7 +257,7 @@ namespace FlightplanLib
     /// <returns>A list of Waypoints</returns>
     public WaypointList ExpandSTAR( string firstIdent = "" )
     {
-      var wypList = new WaypointList();
+      var wypList = new WaypointList( );
       if (this.LocationType != LocationTyp.Destination) return wypList; // cannot, only Destination can provide a STAR
       if (string.IsNullOrEmpty( _starIdent )) return wypList; // cannot without STAR ident
 
@@ -293,16 +294,20 @@ namespace FlightplanLib
     {
       var wypList = new WaypointList( );
       if (this.LocationType != LocationTyp.Destination) return wypList; // cannot, only Destination can provide an Approach
-      if (string.IsNullOrEmpty( _aprProcRef )) return wypList; // cannot, APR is empty
-
+      /*
+      if (string.IsNullOrEmpty( _aprProcRef )) {
+        // APR is empty, add dest airport
+        return wypList; 
+      }
+      */
       AquireFacilities( );
       if (_airport == null) return wypList; // cannot, return an empty list
 
       var dbRunway = _airport?.Runways.FirstOrDefault( r => r.Ident == Runway_Ident );
       if (dbRunway == null) {
         // add at least the Airport
-        wypList.AddRange( Formatter.ExpandLocationRwApt( this, false, "" ) );
-        wypList.Last( ).Distance_nm = 0; wypList.Last( ).InboundTrueTrk = 0; wypList.Last( ).OutboundTrueTrk = 0;
+        wypList.AddRange( Formatter.ExpandLocationRwApt( this, false, "", onDeparture: false ) );
+        wypList.Last( ).InboundDistance_nm = 0; wypList.Last( ).InboundTrueTrk = 0; wypList.Last( ).OutboundTrueTrk = 0;
         return wypList;
       }
 
@@ -311,8 +316,8 @@ namespace FlightplanLib
               ?? _airport.APRs( ).FirstOrDefault( s => s.ProcRef == _aprProcRef );
       if (dbProc == null) {
         // add at least the RW + Airport
-        wypList.AddRange( Formatter.ExpandLocationRwApt( this, true, "" ) );
-        wypList.Last( ).Distance_nm = 0; wypList.Last( ).InboundTrueTrk = 0; wypList.Last( ).OutboundTrueTrk = 0;
+        wypList.AddRange( Formatter.ExpandLocationRwApt( this, true, "", onDeparture: false ) );
+        wypList.Last( ).InboundDistance_nm = 0; wypList.Last( ).InboundTrueTrk = 0; wypList.Last( ).OutboundTrueTrk = 0;
         return wypList;
       }
 
@@ -320,8 +325,8 @@ namespace FlightplanLib
 
       // Add Arr Airport WYP after MAPR without Calculations
       // Add RW + ArrAirport if the APR was empty
-      wypList.AddRange( Formatter.ExpandLocationRwApt( this, wypList.Count == 0, _aprProcRef ) );
-      wypList.Last( ).Distance_nm = 0; wypList.Last( ).InboundTrueTrk = 0; wypList.Last( ).OutboundTrueTrk = 0;
+      wypList.AddRange( Formatter.ExpandLocationRwApt( this, wypList.Count == 0, _aprProcRef, onDeparture: false ) );
+      wypList.Last( ).InboundDistance_nm = 0; wypList.Last( ).InboundTrueTrk = 0; wypList.Last( ).OutboundTrueTrk = 0;
 
       return wypList;
     }

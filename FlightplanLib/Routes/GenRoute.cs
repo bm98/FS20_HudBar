@@ -8,6 +8,7 @@ namespace FlightplanLib.Routes
 {
   /// <summary>
   /// Generic Route Provider
+  ///  i.e. something like: "EDDF N0410F310 DCT FRD DCT KPT DCT BOA DCT CMP DCT LIRF"
   /// incl. Route Interpreter from Route Descriptions like SimBrief, LNM and other sources
   /// </summary>
   public class GenRoute

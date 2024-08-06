@@ -72,31 +72,31 @@ namespace FS20_HudBar.Bar.Items
       if (e.Delta > 0) {
         // Up
         if (SV.Get<bool>( SItem.bGS_Ap_MACH_mode )) {
-          SV.Set( SItem.cmS_Ap_MACH_setting_step, CmdMode.Inc );
+          SV.Set<CmdMode>( SItem.cmS_Ap_MACH_setting_step, CmdMode.Inc );
         }
         else {
           if (largeChange) {
-            int value = (int)SV.Get<float>( SItem.fGS_Ap_IAS_setting_kt ) + 10;
-            SV.Set( SItem.fGS_Ap_IAS_setting_kt, value );
+            float value = SV.Get<float>( SItem.fGS_Ap_IAS_setting_kt ) + 10;
+            SV.Set<float>( SItem.fGS_Ap_IAS_setting_kt, value );
           }
           else {
-            SV.Set( SItem.cmS_Ap_IAS_setting_step, CmdMode.Inc );
+            SV.Set<CmdMode>( SItem.cmS_Ap_IAS_setting_step, CmdMode.Inc );
           }
         }
       }
       else if (e.Delta < 0) {
         // Down
         if (SV.Get<bool>( SItem.bGS_Ap_MACH_mode )) {
-          SV.Set( SItem.cmS_Ap_MACH_setting_step, CmdMode.Dec );
+          SV.Set<CmdMode>( SItem.cmS_Ap_MACH_setting_step, CmdMode.Dec );
         }
         else {
           if (largeChange) {
-            int value = (int)SV.Get<float>( SItem.fGS_Ap_IAS_setting_kt ) - 10;
+            float value = SV.Get<float>( SItem.fGS_Ap_IAS_setting_kt ) - 10;
             value = (value < 0) ? 0 : value; // cannot supply neg values
-            SV.Set( SItem.fGS_Ap_IAS_setting_kt, value );
+            SV.Set<float>( SItem.fGS_Ap_IAS_setting_kt, value );
           }
           else {
-            SV.Set( SItem.cmS_Ap_IAS_setting_step, CmdMode.Dec );
+            SV.Set<CmdMode>( SItem.cmS_Ap_IAS_setting_step, CmdMode.Dec );
           }
         }
       }

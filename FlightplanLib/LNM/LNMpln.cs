@@ -5,12 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using bm98_hbFolders;
+using FSimFacilityIF;
+using static FSimFacilityIF.Extensions;
+using FSFData;
+
+using FlightplanLib.Flightplan;
 using FlightplanLib.Routes;
 using FlightplanLib.LNM.LNMDEC;
-using FSimFacilityIF;
-using FSFData;
-using static FSimFacilityIF.Extensions;
+
+using bm98_hbFolders;
 
 namespace FlightplanLib.LNM
 {
@@ -116,11 +119,11 @@ namespace FlightplanLib.LNM
       var wypList = new WaypointList( );
 
       // adds the Apt, RW
-      wypList.AddRange( Formatter.ExpandLocationAptRw( plan.Origin, true ) );
+      wypList.AddRange( Formatter.ExpandLocationAptRw( plan.Origin, true, onDeparture: true ) );
       // adds SID if given
       wypList.AddRange( plan.Origin.ExpandSID( ) );
       // track item
-      Waypoint prevWyp = (wypList.Count > 0) ? wypList.Last( ) : new Waypoint( );
+      Flightplan.Waypoint prevWyp = (wypList.Count > 0) ? wypList.Last( ) : new Flightplan.Waypoint( );
 
       foreach (var fix in wyps) {
         if (fix.WaypointType == WaypointTyp.APT) continue; // have it 
@@ -129,9 +132,9 @@ namespace FlightplanLib.LNM
         var icao = new IcaoRec( );// SB are ICAO but also and TOC etc.
         if (fix.WaypointType != WaypointTyp.OTH) { icao.ICAO = fix.Ident; }
 
-        Waypoint wyp = null;
+        Flightplan.Waypoint wyp = null;
         bool addWyp = true;
-        if (fix.Ident == prevWyp.Ident) {
+        if (fix.Equals( prevWyp )) {
           // same as before... 
           if (fix.Pos.Alt > 0) {
             // prefer the one with Altitude Information
@@ -144,25 +147,26 @@ namespace FlightplanLib.LNM
         }
         if (addWyp) {
           // create Waypoint
-          wyp = new Waypoint( ) {
+          wyp = new Flightplan.Waypoint( ) {
             WaypointType = fix.WaypointType,
             SourceIdent = fix.Ident,
-            Name = fix.Name,
+            OnDeparture = false,
+            CommonName = fix.Name,
             LatLonAlt_ft = fix.Pos.Coord,
             Icao_Ident = icao,
             Airway_Ident = fix.Airway,
-            Stage = "", // TODO
+            Stage = "", // done in Post Proc
           };
           wypList.Add( wyp );
         }
         // next round
         prevWyp = wypList.Last( );
       }
-      // Add STAR and Approach
-      wypList.AddRange( plan.Destination.ExpandSTAR( ) );
-      wypList.AddRange( plan.Destination.ExpandAPR( ) );
+      // Add/Merge STAR and Approach
+      //wypList.AddRange(  plan.Destination.ExpandSTAR( ));
+      wypList.AddRange( plan.Destination.ExpandSTAR( ).AppendWithMerge( plan.Destination.ExpandAPR( ) ) );
 
-      plan.Waypoints = wypList;
+      plan.AddWaypointRange( wypList );
 
       // create Plan Doc HTML
       //  NA

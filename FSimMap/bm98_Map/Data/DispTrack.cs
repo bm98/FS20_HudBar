@@ -10,9 +10,9 @@ using CoordLib;
 namespace bm98_Map.Data
 {
   /// <summary>
-  /// Track of an aircraft
+  /// Track of an aircraft to be drawn on the map
   /// </summary>
-  internal class Track
+  internal class DispTrack
   {
     // how many items can be stored in a track
     private const int c_maxTrackLength = 100;
@@ -24,7 +24,7 @@ namespace bm98_Map.Data
     /// cTor:
     /// </summary>
     /// <param name="maxLength">Max number of track point to maintain</param>
-    public Track( int maxLength = c_maxTrackLength )
+    public DispTrack( int maxLength = c_maxTrackLength )
     {
       _trackQueue = new ConcurrentQueue<LatLon>( );
       _maxTrackLength = maxLength;

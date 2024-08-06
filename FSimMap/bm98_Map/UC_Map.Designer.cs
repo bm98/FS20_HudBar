@@ -74,7 +74,10 @@
       this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.mnuTeleport = new System.Windows.Forms.ToolStripMenuItem();
       this.mnuCoord = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+      this.mnuVProfile = new System.Windows.Forms.ToolStripMenuItem();
       this.flpLLTele = new System.Windows.Forms.FlowLayoutPanel();
+      this.vpProfile = new bm98_VProfile.UC_VProfile();
       this.teleportField = new bm98_Map.UI.UC_Teleport();
       this.latLonField = new bm98_Map.UI.UC_LatLon();
       this.flpAcftData.SuspendLayout();
@@ -248,7 +251,7 @@
       this.flpAcftData.Controls.Add(this.lblRA);
       this.flpAcftData.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
       this.flpAcftData.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.flpAcftData.Location = new System.Drawing.Point(266, 388);
+      this.flpAcftData.Location = new System.Drawing.Point(285, 89);
       this.flpAcftData.Name = "flpAcftData";
       this.flpAcftData.Size = new System.Drawing.Size(128, 201);
       this.flpAcftData.TabIndex = 13;
@@ -725,9 +728,11 @@
       // 
       this.ctxMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuTeleport,
-            this.mnuCoord});
+            this.mnuCoord,
+            this.toolStripSeparator1,
+            this.mnuVProfile});
       this.ctxMenu.Name = "ctxMenu";
-      this.ctxMenu.Size = new System.Drawing.Size(159, 48);
+      this.ctxMenu.Size = new System.Drawing.Size(159, 76);
       // 
       // mnuTeleport
       // 
@@ -743,6 +748,18 @@
       this.mnuCoord.Text = "Coordinates";
       this.mnuCoord.Click += new System.EventHandler(this.mnuCoord_Click);
       // 
+      // toolStripSeparator1
+      // 
+      this.toolStripSeparator1.Name = "toolStripSeparator1";
+      this.toolStripSeparator1.Size = new System.Drawing.Size(155, 6);
+      // 
+      // mnuVProfile
+      // 
+      this.mnuVProfile.Name = "mnuVProfile";
+      this.mnuVProfile.Size = new System.Drawing.Size(158, 22);
+      this.mnuVProfile.Text = "Vert.Profile";
+      this.mnuVProfile.Click += new System.EventHandler(this.mnuVProfile_Click);
+      // 
       // flpLLTele
       // 
       this.flpLLTele.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -757,6 +774,20 @@
       this.flpLLTele.Size = new System.Drawing.Size(374, 140);
       this.flpLLTele.TabIndex = 35;
       this.flpLLTele.WrapContents = false;
+      // 
+      // vpProfile
+      // 
+      this.vpProfile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.vpProfile.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+      this.vpProfile.CausesValidation = false;
+      this.vpProfile.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.vpProfile.Location = new System.Drawing.Point(0, 349);
+      this.vpProfile.MaximumSize = new System.Drawing.Size(900, 240);
+      this.vpProfile.MinimumSize = new System.Drawing.Size(900, 240);
+      this.vpProfile.Name = "vpProfile";
+      this.vpProfile.Size = new System.Drawing.Size(900, 240);
+      this.vpProfile.TabIndex = 36;
+      this.vpProfile.TabStop = false;
       // 
       // teleportField
       // 
@@ -792,12 +823,12 @@
       this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(16)))));
       this.CausesValidation = false;
       this.ContextMenuStrip = this.ctxMenu;
+      this.Controls.Add(this.lblLoading);
       this.Controls.Add(this.flpLLTele);
       this.Controls.Add(this.flpDeco);
       this.Controls.Add(this.btTogBehavior);
       this.Controls.Add(this.btRangeAuto);
       this.Controls.Add(this.btRangeXFar);
-      this.Controls.Add(this.lblLoading);
       this.Controls.Add(this.btRangeFarFar);
       this.Controls.Add(this.btNavaids);
       this.Controls.Add(this.btCenterAircraft);
@@ -815,8 +846,9 @@
       this.Controls.Add(this.lblCopyright);
       this.Controls.Add(this.btTower);
       this.Controls.Add(this.btRunway);
-      this.Controls.Add(this.pbDrawing);
+      this.Controls.Add(this.vpProfile);
       this.Controls.Add(this.pbAltLadder);
+      this.Controls.Add(this.pbDrawing);
       this.DoubleBuffered = true;
       this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.ForeColor = System.Drawing.Color.LightYellow;
@@ -884,5 +916,8 @@
     private UI.UC_LatLon latLonField;
     private UI.UC_Teleport teleportField;
     private System.Windows.Forms.FlowLayoutPanel flpLLTele;
+    private bm98_VProfile.UC_VProfile vpProfile;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+    private System.Windows.Forms.ToolStripMenuItem mnuVProfile;
   }
 }

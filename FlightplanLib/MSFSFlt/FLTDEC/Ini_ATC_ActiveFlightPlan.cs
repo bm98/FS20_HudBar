@@ -8,6 +8,8 @@ using CoordLib;
 
 using dNetBm98.IniLib;
 
+using FlightplanLib.Flightplan;
+
 namespace FlightplanLib.MSFSFlt.FLTDEC
 {
   /// <summary>

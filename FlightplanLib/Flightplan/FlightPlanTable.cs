@@ -11,20 +11,25 @@ using DbgLib;
 
 using FSimFacilityIF;
 
-namespace FShelf.FPlans
+namespace FlightplanLib.Flightplan
 {
   /// <summary>
   /// Create a table for the generic FlightPlan
   /// </summary>
 
-  internal class FlightPlanTable
+  public class FlightPlanTable
   {
+    #region STATIC DEBUG
     // A logger
     private static readonly IDbg LOG = Dbg.Instance.GetLogger(
       System.Reflection.Assembly.GetCallingAssembly( ),
       System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+    #endregion
+
 
     private FPTableGen _formatter;
+
+    #region Formatting Utilities
 
     // return a more readable type for the Table
     private string PrettyType( WaypointTyp typ )
@@ -40,7 +45,24 @@ namespace FShelf.FPlans
       }
     }
 
-    private string AsHTML( FlightplanLib.FlightPlan plan )
+    /// <summary>
+    /// Descriptive Content for FPTable
+    /// </summary>
+    public string ProcDescription( Waypoint _w )
+    {
+      return _w.IsSTAR ? $"STAR {_w.STAR_Ident}"
+            : _w.IsSID ? $"SID {_w.SID_Ident}"
+            : _w.IsAirway ? $"via Awy {_w.Airway_Ident}"
+            : _w.IsAPR ?
+              (_w.WaypointType == WaypointTyp.RWY) ? ""
+              : (_w.WaypointUsage == UsageTyp.MAPR) ? $"MAPR"
+                  : (_w.WaypointUsage == UsageTyp.HOLD) ? $"MAPR Hold"
+                  : $"APR {_w.ApproachName}"
+            : _w.IsDecorated ? $"{_w.IdentDecoration}"
+            : "";
+    }
+
+    private string AsHTML( FlightPlan plan )
     {
       _formatter = new FPTableGen( );
 
@@ -71,14 +93,14 @@ namespace FShelf.FPlans
         var rowData = new FPTableGen.RowData( ) {
           Ident = item.Ident,
           AltTarget_ft = altTgt,
-          AltLo_ft = item.AltitudeLo_ft,
-          AltHi_ft = item.AltitudeHi_ft,
+          AltLo_ft = item.AltitudeLimitLo_ft,
+          AltHi_ft = item.AltitudeLimitHi_ft,
           Type = $"{PrettyType( item.WaypointType )}{freq}",
-          Proc = item.ProcDescription( ),
+          Proc = ProcDescription( item ),
           InbTRK_degm = item.InboundMagTrk,
-          Dist_nm = (double.IsNaN( item.Distance_nm ) || (item.Distance_nm < 0.001)) ? float.NaN : (float)item.Distance_nm, // omit NaN and 0 (very small..)
+          Dist_nm = (double.IsNaN( item.InboundDistance_nm ) || (item.InboundDistance_nm < 0.001)) ? float.NaN : (float)item.InboundDistance_nm, // omit NaN and 0 (very small..)
         };
-        remaining_dist -= item.Distance_nm;
+        remaining_dist -= item.InboundDistance_nm;
         _formatter.AddRow( rowData, remaining_dist );
       }
       // fill optional APR with something meaningful
@@ -98,13 +120,15 @@ namespace FShelf.FPlans
       return html;
     }
 
+    #endregion
+
     /// <summary>
     /// Load a FP doc into the designated folder
     /// </summary>
     /// <param name="plan">A FlightPlan</param>
     /// <param name="targetFolder">The target folder</param>
     /// <returns>True if successfull</returns>
-    public bool SaveDocument( FlightplanLib.FlightPlan plan, string targetFolder )
+    public bool SaveDocument( FlightPlan plan, string targetFolder )
     {
       // sanity
       if (plan == null) return false;
@@ -113,18 +137,20 @@ namespace FShelf.FPlans
       var html = AsHTML( plan );
 
       // protect from inadvertend crashes of the unknown Library...
-      Image image;
+      //Image image;
       try {
-        image = TheArtOfDev.HtmlRenderer.WinForms.HtmlRender.RenderToImage( html );
+        bm98_Html.HtmlRenderer.Instance.Html2PNG( html, Path.Combine( targetFolder, bm98_hbFolders.Folders.FTablePNG_FileName ) );
+
+        // image = TheArtOfDev.HtmlRenderer.WinForms.HtmlRender.RenderToImage( html );
       }
       catch (Exception ex) {
         LOG.LogException( "FlightPlanTable.SaveDocument", ex, "Converting to HTML failed" );
         return false;
       }
-
+      /*
       // dest may be locked when viewing
       try {
-        image.Save( Path.Combine( targetFolder, "@.FlightTable.png" ), ImageFormat.Png );
+        image.Save( Path.Combine( targetFolder, c_FTablePNG_DocName ), ImageFormat.Png );
 
         image.Dispose( );
       }
@@ -132,6 +158,7 @@ namespace FShelf.FPlans
         LOG.LogException( "FlightPlanTable.SaveDocument", ex, "Saving to file failed" );
         return false;
       }
+      */
       return true;
 
     }

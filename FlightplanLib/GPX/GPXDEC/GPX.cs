@@ -36,7 +36,17 @@ namespace FlightplanLib.GPX.GPXDEC
     /// True if successfully retrieved
     /// </summary>
     [XmlIgnore]
-    public bool IsValid => (Route != null) && Route.IsValid;
-
+    public bool IsValid {
+      get {
+        // weird - debugger fails to resolve this - and then breaks with Null exception
+        // hence the try catch ??!!
+        try {
+          return (Route != null) && Route.IsValid;
+        }
+        catch {
+          return false;
+        }
+      }
+    }
   }
 }

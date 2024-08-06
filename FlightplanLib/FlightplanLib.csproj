@@ -33,6 +33,26 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\FlightplanLib.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>bin\Debug\FlightplanLib.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Release\FlightplanLib.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CoordLib">
       <HintPath>..\..\..\Redist\CoordLib.dll</HintPath>
@@ -48,6 +68,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -60,7 +81,10 @@
       <Link>SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="FileLink.cs" />
-    <Compile Include="FlightPlan.cs" />
+    <Compile Include="Flightplan\FlightPlan.cs" />
+    <Compile Include="Flightplan\FlightPlanTable.cs" />
+    <Compile Include="Flightplan\FPTableGen.cs" />
+    <Compile Include="SimBrief\SbDocLoader.cs" />
     <Compile Include="GPX\GPXpln.cs" />
     <Compile Include="GPX\GPXplnDataEventArgs.cs" />
     <Compile Include="Formatter.cs" />
@@ -135,13 +159,17 @@
     <Compile Include="SimBrief\SBDEC\OFP.cs" />
     <Compile Include="SimBrief\SimBrief.cs" />
     <Compile Include="SimBrief\SimBriefDataEventArgs.cs" />
-    <Compile Include="Waypoint.cs" />
-    <Compile Include="WaypointList.cs" />
+    <Compile Include="Flightplan\Waypoint.cs" />
+    <Compile Include="Flightplan\WaypointList.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\bm98_hbFolders\bm98_hbFolders.csproj">
       <Project>{6c729d4d-fe93-4794-8320-af00c90d016d}</Project>
       <Name>bm98_hbFolders</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\bm98_Html\bm98_Html.csproj">
+      <Project>{afb45ef1-b6e9-49cb-a904-b9af2d710ac3}</Project>
+      <Name>bm98_Html</Name>
     </ProjectReference>
     <ProjectReference Include="..\DbgLib\DbgLib.csproj">
       <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>

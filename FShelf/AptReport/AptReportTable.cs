@@ -13,11 +13,6 @@ using DbgLib;
 
 using FSimFacilityIF;
 
-using PdfSharp;
-using PdfSharp.Pdf;
-
-using TheArtOfDev.HtmlRenderer.PdfSharp;
-
 using static FSimFacilityIF.Extensions;
 
 namespace FShelf.AptReport
@@ -28,10 +23,14 @@ namespace FShelf.AptReport
 
   internal class AptReportTable
   {
+    #region STATIC
+
     // A logger
     private static readonly IDbg LOG = Dbg.Instance.GetLogger(
       System.Reflection.Assembly.GetCallingAssembly( ),
       System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
+    #endregion
 
     private AptTableGen _formatter;
 
@@ -256,7 +255,7 @@ namespace FShelf.AptReport
         NavaidName = navaid.Name,
         //RangeS = $"{navaid.Range_nm:##0} nm",
 
-        RangeS = $"{ToDirectionArrow( dir), -2} {distance_nm:##0.0} nm ({rsiS})",
+        RangeS = $"{ToDirectionArrow( dir ),-2} {distance_nm:##0.0} nm ({rsiS})",
 
       };
       _formatter.AddNavaidRow( navData );
@@ -311,9 +310,8 @@ namespace FShelf.AptReport
     /// <param name="navaidList">A Navaids List</param>
     /// <param name="fixList">A Fix List</param>
     /// <param name="targetFolder">The target folder</param>
-    /// <param name="asPDF">True to save as PDF else as Image</param>
     /// <returns>True if successfull</returns>
-    public bool SaveDocument( IAirport apt, IList<INavaid> navaidList, IList<IFix> fixList, string targetFolder, bool asPDF )
+    public bool SaveDocument( IAirport apt, IList<INavaid> navaidList, IList<IFix> fixList, string targetFolder )
     {
       // sanity
       if (apt == null) return false;
@@ -321,66 +319,21 @@ namespace FShelf.AptReport
 
       var html = AsHTML( apt, navaidList, fixList );
 
-
-      string fName = $"{apt.Ident}-{apt.IATA}-{apt.Name}" + (asPDF ? ".pdf" : ".png");
+      string fName = $"{apt.Ident}-{apt.IATA}-{apt.Name}.pdf";
       // remove invalid chars in filename
       fName = Path.GetInvalidFileNameChars( ).Aggregate( fName, ( current, c ) => current.Replace( c.ToString( ), string.Empty ) );
 
-      // dest may be locked when viewing
-      try {
-
-        // selected Doc type
-        if (asPDF) {
-          // render as PDF
-
-          PdfDocument pdf;
-          PdfGenerateConfig config = new PdfGenerateConfig( ) {
-            PageSize = PageSize.A3, // fits the 800px HTML doc width
-            PageOrientation = PageOrientation.Portrait,
-            MarginLeft = 20,
-            MarginRight = 10,
-            MarginBottom = 10,
-            MarginTop = 10,
-          };
-
-          // protect from inadvertend crashes of the unknown Library...
-          try {
-            pdf = PdfGenerator.GeneratePdf( html, config );
-          }
-          catch (Exception ex) {
-            LOG.LogException( "AptReportTable.SaveDocument", ex, "Rendering to PDF failed" );
-            return false;
-          }
-
-          pdf.Save( Path.Combine( targetFolder, fName ) );
-
-          pdf.Dispose( );
-        }
-
-        else {
-          // render as PNG image
-
-          // protect from inadvertend crashes of the unknown Library...
-          Image image;
-          try {
-            image = TheArtOfDev.HtmlRenderer.WinForms.HtmlRender.RenderToImage( html );
-          }
-          catch (Exception ex) {
-            LOG.LogException( "AptReportTable.SaveDocument", ex, "Rendering to IMAGE failed" );
-            return false;
-          }
-
-          image.Save( Path.Combine( targetFolder, fName ), ImageFormat.Png );
-
-          image.Dispose( );
-        }
+      if (bm98_Html.HtmlRenderer.Instance.Html2PDF(
+              html,
+              Path.Combine( targetFolder, fName ),
+              fName )
+        ) {
+        return true;
       }
-      catch (Exception ex) {
-        LOG.LogException( "AptReportTable.SaveDocument", ex, "Saving to file failed" );
-        return false;
+      else {
+        LOG.Log( "AptReportTable.SaveDocument", "Rendering or saving to PDF failed" );
       }
-      return true;
-
+      return false;
     }
 
   }

@@ -1,10 +1,4 @@
-﻿using dNetBm98;
-
-using FSimClientIF.Modules;
-
-using PdfSharp;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
@@ -14,7 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using static dNetBm98.XRect;
+using dNetBm98;
+
+using FSimClientIF.Modules;
 
 namespace FShelf.LandPerf
 {

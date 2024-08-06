@@ -1,5 +1,5 @@
 FS20_HudBar V 0.70 - Build 70 BETA
-(c) M. Burri - 20-May-2024
+(c) M. Burri - 12-Aug-2024
 
 Contains files:
 
@@ -8,27 +8,29 @@ FS20_HudBar.exe             The program
 .\DemoBag                   Contains some images to showcase the Flight Bag (new since V0.43)
 
 - All libraries below MUST be in the same folder as the Exe file
+bm98_AColorPicker.dll       A custom Color Picker Dialog
 bm98_Album.dll              UserControl for displaying images
 bm98_Checklist.dll          UserControl for displaying the Checklist Box
 bm98_hb_Controls.dll        UserControls for displaying graphs
+bm98_hb_Folders.dll         Unified Folder manager
+bm98_Html.dll               Library and Wrapper for HTML to PDF/Image conversion
 bm98_Map.dll                Mapping display library
-bm98_AColorPicker.dll       A custom Color Picker Dialog
-bm98_XControls.dll          UserControls for displaying LEDs
+bm98_VProfile.dll           UserControl for displaying VProfiles
 BM98CH_WasmClient.dll       WASM Module client to get LVars
 CoordLib.dll                Coord. handling library
 DbgLib.dll                  Debug helper
+dNetBm98.dll                Tools for .Net and WinForms
 FCamControl.dll             Camera Control WinForms library
 FChecklistBox.dll           ChecklistBox WinForms library
+FlightplanLib.dll           Flightplan library
+FSFDataLib.dll              MS facility database access library
 FShelf.dll                  Shelf WinForms library
-dNetBm98                    Tools for .Net and WinForms
 FSimClientIF.dll            Generic FSim Client interface definition
-FSFData.dll                 MS facility database access library
 FSimFacilityIF.dll          MS facility database interface definition
 FSimIF.dll                  Generic FSim interface definition
 MapLib.dll                  Mapping library
-FlightplanLib.dll           Flightplan library
-MSALib.dll                  MSA altitudes library
 MetarLib.dll                METAR access library
+MSALib.dll                  MSA altitudes library
 PingLib.dll                 An audio lib using Win10 Audio facilities
 SettingsLib.dll             Application settings persistence library
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
@@ -40,11 +42,9 @@ NLog.config.OFF             Logging config file / remove .OFF to enable logging
 BingMapsRESTToolkit.dll     Microsoft provided library for accessing Bing Map data
 LiteDB.dll                  3rd party data management library
 NLog.dll                    3rd party logging library
-HtmlRenderer.dll            3rd party HTML formatting library
-HtmlRenderer.WinForms.dll   3rd party HTML formatting library
-HtmlRenderer.PdfSharp.dll   3rd party PDF formatting wrapper
-PdfSharp.dll				3rd party PDF formatting library
-PdfiumViewer.dll			3rd party PDF renderer library
+TuesPechkin.dll             3rd party HTML formatting library wrapper /replaces HtmlRenderer
+TuesPechkin.Wkhtmltox.Win64.dll 3rd party HTML formatting library /replaces HtmlRenderer
+PdfiumViewer.dll			3rd party PDF viewer library
 
 From Google Fonts Library embedded:
   Share_Tech_Mono			(Used as condensed font)
@@ -55,7 +55,7 @@ From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
 
 Simulator Extension Module (extr. to Community folder)
-  BM98CH_DataConnector_Wasm-V0.2.zip  
+  BM98CH_DataConnector_Wasm-V0.5.zip  
 
 
 dataLoader\ folder:
@@ -63,7 +63,7 @@ FacilityDataLoader.exe      MSFS Facility conversion tool
 BGLlib.dll                  BGL and LLM decoder
 CoordLib.dll                A coord. handling library
 FSimFacilityIF.dll          MS facility database interface definition
-FSFData.dll     MS facility database access library
+FSFDataLib.dll              MS facility database access library
 NLog.config                 Logging config file
 NLog.dll                    3rd party logging library
 LiteDB.dll                  3rd party data management library
@@ -88,12 +88,21 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.70-B70
+- Please UPDATE the WASM Module (from BM98CH_DataConnector_Wasm-V0.5.zip) !!!
+
 - Add Reminder/Alert items
 - Add Tail Hook/Arrester item
+- Add VProfile display in FlightBag - Maps Tab
 - Add FlyBy feature in Camera App
 - Add Use Custom Cameras in Camera App
 - Fix Camera 6DOF Pitch direction (changed in one of the SU updates)
+- Add Support for some prettier Simbrief Flightplan types (LIDO, ACA, EZY, SWA, UAL2018)
+- Add Support to include Simbrief images in Flightplan PDF
 - Update Camera App is completely redone (see quickguide)
+- Update Improverd Flightplan decoding from ext. formats
+- Update PDF/IMG Converter for Shelf replaced with WkHtmlToX library
+- Update Deploy Sound files in HudBar Temp folder (less stray files)
+- Update WASM Module to V0.5 (according to SDK advice)
 - Update QuickGuides
 
 V 0.69-B69

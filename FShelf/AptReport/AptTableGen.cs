@@ -87,10 +87,13 @@ namespace FShelf.AptReport
   .wSmall{
     width:3em;
   }
+  body {
+    font-family: ""segoe ui"", arial, sans-serif;
+  }
   table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
-    width: 800px;
+    width: 100%;
   }
   th.frame {
     font-family: arial, sans-serif; font-weight: bold;
@@ -100,13 +103,13 @@ namespace FShelf.AptReport
     padding: 5px;
   }
   td.frame {
-    font-family: lucida sans unicode, arial unicode ms, arial, sans-serif;
+    font-family: Calibri, ""lucida sans unicode"", ""arial unicode ms"", arial, sans-serif;
     border: 1px solid #dddddd;
     text-align: left;
     padding: 3px;
   }
   td.noframe {
-    font-family: lucida sans unicode, arial unicode ms, arial, sans-serif;
+    font-family: Calibri,""lucida sans unicode"", ""arial unicode ms"", arial, sans-serif;
     border: none;
     text-align: left;
     padding: 1px;

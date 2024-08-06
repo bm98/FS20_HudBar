@@ -1074,7 +1074,7 @@
       <Version>5.0.17</Version>
     </PackageReference>
     <PackageReference Include="NLog">
-      <Version>5.2.8</Version>
+      <Version>5.3.2</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

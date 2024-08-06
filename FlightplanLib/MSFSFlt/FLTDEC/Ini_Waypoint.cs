@@ -11,6 +11,8 @@ using FSimFacilityIF;
 
 using static FSimFacilityIF.Extensions;
 
+using FlightplanLib.Flightplan;
+
 namespace FlightplanLib.MSFSFlt.FLTDEC
 {
   /// <summary>
@@ -48,11 +50,11 @@ namespace FlightplanLib.MSFSFlt.FLTDEC
     /// Cleaned Ident of the Waypoint - removed all known decorations
     /// If the Ident is not provided by the FLT file it returns the Name7 Field as Ident
     /// </summary>
-    public string Ident => string.IsNullOrEmpty( SourceIdent ) ? Name7 : Formatter.CleanB21SoaringName( SourceIdent ).ToUpperInvariant( );
+    public string Ident => string.IsNullOrEmpty( SourceIdent ) ? Name7 : Formatter.CleanName( SourceIdent ).ToUpperInvariant( );
     /// <summary>
     /// Get the Decoration for soaring waypoints
     /// </summary>
-    public string Decoration => Formatter.GetB21SoaringDecoration( SourceIdent );
+    public string Decoration => Formatter.GetDecoration( SourceIdent );
     /// <summary>
     /// True if the Wyp as DECO information
     /// </summary>

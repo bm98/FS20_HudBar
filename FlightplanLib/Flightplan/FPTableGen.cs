@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FShelf.FPlans
+namespace FlightplanLib.Flightplan
 {
   /// <summary>
   /// Create a HTML Document for a FlightPlan in table format
@@ -19,6 +19,7 @@ namespace FShelf.FPlans
       <!DOCTYPE html>
       <html>
       <head>
+      <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
       <style>
       table {
         font-family: arial, sans-serif;
@@ -61,7 +62,9 @@ namespace FShelf.FPlans
 
      */
 
+    // style and meta section
     private const string c_docStyle = @"
+<meta http-equiv=""Content-Type"" content=""text/html;charset=UTF-8""> 
 <style>
   table {
     font-family: arial, sans-serif;

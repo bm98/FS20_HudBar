@@ -4,17 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using bm98_hbFolders;
-
 using CoordLib;
 using CoordLib.Extensions;
 using CoordLib.MercatorTiles;
 
-using FSFData;
-
 using FSimFacilityIF;
 
 using static FSimFacilityIF.Extensions;
+
+using FSFData;
+
+using FlightplanLib.Flightplan;
+
+using bm98_hbFolders;
 
 namespace FlightplanLib.Routes
 {
@@ -187,10 +189,10 @@ namespace FlightplanLib.Routes
       };
 
       Location loc;
-      var wypList = new List<Waypoint>( );
+      var wypList = new List<Flightplan.Waypoint>( );
       SpeedAltRemark currentSA = new SpeedAltRemark( ); // track profile
 
-      Waypoint wyp;
+      Flightplan.Waypoint wyp;
       // create Origin
       if (rteCap.HasDeparture) {
         // if Runway not given, try if there is a SID and a Runway (could be ALL)
@@ -199,7 +201,7 @@ namespace FlightplanLib.Routes
         }
         loc = Formatter.ExpandAirport( rteCap.DepAirport, rteCap.DepRwIdent, LocationTyp.Origin );
         // adding a Null when not found in our DB - then all other DB queries may fail anyway
-        wypList.AddRange( Formatter.ExpandLocationAptRw( loc, true ) ); // add Apt + RWY
+        wypList.AddRange( Formatter.ExpandLocationAptRw( loc, true, onDeparture: true ) ); // add Apt + RWY
       }
       else {
         // no Departure Apt, use the first Waypoint as Origin
@@ -236,10 +238,10 @@ namespace FlightplanLib.Routes
           var w = wyps.Find( wayp => wayp.KEY == fix.WYP_FKey );
           // try get the 'real' waypoint used as there are many with the same name
           // create a Waypoint
-          wyp = new Waypoint( ) {
+          wyp = new Flightplan.Waypoint( ) {
             WaypointType = w.WaypointType,
             SourceIdent = w.Ident,
-            Name = w.Ident,
+            CommonName = w.Ident,
             LatLonAlt_ft = w.Coordinate, // has no valid Altitude, the Fix carries it
             Icao_Ident = new IcaoRec( ) { ICAO = w.Ident, Region = w.Region, AirportRef = "", }, // have no region
             SID_Ident = rteCap.SID.Ident,
@@ -247,7 +249,7 @@ namespace FlightplanLib.Routes
             Stage = "", // TODO not avail, need to calculate this
           };
           wyp.SetAltitude_ft( fix.AltitudeLo_ft );
-          wyp.AltitudeHi_ft = fix.AltitudeHi_ft;
+          wyp.AltitudeLimitHi_ft = fix.AltitudeHi_ft;
           if (wyp.Ident != prevWypIdent) wypList.Add( wyp );
           prevWypIdent = wyp.Ident;
         }
@@ -264,10 +266,10 @@ namespace FlightplanLib.Routes
             foreach (var fix in awyFixes) {
               if (fix.WYP == default) continue; // No Wyp Loaded ??? does not exist in DB - ignore
               // create a Waypoint
-              wyp = new Waypoint( ) {
+              wyp = new Flightplan.Waypoint( ) {
                 WaypointType = fix.WYP.WaypointType,
                 SourceIdent = fix.WYP.Ident,
-                Name = fix.WYP.Ident,
+                CommonName = fix.WYP.Ident,
                 LatLonAlt_ft = fix.WYP.Coordinate,
                 Airway_Ident = routeWyp.AirwayIdent,
                 Icao_Ident = new IcaoRec( ) { ICAO = fix.WYP.Ident, Region = fix.WYP.Region, AirportRef = "", }, // have no region
@@ -291,10 +293,10 @@ namespace FlightplanLib.Routes
             }
             if (!ll.IsEmpty) {
               // valid Coordinate
-              wyp = new Waypoint( ) {
+              wyp = new Flightplan.Waypoint( ) {
                 WaypointType = wypType,
                 SourceIdent = routeWyp.WaypointIdent,
-                Name = routeWyp.WaypointIdent,
+                CommonName = routeWyp.WaypointIdent,
                 LatLonAlt_ft = ll,
                 Icao_Ident = new IcaoRec( ) { ICAO = routeWyp.AirwayIdent, Region = "", AirportRef = "", }, // have no region
                 Stage = "", // TODO not avail, need to calculate this
@@ -319,17 +321,17 @@ namespace FlightplanLib.Routes
           var w = wyps.Find( wayp => wayp.KEY == fix.WYP_FKey );
           // try get the 'real' waypoint used as there are many with the same name
           // create a Waypoint
-          wyp = new Waypoint( ) {
+          wyp = new Flightplan.Waypoint( ) {
             WaypointType = w.WaypointType,
             SourceIdent = w.Ident,
-            Name = w.Ident,
+            CommonName = w.Ident,
             LatLonAlt_ft = w.Coordinate,
             Icao_Ident = new IcaoRec( ) { ICAO = w.Ident, Region = w.Region, AirportRef = "", }, // have no region
             STAR_Ident = rteCap.STAR.Ident,
             Stage = "", // TODO not avail, need to calculate this
           };
           wyp.SetAltitude_ft( fix.AltitudeLo_ft );
-          wyp.AltitudeHi_ft = fix.AltitudeHi_ft;
+          wyp.AltitudeLimitHi_ft = fix.AltitudeHi_ft;
           if (wyp.Ident != prevWypIdent) wypList.Add( wyp );
           prevWypIdent = wyp.Ident;
         }
@@ -348,10 +350,10 @@ namespace FlightplanLib.Routes
           var wyps = DbLookup.WaypointList( aprFixes, Folders.GenAptDBFile );
           foreach (var fix in aprFixes) {
             var w = wyps.Find( wayp => wayp.KEY == fix.WYP_FKey );
-            wyp = new Waypoint( ) {
+            wyp = new Flightplan.Waypoint( ) {
               WaypointType = w.WaypointType,
               SourceIdent = w.Ident,
-              Name = w.Ident,
+              CommonName = w.Ident,
               LatLonAlt_ft = w.Coordinate,
               Icao_Ident = new IcaoRec( ) { ICAO = w.Ident, Region = w.Region },
               ApproachTypeS = rteCap.ApproachIdent,
@@ -377,7 +379,7 @@ namespace FlightplanLib.Routes
         }
         loc = Formatter.ExpandAirport( rteCap.ArrAirport, rteCap.ArrRwIdent, LocationTyp.Destination );
         // add a Runway if we don't have an Approach, and an APT (don't use Approach Proc)
-        wypList.AddRange( Formatter.ExpandLocationRwApt( loc, !rteCap.HasApproach, "" ) );
+        wypList.AddRange( Formatter.ExpandLocationRwApt( loc, !rteCap.HasApproach, "", onDeparture: false ) );
       }
       else {
         // No Arrival Apt, use the last Waypoint as Destination
@@ -393,7 +395,7 @@ namespace FlightplanLib.Routes
       plan.Destination = loc;
 
       // finally
-      plan.Waypoints = wypList;
+      plan.AddWaypointRange( wypList );
 
       // create Plan Doc HTML
       //  NA

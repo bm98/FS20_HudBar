@@ -14,6 +14,7 @@ using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
 using static FS20_HudBar.GUI.GUI_Fonts;
 using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -72,19 +73,19 @@ namespace FS20_HudBar.Bar.Items
       if (e.Delta > 0) {
         // Up
         if (largeChange) {
-          SV.Set( SItem.cmS_Ap_ALT_setting_step1000ft, FSimClientIF.CmdMode.Inc );
+          SV.Set<CmdMode>( SItem.cmS_Ap_ALT_setting_step1000ft, CmdMode.Inc );
         }
         else {
-          SV.Set( SItem.cmS_Ap_ALT_setting_step, FSimClientIF.CmdMode.Inc );
+          SV.Set<CmdMode>( SItem.cmS_Ap_ALT_setting_step, CmdMode.Inc );
         }
       }
       else if (e.Delta < 0) {
         // Down
         if (largeChange) {
-          SV.Set( SItem.cmS_Ap_ALT_setting_step1000ft, FSimClientIF.CmdMode.Dec );
+          SV.Set<CmdMode>( SItem.cmS_Ap_ALT_setting_step1000ft, CmdMode.Dec );
         }
         else {
-          SV.Set( SItem.cmS_Ap_ALT_setting_step, FSimClientIF.CmdMode.Dec );
+          SV.Set<CmdMode>( SItem.cmS_Ap_ALT_setting_step, CmdMode.Dec );
         }
       }
     }
@@ -94,7 +95,7 @@ namespace FS20_HudBar.Bar.Items
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
       //SV.ALThold_active = true; // toggles independent of the set value
-      SV.Set( SItem.cmS_Ap_ALT_hold_current, FSimClientIF.CmdMode.Toggle );
+      SV.Set<CmdMode>( SItem.cmS_Ap_ALT_hold_current, CmdMode.Toggle );
     }
 
     /// <summary>

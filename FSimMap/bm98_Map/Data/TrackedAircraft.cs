@@ -108,6 +108,7 @@ namespace bm98_Map.Data
       Trk_degm = aircraft.Trk_degm;
       TrueTrk_deg = aircraft.TrueTrk_deg;
       AltitudeMsl_ft = aircraft.AltitudeMsl_ft;
+      AltitudeIndicated_ft = aircraft.AltitudeIndicated_ft;
       RadioAlt_ft = aircraft.RadioAlt_ft;
       Ias_kt = aircraft.Ias_kt;
       Gs_kt = aircraft.Gs_kt;

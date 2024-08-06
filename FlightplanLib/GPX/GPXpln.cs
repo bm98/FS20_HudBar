@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 using static FSimFacilityIF.Extensions;
 
+using FlightplanLib.Flightplan;
+
 namespace FlightplanLib.GPX
 {
   /// <summary>
@@ -63,14 +65,14 @@ namespace FlightplanLib.GPX
         var wyp = new Waypoint( ) {
           WaypointType = fix.WaypointType,
           SourceIdent = string.IsNullOrEmpty( fix.Ident ) ? fix.CoordName : fix.Ident,
-          Name = fix.ICAO,
+          CommonName = fix.ICAO,
           LatLonAlt_ft = fix.LatLonAlt_ft,
           Airway_Ident = "", // not available
           Frequency = "", // GPX has no Frequ
           Icao_Ident = new IcaoRec( ) { ICAO = string.IsNullOrEmpty( fix.ICAO ) ? fix.CoordName : fix.ICAO, Region = "", AirportRef = "", }, // have no region
           InboundTrueTrk = -1, // need to calculate this
           OutboundTrueTrk = -1, // need to calculate this
-          Distance_nm = -1, // need to calculate this
+          InboundDistance_nm = -1, // need to calculate this
           SID_Ident = fix.SID_Ident,
           STAR_Ident = fix.STAR_Ident,
           ApproachTypeS = fix.ApproachProcRef, // e.g. RNAV, ILS
@@ -78,14 +80,15 @@ namespace FlightplanLib.GPX
           ApproachSequence = fix.ApproachSequ,
           RunwayNumber_S = rwIdent.RwNumberOf( ),
           RunwayDesignation = rwIdent.RwDesignationOf( ),
-          AltitudeLo_ft = fix.AltLo_ft,
-          AltitudeHi_ft = fix.AltHi_ft,
+          AltitudeLimitLo_ft = fix.AltLo_ft,
+          AltitudeLimitHi_ft = fix.AltHi_ft,
           WaypointUsage = fix.UsageType,
           Stage = "", // TODO not avail, need to calculate this
         };
         wypList.Add( wyp );
       }
-      plan.Waypoints = wypList;
+      plan.AddWaypointRange( wypList );
+
       // create Plan Doc HTML
       //  NA
       // create Download Images

@@ -13,6 +13,7 @@ using System.IO;
 using DbgLib;
 using Windows.Devices.Enumeration;
 using System.Linq.Expressions;
+using Windows.Foundation;
 
 namespace PingLib
 {
@@ -29,6 +30,9 @@ namespace PingLib
     private static readonly IDbg LOG = Dbg.Instance.GetLogger(
       System.Reflection.Assembly.GetCallingAssembly( ),
       System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
+    // flag to not deploy multiple times
+    private static bool _soundsDeployed = false;
 
     // files we streamed to play - such files are put into the users Temp folder and remain there until someone cleans them up..
     private static List<SoundInfo> _installedSounds = new List<SoundInfo>( );
@@ -49,40 +53,60 @@ namespace PingLib
       //  _installedSounds.Add( new SoundInfo( "Synth_3", "Syth Tone 3 Smooth In", "Synth3_VBR50Q48kHz", Melody.Synth_3, SoundType.wma, 1, 0.3f, 61 ) );  // Tone 0 = Silence
       //  _installedSounds.Add( new SoundInfo( "Woodblocks_1", "Woodblock Sound 1", "Wood1_VBR50Q48kHz", Melody.Wood_1, SoundType.wma, 1, 0.4f, 61 ) );   // Tone 0 = Silence
       _installedSounds.Add( new SoundInfo( "Bell_1", "Bell Sound 1", "Bell1_VBR50Q48kHz", Melody.Bell_1, SoundType.wma, 3, 2.95f, 61 ) );             // Tone 0 = Silence
-      _installedSounds.Add( new SoundInfo( "TSynth", "Triangle  Wave", "TSynth_VBR50Q48kHz", Melody.TSynth, SoundType.wma, 0.45f, 0.3f, 6 ) );         // Tone 0 = Silence
-      _installedSounds.Add( new SoundInfo( "TSynth_2", "Triangle 2  Wave", "TSynth2_VBR50Q48kHz", Melody.TSynth2, SoundType.wma, 2.0f, 1.9f, 4 ) );   // Tone 0 = Silence, 2sec 
+      //_installedSounds.Add( new SoundInfo( "TSynth", "Triangle  Wave", "TSynth_VBR50Q48kHz", Melody.TSynth, SoundType.wma, 0.45f, 0.3f, 6 ) );         // Tone 0 = Silence
+      //_installedSounds.Add( new SoundInfo( "TSynth_2", "Triangle 2  Wave", "TSynth2_VBR50Q48kHz", Melody.TSynth2, SoundType.wma, 2.0f, 1.9f, 4 ) );   // Tone 0 = Silence, 2sec 
       _installedSounds.Add( new SoundInfo( "TSynth_2", "Clarinet Wave", "TSynth3_VBR50Q48kHz", Melody.TSynth3, SoundType.wma, 2.0f, 1.9f, 5 ) );   // Tone 0 = Silence, 2sec 
+
+      DeploySoundFiles( );
     }
 
-    /// <summary>
-    ///  Returns all of the installed sounds.
-    /// </summary>
-    /// <returns>Returns a read-only collection of the sounds currently available from the library</returns>
-    public static IReadOnlyCollection<SoundInfo> GetInstalledSounds( )
+    // deploy sound files into the designated folder to pick them up later for streaming
+    private static bool DeploySoundFiles( )
     {
-      LoadAvailableSounds( ); // reload (for now one cannot add own Sound Files)
-      return _installedSounds;
-    }
+      if (_soundsDeployed) return true; // already done
 
-    /// <summary>
-    /// Deletes the temp sound files deployed by this module (Streamed files land in the users Temp folder)
-    /// </summary>
-    public static void RemoveTempSounds( )
-    {
-      var usrTemp = Path.GetTempPath( );
-      // list of filenames without extension
-      foreach (var sFileName in _streamedSoundFiles) {
-        var sFiles = Directory.EnumerateFiles( usrTemp, sFileName + "*.wma" ); // get all (there might be FILE (n).wma)
-        foreach (var sFile in sFiles) {
-          // never fail the Delete
-          try {
-            File.Delete( sFile );
+      foreach (var soundInfo in _installedSounds) {
+        try {
+          using (var outStream = File.Create( SoundFileFrom( soundInfo ), 4096 )) {
+            var res = Properties.Resources.ResourceManager.GetObject( soundInfo.Id );
+            if (res is byte[]) {
+              using (var streamWriter = new BinaryWriter( outStream )) {
+                streamWriter.Write( (byte[])Properties.Resources.ResourceManager.GetObject( soundInfo.Id ) );
+              }
+            }
+            else {
+              using (var inStream = Properties.Resources.ResourceManager.GetStream( soundInfo.Id )) {
+                inStream.CopyTo( outStream );
+              }
+            }
           }
-          catch { }
+        }
+        catch (Exception ex) {
+          // could not write soundfile - log and ignore
+          LOG.LogException( "DeploySoundFiles", ex, $"Deploy failed for sound <{soundInfo.Id}>" );
         }
       }
-      _streamedSoundFiles.Clear( );
+      // finishing
+      _soundsDeployed = true;
+      return true;
     }
+
+
+    // returns a soundfile path and name from SoundInfo
+    private static string SoundFileFrom( SoundInfo soundInfo ) => Path.Combine( SoundFolder( ), $"{soundInfo.Id}.{soundInfo.SType}" );
+
+    // returns the (hudbar temp) folder name for sounds
+    // use only this method and not the variable !!
+    private static string SoundFolder( )
+    {
+      if (string.IsNullOrEmpty( _soundFolder )) {
+        // initialize if needed
+        _soundFolder = bm98_hbFolders.Folders.UserTempPath;
+      }
+      return _soundFolder;
+    }
+    private static string _soundFolder = "";
+
 
     // Collect Audio Render Device(s) to see if any is available
     private static void LoadInstalledOutputDevices( )
@@ -101,6 +125,39 @@ namespace PingLib
     }
 
     /// <summary>
+    ///  Returns all of the installed sounds.
+    /// </summary>
+    /// <returns>Returns a read-only collection of the sounds currently available from the library</returns>
+    public static IReadOnlyCollection<SoundInfo> GetInstalledSounds( )
+    {
+      LoadAvailableSounds( ); // reload (for now one cannot add own Sound Files)
+      return _installedSounds;
+    }
+
+    /// <summary>
+    /// Deletes the temp sound files deployed by this module (Streamed files land in the users Temp folder)
+    /// 
+    /// TODO no longer needed when deploying sounds to the HudBar TempLocation - ev. remove this
+    /// 
+    /// </summary>
+    public static void RemoveTempSounds( )
+    {
+      var usrTemp = Path.GetTempPath( );
+      // list of filenames without extension
+      foreach (var sFileName in _streamedSoundFiles) {
+        var sFiles = Directory.EnumerateFiles( usrTemp, sFileName + "*.wma" ); // get all (there might be FILE (n).wma)
+        foreach (var sFile in sFiles) {
+          // never fail the Delete
+          try {
+            File.Delete( sFile );
+          }
+          catch { }
+        }
+      }
+      _streamedSoundFiles.Clear( );
+    }
+
+    /// <summary>
     /// Returns all installed output devices
     /// </summary>
     /// <returns>Returns a read-only collection of the output devices currently installed on the system.</returns>
@@ -109,7 +166,6 @@ namespace PingLib
       LoadInstalledOutputDevices( );
       return _installedOutputDevices;
     }
-
 
     #endregion
 
@@ -268,6 +324,8 @@ namespace PingLib
 
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+
+    // TODO Using deployed files to read for streaming - ev. remove this utility for dynamic streaming
     private async void StreamedFileWriter( StreamedFileDataRequest request )
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
@@ -324,7 +382,11 @@ namespace PingLib
           await EndOfSound( );
           return;
         }
-        StorageFile file = await StorageFile.CreateStreamedFileAsync( $"{_sound.Id}.{_sound.SType}", StreamedFileWriter, null );
+        //TODO ev. Remove this
+        // StorageFile file = await StorageFile.CreateStreamedFileAsync( $"{_sound.Id}.{_sound.SType}", StreamedFileWriter, null ); // using temp files
+
+        // using deployed files for streaming
+        StorageFile file = await StorageFile.GetFileFromPathAsync( SoundFileFrom( _sound ) );
         _streamedSoundFiles.Add( file.DisplayName ); // add to clean up list
         // create the InputNode
         var resultAF = await _audioGraph.CreateFileInputNodeAsync( file );
@@ -370,7 +432,7 @@ namespace PingLib
       }
     }
 
-    // will be called when speaking has finished
+    // will be called when sound has finished
     private async void _fileInputNode_FileCompleted( AudioFileInputNode sender, object args )
     {
       if (_fileInputNode == null) {

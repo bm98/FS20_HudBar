@@ -5,13 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-using bm98_hbFolders;
-
 using CoordLib;
 
 using FSimFacilityIF;
 
 using static FSimFacilityIF.Extensions;
+
+using FlightplanLib.Flightplan;
+
+using bm98_hbFolders;
 
 namespace FlightplanLib.MSFSPln.PLNDEC
 {

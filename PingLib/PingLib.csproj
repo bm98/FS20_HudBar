@@ -76,7 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.22621.3233</Version>
+      <Version>10.0.26100.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -116,6 +116,10 @@
     <None Include="Sounds\TSynth_VBR50Q48kHz.wma" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\bm98_hbFolders\bm98_hbFolders.csproj">
+      <Project>{6c729d4d-fe93-4794-8320-af00c90d016d}</Project>
+      <Name>bm98_hbFolders</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DbgLib\DbgLib.csproj">
       <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
       <Name>DbgLib</Name>

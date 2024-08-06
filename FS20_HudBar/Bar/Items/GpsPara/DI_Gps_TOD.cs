@@ -49,8 +49,8 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        var d = SV.Get<float>( SItem.fG_Gps_TOD_dist_nm );
-        _value1.Value = (d>0)?d:float.NaN;
+        var d = SV.Get<float>( SItem.fG_Gps_TOD_dist_nm, float.NaN ); // send NaN to handle 'not available'
+        _value1.Value = (d > 0) ? d : float.NaN;
       }
     }
 

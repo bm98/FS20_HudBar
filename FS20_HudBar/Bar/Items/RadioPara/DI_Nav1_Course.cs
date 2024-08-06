@@ -99,7 +99,7 @@ namespace FS20_HudBar.Bar.Items
 
         // Has NAV1
         if (SV.Get<bool>( SItem.bG_Nav_1_hasSignal )) {
-          // desired heading to the NDB
+          // desired heading to the VOR
           _value1.Value = SV.Get<float>( SItem.fGS_Nav_1_OBS_deg );
           float err = SV.Get<float>( SItem.fG_Nav_1_RadialError_deg );
           _value1.ItemForeColor = Math.Abs( err ) <= 1.5 ? cOK : Math.Abs( err ) <= 3 ? cWarn : cInfo; // green / orange / white
