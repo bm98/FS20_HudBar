@@ -592,8 +592,8 @@ namespace FlightplanLib.Flightplan
     {
       switch (AltitudeLimitType) {
         case AltLimitType.NoLimit: return ""; // ""
-        case AltLimitType.At:
-        case AltLimitType.Runway: return $"{this.AltitudeLimitLo_ft:##,##0}"; // =15'000
+        case AltLimitType.Runway: return $"{this.LatLonAlt_ft.Altitude:##,##0}"; // 150
+        case AltLimitType.At: return $"{this.AltitudeLimitLo_ft:##,##0}"; // 15'000
         case AltLimitType.Above: return $"/{this.AltitudeLimitLo_ft:##,##0}"; // /8'000
         case AltLimitType.Below: return $"{this.AltitudeLimitHi_ft:##,##0}/"; // 15'000/
         case AltLimitType.Between: return $"{this.AltitudeLimitHi_ft:##,##0}/{this.AltitudeLimitLo_ft:##,##0}"; // 15'000/8'000

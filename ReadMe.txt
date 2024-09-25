@@ -1,5 +1,5 @@
 FS20_HudBar V 0.70 - Build 70 BETA
-(c) M. Burri - 12-Aug-2024
+(c) M. Burri - 25-Sep-2024
 
 Contains files:
 
@@ -20,6 +20,7 @@ BM98CH_WasmClient.dll       WASM Module client to get LVars
 CoordLib.dll                Coord. handling library
 DbgLib.dll                  Debug helper
 dNetBm98.dll                Tools for .Net and WinForms
+dNetWkhtmlWrap.dll          Wrapping library for PDF formatter
 FCamControl.dll             Camera Control WinForms library
 FChecklistBox.dll           ChecklistBox WinForms library
 FlightplanLib.dll           Flightplan library
@@ -36,15 +37,15 @@ SettingsLib.dll             Application settings persistence library
 SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
 SimConnectClientAdapter.dll Connection wrapper
 SpeechLib.dll               Voice synth lib using Win10 TTS facilities
+WkWrapper.WkhtmlToPdf.Mxe.dll deploys the PDF renderer application
 NLog.config.OFF             Logging config file / remove .OFF to enable logging
 
 3rd Party:
 BingMapsRESTToolkit.dll     Microsoft provided library for accessing Bing Map data
 LiteDB.dll                  3rd party data management library
 NLog.dll                    3rd party logging library
-TuesPechkin.dll             3rd party HTML formatting library wrapper /replaces HtmlRenderer
-TuesPechkin.Wkhtmltox.Win64.dll 3rd party HTML formatting library /replaces HtmlRenderer
-PdfiumViewer.dll			3rd party PDF viewer library
+PdfiumViewer.dll            3rd party PDF viewer library
+wkhtmltopdf.exe             3rd party HTML formatting library wrapper /replaces HtmlRenderer
 
 From Google Fonts Library embedded:
   Share_Tech_Mono			(Used as condensed font)
@@ -96,11 +97,12 @@ V 0.70-B70
 - Add FlyBy feature in Camera App
 - Add Use Custom Cameras in Camera App
 - Fix Camera 6DOF Pitch direction (changed in one of the SU updates)
-- Add Support for some prettier Simbrief Flightplan types (LIDO, ACA, EZY, SWA, UAL2018)
-- Add Support to include Simbrief images in Flightplan PDF
+- Fix Some incorrect ALT holding callouts
+- Add Download the original Simbrief Flightplan PDF (@.FlightPlan), omit image download
+- Update FlightPlan Table is now a PDF (@.FlightTable)
 - Update Camera App is completely redone (see quickguide)
 - Update Improverd Flightplan decoding from ext. formats
-- Update PDF/IMG Converter for Shelf replaced with WkHtmlToX library
+- Update PDF Converter for Shelf replaced with WkHtmlToPDF application
 - Update Deploy Sound files in HudBar Temp folder (less stray files)
 - Update WASM Module to V0.5 (according to SDK advice)
 - Update QuickGuides

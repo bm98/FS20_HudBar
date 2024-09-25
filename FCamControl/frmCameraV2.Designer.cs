@@ -383,6 +383,7 @@
       this.Text = "HudBar - Camera";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmCameraV2_FormClosing);
       this.Load += new System.EventHandler(this.frmCameraV2_Load);
+      this.VisibleChanged += new System.EventHandler(this.frmCameraV2_VisibleChanged);
       this.pnlCamButtons.ResumeLayout(false);
       this.pnlCamButtons.PerformLayout();
       this.ctxMenu.ResumeLayout(false);

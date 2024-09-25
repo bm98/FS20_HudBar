@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 using DbgLib;
 
+using Windows.Foundation.Diagnostics;
+
 namespace FlightplanLib.SimBrief.Provider
 {
   /// <summary>
@@ -77,8 +79,19 @@ namespace FlightplanLib.SimBrief.Provider
     // 6 digit number string allow 2..7 as there is no spec about it (read also '5 or 6'...)
     private static Regex _sbUid = new Regex( @"^([0-9]{2,7})$", RegexOptions.Compiled );
 
-    // true for a valid userID
+    /// <summary>
+    /// true for a valid userID
+    /// </summary>
+    /// <param name="userID">A Simbrief UserID</param>
+    /// <returns>True for a match</returns>
     public static bool IsSimBriefUserID( string userID ) => _sbUid.Match( userID ).Success;
+
+    /// <summary>
+    /// True for allowed remote source (https://www.simbrief.com/)
+    /// </summary>
+    /// <param name="remoteFile">A remote URL</param>
+    /// <returns>True when allowed</returns>
+    public static bool IsAllowedRemote( string remoteFile ) => remoteFile.ToLowerInvariant( ).StartsWith( @"https://www.simbrief.com/" );
 
 
     /// <summary>
@@ -121,12 +134,18 @@ namespace FlightplanLib.SimBrief.Provider
     /// <returns>True when successfull</returns>
     public static async Task<bool> DownloadFile( string remoteFile, string localDocName, string destPath )
     {
+      // sanity - only allow to download from allowed remotes
+      if (!IsAllowedRemote( remoteFile )) {
+        LOG.LogError( "DownloadFile", $"Denied attempt to download:\n{remoteFile}" );
+        return false;
+      }
+
       Uri uri = new Uri( remoteFile );
       bool success = false;
       //GET
       try {
         var response = await httpClient.GetAsync( uri );
-        using (var fs = new FileStream( Path.Combine( destPath, localDocName ), FileMode.CreateNew )) {
+        using (var fs = new FileStream( Path.Combine( destPath, localDocName ), FileMode.Create )) { // overwrite if needed
           await response.Content.CopyToAsync( fs );
         }
         success = true;

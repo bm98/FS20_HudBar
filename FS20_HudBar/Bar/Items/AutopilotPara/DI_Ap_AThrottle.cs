@@ -13,6 +13,7 @@ using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
 using static FSimClientIF.Sim;
+using FSimClientIF;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -62,19 +63,14 @@ namespace FS20_HudBar.Bar.Items
       _value2.Click += _value2_Click;
       _value2.Cursor = Cursors.Hand;
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
+      AddObserver( Short, 5, OnDataArrival );
     }
 
     private void _value1_Click( object sender, EventArgs e )
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      if (SV.Get<bool>( SItem.bG_Ap_ATHR_active ) || SV.Get<bool>( SItem.bG_Ap_ATHRmanaged_active )) {
-        SV.Set( SItem.S_Ap_ATHR_disconnect, true );
-      }
-      else {
-        SV.Set( SItem.bGS_Ap_ATHR_armed, true ); // toggles
-      }
+      SV.Set( SItem.S_Ap_ATHR_toggle, true ); // toggles
     }
 
     private void _value2_Click( object sender, EventArgs e )
@@ -91,17 +87,12 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        if (SV.Get<bool>( SItem.bG_Ap_ATHR_active )) {
-          if (SV.Get<bool>( SItem.bG_Ap_ATHRmanaged_active )) {
-            _value1.ItemForeColor = cTxInfo;
-            _value1.Text = c_activeM;
-          }
-          else {
-            _value1.ItemForeColor = cTxActive;
-            _value1.Text = c_active;
-          }
+        var atr = SV.Get<AutoThrottleMode>( SItem.athG_Ap_ATHR_mode );
+        if (atr == AutoThrottleMode.Active) {
+          _value1.ItemForeColor = cTxActive;
+          _value1.Text = c_active;
         }
-        else if (SV.Get<bool>( SItem.bGS_Ap_ATHR_armed )) {
+        else if (atr == AutoThrottleMode.Armed) {
           _value1.ItemForeColor = cTxSet;
           _value1.Text = c_armed;
         }

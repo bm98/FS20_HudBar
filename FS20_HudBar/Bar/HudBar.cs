@@ -48,7 +48,17 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// The current ATC Flightplan (actually a copy of it)
     /// </summary>
-    public static FlightPlan AtcFlightPlan => FltPlanMgr.FlightPlan;
+    public static FSimClientIF.Flightplan.FlightPlan AtcFlightPlan => AtcFltPlanMgr.AtcFlightPlan;
+    /// <summary>
+    /// The current Shelf Flightplan (loaded by the user)
+    /// </summary>
+    public static FlightplanLib.Flightplan.FlightPlan UserFlightPlan => _userFlightPlanRef;
+    /// <summary>
+    /// Update the Shelf Flightplan (loaded by the user)
+    /// </summary>
+    /// <param name="userFlightPlan">A user loaded Flightplan</param>
+    public static void UpdateUserFlightplan( FlightplanLib.Flightplan.FlightPlan userFlightPlan ) => _userFlightPlanRef = userFlightPlan;
+    private static FlightplanLib.Flightplan.FlightPlan _userFlightPlanRef = new FlightplanLib.Flightplan.FlightPlan( ); // init empty
 
     // voice and sounds  - static, will never be disposed
     private static readonly PingLib.Loops m_ping = new PingLib.Loops( ); // Ping, Sound looping, Tone=0 will be Silence
@@ -661,21 +671,40 @@ namespace FS20_HudBar.Bar
       // update calculations
       Calculator.PaceCalculator( );
 
-      // ATC Airport - maintain APTs (we should always have a Destination here)
-      AirportMgr.Update( AtcFlightPlan.Departure, AtcFlightPlan.Destination );
-      // Maintain the WaypointID Tracker to support the GPS Flightplan 
-      if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
-        // WP Enroute Tracker
-        WPTracker.Track(
-             SV.Get<string>( SItem.sG_Gps_WYP_prevID ),
-             SV.Get<string>( SItem.sG_Gps_WYP_nextID ),
-             SV.Get<double>( SItem.dG_Env_Time_loc_sec ),
-             SV.Get<bool>( SItem.bG_Sim_OnGround )
+      // try to get the WYPs
+      //  SimConnect GPS Waypoint IDs are not always available - depends on acft implementation...
+      string prevWypID = SV.Get<bool>( SItem.bG_Gps_FP_tracking ) ? SV.Get<string>( SItem.sG_Gps_WYP_prevID ) : "";
+      string nextWypID = SV.Get<bool>( SItem.bG_Gps_FP_tracking ) ? SV.Get<string>( SItem.sG_Gps_WYP_nextID ) : "";
+      // update from flightplans, user has prio over ATC
+      if (UserFlightPlan.IsValid) {
+        // User Loaded has prio
+        AirportMgr.Update(
+          UserFlightPlan.Origin.IsValid ? UserFlightPlan.Origin.Icao_Ident.ICAO : "",
+          UserFlightPlan.Destination.IsValid ? UserFlightPlan.Destination.Icao_Ident.ICAO : ""
         );
+        // if we don't know the next WYP from SimConnect, try to use the UserFPlan
+        if (string.IsNullOrEmpty( nextWypID ) && UserFlightPlan.NextRoutePoint.IsValid) {
+          nextWypID = UserFlightPlan.NextRoutePoint.Icao_Ident.ICAO;
+          prevWypID = UserFlightPlan.PrevRoutePoint.Icao_Ident.ICAO;
+        }
+      }
+      else if (AtcFlightPlan.HasFlightPlan) {
+        // ATC Airport - maintain APTs (we should always have a Destination here)
+        AirportMgr.Update( AtcFlightPlan.Departure, AtcFlightPlan.Destination );
+        // does not track Waypoints, so no such option with the ATC Plan
       }
 
+      // Maintain the WaypointID Tracker to support the GPS Flightplan 
+      // WP Enroute Tracker
+      WPTracker.Track(
+           prevWypID, nextWypID,
+           SV.Get<double>( SItem.dG_Env_Time_loc_sec ),
+           SV.Get<bool>( SItem.bG_Sim_OnGround )
+      );
+
+      // load Tooltips of Waypoints - will show a remaining ATC plan if there is any
       // Load Remaining Plan if the WYP or Flightplan has changed
-      if (WPTracker.HasChanged || FltPlanMgr.HasChanged) {
+      if (WPTracker.HasChanged || AtcFltPlanMgr.HasChanged) {
         LOG.Log( $"UpdateGUI: WP or FlightPlan has changed" );
         string tt = AtcFlightPlan.RemainingPlan( WPTracker.Read( ) );
         var di = this.DispItem( LItem.GPS_WYP );
@@ -702,7 +731,7 @@ namespace FS20_HudBar.Bar
           di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
         }
         // commit that we read the changes of the Flight Plan
-        FltPlanMgr.Read( );
+        AtcFltPlanMgr.Read( );
       }
 
       // update Aircraft Props - Fuel has probably changed, sometimes Speeds depending on configuration, or a different aircraft at all

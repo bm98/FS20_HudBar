@@ -43,7 +43,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Text( value2Proto ) { ItemForeColor = cTxInfo };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 1), OnDataArrival ); // once per sec
+      AddObserver( Short, 0.5f, OnDataArrival );
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ namespace FS20_HudBar.Bar.Items
         else if (SV.Get<APRtype>( SItem.aptG_Gps_APR_type ) == APRtype.RNAV) fCol = cTxGps;
         else fCol = cTxNav;
         // The Approach Phase
-        if (SV.Get<bool>( SItem.bGS_Ap_APRhold_on )
+        if (SV.Get<bool>( SItem.bGS_Ap_APR_active )
              && (SV.Get<APRmode>( SItem.apmG_Gps_APR_mode ) != APRmode.None)) {
           info += $" - {SV.Get<APRmode>( SItem.apmG_Gps_APR_mode )}"; // Transition, Final, Missed
         }

@@ -36,7 +36,7 @@
       this.btIndex26 = new FCamControl.CheckedButton();
       this.btIndex08 = new FCamControl.CheckedButton();
       this.btIndex25 = new FCamControl.CheckedButton();
-      this.label3 = new System.Windows.Forms.Label();
+      this.lblZoom = new System.Windows.Forms.Label();
       this.btIndex24 = new FCamControl.CheckedButton();
       this.btIndex07 = new FCamControl.CheckedButton();
       this.btIndex23 = new FCamControl.CheckedButton();
@@ -254,17 +254,17 @@
       this.btIndex25.ThreeState = false;
       this.btIndex25.UseVisualStyleBackColor = false;
       // 
-      // label3
+      // lblZoom
       // 
-      this.label3.AutoSize = true;
-      this.label3.CausesValidation = false;
-      this.label3.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label3.ForeColor = System.Drawing.Color.DarkGray;
-      this.label3.Location = new System.Drawing.Point(12, 202);
-      this.label3.Name = "label3";
-      this.label3.Size = new System.Drawing.Size(42, 17);
-      this.label3.TabIndex = 105;
-      this.label3.Text = "Zoom";
+      this.lblZoom.AutoSize = true;
+      this.lblZoom.CausesValidation = false;
+      this.lblZoom.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblZoom.ForeColor = System.Drawing.Color.DarkGray;
+      this.lblZoom.Location = new System.Drawing.Point(12, 202);
+      this.lblZoom.Name = "lblZoom";
+      this.lblZoom.Size = new System.Drawing.Size(42, 17);
+      this.lblZoom.TabIndex = 105;
+      this.lblZoom.Text = "Zoom";
       // 
       // btIndex24
       // 
@@ -783,7 +783,7 @@
       this.Controls.Add(this.btIndex26);
       this.Controls.Add(this.btIndex08);
       this.Controls.Add(this.btIndex25);
-      this.Controls.Add(this.label3);
+      this.Controls.Add(this.lblZoom);
       this.Controls.Add(this.btIndex24);
       this.Controls.Add(this.btIndex07);
       this.Controls.Add(this.btIndex23);
@@ -830,7 +830,7 @@
     private CheckedButton btIndex26;
     private CheckedButton btIndex08;
     private CheckedButton btIndex25;
-    private System.Windows.Forms.Label label3;
+    private System.Windows.Forms.Label lblZoom;
     private CheckedButton btIndex24;
     private CheckedButton btIndex07;
     private CheckedButton btIndex23;

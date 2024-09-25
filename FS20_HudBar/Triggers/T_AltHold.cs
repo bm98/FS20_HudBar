@@ -119,40 +119,47 @@ namespace FS20_HudBar.Triggers
       }
     }
 
+    // delay the readout after ALT is hold (the AltHold altitude seems to be delayed in certain cases)
+    // as we have only one shoot - delay the readout for some cycles
+    private const int c_readDelay = 5; // update cycles
+    private int _delay;
+
+    // Alt holding state 
+    private float _curAltHolding = -10000; // trigger first time
+
     /// <summary>
     /// Update the internal state from the datasource
     /// </summary>
-    /// <param name="dataSource">An IAP_G1000 object from the FSim library</param>
+    /// <param name="dataRefName">Source of the data</param>
     protected override void OnDataArrival( string dataRefName )
     {
       if (!m_enabled) return; // not enabled
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
       if (SV.Get<bool>( SItem.bG_Sim_OnGround )) return; // not while on ground
 
-      // if capturing ALT
-      if ((SV.Get<APMode>( SItem.apmG_Ap_mode ) == APMode.On) && SV.Get<bool>( SItem.bGS_Ap_ALT_hold )) {
-        // find out what ALT we are holding - if at all
-        // ALT hold gets active while approaching the target Alt in ALTS mode
-        // or holds the current ALT if the pilot hits the ALT hold button.
-        // If the Setting is more than 500ft away from the current ALT we assume the pilot pushed the ALT hold button (best guess...)
+      // get the ALT to readout and assign the words, while ALT is holding (and AP is on)
+      if (SV.Get<bool>( SItem.bG_Ap_AP_active ) && SV.Get<bool>( SItem.bGS_Ap_ALT_active )) {
         float altHolding = SV.Get<float>( SItem.fG_Ap_ALT_holding_ft ); // target ALT
-        /*
-        if (altHolding > (hs.Altimeter_ft + 500f)) {
-          // seems ALT button was pressed on the way UP to SET ALT
-          altHolding = (int)Math.Ceiling( hs.Altimeter_ft / 100f ) * 100; // round current ALT UP 
+
+        if (altHolding != _curAltHolding) {
+          // only redo the translation when needed
+          m_actions.First( ).Value.Text = AltText( altHolding, SV.Get<bool>( SItem.bGS_Acft_Altimeter1_mode_Std ) );
+          _curAltHolding = altHolding;
         }
-        else if (altHolding < (hs.Altimeter_ft - 500f)) {
-          // seems ALT button was pressed on the way DOWN to SET ALT
-          altHolding = (int)Math.Floor( hs.Altimeter_ft / 100f ) * 100; // round current ALT DOWN
-        }
-        */
-        m_actions.First( ).Value.Text = AltText( altHolding, SV.Get<bool>( SItem.bGS_Acft_Altimeter1_mode_Std ) );
       }
 
-      // trigger Once and only if AP and ALT Hold is On
-      DetectStateChange( (SV.Get<APMode>( SItem.apmG_Ap_mode ) == APMode.On) && SV.Get<bool>( SItem.bGS_Ap_ALT_hold ) );
-      if (SV.Get<bool>( SItem.bGS_Ap_ALT_hold ) == false)
+      // trigger Once and only if AP and ALT Hold is On and the delay has expired
+      // delay is always reset while ALT is not holding - so it is max when first holding
+      DetectStateChange(
+        (_delay-- <= 0) // delay the readout for a number of cycles
+        && SV.Get<bool>( SItem.bG_Ap_AP_active )    // AP must be ON
+        && SV.Get<bool>( SItem.bGS_Ap_ALT_active )  // ALT must be holding
+      );
+
+      if (SV.Get<bool>( SItem.bGS_Ap_ALT_active ) == false) {
         m_lastTriggered = false; // RESET if no longer captured
+        _delay = c_readDelay; // RESET delay count as well while not ALT holding
+      }
     }
 
     // Implements the means to speak out the AP - ALT hold State
@@ -162,7 +169,7 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     /// <param name="speaker">A valid Speech obj to speak from</param>
     public T_AltHold( GUI.GUI_Speech speaker )
-      : base( speaker )
+          : base( speaker )
     {
       m_name = "AP ALT Hold";
       m_test = $"Holding {AvTextAlt( 5500 )} feet";

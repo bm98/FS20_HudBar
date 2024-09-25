@@ -136,6 +136,11 @@ namespace FlightplanLib.Flightplan
     /// Filename or other source of this plan
     /// </summary>
     public string FlightPlanFile { get; internal set; } = "";
+
+    /// <summary>
+    /// Flightplan Layout (SimBrief specific)
+    /// </summary>
+    public string FPLayout { get; internal set; } = "";
     /// <summary>
     /// The Type of Flightplan
     /// </summary>
@@ -154,6 +159,27 @@ namespace FlightplanLib.Flightplan
     /// The Title of this Plan
     /// </summary>
     public string Title { get; internal set; } = "";
+    /// <summary>
+    /// The Airline Ident (if available)
+    /// </summary>
+    public string Airline_ICAO { get; internal set; } = "";
+    /// <summary>
+    /// The Flight Number (if available)
+    /// </summary>
+    public string FlightNumber { get; internal set; } = "";
+
+    /// <summary>
+    /// Aircraft registration (if available)
+    /// </summary>
+    public string AircraftReg { get; internal set; } = "";
+    /// <summary>
+    /// Aircraft ICAO Type (if available)
+    /// </summary>
+    public string AircraftType_ICAO { get; internal set; } = "";
+    /// <summary>
+    /// Aircraft Type Name (if available)
+    /// </summary>
+    public string AircraftTypeName { get; internal set; } = "";
 
     /// <summary>
     /// The Origin of the plan
@@ -425,11 +451,6 @@ namespace FlightplanLib.Flightplan
     /// <param name="currentAcftCoord">Current Aircraft coordinate</param>
     public void TrackAircraft( LatLon currentAcftCoord )
     {
-      // get previous point if available
-      uint prevIndex = 0;
-      if (_prevRoutePointRef.IsValid) {
-        prevIndex = _prevRoutePointRef.Index;
-      }
       // eval the next one
       var nextRp = GetNextRoutePoint( currentAcftCoord, 0 );
       if (nextRp != null) {
@@ -443,8 +464,9 @@ namespace FlightplanLib.Flightplan
         }
         else {
           // next is empty - i.e. there is no Next anymore
-          _prevRoutePointRef = GetWaypoint( (uint)_waypoints.Count - 1 ); // set prev = last
-          _nextRoutePointRef = Waypoint.Empty;
+          _prevRoutePointRef = _waypoints.LastOrDefault( ); // set prev = last
+          if (_prevRoutePointRef == default) _prevRoutePointRef = Waypoint.Empty; // and make sure we have a Waypoint rather than default (null)
+          _nextRoutePointRef = Waypoint.Empty; // next is empty if there is no WYP left
           _distTraveled_nm = 0;
         }
       }
@@ -505,8 +527,8 @@ namespace FlightplanLib.Flightplan
           // AlongTrackDist will evaluate if the acfts projected position is on a track of a segment
           // if along, use XTK to determine the closest from the candidates
           var atDist_nm = coord.AlongTrackDistanceTo( _waypoints[ptCurrent].LatLonAlt_ft, _waypoints[ptNext].LatLonAlt_ft, ConvConsts.EarthRadiusNm );
-          if ((atDist_nm > 0) && (atDist_nm < _waypoints[ptNext].InboundDistance_nm)) {
-            // along track dist is from Start to Current is positive but less than Start to End 
+          if ((atDist_nm >= 0) && (atDist_nm < _waypoints[ptNext].InboundDistance_nm)) {
+            // along track dist is from Start to Current is zero or positive but less than Start to End 
             // check the deviation from the track
             double xtkabs = Math.Abs( coord.CrossTrackDistanceTo( _waypoints[ptCurrent].LatLonAlt_ft, _waypoints[ptNext].LatLonAlt_ft, ConvConsts.EarthRadiusNm ) );
             if (candidateNext < 0) {
@@ -561,7 +583,7 @@ namespace FlightplanLib.Flightplan
       foreach (var pt in invList) { this._waypoints.Remove( pt ); }
 
       // renumber
-      uint index = 1; // starts with 1
+      uint index = 0; // starts with 0
       foreach (var pt in _waypoints) { pt.Index = index++; }
     }
 

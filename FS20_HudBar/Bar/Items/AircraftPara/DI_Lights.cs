@@ -41,8 +41,11 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Lights( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival ); // twice per sec
+      AddObserver( Short, 2, OnDataArrival ); // twice per sec
     }
+
+    // True when On or NormOn
+    private static bool IsCmdModeOn( CmdMode mode ) => (mode == CmdMode.On) || (mode == CmdMode.NormOn);
 
     /// <summary>
     /// Update from Sim
@@ -53,14 +56,14 @@ namespace FS20_HudBar.Bar.Items
         // Consolidated lights (RA colored for Taxi and/or Landing lights on)
         int lightsInt = 0;
         _value1.ItemForeColor = cTxInfo;
-        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Beacon ) == CmdMode.On) lightsInt |= (int)V_Lights.Lights.Beacon;
-        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Nav ) == CmdMode.On) lightsInt |= (int)V_Lights.Lights.Nav;
-        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Strobe ) == CmdMode.On) lightsInt |= (int)V_Lights.Lights.Strobe;
-        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Taxi ) == CmdMode.On) {
+        if (IsCmdModeOn( SV.Get<CmdMode>( SItem.cmGS_Lit_Beacon ) )) lightsInt |= (int)V_Lights.Lights.Beacon;
+        if (IsCmdModeOn( SV.Get<CmdMode>( SItem.cmGS_Lit_Nav ) )) lightsInt |= (int)V_Lights.Lights.Nav;
+        if (IsCmdModeOn( SV.Get<CmdMode>( SItem.cmGS_Lit_Strobe ) )) lightsInt |= (int)V_Lights.Lights.Strobe;
+        if (IsCmdModeOn( SV.Get<CmdMode>( SItem.cmGS_Lit_Taxi ) )) {
           lightsInt |= (int)V_Lights.Lights.Taxi;
           _value1.ItemForeColor = cTxWarn;
         }
-        if (SV.Get<CmdMode>( SItem.cmGS_Lit_Landing ) == CmdMode.On) {
+        if (IsCmdModeOn( SV.Get<CmdMode>( SItem.cmGS_Lit_Landing ) )) {
           lightsInt |= (int)V_Lights.Lights.Landing;
           _value1.ItemForeColor = cTxWarn;
         }

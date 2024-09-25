@@ -321,7 +321,7 @@ namespace FlightplanLib
         return wypList;
       }
 
-      wypList.AddRange( Formatter.ExpandAPR( dbProc, _aprTransitionIdent, _preferRNAV ) ); // will expand the RW Wyp before the MAP leg
+      wypList.AddRange( Formatter.ExpandAPR(this, dbProc, _aprTransitionIdent, _preferRNAV ) ); // will expand the RW Wyp before the MAP leg
 
       // Add Arr Airport WYP after MAPR without Calculations
       // Add RW + ArrAirport if the APR was empty

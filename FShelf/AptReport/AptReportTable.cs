@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using CoordLib;
 using static dNetBm98.Units;
+using static bm98_Html.HtmlChars;
 using DbgLib;
 
 using FSimFacilityIF;
@@ -41,14 +42,14 @@ namespace FShelf.AptReport
     private string ToDirectionArrow( string dirS )
     {
       switch (dirS) {
-        case "W": return AptTableGen.HChar( AptTableGen.SpclChar.Arrow_W );
-        case "N": return AptTableGen.HChar( AptTableGen.SpclChar.Arrow_N );
-        case "E": return AptTableGen.HChar( AptTableGen.SpclChar.Arrow_E );
-        case "S": return AptTableGen.HChar( AptTableGen.SpclChar.Arrow_S );
-        case "NW": return AptTableGen.HChar( AptTableGen.SpclChar.Arrow_NW );
-        case "NE": return AptTableGen.HChar( AptTableGen.SpclChar.Arrow_NE );
-        case "SE": return AptTableGen.HChar( AptTableGen.SpclChar.Arrow_SE );
-        case "SW": return AptTableGen.HChar( AptTableGen.SpclChar.Arrow_SW );
+        case "W": return HChar( SpclChar.Arrow_W );
+        case "N": return HChar( SpclChar.Arrow_N );
+        case "E": return HChar( SpclChar.Arrow_E );
+        case "S": return HChar( SpclChar.Arrow_S );
+        case "NW": return HChar( SpclChar.Arrow_NW );
+        case "NE": return HChar( SpclChar.Arrow_NE );
+        case "SE": return HChar( SpclChar.Arrow_SE );
+        case "SW": return HChar( SpclChar.Arrow_SW );
         default: return "";
       }
     }
@@ -174,7 +175,7 @@ namespace FShelf.AptReport
     private void StreamProcRunway( IRunway runway, bool sid )
     {
       var rwString = (runway.Ident == RwALLIdent)
-                      ? $"{AptTableGen.HChar( AptTableGen.SpclChar.BULLSEYE )} ALL RW"
+                      ? $"{HChar( SpclChar.BULLSEYE )} ALL RW"
                       : $"{ToDirectionArrow( Dms.CompassPoint( runway.Bearing_deg, 2 ) )} {runway.Ident}"; // outgoing arrow
 
       var rwProcData = new RwyProcRowData( ) {
@@ -224,11 +225,11 @@ namespace FShelf.AptReport
         }
       }
       var rwString = (runway.Ident == RwALLIdent)
-                        ? $"{AptTableGen.HChar( AptTableGen.SpclChar.BULLSEYE )} ALL"
+                        ? $"{HChar( SpclChar.BULLSEYE )} ALL"
                         : $"{ToDirectionArrow( Dms.CompassPoint( runway.Bearing_deg, 2 ) )} {runway.Ident}"; // outgoing arrow
       var rwyData = new RwyRowData( ) {
         Rwy = rwString,
-        Hdg_deg = runway.Bearing_deg,
+        Hdg_deg = (int)runway.Bearing_deg,
         IlsID = ilsID,
         //IlsFreq_mhz = ilsFreq,
         //IlsGsSlope_deg = ilsSlope,
@@ -278,7 +279,7 @@ namespace FShelf.AptReport
       string nav = (navaid != null) ? navaid.Ident : string.Empty;
       ilsSlope = (navaid != null) ? navaid.GsSlope_deg : 0;
       ilsRange = (navaid != null) ? navaid.GsRange_nm : 0;
-      float missed = (rwyFix != null) ? rwyFix.AltitudeHi_ft : 0;
+      int missed = (rwyFix != null) ? rwyFix.AltitudeHi_ft : 0;
       var lastFix = fixes.Last( );
       string lastFixS = (lastFix != null) ? lastFix.WYP_FKey.IdentOfKEY( ) : string.Empty;
       string holdS = (lastFix.IsHold) ? $"Hold" : string.Empty;
@@ -287,7 +288,7 @@ namespace FShelf.AptReport
       var aprData = new AprRowData( ) {
         AprType = appProc.ProcRef,
         Nav = nav,
-        Freq = freqS,
+        FreqS = freqS,
         IlsGsSlope_deg = ilsSlope,
         IlsGsRange_nm = ilsRange,
         WaypointID = firstFix.WYP_FKey.IdentOfKEY( ),
@@ -323,10 +324,11 @@ namespace FShelf.AptReport
       // remove invalid chars in filename
       fName = Path.GetInvalidFileNameChars( ).Aggregate( fName, ( current, c ) => current.Replace( c.ToString( ), string.Empty ) );
 
-      if (bm98_Html.HtmlRenderer.Instance.Html2PDF(
+      if (bm98_Html.HtmlRenderer.Instance.Add_ToPdf_A4_Portrait(
               html,
               Path.Combine( targetFolder, fName ),
-              fName )
+              fName,
+              null )// no header
         ) {
         return true;
       }

@@ -40,7 +40,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Deg( valueProto ) { ItemForeColor = cTxGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival);
+      AddObserver( Short, 2, OnDataArrival);
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
+        if (SV.Get<bool>( SItem.bG_Gps_FP_tracking )) {
           _value1.Value = SV.Get<float>( SItem.fG_Gps_WYP_brg_mag_degm );
         }
         else {

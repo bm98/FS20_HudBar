@@ -60,7 +60,7 @@ namespace FS20_HudBar.Bar.Items
       _value1.Scrollable = true;
       _value1.Cursor = Cursors.SizeNS;
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 10), OnDataArrival );
+      AddObserver( Short, 10, OnDataArrival );
     }
 
     private void _value1_MouseClick( object sender, MouseEventArgs e )
@@ -115,7 +115,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_HDG_hold ) ? cTxAPActive : cTxLabel;
+        this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_HDG_active ) ? cTxAPActive : cTxLabel;
         _value1.Value = SV.Get<float>( SItem.fGS_Ap_HDG_setting_degm );
 
         // Managed Mode

@@ -11,6 +11,7 @@ using FlightplanLib.SimBrief.SBDEC;
 using FlightplanLib.Routes;
 
 using bm98_hbFolders;
+using FSFData;
 
 namespace FlightplanLib.SimBrief
 {
@@ -48,21 +49,33 @@ namespace FlightplanLib.SimBrief
       fPlan.FlightPlanType = TypeOfFlightplan.IFR;
       fPlan.RouteType = (sbPlan.General.CruiseAlt_ft < 18000) ? TypeOfRoute.LowAlt : TypeOfRoute.HighAlt;
       fPlan.StepProfile = sbPlan.General.StepProfile;
+      fPlan.FPLayout = sbPlan.Params.OFP_Layout.Replace( " ", "_" ); // cannot use spaces internally
+      fPlan.Airline_ICAO = sbPlan.General.Airline_ICAO;
+      fPlan.FlightNumber = sbPlan.General.FlightNumber;
+      fPlan.AircraftReg = sbPlan.Aircraft.RegID_plain;
+      fPlan.AircraftType_ICAO = sbPlan.Aircraft.TypeCode_ICAO;
+      fPlan.AircraftTypeName = sbPlan.Aircraft.TypeName;
 
       // create Plan Doc HTML
       fPlan.HTMLdocument = sbPlan.Text.Plan;
+      // create PDF doc link
+      fPlan.DocLinks.Add( new FileLink( ) { Name = sbPlan.Plan_Files.Pdf_File.Name, RemoteUrl = sbPlan.Plan_Files.Directory, LinkUrl = sbPlan.Plan_Files.Pdf_File.Link } );
+
+      /* DISABLED _ NOT USED SO FAR
       // create Download Images
       if (sbPlan.Image_Files.Files != null) {
         foreach (var fix in sbPlan.Image_Files.Files) {
           fPlan.ImageLinks.Add( new FileLink( ) { Name = fix.Name, RemoteUrl = sbPlan.Image_Files.Directory, LinkUrl = fix.Link } );
         }
       }
+
       // create Download Documents
       if (sbPlan.Plan_Files.Files != null) {
-        foreach (var fix in sbPlan.Plan_Files.Files) {
-          fPlan.DocLinks.Add( new FileLink( ) { Name = fix.Name, RemoteUrl = sbPlan.Plan_Files.Directory, LinkUrl = fix.Link } );
+        foreach (var fileLink in sbPlan.Plan_Files.Files) {
+          fPlan.DocLinks.Add( new FileLink( ) { Name = fileLink.Name, RemoteUrl = sbPlan.Plan_Files.Directory, LinkUrl = fileLink.Link } );
         }
       }
+      */
       return fPlan;
 
       /*

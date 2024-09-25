@@ -128,7 +128,7 @@ namespace FCamControl
 
         // GUI elements
         tbZoom.Visible = camValues.CanZoom;
-
+        lblZoom.Visible = tbZoom.Visible;
       }
 
       // Zoom for applicable CameraModes

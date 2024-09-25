@@ -50,6 +50,10 @@ namespace FlightplanLib.GPX
       loc = Formatter.ExpandAirport( gpxPlan.Route.ArrivalAirport.ICAO, gpxPlan.Route.ArrivalRw.RunwayIdent, LocationTyp.Destination );
       plan.Destination = loc;
 
+      bool departing = false;
+      bool aptExpected = true;
+      bool rwyExpected = true;
+
       // create waypoints
       var wypList = new List<Waypoint>( );
       foreach (var fix in gpxPlan.Route.WaypointCat) {
@@ -61,6 +65,11 @@ namespace FlightplanLib.GPX
           : !string.IsNullOrEmpty( fix.ApproachProcRef ) ? plan.Destination.Runway_Ident
           : (fix.WaypointType == FSimFacilityIF.WaypointTyp.RWY) ? fix.RunwayIdent
           : "";
+        // handle departing - may lead to some wyps not on departure between rw and SID
+        // remainst true until either SID disapears or STAR appears or Apr appears or latest when RW or Apt appears a second time
+        if (fix.IsSID) { departing = true; } // in any case
+        if ((fix.WaypointType == FSimFacilityIF.WaypointTyp.APT) && aptExpected) { departing = true; aptExpected = false; };
+        if ((fix.WaypointType == FSimFacilityIF.WaypointTyp.RWY) && rwyExpected) { departing = true; rwyExpected = false; };
 
         var wyp = new Waypoint( ) {
           WaypointType = fix.WaypointType,
@@ -73,6 +82,7 @@ namespace FlightplanLib.GPX
           InboundTrueTrk = -1, // need to calculate this
           OutboundTrueTrk = -1, // need to calculate this
           InboundDistance_nm = -1, // need to calculate this
+          OnDeparture = departing,
           SID_Ident = fix.SID_Ident,
           STAR_Ident = fix.STAR_Ident,
           ApproachTypeS = fix.ApproachProcRef, // e.g. RNAV, ILS
@@ -86,6 +96,8 @@ namespace FlightplanLib.GPX
           Stage = "", // TODO not avail, need to calculate this
         };
         wypList.Add( wyp );
+        // switch if done
+        departing = false;
       }
       plan.AddWaypointRange( wypList );
 

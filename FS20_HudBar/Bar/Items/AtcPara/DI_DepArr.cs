@@ -33,7 +33,9 @@ namespace FS20_HudBar.Bar.Items
     private readonly V_Base _value1;
     private readonly V_Base _value2;
 
-
+    /// <summary>
+    /// cTor:
+    /// </summary>
     public DI_DepArr( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
@@ -49,20 +51,20 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_ICAO( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 1), OnDataArrival ); // once per sec
+      AddObserver( Short, 0.5f, OnDataArrival );
     }
 
-
+    // User Enty of Airport ICAOs
     private void _label_MouseClick( object sender, MouseEventArgs e )
     {
       // if (!SC.SimConnectClient.Instance.IsConnected) return; // need to set it even if the Sim is not connected
 
       var TTX = new Config.frmApt( );
       // load default
-      if (FltPlanMgr.FlightPlan.HasFlightPlan) {
+      if (AtcFltPlanMgr.AtcFlightPlan.HasFlightPlan) {
         // dest from FPLan
-        TTX.DepAptICAO = FltPlanMgr.FlightPlan.Departure;
-        TTX.ArrAptICAO = FltPlanMgr.FlightPlan.Destination;
+        TTX.DepAptICAO = AtcFltPlanMgr.AtcFlightPlan.Departure;
+        TTX.ArrAptICAO = AtcFltPlanMgr.AtcFlightPlan.Destination;
       }
       else {
         // no Flightplan
@@ -89,9 +91,9 @@ namespace FS20_HudBar.Bar.Items
         // Update DEP
         if (string.IsNullOrWhiteSpace( TTX.DepAptICAO )) {
           // empty entry to clear
-          if (FltPlanMgr.FlightPlan.HasFlightPlan) {
+          if (AtcFltPlanMgr.AtcFlightPlan.HasFlightPlan) {
             // update with FP destination
-            AirportMgr.UpdateDep( FltPlanMgr.FlightPlan.Departure );
+            AirportMgr.UpdateDep( AtcFltPlanMgr.AtcFlightPlan.Departure );
           }
           else {
             // clear with N.A. airport
@@ -105,9 +107,9 @@ namespace FS20_HudBar.Bar.Items
         // Update ARR
         if (string.IsNullOrWhiteSpace( TTX.ArrAptICAO )) {
           // empty entry to clear
-          if (FltPlanMgr.FlightPlan.HasFlightPlan) {
+          if (AtcFltPlanMgr.AtcFlightPlan.HasFlightPlan) {
             // update with FP destination
-            AirportMgr.UpdateArr( FltPlanMgr.FlightPlan.Destination );
+            AirportMgr.UpdateArr( AtcFltPlanMgr.AtcFlightPlan.Destination );
           }
           else {
             // clear with N.A. airport

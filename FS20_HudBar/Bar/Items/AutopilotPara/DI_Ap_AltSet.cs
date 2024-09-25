@@ -60,7 +60,7 @@ namespace FS20_HudBar.Bar.Items
       _value1.Scrollable = true;
       _value1.Cursor = Cursors.SizeNS;
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 10), OnDataArrival);
+      AddObserver( Short, 10, OnDataArrival);
     }
 
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
@@ -104,12 +104,12 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _label.Text = SV.Get<bool>( SItem.bGS_Ap_ALT_hold )
+        _label.Text = SV.Get<bool>( SItem.bGS_Ap_ALT_active )
           ? $"ALT{c_space}{c_space}"
           : SV.Get<bool>( SItem.bG_Ap_ALT_armed )
               ? (SV.Get<bool>( SItem.bG_Ap_VNAV_useTargetAlt ) ? $"ALTV{c_space}" : $"ALTS{c_space}")
               : $"ALT{c_space}{c_space}";
-        this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_ALT_hold ) ? cTxAPActive : cTxLabel;
+        this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_ALT_active ) ? cTxAPActive : cTxLabel;
 
         _value1.Value = SV.Get<float>( SItem.fGS_Ap_ALT_setting_ft );
 
@@ -123,7 +123,7 @@ namespace FS20_HudBar.Bar.Items
         else {
           // the Alt Ref currently holding (can get NaN)
           _value2.Managed = false;
-          _value2.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_ALT_hold )
+          _value2.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_ALT_active )
             ? cTxAPActive
             : SV.Get<bool>( SItem.bG_Ap_ALT_armed )
                 ? cTxInfo

@@ -46,7 +46,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 1), OnDataArrival ); // once per sec
+      AddObserver( Short, 1, OnDataArrival ); // once per sec
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )

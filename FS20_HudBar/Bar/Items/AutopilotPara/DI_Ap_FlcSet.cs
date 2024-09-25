@@ -59,7 +59,7 @@ namespace FS20_HudBar.Bar.Items
       _value1.Scrollable = true;
       _value1.Cursor = Cursors.SizeNS;
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 10), OnDataArrival );
+      AddObserver( Short, 10, OnDataArrival );
     }
 
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
@@ -97,11 +97,11 @@ namespace FS20_HudBar.Bar.Items
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
       //      SV.FLChold_active = true; // toggles independent of the set value
-      if (!SV.Get<bool>( SItem.bGS_Ap_FLC_hold )) {
+      if (!SV.Get<bool>( SItem.bGS_Ap_FLC_active )) {
         // gets us Hold Current...
         SV.Set( SItem.fGS_Ap_IAS_setting_kt, SV.Get<float>( SItem.fG_Acft_IAS_kt ) );
       }
-      SV.Set( SItem.bGS_Ap_FLC_hold, true );
+      SV.Set( SItem.bGS_Ap_FLC_active, true );
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_FLC_hold ) ? cTxAPActive : cTxLabel;
+        this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_FLC_active ) ? cTxAPActive : cTxLabel;
         _value1.Value = SV.Get<float>( SItem.fGS_Ap_IAS_setting_kt );
 
         // Managed Mode NOT USED SO FAR

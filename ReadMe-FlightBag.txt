@@ -1,5 +1,5 @@
 FS20_FlightBag V 0.70 - Build 70 BETA
-(c) M. Burri - 12-Aug-2024
+(c) M. Burri - 22-Aug-2024
 
 Contains files:
 
@@ -16,6 +16,7 @@ bm98_VProfile.dll           UserControl for displaying VProfiles
 BM98CH_WasmClient.dll       WASM Module client to get LVars
 CoordLib.dll                A coord. handling library
 dNetBm98                    Tools for .Net and WinForms
+dNetWkhtmlWrap.dll          Wrapping library for PDF formatter
 MapLib.dll                  Mapping library
 FlightplanLib.dll           Flightplan library
 FShelf.dll                  Shelf WinForms library
@@ -27,15 +28,15 @@ SimConnectClientAdapter.dll Connection wrapper
 FSimFacilityIF.dll          MS facility database interface definition
 FSFDataLib.dll              MS facility database access library
 SettingsLib.dll             Application settings persistence library
+WkWrapper.WkhtmlToPdf.Mxe.dll deploys the PDF renderer application
 NLog.config.OFF             Logging config file / remove .OFF to enable logging
 
 3rd Party:
 BingMapsRESTToolkit.dll     Microsoft provided library for accessing Bing Map data
 LiteDB.dll                  3rd party data management library
 NLog.dll                    3rd party logging library
-TuesPechkin.dll             3rd party HTML formatting library wrapper /replaces HtmlRenderer
-TuesPechkin.Wkhtmltox.Win64.dll 3rd party HTML formatting library /replaces HtmlRenderer
-PdfiumViewer.dll			3rd party PDF renderer library
+PdfiumViewer.dll            3rd party PDF viewer library
+wkhtmltopdf.exe             3rd party HTML formatting library wrapper /replaces HtmlRenderer
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
@@ -77,10 +78,10 @@ V 0.70-B70
 - Please UPDATE the WASM Module (from BM98CH_DataConnector_Wasm-V0.5.zip) !!!
 
 - Add VProfile display in FlightBag - Maps Tab
-- Add Support for some prettier Simbrief Flightplan types (LIDO, ACA, EZY, SWA, UAL2018)
-- Add Support to include Simbrief images in Flightplan PDF
+- Add Download the original Simbrief Flightplan PDF (@.FlightPlan), omit image download
+- Update FlightPlan Table is now a PDF (@.FlightTable)
 - Update Improverd Flightplan decoding from ext. formats
-- Update PDF/IMG Converter for Shelf replaced with WkHtmlToX library
+- Update PDF Converter for Shelf replaced with WkHtmlToPDF application
 - Update WASM Module to V0.5 (according to SDK advice)
 - Update QuickGuides
 

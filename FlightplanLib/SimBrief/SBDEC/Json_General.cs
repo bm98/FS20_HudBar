@@ -20,6 +20,18 @@ namespace FlightplanLib.SimBrief.SBDEC
     public string CruiseAlt_S { get; set; } = "";
 
     /// <summary>
+    /// The Airline ICAO name
+    /// </summary>
+    [DataMember( Name = "icao_airline", IsRequired = true )]
+    public string Airline_ICAO { get; set; } = "";
+
+    /// <summary>
+    /// The Flightnumber
+    /// </summary>
+    [DataMember( Name = "flight_number", IsRequired = true )]
+    public string FlightNumber { get; set; } = "";
+
+    /// <summary>
     /// The stepclimb_string field
     /// </summary>
     [DataMember( Name = "stepclimb_string", IsRequired = true )]

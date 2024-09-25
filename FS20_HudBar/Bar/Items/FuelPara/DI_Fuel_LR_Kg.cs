@@ -46,7 +46,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Kilograms( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 1), OnDataArrival ); // once per sec
+      AddObserver( Short, 1, OnDataArrival ); // once per sec
     }
 
     /// <summary>

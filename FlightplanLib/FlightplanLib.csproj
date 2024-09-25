@@ -84,6 +84,9 @@
     <Compile Include="Flightplan\FlightPlan.cs" />
     <Compile Include="Flightplan\FlightPlanTable.cs" />
     <Compile Include="Flightplan\FPTableGen.cs" />
+    <Compile Include="Flightplan\FPlanRowData.cs" />
+    <Compile Include="LNM\LNMDEC\X_AircraftPerformance.cs" />
+    <Compile Include="SimBrief\SBDEC\Json_Aircraft.cs" />
     <Compile Include="SimBrief\SbDocLoader.cs" />
     <Compile Include="GPX\GPXpln.cs" />
     <Compile Include="GPX\GPXplnDataEventArgs.cs" />

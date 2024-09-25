@@ -13,6 +13,15 @@ namespace FlightplanLib
   public class FileLink
   {
     /// <summary>
+    /// True if contents are defined
+    /// </summary>
+    public bool IsValid => (!(
+      string.IsNullOrWhiteSpace( Name )
+      || string.IsNullOrWhiteSpace( RemoteUrl )
+      || string.IsNullOrWhiteSpace( LinkUrl )
+      ));
+
+    /// <summary>
     /// The Name of the file document
     /// </summary>
     public string Name { get; internal set; } = "";

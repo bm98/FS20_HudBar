@@ -43,7 +43,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Dist( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 1), OnDataArrival ); // once per sec
+      AddObserver( Short, 1, OnDataArrival ); // once per sec
     }
 
     /// <summary>

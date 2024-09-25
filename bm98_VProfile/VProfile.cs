@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using bm98_VProfile.Drawing;
 
@@ -15,7 +13,7 @@ namespace bm98_VProfile
   internal class VProfile
   {
     // number of waypoints supported
-    private const int c_numWyp = 5; // MAX 10 (update DItems if more are needed)
+    private const int c_numWyp = 6; // MAX 10 (update DItems if more are needed)
 
     /// <summary>
     /// All Display items
@@ -189,16 +187,22 @@ namespace bm98_VProfile
         di = gProc.Drawings.DispItem( (int)DItems.ALTtape );
         di.Active = ActiveState.Engaged;
         // calc vPath
+        // hor scale for current GS and ALT (set to either 30 or 10 see below)
         int hScale = DistScaleFor( props.GS_kt, props.ALT_ft );
         float nmPmin = props.GS_kt / 60f;
+        // minutes to fly to end of the graph
         float minToTgt = (2 * hScale) / nmPmin;
+        //delta alt for the full scale graph at current VS, this may be a rather large number ...
         float dAlt = props.VS_fpm * minToTgt;
+        // adjust the minute displayed (div 0 and silly numbers avoidance)
         minToTgt = (props.GS_kt < 1) ? float.PositiveInfinity : minToTgt; // cut if GS is <1
-        // clip to a reasonable number
+        // clip delta Alt to a reasonable number before attempting to scale the Y axis
         dAlt = dAlt > 60_000f ? 60_000f
                : dAlt < -60_000f ? -60_000f
                : dAlt;
         int vScale = AltScaleFor( Math.Abs( dAlt ) );
+        // avoid jumping of the Y scale when VS is varying 
+
 
         (di as TapeItem).Value = props.ALT_ft;
         (di as TapeItem).ValScale = vScale;
@@ -227,9 +231,13 @@ namespace bm98_VProfile
 
         di = gProc.Drawings.DispItem( (int)DItems.FpaDegGraph );
         di.Active = ActiveState.Engaged;
-        di.String = $"{props.FPA_deg:0.0}°";
+        di.String = $"FPA {props.FPA_deg:0.0}°";
 
         // Do Waypoints
+        // The drawing area is for the WypItem is 1x1 units with top-left corner = 0/0
+        // - WYP locations will be scaled accordingly below
+
+        // set Waypoints with TargetAlt == NaN or ==0 to the current Alt Line (middle=0.5)
 
         // Disable all before updating from the available ones
         for (int i = 0; i < c_numWyp; i++) {
@@ -242,7 +250,7 @@ namespace bm98_VProfile
           var wyp = props.WaypointList[0];
           if (wyp.IsValid) {
             di.Active = ActiveState.Engaged;
-            if (!float.IsNaN( wyp.TargetAlt_ft )) {
+            if (!(float.IsNaN( wyp.TargetAlt_ft ) || (wyp.TargetAlt_ft == 0))) {
               // draw with Alt at Altitude
               di.String = $"{wyp.Ident}\n{wyp.TargetAlt_ft:## 000}";
               (di as WypItem).WypPoint = new PointF( (float)wyp.Distance_nm / (2 * hScale), 0.5f - (wyp.TargetAlt_ft - props.ALT_ft) / (5f * vScale) );
@@ -262,11 +270,11 @@ namespace bm98_VProfile
             if (wyp.Distance_nm > (hScale * 2)) break; // point is out of bounds
 
             // show Wyp
-            int key = (int)DItems.NextWyp + i;
+            int key = (int)DItems.NextWyp + i; // further Wyps
             di = gProc.Drawings.DispItem( key );
             if (wyp.IsValid) {
               di.Active = ActiveState.Engaged;
-              if (!float.IsNaN( wyp.TargetAlt_ft )) {
+              if (!(float.IsNaN( wyp.TargetAlt_ft ) || (wyp.TargetAlt_ft == 0))) {
                 // draw with Alt at Altitude
                 di.String = $"{wyp.Ident}\n{wyp.TargetAlt_ft:## 000}";
                 (di as WypItem).WypPoint = new PointF( (float)wyp.Distance_nm / (2 * hScale), 0.5f - (wyp.TargetAlt_ft - props.ALT_ft) / (5f * vScale) );
@@ -295,23 +303,69 @@ namespace bm98_VProfile
 
     }
 
-    // calc the Altitude scaling for given full scale delta Alt
+    // calc the Altitude scaling for given delta Alt - the graph shows +- 2.5 unit steps
+    // avoiding switching between scale values for unstable (varying VS) deltaAlts
+
+    private const int c_fl160Scale = 8000;
+    private const int c_fl80Scale = 4000;
+    private const int c_fl0Scale = 2000;
+
+    private dNetBm98.InsideLimitDetector<float> _fl160 = new dNetBm98.InsideLimitDetector<float>( 15_000f, 100_000f );
+    private dNetBm98.InsideLimitDetector<float> _fl80 = new dNetBm98.InsideLimitDetector<float>( 7_000f, 16_000f );
+    private dNetBm98.InsideLimitDetector<float> _fl0 = new dNetBm98.InsideLimitDetector<float>( -1_000f, 8_000f );
+    private int _prevScale = c_fl0Scale;
+
     private int AltScaleFor( float dAlt_ft )
     {
-      // if (dAlt_ft > 28_000) return 15_000;
-      // if (dAlt_ft > 24_000) return 12_000;
-      //if (dAlt_ft > 20_000) return 10_000;
-      if (dAlt_ft > 16_000) return 8_000;
-      //if (dAlt_ft > 12_000) return 6_000;
-      if (dAlt_ft > 8_000) return 4_000;
-      return 2000;
+      _fl160.Update( dAlt_ft );
+      _fl80.Update( dAlt_ft );
+      _fl0.Update( dAlt_ft );
+
+      int newScale;
+      // eval the outcome
+      if (_fl160.LimitDetected) {
+        // above 150
+        if (_fl80.LimitDetected) {
+          // above 150 and below 160
+          newScale = _prevScale; // return current
+        }
+        else {
+          // above 160
+          newScale = c_fl160Scale; // return new FL160
+        }
+      }
+      else {
+        // below 150
+        if (_fl80.LimitDetected) {
+          // above 70
+          if (_fl0.LimitDetected) {
+            // above 70 and below 80
+            newScale = _prevScale; // return current
+          }
+          else {
+            // above 80
+            newScale = c_fl80Scale; // return new FL80
+          }
+        }
+        else {
+          // below 70
+          newScale = c_fl0Scale; // return new FL00
+        }
+      }
+      // clear detectors
+      _fl160.Read( );
+      _fl80.Read( );
+      _fl0.Read( );
+
+      _prevScale = newScale;
+      return newScale;
     }
 
     // calc the Distance scaling for given speed and alt - the graph shows 2 unit steps
     private int DistScaleFor( float gs_kt, float alt_ft )
     {
-      if ((alt_ft >= 10_000) || (gs_kt > 185)) return 30;
-      return 10;
+      if ((alt_ft >= 10_000) || (gs_kt > 190)) return 30; // above 10000ft and faster than 190kt use 30nm per step
+      return 10; // else 10nm
     }
 
   }

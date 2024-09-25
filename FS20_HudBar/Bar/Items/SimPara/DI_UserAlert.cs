@@ -17,7 +17,6 @@ using FS20_HudBar.GUI.Templates;
 using CoordLib;
 using FS20_HudBar.GUI.Templates.Base;
 using FS20_HudBar.Triggers;
-using Windows.Media.Capture;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -59,6 +58,9 @@ namespace FS20_HudBar.Bar.Items
   /// </summary>
   abstract class DI_UserAlert : DispItem
   {
+    private object _settingLock = new object( );
+
+
     // need to implement an InsiteLimitDetector with abilities...
     private class ILDet : InsideLimitDetector<float>
     {
@@ -111,8 +113,8 @@ namespace FS20_HudBar.Bar.Items
 
 
     // Meters live throughout the application 
-    protected static readonly CPointMeter _cpMeter = new CPointMeter( );
-    protected static readonly TimeMeter _timeMeter = new TimeMeter( );
+    protected readonly CPointMeter _cpMeter = new CPointMeter( );
+    protected readonly TimeMeter _timeMeter = new TimeMeter( );
 
     // the alert set value
     protected float _setValue = 0;
@@ -135,7 +137,7 @@ namespace FS20_HudBar.Bar.Items
       aTrig.IssueState( _alert.AlertValueType );
     }
 
-    // alert chime
+    // alert chime and silence further ones
     private void Chime( )
     {
       if (_canChime) {
@@ -169,6 +171,7 @@ namespace FS20_HudBar.Bar.Items
       return _closeLimit.Read( );
     }
 
+    // update the targetLimit and return if triggered
     private bool CheckAlertTarget( float value )
     {
       _targetLimit.Update( value );
@@ -229,27 +232,32 @@ namespace FS20_HudBar.Bar.Items
       // set new target values
       switch (_alert.AlertValueType) {
         case AlertType.ALT:
+          _targetLimit.SetSlope( Slope.BiDirectional );
           _targetLimit.SetTarget( setValue );
           _closeLimit.SetLimitsAndTarget( setValue - 500f, setValue + 500f, setValue );
           break;
 
         case AlertType.AOG:
+          _targetLimit.SetSlope( Slope.BiDirectional );
           _targetLimit.SetTarget( setValue );
           _closeLimit.SetLimitsAndTarget( setValue - 200f, setValue + 200f, setValue );
           break;
 
         case AlertType.VS:
+          _targetLimit.SetSlope( Slope.BiDirectional );
           _targetLimit.SetTarget( setValue );
           _closeLimit.SetLimitsAndTarget( setValue - 300f, setValue + 300f, setValue );
           break;
 
         case AlertType.SPD:
+          _targetLimit.SetSlope( Slope.BiDirectional );
           _targetLimit.SetTarget( setValue );
           _closeLimit.SetLimitsAndTarget( setValue - 20f, setValue + 20f, setValue );
           break;
 
         case AlertType.DIST:
           // dist decreases only to 0 i.e. has an upper limit for closing in and 0 as target
+          _targetLimit.SetSlope( Slope.FromAbove );
           _targetLimit.SetTarget( 0.001f ); // cannot be 0 else it will trigger immediately after changing to DIST
           _closeLimit.SetLimitsAndTarget( 0f, 5f, 0.0001f ); // 5nm
 
@@ -262,12 +270,13 @@ namespace FS20_HudBar.Bar.Items
           break;
 
         case AlertType.TIME:
+          _timeMeter.Stop( );
           // time decreases only to 0 i.e. has an upper limit for closing in and 0 as target
+          _targetLimit.SetSlope( Slope.FromAbove );
           _targetLimit.SetTarget( 0.001f ); // cannot be 0 else it will trigger immediately after changing to TIME
-          _closeLimit.SetLimitsAndTarget( 0f, 1.5f, 0.001f ); // 90 sec
+          _closeLimit.SetLimitsAndTarget( 0f, 1.5f, 0.001f ); // limit: 0..90 sec
 
           // restart the time counter
-          _timeMeter.Stop( );
           _timeMeter.Start( SV.Get<double>( SItem.dG_Env_Time_zulu_sec ) );
           // _setValue - current will be shown
           _lastUserTime = setValue;
@@ -276,6 +285,8 @@ namespace FS20_HudBar.Bar.Items
         default:
           break;
       }
+      // reset after change
+      ClearTriggers( );
     }
 
     // return the name of the Alert
@@ -352,23 +363,21 @@ namespace FS20_HudBar.Bar.Items
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
+      // 1/2 - 1/2  dectection for Digits
+      var largeChange = e.Location.X < (_value1.Width / 2);
+
+      if (e.Delta > 0) {
+        // Up
+        _setValue = GetAlertValue( _setValue, true, largeChange );
+      }
+      else if (e.Delta < 0) {
+        // Down
+        _setValue = GetAlertValue( _setValue, false, largeChange );
+      }
+
       lock (_targetLimit) {
-
-        // 1/2 - 1/2  dectection for Digits
-        var largeChange = e.Location.X < (_value1.Width / 2);
-
-        if (e.Delta > 0) {
-          // Up
-          _setValue = GetAlertValue( _setValue, true, largeChange );
-        }
-        else if (e.Delta < 0) {
-          // Down
-          _setValue = GetAlertValue( _setValue, false, largeChange );
-        }
         // set new target values
         SetLimits( _setValue );
-        // reset after change
-        ClearTriggers( );
       }//lock
     }
 
@@ -396,8 +405,6 @@ namespace FS20_HudBar.Bar.Items
         // must set default limits after a change
         // set new target values
         SetLimits( _setValue );
-        // reset after change
-        ClearTriggers( );
 
         _canChime = false; // not when switched, will be reset when changing values
       }
@@ -458,7 +465,7 @@ namespace FS20_HudBar.Bar.Items
             case AlertType.TIME:
               // collect time elapsed
               _timeMeter.Lapse( SV.Get<double>( SItem.dG_Env_Time_zulu_sec ) );
-              // remaining distance
+              // remaining time
               checkValue = _setValue - (float)_timeMeter.Duration / 60f; // Minutes
               checkValue = (checkValue < 0) ? 0 : checkValue; // dont use below zero for the Time
               dispValue = checkValue; // shows the checkValue
@@ -474,7 +481,7 @@ namespace FS20_HudBar.Bar.Items
           // - check aircraft values only when not on ground
           // - check Timer in any case
           bool mustCheck = !(float.IsNaN( checkValue ) || float.IsNaN( dispValue ))
-            && (!SV.Get<bool>( SItem.bG_Sim_OnGround ) || (_alert.AlertValueType == AlertType.TIME));
+                          && (!SV.Get<bool>( SItem.bG_Sim_OnGround ) || (_alert.AlertValueType == AlertType.TIME));
 
           if (mustCheck &&
             (CheckAlertTarget( checkValue ) || _targetTriggered)) {
@@ -491,12 +498,14 @@ namespace FS20_HudBar.Bar.Items
           else {
             _led.IntValue = 0; // % bar indicator
           }
+
           // set display text field
           _alert.Value = dispValue;
-
         }//lock
-      }
+
+      }// visible
     }
+
 
   }
 }

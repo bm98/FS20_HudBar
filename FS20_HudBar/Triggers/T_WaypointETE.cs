@@ -46,7 +46,7 @@ namespace FS20_HudBar.Triggers
       if (SV.Get<bool>( SItem.bG_Sim_OnGround )) return; // not while on ground
 
       var ds = SV;
-      if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
+      if (SV.Get<bool>( SItem.bG_Gps_FP_tracking )) {
         DetectStateChange( (float)SV.Get<double>( SItem.dG_Gps_WYP_ete_sec ) );
       }
     }

@@ -285,12 +285,9 @@ namespace bm98_Map
       if (vpProfile.Visible) {
         // Create a List of Points starting from the NextPoint of the current DispRoute
         var wypList = new List<UC_VProfile.UC_VProfilePropsRoutepoint>( );
-        var nextRp = Waypoint.Empty;
         double dist = 0;
         // evaluate where we are within the current DispRoute
-        _flightPlanRef.TrackAircraft( _trackedAircraft.Position );
-        nextRp = _flightPlanRef.NextRoutePoint;
-
+        Waypoint nextRp = _flightPlanRef.NextRoutePoint;
         if (nextRp.IsValid) {
           // having a valid NextPoint...
           // subtract distance traveled from Prev to Next Point for the VProfile

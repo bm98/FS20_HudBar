@@ -126,6 +126,13 @@ namespace FCamControl
 
     private void timer1_Tick( object sender, EventArgs e )
     {
+      // register DataUpdates if in shared mode and if not yet done 
+      if (!Standalone) {
+        if ((_camera != null) && _camera.ConnectSim( )) {
+          // newly connected
+        }
+      }
+
       // Check Inop State only
       // inhibit when not in flight
       pnlCamButtons.Enabled = !Inop( );
@@ -257,8 +264,6 @@ namespace FCamControl
 
       _tooltip.SetToolTip( btResetView, "Reset the view" );
 
-      Location = AppSettings.Instance.CameraLocation;
-
       // Inop Checker
       timer1.Interval = 1000;
 
@@ -309,18 +314,60 @@ namespace FCamControl
           string msg = $"MyDocuments Folder Access Check Failed:\n{DbgLib.Dbg.Instance.AccessCheckResult}\n\n{DbgLib.Dbg.Instance.AccessCheckMessage}";
           MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
         }
-        // activate connection
+        // activate connection, will cause SCAdapter events to finalize the connection
         SCAdapter.Connect( );
+      }
+      else {
+        // connect via HudBar
+        _camera?.ConnectSim( );
       }
 
       // start inop checker
       timer1.Start( );
     }
 
+    // act when getting visible
+    private void frmCameraV2_VisibleChanged( object sender, EventArgs e )
+    {
+      if (this.Visible) {
+        // after hide, make sure we are live again
+        this.TopMost = true;
+        timer1.Enabled = true;
+      }
+    }
+
     // form is about to close
     private void frmCameraV2_FormClosing( object sender, FormClosingEventArgs e )
     {
+      // no longer live
+      this.TopMost = false;
+      timer1.Enabled = false;
 
+      // UnRegister DataUpdates
+      _camera?.DisconnectSim( );
+
+      // save last known good form location and size
+      if (this.Visible && this.WindowState == FormWindowState.Normal) {
+        AppSettings.Instance.CameraLocation = this.Location;
+      }
+      else {
+        AppSettings.Instance.CameraLocation = _lastLiveLocation;
+      }
+      //--
+      AppSettings.Instance.Save( );
+
+      if (Standalone) {
+        // don't cancel if standalone (else how to close it..)
+        this.WindowState = FormWindowState.Minimized;
+        SCAdapter.Disconnect( );
+      }
+      else {
+        if (e.CloseReason == CloseReason.UserClosing) {
+          // we don't close if the User clicks the X Box, only Hide; else it will not maintain the content throughout
+          e.Cancel = true;
+          this.Hide( );
+        }
+      }
     }
 
     private void FrmCameraV2_Disposed( object sender, EventArgs e )
@@ -403,16 +450,6 @@ namespace FCamControl
 
     #endregion
 
-
-
-    // Zoom is used also for indexed cams
-    private void tbZoom_ValueChanged( object sender, EventArgs e )
-    {
-      if (_updatingGUI) return;
-
-      // _camera.CameraAPI.CamRequestAPI.RequestZoomLevel( tbZoom.Value );
-    }
-
     #region Key Configs
 
     // Use the Key Config Dialog
@@ -473,6 +510,7 @@ namespace FCamControl
     }
 
     #endregion
+
 
   }
 }

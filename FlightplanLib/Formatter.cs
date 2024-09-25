@@ -252,6 +252,7 @@ namespace FlightplanLib
           Icao_Ident = loc.Icao_Ident,
           RunwayNumber_S = loc.RunwayNumber_S,
           RunwayDesignation = loc.RunwayDesignation,
+          Stage = "TAXI",
         };
         wypList.Add( wyp );
         // add an Airport WYP Runway if we know it
@@ -265,6 +266,7 @@ namespace FlightplanLib
             Icao_Ident = new IcaoRec( ) { ICAO = loc.Runway_Ident, Region = loc.Icao_Ident.Region, AirportRef = loc.Icao_Ident.ICAO },
             RunwayNumber_S = loc.RunwayNumber_S,
             RunwayDesignation = loc.RunwayDesignation,
+            Stage = "TAKEOFF",
           };
           wypList.Add( wyp );
         }
@@ -296,6 +298,7 @@ namespace FlightplanLib
             Icao_Ident = new IcaoRec( ) { ICAO = loc.Runway_Ident, Region = loc.Icao_Ident.Region, AirportRef = loc.Icao_Ident.ICAO },
             RunwayNumber_S = loc.RunwayNumber_S,
             RunwayDesignation = loc.RunwayDesignation,
+            Stage = "LAND",
           };
           wypList.Add( wyp );
         }
@@ -311,6 +314,7 @@ namespace FlightplanLib
           ApproachSuffix = aprProcRef.SuffixOf( ),
           RunwayNumber_S = loc.RunwayNumber_S,
           RunwayDesignation = loc.RunwayDesignation,
+          Stage = "TAXI",
         };
         wypList.Add( wyp );
       }
@@ -404,7 +408,7 @@ namespace FlightplanLib
           RunwayNumber_S = sid.RunwayIdent.RwNumberOf( ),
           RunwayDesignation = sid.RunwayIdent.RwDesignationOf( ),
           SID_Ident = ProcS( sid.Ident, transition ),
-          Stage = "", // TODO
+          Stage = sWyp.WaypointUsage.ToString( ),
         };
         if (sWyp.WYP.HasNAV) {
           var nv = DbLookup.GetNavaid_ByKey( sWyp.WYP.Nav_FKEY, bm98_hbFolders.Folders.GenAptDBFile );
@@ -444,7 +448,7 @@ namespace FlightplanLib
           RunwayNumber_S = star.RunwayIdent.RwNumberOf( ),
           RunwayDesignation = star.RunwayIdent.RwDesignationOf( ),
           STAR_Ident = ProcS( star.Ident, transition ),
-          Stage = "", // TODO
+          Stage = sWyp.WaypointUsage.ToString( ),
         };
         if (sWyp.WYP.HasNAV) {
           var nv = DbLookup.GetNavaid_ByKey( sWyp.WYP.Nav_FKEY, bm98_hbFolders.Folders.GenAptDBFile );
@@ -458,16 +462,18 @@ namespace FlightplanLib
     /// <summary>
     /// Expand a Approach into it's Flighplan Waypoints
     /// </summary>
+    /// <param name="loc">The Destination Location</param>
     /// <param name="apr">The Approach</param>
     /// <param name="transition">The Approach Transition</param>
     /// <param name="preferRNAV">True to prefer RNAV transitions</param>
     /// <returns>A Waypoint List</returns>
-    public static WaypointList ExpandAPR( IProcedure apr, string transition, bool preferRNAV )
+    public static WaypointList ExpandAPR( Location loc, IProcedure apr, string transition, bool preferRNAV )
     {
       var wypList = new WaypointList( );
       // sanity
       if (apr == null) return wypList;
 
+      // APR Transition
       if (!string.IsNullOrEmpty( transition )) {
         // try to find an approach transition
         KeyValuePair<string, List<IFix>> txWyps;
@@ -501,7 +507,7 @@ namespace FlightplanLib
               RunwayDesignation = apr.RunwayIdent.RwDesignationOf( ),
               ApproachTypeS = apr.NavType.ToString( ),
               ApproachSuffix = apr.NavSuffix,
-              Stage = "", // TODO
+              Stage = sWyp.WaypointUsage.ToString( ),
             };
             if (sWyp.WYP.HasNAV) {
               var nv = DbLookup.GetNavaid_ByKey( sWyp.WYP.Nav_FKEY, bm98_hbFolders.Folders.GenAptDBFile );
@@ -510,7 +516,7 @@ namespace FlightplanLib
             wypList.Add( wyp );
           }
         }
-      }
+      } // APR Transition
 
       // get all Approach fixes from this Approach
       var srcWyps = DbLookup.ExpandAPRFixes( apr, bm98_hbFolders.Folders.GenAptDBFile );
@@ -524,25 +530,49 @@ namespace FlightplanLib
         if (wypList.Count > 0 && sWyp.IdentOf == wypList.Last( ).Ident) {
           wypList.Remove( wypList.Last( ) );// remove last
         }
-        // create the Wyp
-        var wyp = new Flightplan.Waypoint( ) {
-          WaypointType = sWyp.WYP.WaypointType,
-          WaypointUsage = sWyp.WaypointUsage,
-          OnDeparture = false,
-          SourceIdent = sWyp.WYP.Ident,
-          CommonName = sWyp.WYP.Ident,
-          LatLonAlt_ft = sWyp.WYP.Coordinate,
-          Icao_Ident = new IcaoRec( ) { ICAO = sWyp.WYP.Ident, Region = sWyp.WYP.Region },
-          AltitudeLimitLo_ft = sWyp.AltitudeLo_ft,
-          AltitudeLimitHi_ft = sWyp.AltitudeHi_ft,
-          RunwayNumber_S = apr.RunwayIdent.RwNumberOf( ),
-          RunwayDesignation = apr.RunwayIdent.RwDesignationOf( ),
-          ApproachTypeS = apr.NavType.ToString( ),
-          ApproachSuffix = apr.NavSuffix,
-          ApproachSequence = sequ++,
-          Stage = "", // TODO
-        };
-        wypList.Add( wyp );
+        // Runway?
+        if (sWyp.WYP.WaypointType == WaypointTyp.RWY) {
+          // create the Runway Wyp
+          var wyp = new Flightplan.Waypoint( ) {
+            WaypointType = sWyp.WYP.WaypointType,
+            WaypointUsage = sWyp.WaypointUsage,
+            OnDeparture = false,
+            SourceIdent = sWyp.WYP.Ident,
+            CommonName = sWyp.WYP.Ident,
+            LatLonAlt_ft = loc.RunwayLatLonAlt_ft, // subst with LLA of the runway
+            Icao_Ident = new IcaoRec( ) { ICAO = sWyp.WYP.Ident, Region = sWyp.WYP.Region },
+            AltitudeLimitLo_ft = (int)loc.RunwayLatLonAlt_ft.Altitude, // subst with RW Alt
+            AltitudeLimitHi_ft = (int)loc.RunwayLatLonAlt_ft.Altitude, // subst with RW Alt
+            RunwayNumber_S = apr.RunwayIdent.RwNumberOf( ),
+            RunwayDesignation = apr.RunwayIdent.RwDesignationOf( ),
+            ApproachTypeS = apr.NavType.ToString( ),
+            ApproachSuffix = apr.NavSuffix,
+            ApproachSequence = sequ++,
+            Stage = "LAND",
+          };
+          wypList.Add( wyp );
+        }
+        else {
+          // create the APR/MAPR Wyp
+          var wyp = new Flightplan.Waypoint( ) {
+            WaypointType = sWyp.WYP.WaypointType,
+            WaypointUsage = sWyp.WaypointUsage,
+            OnDeparture = false,
+            SourceIdent = sWyp.WYP.Ident,
+            CommonName = sWyp.WYP.Ident,
+            LatLonAlt_ft = sWyp.WYP.Coordinate,
+            Icao_Ident = new IcaoRec( ) { ICAO = sWyp.WYP.Ident, Region = sWyp.WYP.Region },
+            AltitudeLimitLo_ft = sWyp.AltitudeLo_ft,
+            AltitudeLimitHi_ft = sWyp.AltitudeHi_ft,
+            RunwayNumber_S = apr.RunwayIdent.RwNumberOf( ),
+            RunwayDesignation = apr.RunwayIdent.RwDesignationOf( ),
+            ApproachTypeS = apr.NavType.ToString( ),
+            ApproachSuffix = apr.NavSuffix,
+            ApproachSequence = sequ++,
+            Stage = sWyp.WaypointUsage.ToString( ),
+          };
+          wypList.Add( wyp );
+        }
       }
       return wypList;
     }

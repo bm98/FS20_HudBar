@@ -24,8 +24,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>68</ApplicationRevision>
-    <ApplicationVersion>0.68.0.68</ApplicationVersion>
+    <ApplicationRevision>70</ApplicationRevision>
+    <ApplicationVersion>0.70.0.70</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -679,7 +679,7 @@
     <Compile Include="Config\ProfileItemsStore.cs" />
     <Compile Include="Config\CProfile.cs" />
     <Compile Include="AApp\AirportMgr.cs" />
-    <Compile Include="Bar\FltPlanMgr.cs" />
+    <Compile Include="Bar\AtcFltPlanMgr.cs" />
     <Compile Include="AApp\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -986,6 +986,9 @@
     <None Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="NLog.config.OFF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1048,6 +1051,10 @@
       <Project>{e15a0e90-bd54-48c6-ae8c-fb7343f49540}</Project>
       <Name>FChecklistBox</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FlightplanLib\FlightplanLib.csproj">
+      <Project>{4766e323-833c-42b5-88ed-dafb25e934ef}</Project>
+      <Name>FlightplanLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FShelf\FShelf.csproj">
       <Project>{9f304b94-90dd-4f3a-8b19-54641277c1cd}</Project>
       <Name>FShelf</Name>
@@ -1074,7 +1081,7 @@
       <Version>5.0.17</Version>
     </PackageReference>
     <PackageReference Include="NLog">
-      <Version>5.3.2</Version>
+      <Version>5.3.3</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

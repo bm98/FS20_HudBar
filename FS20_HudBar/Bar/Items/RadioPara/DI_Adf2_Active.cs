@@ -52,7 +52,7 @@ namespace FS20_HudBar.Bar.Items
       _brg.Heading = 180; // Wind indicator is used - so inverse direction
       this.AddItem( _brg ); vCat.AddLbl( item, _brg );
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival );
+      AddObserver( Short, 2, OnDataArrival );
     }
 
     /// <summary>

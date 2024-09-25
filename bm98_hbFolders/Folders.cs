@@ -57,6 +57,7 @@ namespace bm98_hbFolders
     private static string c_FPlanPDF = "@.FlightPlan.pdf";
     private static string c_FPlanPNG = "@.FlightPlan.png";
     private static string c_FPlanJPG = "@.FlightPlan.jpg";
+    private static string c_FTablePDF = "@.FlightTable.pdf";
     private static string c_FTablePNG = "@.FlightTable.png";
 
 
@@ -225,6 +226,10 @@ namespace bm98_hbFolders
     /// Flightplan JPG Filename in Shelf (Shelf folder is in AppSettings)
     /// </summary>
     public static string FPlanJPG_FileName => c_FPlanJPG;
+    /// <summary>
+    /// Flightplan Table PDF Filename in Shelf (Shelf folder is in AppSettings)
+    /// </summary>
+    public static string FTablePDF_FileName => c_FTablePDF;
     /// <summary>
     /// Flightplan Table PNG Filename in Shelf (Shelf folder is in AppSettings)
     /// </summary>

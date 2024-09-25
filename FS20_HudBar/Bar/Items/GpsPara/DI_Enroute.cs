@@ -48,7 +48,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 1), OnDataArrival ); // once per sec
+      AddObserver( Short, 1, OnDataArrival ); // once per sec
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
@@ -62,7 +62,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
+        if (SV.Get<bool>( SItem.bG_Gps_FP_tracking )) {
           _value1.Value = WPTracker.WPTimeEnroute_sec;
           _value2.Value = WPTracker.TimeEnroute_sec;
         }

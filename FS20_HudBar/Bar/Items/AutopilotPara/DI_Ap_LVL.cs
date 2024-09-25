@@ -43,13 +43,13 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
+      AddObserver( Short, 5, OnDataArrival );
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
       if (SC.SimConnectClient.Instance.IsConnected) {
-        SV.Set( SItem.bGS_Ap_LVL_hold, true ); // toggles
+        SV.Set( SItem.bGS_Ap_LVL_active, true ); // toggles
       }
     }
 
@@ -59,7 +59,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_LVL_hold ) ? cTxAPActive : cTxLabel;
+        this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_LVL_active ) ? cTxAPActive : cTxLabel;
       }
     }
 

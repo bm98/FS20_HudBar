@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 using SC = SimConnectClient;
 using FSimClientIF.Flightplan;
-using FS20_HudBar.GUI;
 using FSimClientIF;
 
 namespace FS20_HudBar.Bar
@@ -19,23 +18,22 @@ namespace FS20_HudBar.Bar
   /// DON'T Use the SimConnectClient FlightPlanModule outside, use the Manager...
   /// 
   /// </summary>
-  internal static class FltPlanMgr
+  internal static class AtcFltPlanMgr
   {
-    //    private static FS20FltFile m_fltFile = null;
     private static int m_currentHash = 0;
 
     private static object m_lock = new object( );
 
-    private static FlightPlan m_FP; // The managed one
-    private static FlightPlan m_dummyFP = new FlightPlan( ); // an empty one to return when needed
+    private static FSimClientIF.Flightplan.FlightPlan m_FP; // The managed one
+    private static FSimClientIF.Flightplan.FlightPlan m_dummyFP = new FSimClientIF.Flightplan.FlightPlan( ); // an empty one to return when needed
 
     /// <summary>
-    /// Event triggered when a new FlightPlan is available
+    /// Event triggered when a new ATC FlightPlan is available
     /// </summary>
-    public static event EventHandler<EventArgs> NewFlightPlan;
-    private static void OnNewFlightPlan( )
+    public static event EventHandler<EventArgs> NewAtcFlightPlan;
+    private static void OnNewAtcFlightPlan( )
     {
-      NewFlightPlan?.Invoke( null, new EventArgs( ) );
+      NewAtcFlightPlan?.Invoke( null, new EventArgs( ) );
     }
 
     /// <summary>
@@ -47,7 +45,7 @@ namespace FS20_HudBar.Bar
         SC.SimConnectClient.Instance.FlightPlanModule.Enabled = value;
         if (value) {
           // enable - reset state
-          m_currentHash = FlightPlan.Hash;
+          m_currentHash = AtcFlightPlan.Hash;
           HasChanged = true;
         }
         else {
@@ -71,9 +69,9 @@ namespace FS20_HudBar.Bar
     }
 
     /// <summary>
-    /// The most current FlightPlan (can be an empty one)
+    /// The most current ATC FlightPlan (can be an empty one)
     /// </summary>
-    public static FlightPlan FlightPlan {
+    public static FSimClientIF.Flightplan.FlightPlan AtcFlightPlan {
       get {
         lock (m_lock) {
           if (m_FP != null)
@@ -105,24 +103,24 @@ namespace FS20_HudBar.Bar
     public static FlightPlan Read( )
     {
       HasChanged = false;
-      return FlightPlan;
+      return AtcFlightPlan;
     }
 
 
     /// <summary>
     /// cTor:
     /// </summary>
-    static FltPlanMgr( )
+    static AtcFltPlanMgr( )
     {
       // receive FLT updates
-//      SC.SimConnectClient.Instance.FltSave += Instance_FltSave;
+      //      SC.SimConnectClient.Instance.FltSave += Instance_FltSave;
       SC.SimConnectClient.Instance.FlightPlanModule.NewDataAvailable += FlightPlanModule_NewDataAvailable;
     }
 
     // Reports on valid and changed FPs only (module must be enabled, and mode is capture ATC or Backup)
     private static void FlightPlanModule_NewDataAvailable( object sender, EventArgs e )
     {
-      OnNewFlightPlan( ); // inform the Bar
+      OnNewAtcFlightPlan( ); // inform the Bar
     }
 
 
@@ -140,7 +138,7 @@ namespace FS20_HudBar.Bar
       }
       // call the owner
       if (HasChanged)
-        OnNewFlightPlan( ); // inform the Bar
+        OnNewAtcFlightPlan( ); // inform the Bar
     }
 
   }

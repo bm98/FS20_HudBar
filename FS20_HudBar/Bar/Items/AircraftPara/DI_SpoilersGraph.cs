@@ -43,7 +43,7 @@ namespace FS20_HudBar.Bar.Items
       _scale1 = new A_Scale( ) { Minimum = 0, Maximum = 100, AlertEnabled = false, ItemForeColor = cStep };
       this.AddItem( _scale1 ); vCat.AddLbl( item, _scale1 );
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
+      AddObserver( Short, 5, OnDataArrival );
     }
 
 

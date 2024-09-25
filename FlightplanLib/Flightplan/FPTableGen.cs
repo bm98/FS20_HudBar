@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static FlightplanLib.Flightplan.RowData;
+
 namespace FlightplanLib.Flightplan
 {
   /// <summary>
@@ -62,135 +64,85 @@ namespace FlightplanLib.Flightplan
 
      */
 
-    // style and meta section
-    private const string c_docStyle = @"
-<meta http-equiv=""Content-Type"" content=""text/html;charset=UTF-8""> 
-<style>
+
+    // style section content
+    private const string c_docStyle =
+@"
+  body { font-family: ""segoe ui"", arial, sans-serif; }
   table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
     width: 1000px;
   }
   td, th {
-    border: 1px solid #dddddd;
+    border: 1px solid #cccccc;
     text-align: left;
     padding: 8px;
   }
-  th {
-    font-weight: bold;
-  }
-}
-</style>";
+  th { font-weight: bold; background-color: #f0ffff; }
+  td.even { background-color: #dddddd; }
+  td.odd { background-color: #ffffff; }
+  td.airport { background-color: #f0f8ff; }
+  td.runway { background-color: #ffe4c4; }
+  td.mapr { background-color: #fff0f5; }
+  p.footer { font-size:80%; }
+";
 
-    // string replacement mark
-    private const string c_MARK = "$$$+++$$$";
-    // templates 
-    private string t_doc;
-    private string t_title;
-    private string t_stitle;
-    private string t_table;
+    // templates  t_ccc
+    private string t_title = "";
+    private string t_subtitle = "";
+    private string t_table = "";
+    private string t_footer = "";
 
-    private string _document;
-    private string _rows;
+    private bm98_Html.HtmlDocument _htmlDoc;
+    private StringBuilder _sbRows;
     private int _rowCount = 0;
-    private string _footer = "";
+
+
+    // init to restart
+    private void InitDocGen( )
+    {
+      _htmlDoc = new bm98_Html.HtmlDocument( );
+      _sbRows = new StringBuilder( );
+      _htmlDoc.AddStyleHtml( c_docStyle );
+      _sbRows.AppendLine( FPlanRowData.HeaderRow_html( ) );
+      _rowCount = 0;
+    }
+
     /// <summary>
     /// cTor:
     /// </summary>
     public FPTableGen( )
     {
+      // create used templates
       // rule is to leave the template with with \n where needed \n will be read by the Renderer as CR(LF)
-      var docHead = $"<head>\n{c_docStyle}\n</head>";
-      var docBody = $"<body>\n{c_MARK}\n</body>";
-      t_doc = $"<!DOCTYPE html>\n<html>\n{docHead}\n{docBody}\n</html>\n"; // replacement mark
+      t_title = $"<h2>{c_MARK}</h2>\n";
+      t_subtitle = $"<h3>{c_MARK}</h3>\n";
+      t_table = $"<table>\n{c_MARK}\n</table>\n";
+      t_footer = $"<p class=\"footer\">{c_MARK}</p>";
 
-      t_title = $"<h2>{c_MARK}</h2>\n"; // replacement mark
-      t_stitle = $"<h3>{c_MARK}</h3>\n"; // replacement mark
-      t_table = $"<table>\n{c_MARK}\n</table>\n"; // replacement mark
-
-      _document = "";
-      _footer = $"<p style=\"font-size:80%\">{c_MARK}</p>";
-      _rows = RowData.HeaderRow_html( );
-      _rowCount = 0;
+      InitDocGen( );
     }
 
+    /// <summary>
+    /// Formatter for one FP Table Row
+    ///   Set properties and use it to add a row
+    /// </summary>
     public struct RowData
     {
-      /// <summary>
-      /// Format as HTML row
-      /// </summary>
-      /// <returns>A formatted row</returns>
-      public static string HeaderRow_html( )
-      {
-        string cols = "";
-        string t_td = $"<th style=\"background-color: #f0ffff;\">{c_MARK}</th>\n"; // background style for TR does not work with this renderer, use TD
-        cols += t_td.Replace( c_MARK, "Ident" );
-        cols += t_td.Replace( c_MARK, "Alt ft" );
-        cols += t_td.Replace( c_MARK, "Type" );
-        cols += t_td.Replace( c_MARK, "Proc/Info" );
-        cols += t_td.Replace( c_MARK, "Trk °M" );
-        cols += t_td.Replace( c_MARK, "Dist nm" );
-        cols += t_td.Replace( c_MARK, "Remaining nm" );
 
-        string row = $"<tr>\n{cols}</tr>\n";
-        return row;
-      }
 
-      public string Ident;
-      public float AltTarget_ft; // use if >0
-      public float AltLo_ft;
-      public float AltHi_ft;
-      public string Type;
-      public string Proc;
-      public int InbTRK_degm;
-      public float Dist_nm;
+    }// class RowData
 
-      /// <summary>
-      /// Format as HTML row
-      /// </summary>
-      /// <returns>A formatted row</returns>
-      public string Row_html( int lineNum, double remainingDist )
-      {
-        /*
-        <tr>
-          <td>Col 1</td>
-          <td>Col 2</td>
-          <td>Col 3</td>
-        </tr>
-         */
-        string cols = "";
-        string bg = (lineNum % 2 == 0) ? "background-color: #dddddd;" : "background-color: #ffffff;"; // even / odd
-        // do some fancy row background for APT and RWY
-        bg = Type.StartsWith( "AIRPORT" ) ? "background-color: #f0f8ff;" : bg; // alice blue
-        bg = Type.StartsWith( "RUNWAY" ) ? "background-color: #ffe4c4;" : bg;  // bisque
-        bg = Proc.StartsWith( FSimFacilityIF.UsageTyp.MAPR.ToString( ) ) ? "background-color: #fff0f5;" : bg;  // lavender blush
 
-        string t_td = $"<td style=\"{bg}\">{c_MARK}</td>\n"; // background style for TR does not work with this renderer, use TD
-        cols += t_td.Replace( c_MARK, Ident );
-        string a;
-        if (AltTarget_ft > 0) {
-          a = $"{AltTarget_ft:##,##0}";
-        }
-        else if (AltHi_ft == AltLo_ft) {
-          a = float.IsNaN( AltLo_ft ) || (AltLo_ft < 1) ? "" : $"={AltLo_ft:##,##0}";
-        }
-        else {
-          a = float.IsNaN( AltLo_ft ) || (AltLo_ft < 1) ? "" : $"{AltLo_ft:##,##0}";
-          a = (float.IsNaN( AltHi_ft ) || (AltHi_ft < 1) ? "" : $"{AltHi_ft:##,##0}") + "/" + a;
-        }
-        cols += t_td.Replace( c_MARK, a ); // don't print NaNs and Zeros
-        cols += t_td.Replace( c_MARK, $"{Type}" );
-        cols += t_td.Replace( c_MARK, Proc );
-        cols += t_td.Replace( c_MARK, $"{InbTRK_degm:000}" );
-        cols += t_td.Replace( c_MARK, float.IsNaN( Dist_nm ) ? "" : $"{Dist_nm:##0.0}" );
-        cols += t_td.Replace( c_MARK, (remainingDist >= 0) ? $"{remainingDist:##0.0}" : "." );
-
-        string row = $"<tr>\n{cols}</tr>\n";
-        return row;
-      }
-
+    /// <summary>
+    /// Add one row of data
+    /// </summary>
+    /// <param name="rowData">The rowData obj</param>
+    public void AddRow( FPlanRowData rowData )
+    {
+      _sbRows.AppendLine( rowData.Row_html( ++_rowCount ) );
     }
-
 
     /// <summary>
     /// Commit the document 
@@ -200,32 +152,20 @@ namespace FlightplanLib.Flightplan
     public string CommitDocument( string titleContent, List<string> subTitles, string footer )
     {
       //  finalize by replacing the marks in the templates
-      var body = t_title.Replace( c_MARK, titleContent );
+      _htmlDoc.AddBodyHtml( t_title.Replace( c_MARK, titleContent ) );
       foreach (var subTitle in subTitles) {
         if (string.IsNullOrWhiteSpace( subTitle )) continue; // ignore empty lines
-
-        body += t_stitle.Replace( c_MARK, subTitle );
+        _htmlDoc.AddBodyHtml( t_subtitle.Replace( c_MARK, subTitle ) );
       }
-      body += t_table.Replace( c_MARK, _rows );
-      body += _footer.Replace( c_MARK, $"{DateTime.Now:g} - " + footer );
-      _document = t_doc.Replace( c_MARK, body );
+      _htmlDoc.AddBodyHtml( t_table.Replace( c_MARK, _sbRows.ToString( ) ) );
+      _htmlDoc.AddBodyHtml( t_footer.Replace( c_MARK, $"{DateTime.Now:g} - " + footer ) );
 
-      // copy to reset and return
-      var doc = _document;
-      _document = "";
-      _rows = RowData.HeaderRow_html( );
-      _rowCount = 0;
+      // return the outcome and prep for a next round of content
+      var doc = _htmlDoc.GetDocument( );
+      // init for next round
+      InitDocGen( );
+
       return doc;
-    }
-
-    /// <summary>
-    /// Add one row of data
-    /// </summary>
-    /// <param name="rowData">The rowData obj</param>
-    /// <param name="remainingDist_nm">The calculated remaining dist value</param>
-    public void AddRow( RowData rowData, double remainingDist_nm )
-    {
-      _rows += rowData.Row_html( ++_rowCount, remainingDist_nm );
     }
 
   }

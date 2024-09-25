@@ -47,13 +47,11 @@ namespace FlightplanLib.LNM.LNMDEC
     [XmlElement( ElementName = "NavData" )]
     public X_SimNavData NavData { get; set; } = null;
 
-    /*
-      /// <summary>
-      /// Some Aircraft related data - will be ignored
-      /// </summary>
-      [XmlElement( ElementName = "AircraftPerformance" )]
-      public string AircraftPerformance;
-    */
+    /// <summary>
+    /// Some Aircraft related data
+    /// </summary>
+    [XmlElement( ElementName = "AircraftPerformance", IsNullable = true )]
+    public X_AircraftPerformance AircraftPerformance = new X_AircraftPerformance();
 
     /// <summary>
     /// The Departure (OPTIONAL)

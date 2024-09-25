@@ -48,14 +48,17 @@ namespace FCamControl
     /// <summary>
     /// Connect to Sim
     /// </summary>
-    public void ConnectSim( )
+    /// <returns>True if newly connected, else false (already connected or failed)</returns>
+    public bool ConnectSim( )
     {
-      if (SC.SimConnectClient.Instance.IsConnected && _observerID < 0) {
+      if (SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
         _observerID = SV.AddObserver(
            "FCamControl.Context",
            (int)(Sim.DataArrival_perSecond / 2), // twice per sec - else go faster..
            OnDataArrival, null ); // may be no need to run through the invoker ??
+        return (_observerID > 0);
       }
+      return false;
     }
 
     /// <summary>

@@ -60,6 +60,8 @@ namespace FlightplanLib.LNM
         FlightPlanType = fp.Header.FlightplanType,
         RouteType = (fp.Header.CruiseAlt_ft < 18000) ? TypeOfRoute.LowAlt : TypeOfRoute.HighAlt,
         StepProfile = "", // to be evaluated TODO
+        AircraftType_ICAO=fp.AircraftPerformance.AircraftType_ICAO,
+        AircraftTypeName=fp.AircraftPerformance.AircraftType_Name,
       };
 
       // create Origin

@@ -6,9 +6,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using CoordLib;
 using bm98_hbFolders;
 
 using FlightplanLib.Flightplan;
@@ -164,7 +166,7 @@ namespace Z_TEST_Flightplan
       else {
         if (IsSbPlan) {
           // Load Shelf Docs
-          if (!_sbDocLoader.LoadDocuments( FlightPlan, destLocation, false )) {
+          if (!_sbDocLoader.LoadDocuments( FlightPlan, destLocation )) {
             sb.AppendLine( "FP document is currently in use, could not change it" );
           }
         }
@@ -201,7 +203,7 @@ namespace Z_TEST_Flightplan
 
       // Init the Folders Utility with our AppSettings File
       Folders.InitStorage( "FShelfAppSettings.json" );
-      _destPath=Path.GetFullPath( c_destLocation );
+      _destPath = Path.GetFullPath( c_destLocation );
       if (!Directory.Exists( _destPath )) {
         Directory.CreateDirectory( _destPath );
       }
@@ -254,7 +256,9 @@ namespace Z_TEST_Flightplan
           case ".rte":
             LoadLnmRTE( buffer );
             return true;
-          default: break;
+          default:
+            RTB.Text += $"ERROR: Unknown Plan Format for plan file:\n{_loadFilename}\n";
+            break;
         }
       }
       catch (Exception ex) {
@@ -268,18 +272,34 @@ namespace Z_TEST_Flightplan
       if (OFD.ShowDialog( this ) == DialogResult.OK) {
         _loadFilename = OFD.FileName;
         RTB.Text = $"Loading file: {_loadFilename}\n";
+        _fPlan = null;
         bool loadResult = FPLoader( );
         RTB.Text += $"Load result: {loadResult}\n";
         if (loadResult) {
           RTB.Text += $"Saving in: {c_destLocation}\n";
           string saveResult = GetAndSaveDocuments( _destPath, true );
           RTB.Text += $"Save result: {saveResult}\n";
-          File.Move(Path.Combine( _destPath,"@.FlightTable.png" ), Path.Combine( _destPath, $"FT_{DateTime.Now.ToString("s").Replace(":","_")}.png" ) );
-        }
+          Thread.Sleep( 5000 );
+          File.Move( Path.Combine( _destPath, "@.FlightTable.pdf" ), Path.Combine( _destPath, $"FT_{DateTime.Now.ToString( "s" ).Replace( ":", "_" )}.pdf" ) );
 
+          RTB.Text += $"\n++++ A valid Flightplan is available\n";
+          txLat.Text = _fPlan.Origin.LatLonAlt_ft.Lat.ToString( );
+          txLon.Text = _fPlan.Origin.LatLonAlt_ft.Lon.ToString( );
+        }
+        else {
+          RTB.Text += $"\n---- NO valid Flightplan is available\n";
+        }
 
       }
     }
+
+    private void btNextWYP_Click( object sender, EventArgs e )
+    {
+      _fPlan.TrackAircraft( new LatLon( double.Parse( txLat.Text ), double.Parse( txLon.Text ) ) );
+
+      RTB.Text += $"RouteTracking: {_fPlan.PrevRoutePoint.Icao_Ident} -> {_fPlan.NextRoutePoint.Icao_Ident} along {_fPlan.DistTraveled_nm:0.00} nm\n";
+    }
+
 
   }
 }

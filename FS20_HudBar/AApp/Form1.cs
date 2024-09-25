@@ -23,6 +23,7 @@ using System.IO;
 using FS20_HudBar.GUI;
 using FSimClientIF.Modules;
 using bm98_hbFolders;
+using FShelf;
 
 namespace FS20_HudBar
 {
@@ -610,6 +611,7 @@ namespace FS20_HudBar
       // Setup the Shelf
       LOG.Log( "frmMain", "Load Shelf" );
       m_shelf = new FShelf.frmShelf( Program.Instance );
+      m_shelf.FlightPlanLoadedByUser += M_shelf_FlightPlanLoadedByUser; // attach FPlan loading event
       UpdateShelfSettings( ); // needed for transition to new AppSettings concept
 
       LOG.Log( "frmMain", "Init Form Done" );
@@ -642,7 +644,7 @@ namespace FS20_HudBar
 
       // attach a Callback for the SimClient
       SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
-      FltPlanMgr.Enabled = false; // start disabled, will be re-checked in InitGUI
+      AtcFltPlanMgr.Enabled = false; // start disabled, will be re-checked in InitGUI
       // Layout may need to update when the Aircraft changes (due to Engine Count)
       SC.SimConnectClient.Instance.AircraftChange += Instance_AircraftChange;
 
@@ -758,9 +760,7 @@ namespace FS20_HudBar
       this.Close( ); // just call the main Close
     }
 
-    /// <summary>
-    /// Timer Event
-    /// </summary>
+    // Timer Event
     private void timer1_Tick( object sender, EventArgs e )
     {
       // SimConnect stuff
@@ -769,6 +769,13 @@ namespace FS20_HudBar
       //DEBUG
       SynchGUISize( ); // first time align the size
 
+    }
+
+    // fired when the user has loaded a flightplan
+    private void M_shelf_FlightPlanLoadedByUser( object sender, EventArgs e )
+    {
+      // update from shelf
+      HudBar.UpdateUserFlightplan( m_shelf.FlightPlanRef );
     }
 
 
@@ -1105,8 +1112,8 @@ namespace FS20_HudBar
       SynchGUIVisible( false ); // hide, else we see all kind of shaping
 
       LOG.Log( "InitGUI", "FltPlanMgr Setup" );
-      FltPlanMgr.FlightPlanMode = (FSimClientIF.FlightPlanMode)AS.FltAutoSaveATC;
-      FltPlanMgr.Enabled = AS.FltAutoSaveATC > 0;
+      AtcFltPlanMgr.FlightPlanMode = (FSimClientIF.FlightPlanMode)AS.FltAutoSaveATC;
+      AtcFltPlanMgr.Enabled = AS.FltAutoSaveATC > 0;
       LOG.Log( "InitGUI", "FlightLogModule Setup" );
       SC.SimConnectClient.Instance.FlightLogModule.Enabled = AS.FRecorder;
       LOG.Log( "InitGUI", "AirportMgr Reset" );
@@ -1324,7 +1331,7 @@ namespace FS20_HudBar
       //signalling the connection state on the topmost Bar Item
       HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
 
-      FltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
+      AtcFltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
       // enable game hooks if newly connected and desired
       SetupInGameHook( AppSettingsV2.Instance.InGameHook );
       // Set Engines 
@@ -1345,7 +1352,7 @@ namespace FS20_HudBar
       SetupInGameHook( false );
       flp.SetEnginesVisible( -1 ); // reset for the next attempt
 
-      FltPlanMgr.Enabled = false; // disable when disconnecting
+      AtcFltPlanMgr.Enabled = false; // disable when disconnecting
       LOG.Log( $"SCAdapter", "Disconnected now" );
     }
 
@@ -1357,7 +1364,7 @@ namespace FS20_HudBar
     /// </summary>
     private void Instance_DataArrived( object sender, FSimClientIF.ClientDataArrivedEventArgs e )
     {
-      if ( this.InvokeRequired) {
+      if (this.InvokeRequired) {
         this.Invoke( (MethodInvoker)delegate { UpdateGUI( e.DataRefName ); } );
       }
       else {

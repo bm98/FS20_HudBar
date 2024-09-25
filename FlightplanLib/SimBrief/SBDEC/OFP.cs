@@ -64,6 +64,12 @@ namespace FlightplanLib.SimBrief.SBDEC
     public Json_Atc Atc { get; set; } = new Json_Atc( );
 
     /// <summary>
+    /// The aircraft field
+    /// </summary>
+    [DataMember( Name = "aircraft", IsRequired = true )]
+    public Json_Aircraft Aircraft { get; set; } = new Json_Aircraft( );
+
+    /// <summary>
     /// The text field
     /// </summary>
     [DataMember( Name = "text", IsRequired = true )]

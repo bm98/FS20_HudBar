@@ -47,7 +47,7 @@ namespace FS20_HudBar.Bar.Items
       _comp = new A_WindArrow( ) { BorderStyle = BorderStyle.FixedSingle, AutoSizeWidth = true, ItemForeColor = cInfo };
       this.AddItem( _comp ); vCat.AddLbl( item, _comp );
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival );
+      AddObserver( Short, 2, OnDataArrival );
     }
 
     /// <summary>

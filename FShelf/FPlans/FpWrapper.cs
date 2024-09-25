@@ -128,10 +128,10 @@ namespace FShelf.FPlans
     /// <summary>
     /// Decode and Load the LNM PLN String
     /// </summary>
-    /// <param name="rteString">The received LNM PLN String</param>
-    public void LoadLnmPLN( string rteString )
+    /// <param name="lnmplnString">The received LNM PLN String</param>
+    public void LoadLnmPLN( string lnmplnString )
     {
-      var pln = FlightplanLib.LNM.LNMDEC.LnmPlnDecoder.FromString( rteString );
+      var pln = FlightplanLib.LNM.LNMDEC.LnmPlnDecoder.FromString( lnmplnString );
       if (pln.IsValid) {
         _fPlan = LNMpln.AsFlightPlan( pln );
       }

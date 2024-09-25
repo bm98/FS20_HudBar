@@ -117,7 +117,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
 
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
+      AddObserver( Short, 5, OnDataArrival );
     }
 
     // Calibrate the Load% per Engine 

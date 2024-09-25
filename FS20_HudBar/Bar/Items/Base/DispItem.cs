@@ -71,11 +71,16 @@ namespace FS20_HudBar.Bar.Items.Base
     /// and populate the observerID
     /// </summary>
     /// <param name="itemId">An Item ID string</param>
-    /// <param name="interval_perSecond">An interval to receive updates</param>
+    /// <param name="reports_perSecond">How many data reports per second are expected (0.1..10)</param>
     /// <param name="onDataArrival">The Action to perform if data arrives</param>
-    protected void AddObserver( string itemId, int interval_perSecond, Action<string> onDataArrival )
+    protected void AddObserver( string itemId, float reports_perSecond, Action<string> onDataArrival )
     {
-      m_observerID = SV.AddObserver( itemId, interval_perSecond, onDataArrival, this ); // once per sec
+      // sanity
+      var rps = dNetBm98.XMath.Clip( reports_perSecond, 0.1f, 10f );
+
+      // 0.1: 10/0.1=100 (*100ms = 10sec), 1: 10/1=10 (*100ms=1sec),  10: 10/10=1 (*100ms=0.1sec)
+      int divider = (int)Math.Round( FSimClientIF.Sim.DataArrival_perSecond / rps );
+      m_observerID = SV.AddObserver( itemId, divider, onDataArrival, this );// divider = every nth reporting of 10/sec (nominal pace)
     }
 
     /// <summary>

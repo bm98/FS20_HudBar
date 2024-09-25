@@ -100,6 +100,10 @@ namespace bm98_Map.Data
     /// </summary>
     float Vs_fpm { get; }
     /// <summary>
+    /// FlightPath angle degree
+    /// </summary>
+    float Fpa_deg { get; }
+    /// <summary>
     /// Wind Speed in kt
     /// </summary>
     float WindSpeed_kt { get; }

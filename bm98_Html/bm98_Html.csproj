@@ -49,6 +49,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dNetWkhtmlWrap">
+      <HintPath>..\..\..\..\Redist\dNetWkhtmlWrap.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -58,21 +61,18 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="TuesPechkin.Wkhtmltox.Win64">
-      <HintPath>..\..\..\..\Redist\TuesPechkin.Wkhtmltox.Win64.dll</HintPath>
+    <Reference Include="WkWrapper.WkhtmlToPdf.Mxe">
+      <HintPath>..\..\..\..\Redist\WkWrapper.WkhtmlToPdf.Mxe.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs">
       <Link>SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="HtmlChars.cs" />
+    <Compile Include="HtmlDocBase.cs" />
     <Compile Include="HtmlRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="TuesPechkin">
-      <Version>2.1.1</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\bm98_hbFolders\bm98_hbFolders.csproj">

@@ -68,17 +68,39 @@ namespace bm98_VProfile.Drawing
         var ctxSave = g.Save( );
         //g.SetClip( Rectangle, CombineMode.Replace );
 
+        // WypPoint enters as 1x1 unit scaled coordinate with top/left corner = 0/0
         float Xs = Rectangle.Left + (WypPoint.X * Rectangle.Width);
         float Ys = Rectangle.Top + (WypPoint.Y * Rectangle.Height);
 
+        // text labels will be drawn below the Dot for Y<=0.7 else above the Dot
+        // if the Dot is out of sight the label is drawn on the middle line
+        // text label is shifted right when the dot is close to the left edge
+
+        bool dotInvisible = (WypPoint.Y < 0.002) || (WypPoint.Y > 0.998); // within the limits, the dot remains barely visible
+
+        // default Label rect
+        var textRect = new Rectangle( -40, 5, 80, 50 ); // relative to Loc of WYP (5pix below)
+        if (dotInvisible) {
+          // recalc the Y dot location for middle line
+          Ys = Rectangle.Top + (0.5f * Rectangle.Height);
+          textRect.Y = -textRect.Height / 2;
+        }
+        else {
+          // dot is visible
+          // draw Label above the dot if the dot is close to the bottom of the graph
+          textRect.Y = WypPoint.Y > 0.7 ? -5 - textRect.Height : textRect.Y;
+        }
+
+        // shift the label right when clipped left
+        textRect.X = (Xs - Rectangle.Left) < textRect.Width / 2 ? textRect.X + textRect.Width / 2 : textRect.X;
+
+        // center to dot location
         g.TranslateTransform( Xs, Ys );
 
-        g.FillEllipse( FillBrush, new Rectangle( -5, -5, 10, 10 ) );
-        //g.DrawLines( Pen, _wyp );
-
-        var textRect = new Rectangle( -40, 5, 80, 50 ); // currently at Loc WYP
-        textRect.Y = WypPoint.Y > 0.7 ? -5 - textRect.Height : textRect.Y; // on top of the label if it is at the bottom 
-        textRect.X = (Xs-Rectangle.Left)<textRect.Width/2?textRect.X+textRect.Width/2 :textRect.X; // shift right when clipped left
+        // draw dot if possible
+        if (!dotInvisible) {
+          g.FillEllipse( FillBrush, new Rectangle( -5, -5, 10, 10 ) );
+        }
 
         // draw label background if active and there is a FillBrush
         if (Active == ActiveState.Alert && BackgBrushAlarm != null) {

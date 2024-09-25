@@ -57,7 +57,7 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// The elapsed seconds
     /// </summary>
-    public int Duration => (int)((Started) ? m_lapseSec - m_startSec : 0);
+    public int Duration => (int)(Started ? m_lapseSec - m_startSec : 0);
 
 
   }

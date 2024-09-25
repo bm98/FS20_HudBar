@@ -43,13 +43,13 @@ namespace FS20_HudBar.Bar.Items
       _label = new B_Text( item, value2Proto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += DI_Ap_ButtonClicked;
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
+      AddObserver( Short, 5, OnDataArrival );
     }
 
     private void DI_Ap_ButtonClicked( object sender, ClickedEventArgs e )
     {
       if (SC.SimConnectClient.Instance.IsConnected) {
-        SV.Set( SItem.cmGS_Ap_AP1, CmdMode.Toggle );
+        SV.Set( SItem.cmGS_Ap_AP1_active, CmdMode.Toggle );
       }
     }
 
@@ -59,7 +59,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        this.ColorType.ItemForeColor = (SV.Get<CmdMode>( SItem.cmGS_Ap_AP1 ) == CmdMode.On) ? cTxAPActive : cTxLabel;
+        this.ColorType.ItemForeColor = (SV.Get<CmdMode>( SItem.cmGS_Ap_AP1_active ) == CmdMode.On) ? cTxAPActive : cTxLabel;
       }
     }
 

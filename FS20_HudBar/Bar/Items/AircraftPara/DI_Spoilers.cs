@@ -44,7 +44,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Steps( signProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 5), OnDataArrival );
+      AddObserver( Short, 5, OnDataArrival );
     }
 
     private void _label_ButtonClicked( object sender, EventArgs e )

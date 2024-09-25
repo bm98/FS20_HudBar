@@ -90,7 +90,8 @@ namespace FlightplanLib.Flightplan
         int altTgt = item.IsProc ? 0 : item.AltitudeRounded_ft; // use Limits
 
         string freq = string.IsNullOrWhiteSpace( item.Frequency ) ? "" : $" ({item.Frequency})";
-        var rowData = new FPTableGen.RowData( ) {
+        remaining_dist -= item.InboundDistance_nm;
+        var rowData = new FPlanRowData( ) {
           Ident = item.Ident,
           AltTarget_ft = altTgt,
           AltLo_ft = item.AltitudeLimitLo_ft,
@@ -98,10 +99,10 @@ namespace FlightplanLib.Flightplan
           Type = $"{PrettyType( item.WaypointType )}{freq}",
           Proc = ProcDescription( item ),
           InbTRK_degm = item.InboundMagTrk,
-          Dist_nm = (double.IsNaN( item.InboundDistance_nm ) || (item.InboundDistance_nm < 0.001)) ? float.NaN : (float)item.InboundDistance_nm, // omit NaN and 0 (very small..)
+          Dist_nm = (double.IsNaN( item.InboundDistance_nm ) || (item.InboundDistance_nm < 0.001)) ? double.NaN : item.InboundDistance_nm, // omit NaN and 0 (very small..)
+          DistRemaining_nm = remaining_dist,
         };
-        remaining_dist -= item.InboundDistance_nm;
-        _formatter.AddRow( rowData, remaining_dist );
+        _formatter.AddRow( rowData );
       }
       // fill optional APR with something meaningful
       if (string.IsNullOrEmpty( apr_text )) {
@@ -139,26 +140,17 @@ namespace FlightplanLib.Flightplan
       // protect from inadvertend crashes of the unknown Library...
       //Image image;
       try {
-        bm98_Html.HtmlRenderer.Instance.Html2PNG( html, Path.Combine( targetFolder, bm98_hbFolders.Folders.FTablePNG_FileName ) );
-
-        // image = TheArtOfDev.HtmlRenderer.WinForms.HtmlRender.RenderToImage( html );
+        bm98_Html.HtmlRenderer.Instance.Add_ToPdf_A4_Portrait(
+          html,
+          Path.Combine( targetFolder, bm98_hbFolders.Folders.FTablePDF_FileName ),
+          $"Flight Table {plan.Origin.Icao_Ident} - {plan.Destination.Icao_Ident}",
+          null  // no header
+         );
       }
       catch (Exception ex) {
         LOG.LogException( "FlightPlanTable.SaveDocument", ex, "Converting to HTML failed" );
         return false;
       }
-      /*
-      // dest may be locked when viewing
-      try {
-        image.Save( Path.Combine( targetFolder, c_FTablePNG_DocName ), ImageFormat.Png );
-
-        image.Dispose( );
-      }
-      catch (Exception ex) {
-        LOG.LogException( "FlightPlanTable.SaveDocument", ex, "Saving to file failed" );
-        return false;
-      }
-      */
       return true;
 
     }

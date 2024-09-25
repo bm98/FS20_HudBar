@@ -41,6 +41,7 @@ using FlightplanLib.LNM;
 using FShelf.Profiles;
 using FShelf.FPlans;
 using FShelf.LandPerf;
+using System.ComponentModel;
 
 namespace FShelf
 {
@@ -126,6 +127,29 @@ namespace FShelf
     public bool Standalone { get; private set; } = false;
 
     /// <summary>
+    /// Fired when the user loaded a valid flightplan
+    /// </summary>
+    public event EventHandler<EventArgs> FlightPlanLoadedByUser;
+    private void OnFlightPlanLoadedByUser( ) => FlightPlanLoadedByUser?.Invoke( this, new EventArgs( ) );
+
+
+    /// <summary>
+    /// Ref to the currently loaded Flightplan or an empty one (check IsValid)
+    /// NOTE: don't mess with it and update when the load event is fired... 
+    /// TODO: provide a tamper safe interface...
+    /// </summary>
+    public FlightplanLib.Flightplan.FlightPlan FlightPlanRef {
+      get {
+        if (_flightPlan.FlightPlan.IsValid) {
+          return _flightPlan.FlightPlan;
+        }
+        else {
+          return new FlightplanLib.Flightplan.FlightPlan( );
+        }
+      }
+    }
+
+    /// <summary>
     /// Departure Airport IlsID
     /// </summary>
     public string DEP_Airport {
@@ -194,7 +218,7 @@ namespace FShelf
       }
     }
 
-
+    // save the last loaded plan to the MyDocuments Folder of HudBar
     private static void DebSaveRouteString( string content, string ext )
     {
       var fName = $".\\LastPlanDownload.{ext}";
@@ -934,6 +958,7 @@ namespace FShelf
 
       // Map update pace slowed down to an acceptable CPU load - (native is 100ms)
       if ((_updates++ % 5) == 0) { // 500ms pace - slow enough ?? performance penalty...
+        // track waypoints on data arrival
         _tAircraft.AircraftID = SV.Get<string>( SItem.sG_Cfg_AircraftID );
         _tAircraft.OnGround = SV.Get<bool>( SItem.bG_Sim_OnGround );
         _tAircraft.TrueHeading_deg = SV.Get<float>( SItem.fG_Nav_HDG_true_deg );
@@ -943,7 +968,8 @@ namespace FShelf
         _tAircraft.AltitudeIndicated_ft = SV.Get<float>( SItem.fG_Acft_Altimeter_ft );
 
         // limit RA visible to an altitude and if not on ground
-        var _raLimit_ft = (SV.Get<EngineType>( SItem.etG_Cfg_EngineType ) == EngineType.Jet) ? c_raAirliner_ft : c_raDefault_ft;
+        var _raLimit_ft = ((SV.Get<EngineType>( SItem.etG_Cfg_EngineType ) == EngineType.Jet)
+                        || (SV.Get<EngineType>( SItem.etG_Cfg_EngineType ) == EngineType.Turboprop)) ? c_raAirliner_ft : c_raDefault_ft;
         var ra_ft = SV.Get<float>( SItem.fGS_Acft_AltAoG_ft );
         _tAircraft.RadioAlt_ft = SV.Get<bool>( SItem.bG_Sim_OnGround ) ? float.NaN
                                                                        : ra_ft <= _raLimit_ft ? ra_ft
@@ -961,6 +987,8 @@ namespace FShelf
         _tAircraft.WindSpeed_kt = SV.Get<float>( SItem.fG_Acft_WindSpeed_kt );
         _tAircraft.WindDirection_deg = SV.Get<float>( SItem.fG_Acft_WindDirection_deg );
 
+        // track current position in FlightPlan
+        _flightPlan.FlightPlan.TrackAircraft( _tAircraft.Position );
         // update the map
         aMap.UpdateAircraft( _tAircraft );
 
@@ -1119,6 +1147,8 @@ namespace FShelf
 
         // Set Map Route
         aMap.SetFlightplan( _flightPlan.FlightPlan );
+        // Announce plan loading
+        OnFlightPlanLoadedByUser( );
         // Load Shelf Docs
         var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgSbPlanData.Text = err;
@@ -1186,6 +1216,8 @@ namespace FShelf
 
         // Set Map Route
         aMap.SetFlightplan( _flightPlan.FlightPlan );
+        // Announce plan loading
+        OnFlightPlanLoadedByUser( );
         // Load Shelf Docs
         var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
@@ -1246,6 +1278,8 @@ namespace FShelf
 
         // Set Map Route
         aMap.SetFlightplan( _flightPlan.FlightPlan );
+        // Announce plan loading
+        OnFlightPlanLoadedByUser( );
         // Load Shelf Docs
         var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
@@ -1304,6 +1338,8 @@ namespace FShelf
 
         // Set Map Route
         aMap.SetFlightplan( _flightPlan.FlightPlan );
+        // Announce plan loading
+        OnFlightPlanLoadedByUser( );
         // Load Shelf Docs
         var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
@@ -1358,6 +1394,8 @@ namespace FShelf
 
         // Set Map Route
         aMap.SetFlightplan( _flightPlan.FlightPlan );
+        // Announce plan loading
+        OnFlightPlanLoadedByUser( );
         // Load Shelf Docs
         var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;
@@ -1412,6 +1450,8 @@ namespace FShelf
 
         // Set Map Route
         aMap.SetFlightplan( _flightPlan.FlightPlan );
+        // Announce plan loading
+        OnFlightPlanLoadedByUser( );
         // Load Shelf Docs
         var err = _flightPlan.GetAndSaveDocuments( AppSettings.Instance.ShelfFolder );
         if (!string.IsNullOrWhiteSpace( err )) lblCfgMsPlanData.Text = err;

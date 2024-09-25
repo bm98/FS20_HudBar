@@ -50,12 +50,12 @@ namespace FS20_HudBar.Triggers
       if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
       if (SV.Get<bool>( SItem.bG_Sim_OnGround )) return; // not while on ground
 
-      this.m_actions[true].Text = SV.Get<bool>( SItem.bG_Ap_GP_active ) ? _path : _slope; // GS may be active even on GP (then both are..)
+      this.m_actions[true].Text = SV.Get<bool>( SItem.bG_Ap_GP_tracking ) ? _path : _slope; // GS may be active even on GP (then both are..)
 
-      DetectStateChange( SV.Get<bool>( SItem.bG_Ap_GS_active ) || SV.Get<bool>( SItem.bG_Ap_GP_active ) );
+      DetectStateChange( SV.Get<bool>( SItem.bG_Ap_GS_tracking ) || SV.Get<bool>( SItem.bG_Ap_GP_tracking ) );
 
-      if ((SV.Get<bool>( SItem.bG_Ap_GS_active ) == false)
-        && (SV.Get<bool>( SItem.bG_Ap_GP_active ) == false))
+      if ((SV.Get<bool>( SItem.bG_Ap_GS_tracking ) == false)
+        && (SV.Get<bool>( SItem.bG_Ap_GP_tracking ) == false))
         m_lastTriggered = false; // RESET if no longer captured
     }
 

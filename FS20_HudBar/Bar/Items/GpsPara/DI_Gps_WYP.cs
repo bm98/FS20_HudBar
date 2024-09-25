@@ -45,7 +45,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_ICAO_L( value2Proto ) { ItemForeColor = cTxGps };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      AddObserver( Short, (int)(DataArrival_perSecond / 2), OnDataArrival ); // twice per sec
+      AddObserver( Short, 1, OnDataArrival ); // once per sec is enough
     }
 
     // format an empty wyp as null -> ____ readout
@@ -58,15 +58,12 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        if (SV.Get<bool>( SItem.bG_Gps_FP_active )) {
-          _value1.Text = SV.Get<bool>( SItem.bG_Gps_DirectTo_active ) ? "Ð→" : SV.Get<string>( SItem.sG_Gps_WYP_prevID );
-          _value2.Text = SV.Get<string>( SItem.sG_Gps_WYP_nextID );
-        }
-        else {
-          // No SIM GPS - Flightplan active (WYPs still valid??) provider returns "" when the GPS WYP is not set valid anyway
-          _value1.Text = SV.Get<bool>( SItem.bG_Gps_DirectTo_active ) ? "Ð→" : WypLabel( SV.Get<string>( SItem.sG_Gps_WYP_prevID ) );
-          _value2.Text = WypLabel( SV.Get<string>( SItem.sG_Gps_WYP_nextID ) );
-        }
+        // using the WPtrackers content
+        string pWyp = WPTracker.PrevWP; // SV.Get<string>( SItem.sG_Gps_WYP_prevID );
+        string nWyp = WPTracker.NextWP; // SV.Get<string>( SItem.sG_Gps_WYP_nextID );
+
+        _value1.Text = SV.Get<bool>( SItem.bG_Gps_DirectTo_tracking ) ? "Ð→" : WypLabel( pWyp );
+        _value2.Text = WypLabel( nWyp );
       }
     }
 
