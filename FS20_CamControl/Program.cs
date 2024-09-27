@@ -24,11 +24,7 @@ namespace FS20_CamControl
 
       Application.EnableVisualStyles( );
       Application.SetCompatibleTextRenderingDefault( false );
-#if DEBUG
       Application.Run( new FCamControl.frmCameraV2( Instance, true ) );
-#else
-      Application.Run( new FCamControl.frmCamera( Instance, true ) );
-#endif
       //
       NLog.LogManager.Shutdown( );
 

@@ -49,7 +49,10 @@ namespace bm98_VProfile
       /// Target Altitude for this Waypoint
       /// </summary>
       public int TargetAlt_ft { get; set; }
-
+      /// <summary>
+      /// VP Altitude/Limit String
+      /// </summary>
+      public string VPAltS { get; set; }
       /// <summary>
       /// True if valid
       /// </summary>

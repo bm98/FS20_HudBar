@@ -159,10 +159,7 @@ namespace FlightplanLib.SimBrief.Provider
       return success;
     }
 
-
-#if DEBUG
-
-    // Provide File Loading for Debug
+    // Provide File Loading
 
     /// <summary>
     /// Async Retrieve a SB Json record as File
@@ -186,6 +183,5 @@ namespace FlightplanLib.SimBrief.Provider
       return ResponseRaw;
     }
 
-#endif
   }
 }

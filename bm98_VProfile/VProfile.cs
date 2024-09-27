@@ -250,9 +250,9 @@ namespace bm98_VProfile
           var wyp = props.WaypointList[0];
           if (wyp.IsValid) {
             di.Active = ActiveState.Engaged;
-            if (!(float.IsNaN( wyp.TargetAlt_ft ) || (wyp.TargetAlt_ft == 0))) {
+            if (!(float.IsNaN( wyp.TargetAlt_ft ) || (wyp.TargetAlt_ft <= 0))) {
               // draw with Alt at Altitude
-              di.String = $"{wyp.Ident}\n{wyp.TargetAlt_ft:## 000}";
+              di.String = $"{wyp.Ident}\n{wyp.VPAltS}";
               (di as WypItem).WypPoint = new PointF( (float)wyp.Distance_nm / (2 * hScale), 0.5f - (wyp.TargetAlt_ft - props.ALT_ft) / (5f * vScale) );
             }
             else {
@@ -276,7 +276,7 @@ namespace bm98_VProfile
               di.Active = ActiveState.Engaged;
               if (!(float.IsNaN( wyp.TargetAlt_ft ) || (wyp.TargetAlt_ft == 0))) {
                 // draw with Alt at Altitude
-                di.String = $"{wyp.Ident}\n{wyp.TargetAlt_ft:## 000}";
+                di.String = $"{wyp.Ident}\n{wyp.VPAltS}";
                 (di as WypItem).WypPoint = new PointF( (float)wyp.Distance_nm / (2 * hScale), 0.5f - (wyp.TargetAlt_ft - props.ALT_ft) / (5f * vScale) );
               }
               else {

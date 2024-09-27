@@ -16,6 +16,7 @@ using dNetBm98.Job;
 
 using FSimClientIF;
 
+using SC = SimConnectClient;
 using SimConnectClientAdapter;
 
 namespace FCamControl

@@ -296,6 +296,7 @@ namespace bm98_Map
             Ident = nextRp.Ident.LeftString( 5 ),
             Distance_nm = dist,
             TargetAlt_ft = nextRp.TargetAltitude_ft,
+            VPAltS=nextRp.VPAltitudeS,
           };
           wypList.Add( nextWyp );
 
@@ -307,6 +308,7 @@ namespace bm98_Map
               Ident = nextRp.Ident.LeftString( 5 ),
               Distance_nm = dist,
               TargetAlt_ft = nextRp.TargetAltitude_ft,
+              VPAltS = nextRp.VPAltitudeS,
             };
             wypList.Add( nextWyp );
             // next round

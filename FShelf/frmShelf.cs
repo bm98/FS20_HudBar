@@ -121,6 +121,18 @@ namespace FShelf
     private static readonly DataGridViewCellStyle _vCellStyleMarked
       = new DataGridViewCellStyle( _vCellStyle ) { BackColor = Color.MediumSpringGreen, SelectionBackColor = Color.CadetBlue };
 
+    // remove the obsolete @.FlightTable.png file 
+    private void CleanupV07( string shelfFolder )
+    {
+      string delFile = Path.Combine( shelfFolder, "@.FlightTable.png" );
+      if (File.Exists( delFile )) {
+        try {
+          File.Delete( delFile );
+        }
+        catch { }
+      }
+    }
+
     /// <summary>
     /// Set true to run in standalone mode
     /// </summary>
@@ -601,6 +613,9 @@ namespace FShelf
         // Init Landing Performance Tracker
         _ = FShelf.LandPerf.PerfTracker.Instance;
       }
+
+      // cleanup from prev versions
+      CleanupV07( aShelf.ShelfFolder );
 
       // Pacer interval 
       timer1.Interval = 1000;
@@ -1776,6 +1791,9 @@ namespace FShelf
         }
         else if (_selectedPlanFile.ToLowerInvariant( ).EndsWith( ".lnmpln" )) {
           _lnmPln.PostDocument_Request( _selectedPlanFile );
+        }
+        else if (_selectedPlanFile.ToLowerInvariant( ).EndsWith( ".json" )) {
+          _simBrief.PostDocument_Request( _selectedPlanFile );
         }
         // will report in the Event
       }

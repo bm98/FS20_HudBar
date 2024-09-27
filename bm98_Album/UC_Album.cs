@@ -73,6 +73,11 @@ namespace bm98_Album
     public string ImageFilename => _shelfFilename;
 
     /// <summary>
+    /// The folder in use for shelf documents
+    /// </summary>
+    public string ShelfFolder => _shelfFolder;
+
+    /// <summary>
     /// Load and display the document
     /// NOTE: this will never fail, but ignore the offending file
     /// </summary>

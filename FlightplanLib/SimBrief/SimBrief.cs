@@ -359,6 +359,21 @@ namespace FlightplanLib.SimBrief
 #endif
 
     /// <summary>
+    /// Post a SBrief Json file plan request
+    /// </summary>
+    /// <param name="fileName">The fully qualified filename</param>
+    public void PostDocument_Request( string fileName )
+    {
+      // Sanity checks
+      if (string.IsNullOrWhiteSpace( fileName )) return;
+      if (!File.Exists( fileName )) return;
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+      GetData( fileName );
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+    }
+
+    /// <summary>
     /// Post a SimBrief request for a user ID
     /// The caller received an SimBrief Event when finished
     /// </summary>
@@ -379,7 +394,7 @@ namespace FlightplanLib.SimBrief
         GetData( jFile );
       }
 #else
-        GetData( userIDorName, dataFormat );
+      GetData( userIDorName, dataFormat );
 #endif
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
     }
@@ -433,9 +448,7 @@ namespace FlightplanLib.SimBrief
     }
 
 
-#if DEBUG
-
-    // Provide File Loading for Debug
+    // Provide File Loading
 
     // Retrieve a File
     private async Task GetData( string fileName )
@@ -445,7 +458,6 @@ namespace FlightplanLib.SimBrief
       OnSimBriefDataEvent( !string.IsNullOrWhiteSpace( response ), response, SimBriefDataFormat.JSON );
     }
 
-#endif
 
     #endregion
 

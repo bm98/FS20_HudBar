@@ -16,6 +16,7 @@ using FSimFacilityIF;
 using static FSimFacilityIF.Extensions;
 
 using static FlightplanLib.Formatter;
+using Windows.Management.Deployment;
 
 namespace FlightplanLib.Flightplan
 {
@@ -280,6 +281,11 @@ namespace FlightplanLib.Flightplan
     public int TargetAltitude_ft => EvalTargetAltitude( );
 
     /// <summary>
+    /// Get: VProfile Altitude String
+    /// </summary>
+    public string VPAltitudeS => EvalVPAltitudeS( );
+
+    /// <summary>
     /// Speed Limit for Procedures
     /// </summary>
     public int SpeedLimit_kt { get; internal set; } = 0;
@@ -542,21 +548,57 @@ namespace FlightplanLib.Flightplan
 
     // *** TOOLS
 
+    // return the Waypoints safe limit altitude
+    // i.e. on Climbs the upper limit and on Descends the lower limits
+    private string EvalVPAltitudeS( )
+    {
+      switch (AltitudeLimitType) {
+        case AltLimitType.Runway: return $"{this.LatLonAlt_ft.Altitude:## ##0}ft";  // 1 150ft
+        case AltLimitType.At: return $"={this.AltitudeLimitLo_ft / 100:000}";       // =150
+        case AltLimitType.Above: return $"/{this.AltitudeLimitLo_ft / 100:000}";    // /080
+        case AltLimitType.Below: return $"{this.AltitudeLimitHi_ft / 100:000}/";    // 150/
+        case AltLimitType.Between: return $"{this.AltitudeLimitHi_ft / 100:000}/{this.AltitudeLimitLo_ft / 100:000}"; // 150/080
+        case AltLimitType.NoLimit:
+        default:
+          int alt = double.IsNaN( LatLonAlt_ft.Altitude ) ? -1 : (int)LatLonAlt_ft.Altitude;
+          return (alt > 0) ? $"({alt / 100:000})" : "";  // (150) or "" Wyp ALT if there is one
+      }
+    }
+
     // return the Waypoints target altitude
     private int EvalTargetAltitude( )
     {
       // if Limit return limit
       switch (AltitudeLimitType) {
+        case AltLimitType.Runway: return (int)this.LatLonAlt_ft.Altitude; // runway Alt
+
         case AltLimitType.At:
-        case AltLimitType.Above:
-        case AltLimitType.Runway: return AltitudeLimitLo_ft;
+        case AltLimitType.Above: return AltitudeLimitLo_ft; // lower limit 
 
-        case AltLimitType.Below: return AltitudeLimitHi_ft;
+        case AltLimitType.Below: return AltitudeLimitHi_ft; // upper limit
 
-        case AltLimitType.Between: return (int)((AltitudeLimitHi_ft + AltitudeLimitLo_ft) / 2.0);
+        case AltLimitType.Between:
+          if (this.WaypointUsage == UsageTyp.SID) {
+            return AltitudeLimitHi_ft; // On DEP return Top Limit
+          }
+          else if (this.WaypointUsage == UsageTyp.MAPR) {
+            return AltitudeLimitHi_ft; // On MAPR return Top Limit
+          }
+          else if (this.WaypointUsage == UsageTyp.STAR) {
+            return AltitudeLimitLo_ft; // On ARR return Bottom Limit
+          }
+          else if (this.WaypointUsage == UsageTyp.APRTX) {
+            return AltitudeLimitLo_ft; // On ARR return Bottom Limit
+          }
+          else if (this.WaypointUsage == UsageTyp.APR) {
+            return AltitudeLimitLo_ft; // On ARR return Bottom Limit
+          }
+          else {
+            return (int)((AltitudeLimitHi_ft + AltitudeLimitLo_ft) / 2.0); // others in between
+          }
 
         case AltLimitType.NoLimit:
-        default: return double.IsNaN( LatLonAlt_ft.Altitude ) ? -1 : (int)LatLonAlt_ft.Altitude;
+        default: return double.IsNaN( LatLonAlt_ft.Altitude ) ? -1 : (int)LatLonAlt_ft.Altitude; // Wyp ALT if there is one
       }
     }
 
