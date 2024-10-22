@@ -274,9 +274,10 @@ namespace FCamControl
     private void frmCameraV2_Load( object sender, EventArgs e )
     {
       // Init GUI
-      this.Location = AppSettings.Instance.CameraLocation;
-      if (!dNetBm98.Utilities.IsOnScreen( Location )) {
-        Location = new Point( 20, 20 );
+      Location = new Point( 20, 20 );
+      // init with the proposed location from profile (check within a virtual box)
+      if (dNetBm98.Utilities.IsOnScreen( AppSettings.Instance.CameraLocation, new Size( 100, 100 ) )) {
+        this.Location = AppSettings.Instance.CameraLocation;
       }
       _lastLiveLocation = Location;
 

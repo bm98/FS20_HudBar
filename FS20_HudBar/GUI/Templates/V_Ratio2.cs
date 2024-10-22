@@ -38,7 +38,7 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:#.00} " ); // positive 1.2 digits, add a blank for alignment
+          this.Text = UnitString( $"{value,4:#.00} " ); // positive 1.2 digits, add a blank for alignment
         }
       }
     }

@@ -229,7 +229,7 @@ namespace MapLib.Sources.MemCache
             // get below watermark
             int itemsToRemove = _cache.Count - c_WaterMark;
             var rItems = _cache.OrderBy( x => x.Value.TimeStamp );
-            LOG.Log( "MemCacheItemCat.MaintainCacheSize",$"Must remove {itemsToRemove} items" );
+            LOG.Info( "MemCacheItemCat.MaintainCacheSize",$"Must remove {itemsToRemove} items" );
             if (rItems.Count( ) > 0) {
               rwl.EnterWriteLock( );
               try {

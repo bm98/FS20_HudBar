@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_WaterBallast( ValueItemCat vCat, Label lblProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.WBALLAST_ANI;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _scaleQuan = new A_Scale( ) { Minimum = 0, Maximum = 60000, AlertValue = 0, ItemForeColor_Alert = cWarn }; // limits are set while updating

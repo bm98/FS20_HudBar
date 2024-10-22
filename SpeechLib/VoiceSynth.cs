@@ -59,7 +59,7 @@ namespace SpeechLib
         }
       }
       else {
-        LOG.LogError( $"LoadInstalledOutputDevices: Status {ret.Status}" );
+        LOG.Error( $"LoadInstalledOutputDevices: Status {ret.Status}" );
       }
     }
 
@@ -134,12 +134,12 @@ namespace SpeechLib
         AudioGraphSettings settings = new AudioGraphSettings( _renderCat ) {
           PrimaryRenderDevice = _outputDevice, // If PrimaryRenderDevice is null, the default playback device will be used.
         };
-        LOG.Log( $"FindRenderCategory: About to test AudioGraph with RenderCategory: {_renderCat}" );
+        LOG.Info( $"FindRenderCategory: About to test AudioGraph with RenderCategory: {_renderCat}" );
         // We await here the execution without providing an async method ...
         var resultAG = WindowsRuntimeSystemExtensions.AsTask( AudioGraph.CreateAsync( settings ) );
         resultAG.Wait( );
         if (resultAG.Result.Status != AudioGraphCreationStatus.Success) {
-          LOG.LogError( $"FindRenderCategory: AudioGraph test error: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
+          LOG.Error( $"FindRenderCategory: AudioGraph test error: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
             + $"\nExtError: {resultAG.Result.ExtendedError}" );
 
           // try next category if there is one left
@@ -148,19 +148,19 @@ namespace SpeechLib
           }
           else {
             // sanity - should never happen
-            LOG.LogError( $"FindRenderCategory: Program error - Queue overrun" );
+            LOG.Error( $"FindRenderCategory: Program error - Queue overrun" );
             _renderCat = _renderNone;
             return;
           }
         }
         else {
           resultAG.Result.Graph?.Dispose( ); // not used after tryout
-          LOG.Log( $"FindRenderCategory: Success with RenderCategory: {_renderCat}" );
+          LOG.Info( $"FindRenderCategory: Success with RenderCategory: {_renderCat}" );
           return; // _renderCat contains a successful one
         }
       } while (_renderCat != _renderNone);
 
-      LOG.LogError( $"FindRenderCategory: Failed to find a working RenderCategory - cannot speak" );
+      LOG.Error( $"FindRenderCategory: Failed to find a working RenderCategory - cannot speak" );
       _canSpeak = false;
       return; // could not resolve - left with _renderNone
     }
@@ -182,7 +182,7 @@ namespace SpeechLib
 
       var voices = SpeechSynthesizer.AllVoices;
       if (voices.Count <= 0) {
-        LOG.Log( "InitVoice: No Voices installed or found" );
+        LOG.Info( "InitVoice: No Voices installed or found" );
         _voiceAvailable = false;
         return; // NOPE..
       }
@@ -200,7 +200,7 @@ namespace SpeechLib
     //  despite the Aync methods - this will exec synchronously to get the InitPhase  only get done when all is available 
     private void InitAudioGraph( )
     {
-      LOG.Log( "InitAudioGraph: Begin" );
+      LOG.Info( "InitAudioGraph: Begin" );
       // find a render cat (see notes above)
       FindRenderCategory( );
 
@@ -222,14 +222,14 @@ namespace SpeechLib
       var resultAG = WindowsRuntimeSystemExtensions.AsTask( AudioGraph.CreateAsync( settings ) );
       resultAG.Wait( );
       if (resultAG.Result.Status != AudioGraphCreationStatus.Success) {
-        LOG.LogError( $"InitAudioGraph: Failed to create AudioGraph with RenderCategory: {_renderCat}" );
-        LOG.LogError( $"InitAudioGraph: AudioGraph creation: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
+        LOG.Error( $"InitAudioGraph: Failed to create AudioGraph with RenderCategory: {_renderCat}" );
+        LOG.Error( $"InitAudioGraph: AudioGraph creation: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
                         + $"\nExtError: {resultAG.Result.ExtendedError}" );
         _canSpeak = false;
         return; // ERROR EXIT
       }
       _audioGraph = resultAG.Result.Graph;
-      LOG.Log( $"InitAudioGraph: AudioGraph: [{_audioGraph.EncodingProperties}]" );
+      LOG.Info( $"InitAudioGraph: AudioGraph: [{_audioGraph.EncodingProperties}]" );
 
       // Create a device output node
       // The output node uses the PrimaryRenderDevice of the audio graph.
@@ -238,7 +238,7 @@ namespace SpeechLib
       resultDO.Wait( );
       if (resultDO.Result.Status != AudioDeviceNodeCreationStatus.Success) {
         // Cannot create device output node
-        LOG.LogError( $"InitAudioGraph: DeviceOutputNode creation: {resultDO.Result.Status}, TaskStatus: {resultDO.Status}"
+        LOG.Error( $"InitAudioGraph: DeviceOutputNode creation: {resultDO.Result.Status}, TaskStatus: {resultDO.Status}"
                         + $"\nExtError: {resultDO.Result.ExtendedError}" );
         _canSpeak = false;
         return; // ERROR EXIT
@@ -247,8 +247,8 @@ namespace SpeechLib
       _canSpeak = true; // finally
 
       var devName = (_deviceOutputNode.Device == null) ? "Standard Output Device" : _deviceOutputNode.Device.Name;
-      LOG.Log( $"InitAudioGraph: DeviceOutputNode: [{devName}]" );
-      LOG.Log( $"InitAudioGraph: InitAudioGraph-END" );
+      LOG.Info( $"InitAudioGraph: DeviceOutputNode: [{devName}]" );
+      LOG.Info( $"InitAudioGraph: InitAudioGraph-END" );
     }
 
 
@@ -268,7 +268,7 @@ namespace SpeechLib
 
       // Speech
       if (!_canSpeak || _synthesizer == null || _audioGraph == null || _deviceOutputNode == null) {
-        LOG.LogError( $"SpeakAsyncLow: Some item do not exist: cannot speak..\n[{_synthesizer}] [{_audioGraph}] [{_deviceOutputNode}]" );
+        LOG.Error( $"SpeakAsyncLow: Some item do not exist: cannot speak..\n[{_synthesizer}] [{_audioGraph}] [{_deviceOutputNode}]" );
         EndOfSpeak( );
         return;
       }
@@ -289,7 +289,7 @@ namespace SpeechLib
       var resultMS = await _audioGraph.CreateMediaSourceAudioInputNodeAsync( _mediaSource );
       if (resultMS.Status != MediaSourceAudioInputNodeCreationStatus.Success) {
         // Cannot create input node
-        LOG.LogError( $"SpeakAsyncLow: MediaSourceAudioInputNode creation: {resultMS.Status}\nExtError: {resultMS.ExtendedError}" );
+        LOG.Error( $"SpeakAsyncLow: MediaSourceAudioInputNode creation: {resultMS.Status}\nExtError: {resultMS.ExtendedError}" );
         EndOfSpeak( );
         return; // cannot speak
       }
@@ -338,7 +338,7 @@ namespace SpeechLib
     /// <param name="displayName">The name of the voice to select</param>
     public void SelectVoice( string displayName )
     {
-      LOG.Log( $"SelectVoice: {displayName}" );
+      LOG.Info( $"SelectVoice: {displayName}" );
       if (!_voiceAvailable) return; // Cannot, no voices installed
       // select the one requested
       var voices = SpeechSynthesizer.AllVoices;
@@ -355,7 +355,7 @@ namespace SpeechLib
     /// <param name="displayName">The name of the output device to select</param>
     public void SelectOutputDevice( string displayName )
     {
-      LOG.Log( $"SelectOutputDevice: {displayName}" );
+      LOG.Info( $"SelectOutputDevice: {displayName}" );
       if (!_voiceAvailable) return; // Cannot, no voices installed
 
       _canSpeak = false; // not yet

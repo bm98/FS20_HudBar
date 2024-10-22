@@ -37,6 +37,7 @@ namespace FS20_HudBar.Bar.Items
     {
       LabelID = LItem;
       var item = VItem.LIGHTS;
+      DiLayout = ItemLayout.Generic;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Lights( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );

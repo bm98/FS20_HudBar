@@ -91,7 +91,7 @@ namespace FS20_HudBar.Win
       }
       catch (Exception e) {
         _kbdHook = null;
-        LOG.LogError( $"HotkeyController: Cannot establish the Keyboard Hook\n{e.Message}" );
+        LOG.Error( $"HotkeyController: Cannot establish the Keyboard Hook\n{e.Message}" );
       }
 
     }

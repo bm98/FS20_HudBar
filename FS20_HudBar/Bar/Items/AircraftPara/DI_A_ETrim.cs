@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
-using static FS20_HudBar.GUI.GUI_Colors;
-using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
@@ -48,6 +46,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "Click to enable Auto Elevator Trim for 20 seconds.";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       var item = VItem.A_ETRIM;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Prct_999( value2Proto );
@@ -55,7 +54,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
       _label.MouseWheel += _label_MouseWheel;
-      _label.Scrollable= true;
+      _label.Scrollable = true;
       _label.Cursor = Cursors.SizeNS;
 
       AddObserver( Short, 5, OnDataArrival );

@@ -51,6 +51,7 @@ namespace FS20_HudBar.Bar.Items
     {
       _metar.MetarDataEvent += _metar_MetarDataEvent;
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.ATC_APT;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_ICAO_L( value2Proto );
@@ -98,14 +99,12 @@ namespace FS20_HudBar.Bar.Items
         _value1.Text = AirportMgr.ArrAirportICAO;
 
         // Distance to Destination
-        if (HudBar.AtcFlightPlan.HasFlightPlan) {
-          _value2.Value = HudBar.AtcFlightPlan.RemainingDist_nm(
-              SV.Get<string>( SItem.sG_Gps_WYP_nextID ),
-              SV.Get<float>( SItem.fG_Gps_WYP_dist_nm ) );
+        if (HudBar.FlightPlanRef.Tracker.IsTracking) {
+          _value2.Value = (float)HudBar.FlightPlanRef.Tracker.PlanDistanceRemaining_nm;
           _value2.ItemForeColor = cTxGps;
         }
         else {
-          // calc straight distance if we don't have an ATC flightplan with waypoints
+          // calc straight distance if we don't have a tracked flightplan with waypoints
           var latLon = new LatLon( SV.Get<double>( SItem.dGS_Acft_Lat ), SV.Get<double>( SItem.dGS_Acft_Lon ) );
           _value2.Value = AirportMgr.ArrDistance_nm( latLon );
           _value2.ItemForeColor = cTxInfo;

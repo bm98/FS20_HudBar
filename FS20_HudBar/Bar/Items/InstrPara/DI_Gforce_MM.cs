@@ -40,6 +40,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "G Force min/max\nClick to reset";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.GFORCE_Min;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += DI_Gforce_MM_ButtonClicked;

@@ -29,15 +29,15 @@
     {
       this.SuspendLayout();
       // 
-      // UC_Acccel
+      // UC_Accel
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-      this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.CausesValidation = false;
       this.DoubleBuffered = true;
       this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.ForeColor = System.Drawing.Color.GreenYellow;
       this.MinimumSize = new System.Drawing.Size(30, 10);
-      this.Name = "UC_Acccel";
+      this.Name = "UC_Accel";
       this.Size = new System.Drawing.Size(30, 10);
       this.Paint += new System.Windows.Forms.PaintEventHandler(this.UC_Acccel_Paint);
       this.Resize += new System.EventHandler(this.UC_Acccel_Resize);

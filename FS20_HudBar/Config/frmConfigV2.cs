@@ -13,8 +13,6 @@ using FS20_HudBar.Bar;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates.Base;
 
-using FSimClientIF.Modules;
-
 using static FS20_HudBar.GUI.GUI_Colors;
 
 namespace FS20_HudBar.Config
@@ -65,6 +63,8 @@ namespace FS20_HudBar.Config
     private TextBox m_pBgImageName;
     private TextBox m_pBgImageBorder;
     private Padding _bgImageBorder = Padding.Empty;
+    private CheckBox m_pFrameItems;
+    private CheckBox m_pBoxDivider;
 
     // Dialogs
     private FrmHotkey HKdialog = new FrmHotkey( );
@@ -95,7 +95,7 @@ namespace FS20_HudBar.Config
       cbx.Items.Clear( );
       cbx.Items.Add( "AutoBackup DISABLED" );
       cbx.Items.Add( "AutoBackup (5 Min)" );
-      cbx.Items.Add( "AutoBackup + ATC" );
+      //cbx.Items.Add( "AutoBackup + ATC" ); // DISABLED
     }
 
     // set from current TODO values from Config
@@ -253,6 +253,9 @@ namespace FS20_HudBar.Config
       profile.LoadCond( m_pCondensed );
       profile.LoadTrans( m_pTransparency );
 
+      m_pFrameItems.Checked = profile.FrameItems;
+      m_pBoxDivider.Checked = profile.BoxDivider;
+
       m_pHotkey.Text = profile.HKProfile;
       m_pBgImageName.Text = profile.BgImageName;
       _bgImageBorder = profile.BgImageBorder; // maintain Master value as Struct
@@ -278,6 +281,8 @@ namespace FS20_HudBar.Config
       profile.GetKindFromCombo( m_pKind );
       profile.GetCondensedFromCombo( m_pCondensed );
       profile.GetTransparencyFromCombo( m_pTransparency );
+      profile.SetFrameItemsFromValue( m_pFrameItems.Checked );
+      profile.SetBoxDividerFromValue(m_pBoxDivider.Checked );
 
       profile.SetHKfromValue( m_pHotkey.Text );
       profile.SetBgImageFromValues( m_pBgImageName.Text, _bgImageBorder );
@@ -333,6 +338,8 @@ namespace FS20_HudBar.Config
       m_pHotkey = txHkP1;
       m_pBgImageName = txBgFileP1;
       m_pBgImageBorder = txBgFileBorderP1;
+      m_pFrameItems = cbxFrameItems;
+      m_pBoxDivider = cbxBoxDivider;
 
       // init combos values
       PopulateFonts( m_pFont );
@@ -352,7 +359,8 @@ namespace FS20_HudBar.Config
       this.TopMost = false; // inherited from parent - we don't want this here
 
       this.Location = new Point( 10, 10 );
-      if (dNetBm98.Utilities.IsOnScreen( AppSettingsV2.Instance.ConfigLocation )) {
+      // init with the proposed location from profile (check within a virtual box)
+      if (dNetBm98.Utilities.IsOnScreen( AppSettingsV2.Instance.ConfigLocation, new Size( 100, 100 ) )) {
         this.Location = AppSettingsV2.Instance.ConfigLocation;
       }
       this.Size = AppSettingsV2.Instance.ConfigSize;
@@ -380,7 +388,6 @@ namespace FS20_HudBar.Config
       _pButtons[_selProfileIndex].BackColor = c_profileColSel; // mark the currently selected one
 
       cbxFlightRecorder.Checked = ConfigCopy.FRecorder;
-
       cbxASave.SelectedIndex = (int)ConfigCopy.FltAutoSaveATC;
 
       PopulateOutputDevice( cbxOutputDevice );
@@ -473,7 +480,7 @@ namespace FS20_HudBar.Config
       ConfigCopy.SetFlightRecorder( cbxFlightRecorder.Checked );
       ConfigCopy.SetKeyboardHook( chkKeyboard.Checked );
       ConfigCopy.SetInGameHook( chkInGame.Checked );
-      ConfigCopy.SetFltAutoSave( (FSimClientIF.FlightPlanMode)cbxASave.SelectedIndex );
+      ConfigCopy.SetFltAutoSave( (FSimClientIF.FltFileModuleMode)cbxASave.SelectedIndex ); // can no longer carry ATC (was removed)
       ConfigCopy.SetOutputDeviceName( cbxOutputDevice.SelectedItem.ToString( ) );
       ConfigCopy.SetVoiceName( cbxVoice.SelectedItem.ToString( ) );
 

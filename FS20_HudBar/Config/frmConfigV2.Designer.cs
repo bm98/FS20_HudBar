@@ -38,6 +38,8 @@
       this.asdasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.checkBox1 = new System.Windows.Forms.CheckBox();
       this.panel1 = new System.Windows.Forms.Panel();
+      this.cbxBoxDivider = new System.Windows.Forms.CheckBox();
+      this.cbxFrameItems = new System.Windows.Forms.CheckBox();
       this.btProfileColors = new System.Windows.Forms.Button();
       this.btProfileFonts = new System.Windows.Forms.Button();
       this.txBgFileBorderP1 = new System.Windows.Forms.TextBox();
@@ -77,6 +79,7 @@
       this.label4 = new System.Windows.Forms.Label();
       this.txHkChecklistBox = new System.Windows.Forms.TextBox();
       this.panel2 = new System.Windows.Forms.Panel();
+      this.btTestVoice = new System.Windows.Forms.Button();
       this.label6 = new System.Windows.Forms.Label();
       this.btColors = new System.Windows.Forms.Button();
       this.btFonts = new System.Windows.Forms.Button();
@@ -89,7 +92,6 @@
       this.btAccept = new System.Windows.Forms.Button();
       this.btCancel = new System.Windows.Forms.Button();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
-      this.btTestVoice = new System.Windows.Forms.Button();
       this.tlpMain.SuspendLayout();
       this.tlpProfile.SuspendLayout();
       this.flpP1.SuspendLayout();
@@ -209,6 +211,8 @@
       // panel1
       // 
       this.panel1.ContextMenuStrip = this.ctxMenu;
+      this.panel1.Controls.Add(this.cbxBoxDivider);
+      this.panel1.Controls.Add(this.cbxFrameItems);
       this.panel1.Controls.Add(this.btProfileColors);
       this.panel1.Controls.Add(this.btProfileFonts);
       this.panel1.Controls.Add(this.txBgFileBorderP1);
@@ -228,6 +232,26 @@
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(738, 128);
       this.panel1.TabIndex = 0;
+      // 
+      // cbxBoxDivider
+      // 
+      this.cbxBoxDivider.AutoSize = true;
+      this.cbxBoxDivider.Location = new System.Drawing.Point(476, 8);
+      this.cbxBoxDivider.Name = "cbxBoxDivider";
+      this.cbxBoxDivider.Size = new System.Drawing.Size(99, 19);
+      this.cbxBoxDivider.TabIndex = 62;
+      this.cbxBoxDivider.Text = "Box Separator";
+      this.cbxBoxDivider.UseVisualStyleBackColor = true;
+      // 
+      // cbxFrameItems
+      // 
+      this.cbxFrameItems.AutoSize = true;
+      this.cbxFrameItems.Location = new System.Drawing.Point(476, 35);
+      this.cbxFrameItems.Name = "cbxFrameItems";
+      this.cbxFrameItems.Size = new System.Drawing.Size(91, 19);
+      this.cbxFrameItems.TabIndex = 61;
+      this.cbxFrameItems.Text = "Frame Items";
+      this.cbxFrameItems.UseVisualStyleBackColor = true;
       // 
       // btProfileColors
       // 
@@ -300,10 +324,10 @@
       // txHkP1
       // 
       this.txHkP1.BackColor = System.Drawing.Color.Honeydew;
-      this.txHkP1.Location = new System.Drawing.Point(376, 34);
+      this.txHkP1.Location = new System.Drawing.Point(197, 5);
       this.txHkP1.Name = "txHkP1";
       this.txHkP1.ReadOnly = true;
-      this.txHkP1.Size = new System.Drawing.Size(180, 23);
+      this.txHkP1.Size = new System.Drawing.Size(173, 23);
       this.txHkP1.TabIndex = 33;
       this.txHkP1.WordWrap = false;
       this.txHkP1.DoubleClick += new System.EventHandler(this.txHkP1_DoubleClick);
@@ -705,6 +729,17 @@
       this.panel2.Size = new System.Drawing.Size(746, 109);
       this.panel2.TabIndex = 3;
       // 
+      // btTestVoice
+      // 
+      this.btTestVoice.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btTestVoice.Location = new System.Drawing.Point(7, 83);
+      this.btTestVoice.Name = "btTestVoice";
+      this.btTestVoice.Size = new System.Drawing.Size(82, 19);
+      this.btTestVoice.TabIndex = 60;
+      this.btTestVoice.Text = "Test Voice";
+      this.btTestVoice.UseVisualStyleBackColor = true;
+      this.btTestVoice.Click += new System.EventHandler(this.btTestVoice_Click);
+      // 
       // label6
       // 
       this.label6.AutoSize = true;
@@ -836,17 +871,6 @@
       this.timer1.Interval = 5000;
       this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
       // 
-      // btTestVoice
-      // 
-      this.btTestVoice.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btTestVoice.Location = new System.Drawing.Point(7, 83);
-      this.btTestVoice.Name = "btTestVoice";
-      this.btTestVoice.Size = new System.Drawing.Size(82, 19);
-      this.btTestVoice.TabIndex = 60;
-      this.btTestVoice.Text = "Test Voice";
-      this.btTestVoice.UseVisualStyleBackColor = true;
-      this.btTestVoice.Click += new System.EventHandler(this.btTestVoice_Click);
-      // 
       // frmConfigV2
       // 
       this.AcceptButton = this.btAccept;
@@ -950,5 +974,7 @@
     private System.Windows.Forms.Button btProfileColors;
     private System.Windows.Forms.Button btProfileFonts;
     private System.Windows.Forms.Button btTestVoice;
+    private System.Windows.Forms.CheckBox cbxBoxDivider;
+    private System.Windows.Forms.CheckBox cbxFrameItems;
   }
 }

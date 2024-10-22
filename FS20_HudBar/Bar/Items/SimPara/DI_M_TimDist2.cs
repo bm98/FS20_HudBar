@@ -44,6 +44,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "Click to enable Meter 2\nClick twice within 2 sec. to switch it off";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.M_Elapsed2;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_TimeHHMMSS( value2Proto );

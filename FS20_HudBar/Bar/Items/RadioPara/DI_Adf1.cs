@@ -37,6 +37,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Adf1( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.ADF1_SWAP;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _label.Click += _label_Click;

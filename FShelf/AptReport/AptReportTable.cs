@@ -115,7 +115,7 @@ namespace FShelf.AptReport
       var iata = $"{airport.IATA}";
       string title = $"{airport.Ident,-4}  -  {iata,-6}  - {airport.Name}";
       var cmt = new List<string> {
-        $"{Dms.ToLat( airport.Coordinate.Lat, "dm", "", 0 )} {Dms.ToLon( airport.Coordinate.Lon, "dm", "", 0 )}"
+        $"{Dms.ToLat( airport.Coordinate.Lat, "dm",'\0', 0 )} {Dms.ToLon( airport.Coordinate.Lon, "dm", '\0', 0 )}"
         + $" - {airport.Coordinate.Altitude:##,##0} ft ({M_From_Ft(airport.Coordinate.Altitude):##,##0} m)",
       };
 
@@ -333,7 +333,7 @@ namespace FShelf.AptReport
         return true;
       }
       else {
-        LOG.Log( "AptReportTable.SaveDocument", "Rendering or saving to PDF failed" );
+        LOG.Info( "AptReportTable.SaveDocument", "Rendering or saving to PDF failed" );
       }
       return false;
     }

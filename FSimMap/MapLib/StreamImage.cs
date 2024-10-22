@@ -133,7 +133,7 @@ namespace MapLib
         }
       }
       catch (Exception ex) {
-        LOG.LogException( "StreamImage", ex, "MapImage.FromStream" );
+        LOG.Error( "StreamImage", ex, "MapImage.FromStream" );
         _image = null;
         _dataStream = null;
       }

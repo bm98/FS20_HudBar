@@ -97,15 +97,15 @@ namespace MapLib.Sources.DiskCache
     public void MaintainCacheSize( )
     {
       DateTime oldDate = DateTime.Now - new TimeSpan( c_retentionDays, 0, 0, 0 );
-      LOG.Log( "DiskSource.MaintainCacheSize", $"Started, {c_retentionDays} days retention " );
+      LOG.Info( "DiskSource.MaintainCacheSize", $"Started, {c_retentionDays} days retention " );
 
       foreach (MapProvider provider in Enum.GetValues( typeof( MapProvider ) )) {
         int deletedRecords = _cache.DeleteOlderThan( oldDate, provider );
-        LOG.Log( "DiskSource.MaintainCacheSize", $"Deleted {deletedRecords} records from {provider}" );
+        LOG.Info( "DiskSource.MaintainCacheSize", $"Deleted {deletedRecords} records from {provider}" );
       }
       foreach (MapProvider provider in Enum.GetValues( typeof( MapProvider ) )) {
         int deletedRecords = _cache.DeleteByMaxRecNumber( c_maxRecNumber, provider );
-        LOG.Log( "DiskSource.MaintainCacheSize", $"Deleted {deletedRecords} records from {provider}" );
+        LOG.Info( "DiskSource.MaintainCacheSize", $"Deleted {deletedRecords} records from {provider}" );
       }
     }
 

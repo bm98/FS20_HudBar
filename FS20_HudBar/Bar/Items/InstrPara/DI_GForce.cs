@@ -35,6 +35,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_GForce( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       var item = VItem.GFORCE_Cur;
       _label = new V_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_GForce( valueProto ) { ItemForeColor = cTxInfo };

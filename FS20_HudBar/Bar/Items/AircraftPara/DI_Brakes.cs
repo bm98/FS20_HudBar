@@ -37,6 +37,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Brakes( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Symbol;
       var item = VItem.BRAKES;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Steps( signProto ) { ItemForeColor = cTxWarn };

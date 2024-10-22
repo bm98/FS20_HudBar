@@ -69,63 +69,61 @@ namespace FS20_HudBar
     /// <summary>
     /// Update from Sim Data Event
     /// Maintain the current Departure Airport - if the IlsID cannot be found it will get N.A.
-    /// 
+    ///  Empty icao will be ignored
     /// </summary>
     /// <param name="icao">The airport IlsID code or an empty string</param>
     public static void UpdateDep( string icao )
     {
+      if (string.IsNullOrWhiteSpace( icao )) return;
+
       icao = icao.ToUpperInvariant( );
       if (icao == DepAirportICAO) return; // same as before
 
 
       // then set if a string was given, else we leave it as it was before
-      if (!string.IsNullOrWhiteSpace( icao )) {
-        // first clear all
-        DepAirportICAO = AirportNA_Icao;
-        DepLocation = LatLon.Empty;
-        DepAirportName = "";
+      // first clear all
+      DepAirportICAO = AirportNA_Icao;
+      DepLocation = LatLon.Empty;
+      DepAirportName = "";
 
-        var apt = GetAirport( icao ); //  Airports.FindAirport( icao );
-        if (apt != null) {
-          // Apt found in DB
-          DepLocation = apt.Coordinate;
-          DepAirportName = apt.Name;
-          DepAirportICAO = icao;
-        }
-
-        HasChanged = true;
+      var apt = GetAirport( icao ); //  Airports.FindAirport( icao );
+      if (apt != null) {
+        // Apt found in DB
+        DepLocation = apt.Coordinate;
+        DepAirportName = apt.Name;
+        DepAirportICAO = icao;
       }
+
+      HasChanged = true;
     }
 
     /// <summary>
     /// Update from Sim Data Event
     /// Maintain the current Arrival Airport - if the IlsID cannot be found it will get N.A.
-    /// 
+    ///  Empty icao will be ignored
     /// </summary>
     /// <param name="icao">The airport IlsID code or an empty string</param>
     public static void UpdateArr( string icao )
     {
+      if (string.IsNullOrWhiteSpace( icao )) return;
+
       icao = icao.ToUpperInvariant( );
       if (icao == ArrAirportICAO) return; // same as before
 
+      // first clear all
+      ArrAirportICAO = AirportNA_Icao;
+      ArrLocation = LatLon.Empty;
+      ArrAirportName = "";
 
-      // then set if a string was given, else we leave it as it was before
-      if (!string.IsNullOrWhiteSpace( icao )) {
-        // first clear all
-        ArrAirportICAO = AirportNA_Icao;
-        ArrLocation = LatLon.Empty;
-        ArrAirportName = "";
-
-        var apt = GetAirport( icao ); // Airports.FindAirport( icao );
-        if (apt != null) {
-          // Apt found in DB
-          ArrLocation = apt.Coordinate;
-          ArrAirportName = apt.Name;
-          ArrAirportICAO = icao;
-        }
-
-        HasChanged = true;
+      var apt = GetAirport( icao ); // Airports.FindAirport( icao );
+      if (apt != null) {
+        // Apt found in DB
+        ArrLocation = apt.Coordinate;
+        ArrAirportName = apt.Name;
+        ArrAirportICAO = icao;
       }
+
+      HasChanged = true;
     }
 
     /// <summary>

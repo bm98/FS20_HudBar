@@ -90,9 +90,9 @@ namespace FS20_HudBar.GUI.Templates.Base
     /// Sends the VItem ID set in the cTor
     /// </summary>
     public event EventHandler<ClickedEventArgs> ButtonClicked;
-    private void OnButtonClicked( )
+    private void OnButtonClicked( MouseEventArgs e )
     {
-      ButtonClicked?.Invoke( this, new ClickedEventArgs( m_mID ) );
+      ButtonClicked?.Invoke( this, new ClickedEventArgs( m_mID, e.Button ) );
     }
 
     /// <summary>
@@ -133,27 +133,6 @@ namespace FS20_HudBar.GUI.Templates.Base
       return ret;
     }
 
-
-    /* USING the improved method from dNetBm98.WinUser
-    /// <summary>
-    /// Activates the Main Form in order to prevent that further (Mouse) events are sent to the prev. Active Application
-    /// This is used to switch to the HudBar for Mouse Wheel scrolling.
-    /// MSFS however will still capture the first scroll event as it receives the Event in parallel to the Mouse hovered control of the HudBar
-    /// But at least then it will stop getting further scroll events and usually Zoom in/out like crazy...
-    ///     basically one would be able to send a reverse scroll to Windows before this but it seems rather complicated to do so....
-    /// </summary>
-    /// <param name="e">The MouseEvents</param>
-    internal void ActivateForm( MouseEventArgs e )
-    {
-      // activate the form if the HudBar is not active so at least the most scroll goes only to the HudBar
-      //  NOTE: this will not prevent a single scroll event captured by DirectInput i.e. the Sim however...
-      if (Form.ActiveForm == null) {
-        this.FindForm( ).Activate( );
-      }
-      (e as HandledMouseEventArgs).Handled = true; // don't bubble up the scroll wheel
-    }
-    */
-
     /// <summary>
     /// cTor: Create a UserControl..
     /// </summary>
@@ -186,7 +165,7 @@ namespace FS20_HudBar.GUI.Templates.Base
       GUI_Colors.Register( this );
 
       // capture Mouse Click Event
-      base.MouseClick += Control_Click;
+      base.MouseClick += new MouseEventHandler( Control_Click );
 
       // capture mouse entering to switch the active window
       base.MouseEnter += Control_MouseEnter;
@@ -205,9 +184,9 @@ namespace FS20_HudBar.GUI.Templates.Base
 
 
     // subst with our own handler that submits our ID
-    private void Control_Click( object sender, EventArgs e )
+    private void Control_Click( object sender, MouseEventArgs e )
     {
-      OnButtonClicked( );
+      OnButtonClicked( e );
     }
 
 

@@ -39,6 +39,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "Elevator Trim value\nClick to reset to 0 %";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       // Elevator (plain)
       // All ERA-Trim label get a button to activate the 0 Trim action
       var item = VItem.ETRIM;

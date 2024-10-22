@@ -46,7 +46,7 @@ namespace PingLib
         }
       }
       else {
-        LOG.LogError( "LoadInstalledOutputDevices", $"Status {ret.Status}" );
+        LOG.Error( "LoadInstalledOutputDevices", $"Status {ret.Status}" );
       }
     }
 
@@ -103,12 +103,12 @@ namespace PingLib
         AudioGraphSettings settings = new AudioGraphSettings( _renderCat ) {
           PrimaryRenderDevice = _outputDevice, // If PrimaryRenderDevice is null, the default playback device will be used.
         };
-        LOG.Log( "FindRenderCategory", $"About to test AudioGraph with RenderCategory: {_renderCat}" );
+        LOG.Info( "FindRenderCategory", $"About to test AudioGraph with RenderCategory: {_renderCat}" );
         // We await here the execution without providing an async method ...
         var resultAG = WindowsRuntimeSystemExtensions.AsTask( AudioGraph.CreateAsync( settings ) );
         resultAG.Wait( );
         if (resultAG.Result.Status != AudioGraphCreationStatus.Success) {
-          LOG.LogError( $"FindRenderCategory", $"AudioGraph test error: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
+          LOG.Error( $"FindRenderCategory", $"AudioGraph test error: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
             + $"\nExtError: {resultAG.Result.ExtendedError}" );
 
           // try next category if there is one left
@@ -117,19 +117,19 @@ namespace PingLib
           }
           else {
             // sanity - should never happen
-            LOG.LogError( $"FindRenderCategory", $"Program error - Queue overrun" );
+            LOG.Error( $"FindRenderCategory", $"Program error - Queue overrun" );
             _renderCat = _renderNone;
             return;
           }
         }
         else {
           resultAG.Result.Graph?.Dispose( ); // not used after tryout
-          LOG.Log( $"FindRenderCategory", $"Success with RenderCategory: {_renderCat}" );
+          LOG.Info( $"FindRenderCategory", $"Success with RenderCategory: {_renderCat}" );
           return; // _renderCat contains a successful one
         }
       } while (_renderCat != _renderNone);
 
-      LOG.LogError( $"FindRenderCategory", $"Failed to find a working RenderCategory - cannot speak" );
+      LOG.Error( $"FindRenderCategory", $"Failed to find a working RenderCategory - cannot speak" );
       _canPlay = false;
       return; // could not resolve - left with _renderNone
     }
@@ -140,7 +140,7 @@ namespace PingLib
     //  despite the Aync methods - this will exec synchronously to get the InitPhase  only get done when all is available 
     private void InitAudioGraph( )
     {
-      LOG.Log( "InitAudioGraph", "Begin" );
+      LOG.Info( "InitAudioGraph", "Begin" );
       // MUST WAIT UNTIL all items are created, else one may call Play too early...
       // cleanup existing items
       if (_deviceOutputNode != null) { _deviceOutputNode.Dispose( ); _deviceOutputNode = null; }
@@ -162,14 +162,14 @@ namespace PingLib
       var resultAG = WindowsRuntimeSystemExtensions.AsTask( AudioGraph.CreateAsync( settings ) );
       resultAG.Wait( );
       if (resultAG.Result.Status != AudioGraphCreationStatus.Success) {
-        LOG.LogError( "InitAudioGraph", $"Failed to create AudioGraph with RenderCategory: {_renderCat}" );
-        LOG.LogError( "InitAudioGraph", $"AudioGraph creation: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
+        LOG.Error( "InitAudioGraph", $"Failed to create AudioGraph with RenderCategory: {_renderCat}" );
+        LOG.Error( "InitAudioGraph", $"AudioGraph creation: {resultAG.Result.Status}, TaskStatus: {resultAG.Status}"
                         + $"\nExtError: {resultAG.Result.ExtendedError}" );
         _canPlay = false;
         return; // ERROR EXIT
       }
       _audioGraph = resultAG.Result.Graph;
-      LOG.Log( "InitAudioGraph", $"AudioGraph: [{_audioGraph.EncodingProperties}]" );
+      LOG.Info( "InitAudioGraph", $"AudioGraph: [{_audioGraph.EncodingProperties}]" );
       _audioGraph.UnrecoverableErrorOccurred += _audioGraph_UnrecoverableErrorOccurred;
 
       // Create a device output node
@@ -179,7 +179,7 @@ namespace PingLib
       resultDO.Wait( );
       if (resultDO.Result.Status != AudioDeviceNodeCreationStatus.Success) {
         // Cannot create device output node
-        LOG.LogError( "InitAudioGraph", $"DeviceOutputNode creation: {resultDO.Result.Status}, TaskStatus: {resultDO.Status}"
+        LOG.Error( "InitAudioGraph", $"DeviceOutputNode creation: {resultDO.Result.Status}, TaskStatus: {resultDO.Status}"
                         + $"\nExtError: {resultDO.Result.ExtendedError}" );
         _canPlay = false;
         return; // ERROR EXIT
@@ -194,13 +194,13 @@ namespace PingLib
 
       // log outcome
       var devName = (_deviceOutputNode.Device == null) ? "Standard Output Device" : _deviceOutputNode.Device.Name;
-      LOG.Log( "InitAudioGraph", $"DeviceOutputNode: [{devName}]" );
-      LOG.Log( "InitAudioGraph", $"InitAudioGraph-END" );
+      LOG.Info( "InitAudioGraph", $"DeviceOutputNode: [{devName}]" );
+      LOG.Info( "InitAudioGraph", $"InitAudioGraph-END" );
     }
 
     private void _audioGraph_UnrecoverableErrorOccurred( AudioGraph sender, AudioGraphUnrecoverableErrorOccurredEventArgs args )
     {
-      LOG.LogError( "_audioGraph_UnrecoverableErrorOccurred", $"{args.Error}" );
+      LOG.Error( "_audioGraph_UnrecoverableErrorOccurred", $"{args.Error}" );
       Console.WriteLine( args.Error );
     }
 
@@ -211,11 +211,11 @@ namespace PingLib
       AudioEncodingProperties nodeEncodingProperties = _audioGraph.EncodingProperties;
       _frameInputNode = _audioGraph.CreateFrameInputNode( nodeEncodingProperties );
       if (_frameInputNode == null) {
-        LOG.LogError( "CreateInputNode", $"CreateFrameInputNode returned null" );
+        LOG.Error( "CreateInputNode", $"CreateFrameInputNode returned null" );
         //        await EndOfSound( );
         return false;
       }
-      LOG.Log( "CreateInputNode", $"FrameInputNode: CREATED, emitter is {_frameInputNode.Emitter}" );
+      LOG.Info( "CreateInputNode", $"FrameInputNode: CREATED, emitter is {_frameInputNode.Emitter}" );
       // Initialize the Frame Input Node in the stopped state
       _frameInputNode.Stop( );
       // Hook up an event handler so we can start generating samples when needed
@@ -297,7 +297,7 @@ namespace PingLib
     /// <param name="displayName">The name of the output device to select</param>
     public void SelectOutputDevice( string displayName )
     {
-      LOG.Log( "SelectOutputDevice", $"Is {displayName}" );
+      LOG.Info( "SelectOutputDevice", $"Is {displayName}" );
       _canPlay = false; // not yet
 
       // select the one requested
@@ -325,7 +325,7 @@ namespace PingLib
       if (!_canPlay) return; // Cannot
 
       if (_deviceOutputNode == null) {
-        LOG.LogError( "Mute", $"Cannot Mute, DeviceOutput was null ??" );
+        LOG.Error( "Mute", $"Cannot Mute, DeviceOutput was null ??" );
         return;
       }
       _deviceOutputNode.ConsumeInput = !muted;

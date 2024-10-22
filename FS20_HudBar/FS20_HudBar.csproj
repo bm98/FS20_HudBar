@@ -24,8 +24,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>70</ApplicationRevision>
-    <ApplicationVersion>0.70.0.70</ApplicationVersion>
+    <ApplicationRevision>71</ApplicationRevision>
+    <ApplicationVersion>0.71.0.71</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -97,6 +97,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\FSimFacilityIF.dll</HintPath>
     </Reference>
+    <Reference Include="FSimFlightPlans">
+      <HintPath>..\..\..\Redist\FSimFlightPlans.dll</HintPath>
+    </Reference>
     <Reference Include="FSimIF, Version=1.1.0.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\FSimIF.dll</HintPath>
@@ -131,7 +134,6 @@
     <Compile Include="AApp\AppSettingsUpgrade.cs" />
     <Compile Include="Bar\Calculator.cs" />
     <Compile Include="Bar\DispItemCat.cs" />
-    <Compile Include="Bar\FltStateMgr.cs" />
     <Compile Include="Bar\Items\AircraftPara\DI_A_ETrim.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -679,7 +681,6 @@
     <Compile Include="Config\ProfileItemsStore.cs" />
     <Compile Include="Config\CProfile.cs" />
     <Compile Include="AApp\AirportMgr.cs" />
-    <Compile Include="Bar\AtcFltPlanMgr.cs" />
     <Compile Include="AApp\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -939,7 +940,6 @@
     <Compile Include="Win\HotkeyController.cs" />
     <Compile Include="Win\HotkeyItem.cs" />
     <Compile Include="Win\HotkeyItemCat.cs" />
-    <Compile Include="AApp\WPTracker.cs" />
     <Compile Include="Win\WinHotkey.cs" />
     <Compile Include="Config\WinHotkeyCat.cs" />
     <EmbeddedResource Include="AApp\Form1.resx">
@@ -1050,10 +1050,6 @@
     <ProjectReference Include="..\FChecklistBox\FChecklistBox.csproj">
       <Project>{e15a0e90-bd54-48c6-ae8c-fb7343f49540}</Project>
       <Name>FChecklistBox</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FlightplanLib\FlightplanLib.csproj">
-      <Project>{4766e323-833c-42b5-88ed-dafb25e934ef}</Project>
-      <Name>FlightplanLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\FShelf\FShelf.csproj">
       <Project>{9f304b94-90dd-4f3a-8b19-54641277c1cd}</Project>

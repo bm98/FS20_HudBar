@@ -59,7 +59,7 @@ namespace MapLib.Tiles
       //     Debug.WriteLine( $"{DateTime.Now.Ticks} TileMatrix.OnLoadComplete- Key: <{key}> LoadFailed: {failed} MatComplete: {string.IsNullOrEmpty( key )}" );
 
       if (LoadComplete == null) {
-        LOG.LogError( "TileMatrix.OnLoadComplete", $"NO EVENT RECEIVERS HAVE REGISTERED" );
+        LOG.Error( "TileMatrix.OnLoadComplete", $"NO EVENT RECEIVERS HAVE REGISTERED" );
       }
       LoadComplete?.Invoke( this, new LoadCompleteEventArgs( key, "dummy", failed, string.IsNullOrEmpty( key ) ) );
     }
@@ -492,7 +492,7 @@ namespace MapLib.Tiles
       }
       // sanity check
       if ((tlTileXY.X < 0) || (tlTileXY.Y < 0)) {
-        LOG.LogError( "LoadMatrix", $"Invalid start TileXY ({tlTileXY})" );
+        LOG.Error( "LoadMatrix", $"Invalid start TileXY ({tlTileXY})" );
         throw new ArgumentOutOfRangeException( $"Input creates invalid start TileXY ({tlTileXY})" );
       }
       // Start Loading
@@ -629,7 +629,7 @@ namespace MapLib.Tiles
     /// </summary>
     public void LoadFailedTiles( )
     {
-      LOG.Log( $"TileMatrix.LoadFailedTiles", $"LoadingStatus= {LoadingStatus}" );
+      LOG.Info( $"TileMatrix.LoadFailedTiles", $"LoadingStatus= {LoadingStatus}" );
       // sanity
       if (LoadingStatus == ImageLoadingStatus.Loading) return;
 
@@ -639,7 +639,7 @@ namespace MapLib.Tiles
           for (int y = 0; y < Height; y++) {
             if (_mapTiles[x, y].LoadingStatus != ImageLoadingStatus.LoadComplete) {
               if (_mapTiles[x, y].MapImage.ShouldRetry) {
-                LOG.Log( "TileMatrix.LoadFailedTiles", $"Reloading {_mapTiles[x, y].FullKey}" );
+                LOG.Info( "TileMatrix.LoadFailedTiles", $"Reloading {_mapTiles[x, y].FullKey}" );
                 _mapTiles[x, y].TileXYUpdate = _mapTiles[x, y].TileXY; // re-schedule the key
                 if (_mapTiles[x, y].UpdateTile( _tileTrackingList )) {
                   LoadingStatus = ImageLoadingStatus.Loading;
@@ -658,7 +658,7 @@ namespace MapLib.Tiles
 
         // signal only for tracked tiles
         if (e.LoadFailed) {
-          LOG.LogError( "TileMatrix_LoadComplete", $"LoadFailed for Tile {e.TrackKey}" );
+          LOG.Error( "TileMatrix_LoadComplete", $"LoadFailed for Tile {e.TrackKey}" );
           LoadingStatus = ImageLoadingStatus.LoadFailed;
           OnLoadComplete( e.TileKey, true ); // report about a failed Tile
         }

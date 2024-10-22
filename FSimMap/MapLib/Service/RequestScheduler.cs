@@ -234,10 +234,10 @@ namespace MapLib.Service
 
       }
       catch (Exception ex) {
-        LOG.LogException( "RequestScheduler.StartDispatcher", ex, "Error - task loop run into an Exception" );
+        LOG.Error( "RequestScheduler.StartDispatcher", ex, "Error - task loop run into an Exception" );
       }
 
-      LOG.Log( "RequestScheduler.StartDispatcher", $"Aborted on command" );
+      LOG.Info( "RequestScheduler.StartDispatcher", $"Aborted on command" );
       // Stop client requests handling
       loaderService.Stop( );
       cacheService.Stop( );
@@ -430,11 +430,11 @@ namespace MapLib.Service
             _threadTasks[taskID].IsBackground = false;
             try {
               if (!job.CacheProvider.PutImageToCache( job.Data, job.MapImageID.MapProvider, job.MapImageID.TileXY, job.MapImageID.ZoomLevel )) {
-                LOG.LogError( "DiskCacheService.DiskCache_Process", $"Could not Cache ({job.MapImageID.ZxyKey})" );
+                LOG.Error( "DiskCacheService.DiskCache_Process", $"Could not Cache ({job.MapImageID.ZxyKey})" );
               }
             }
             catch (Exception ex) {
-              LOG.LogException( "DiskCacheService.DiskCache_Process", ex, $"Exception in chache Job ({job.MapImageID.ZxyKey})" );
+              LOG.Error( "DiskCacheService.DiskCache_Process", ex, $"Exception in chache Job ({job.MapImageID.ZxyKey})" );
             }
             // pace as Busy
             timeout_ms = c_TimeoutBusy;

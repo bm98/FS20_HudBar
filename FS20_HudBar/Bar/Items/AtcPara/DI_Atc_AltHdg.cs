@@ -37,6 +37,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Atc_AltHdg( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.ATC_ALT;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Alt( value2Proto );
@@ -59,19 +60,16 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        // if we have an ATC FlightPlan show ATC assignments
-        if (HudBar.AtcFlightPlan.HasFlightPlan) {
-          // ATC Alt Hdg NextWYP
-          _value1.Value = HudBar.AtcFlightPlan.AssignedAlt;
-          _value2.Value = HudBar.AtcFlightPlan.AssignedHdg;
-          _value3.Text = HudBar.AtcFlightPlan.NextWypIdent;
+        if (HudBar.FlightPlanRef.HasSimATC) {
+          _value1.Value = HudBar.FlightPlanRef.ATC_AssignedAlt_ft;
+          _value2.Value = HudBar.FlightPlanRef.ATC_AssignedHdg_degm;
+          _value3.Text = HudBar.FlightPlanRef.ATC_WaypointNext.Ident7;
         }
         else {
-          _value1.Value = null;
-          _value2.Value = null;
-          _value3.Text = "";
         }
-
+        _value1.Value = null;
+        _value2.Value = null;
+        _value3.Text = "";
       }
     }
 

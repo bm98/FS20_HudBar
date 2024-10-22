@@ -37,6 +37,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Nav2( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.NAV2_SWAP;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _label.Click += _label_Click;
@@ -95,6 +96,7 @@ namespace FS20_HudBar.Bar.Items
         // Has NAV2
         _value1.Text = $"{SV.Get<int>( SItem.iGS_Nav_2_stdby_hz ) / 1_000_000f:000.00}";
         _value2.Text = $"{SV.Get<int>( SItem.iG_Nav_2_active_hz ) / 1_000_000f:000.00}";
+        _value2.ItemForeColor = SV.Get<bool>( SItem.bG_Nav_Source_NAV2 ) ? cTxNav : cTxInfo;
       }
     }
 

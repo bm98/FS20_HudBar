@@ -44,6 +44,7 @@ namespace FS20_HudBar.Bar.Items
     {
       _metar.MetarDataEvent += _metar_MetarDataEvent;
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.METAR;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Text( value2Proto );

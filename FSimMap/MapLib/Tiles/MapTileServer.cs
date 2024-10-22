@@ -61,7 +61,7 @@ namespace MapLib.Tiles
         if (_tiles.Count > _numTiles) {
 #if DEBUG
           // many consumed - track the behavior on Slow Providers (Stamen...)
-          LOG.Log( "GetTile", $"Tiles in circulation: {_tiles.Count} (mark is {_numTiles})" );
+          LOG.Info( "GetTile", $"Tiles in circulation: {_tiles.Count} (mark is {_numTiles})" );
 #endif
         }
         return tile;
@@ -93,7 +93,7 @@ namespace MapLib.Tiles
       }
       else {
         // we did not serve this returned tile... (Programm Error)
-        LOG.LogError( "ReturnTile( MapTile mapTile )\r\n    {", $"Returned unsolicited MapTile {mapTile.TrackKey}" );
+        LOG.Error( "ReturnTile( MapTile mapTile )\r\n    {", $"Returned unsolicited MapTile {mapTile.TrackKey}" );
         throw new ApplicationException( $"Returned unsolicited MapTile {mapTile.TrackKey}" );
       }
     }

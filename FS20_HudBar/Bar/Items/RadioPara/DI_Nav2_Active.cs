@@ -40,6 +40,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Nav2_Active( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.NAV2_ID;
       _label = new V_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_ICAO_L( valueProto ) { ItemForeColor = cTxInfo };
@@ -73,7 +74,7 @@ namespace FS20_HudBar.Bar.Items
         // Has NAV2
         this.Label.Text = SV.Get<bool>( SItem.bG_Nav_2_hasLOC ) ? "LOC 2" : "NAV 2";
         if (SV.Get<string>( SItem.sG_Nav_2_Ident ) != "") {
-          _value1.ItemForeColor = cTxNav;
+          _value1.ItemForeColor = SV.Get<bool>( SItem.bG_Nav_Source_NAV2 ) ? cTxNav : cTxInfo;
           _value1.Text = Calculator.NAV2_ID;
 
           var brg = (float)Geo.Wrap360( SV.Get<float>( SItem.fG_Nav_2_Radial_degm ) - 180 ); // direction towards the station 

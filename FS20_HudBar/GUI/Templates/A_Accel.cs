@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 using bm98_hbControls;
 
 namespace FS20_HudBar.GUI.Templates
@@ -89,6 +90,7 @@ namespace FS20_HudBar.GUI.Templates
       Cursor = Cursors.Default;                 // avoid the movement cross on the item controls
       Text = ""; // there is no Text supported
       BorderStyle = BorderStyle.FixedSingle; // Else the Graph is 'homeless'
+      Margin = new Padding( 0, 0, 3, 0 ); // right only
 
       GUI_Colors.Register( this );
 

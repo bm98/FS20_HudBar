@@ -19,7 +19,7 @@ namespace FS20_HudBar.GUI.Templates
     : base( proto )
     {
       m_unit = "g";
-      m_default = DefaultString( "+_._ " );
+      m_default = DefaultString( "+_._  " );
       Text = UnitString( m_default );
     }
 
@@ -35,7 +35,7 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,4:+0.0;-0.0} " ); // sign 1.1 digits no sign expected, add a blank to aling better
+          this.Text = UnitString( $"{value,4:+0.0;-0.0}  " ); // sign 1.1 digits no sign expected, add a blank to aling better
         }
       }
     }

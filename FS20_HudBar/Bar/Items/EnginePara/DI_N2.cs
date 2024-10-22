@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_N2( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Value2x2;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       var item = VItem.E1_N2;
       _value1 = new V_Prct( value2Proto );

@@ -19,18 +19,15 @@ namespace FS20_HudBar.GUI.Templates
 
     // UC Props
 
-    public float Rudder_prct
-    {
+    public float Rudder_prct {
       get => base.ValueRudder;
       set => base.ValueRudder = value;
     }
-    public float Elevator_prct
-    {
+    public float Elevator_prct {
       get => base.ValueElevator;
       set => base.ValueElevator = value;
     }
-    public float Aileron_prct
-    {
+    public float Aileron_prct {
       get => base.ValueAileron;
       set => base.ValueAileron = value;
     }
@@ -40,17 +37,17 @@ namespace FS20_HudBar.GUI.Templates
     /// <summary>
     /// Set the numeric Value
     /// </summary>
-    public float? Value { set => throw new NotImplementedException(); }
+    public float? Value { set => throw new NotImplementedException( ); }
 
     /// <summary>
     /// Set the integer Value
     /// </summary>
-    public int? IntValue { set => throw new NotImplementedException(); }
+    public int? IntValue { set => throw new NotImplementedException( ); }
 
     /// <summary>
     /// Set the Step Value
     /// </summary>
-    public Steps Step { set => throw new NotImplementedException(); }
+    public Steps Step { set => throw new NotImplementedException( ); }
 
     /// <summary>
     /// If true shows the unit of value fields
@@ -63,26 +60,22 @@ namespace FS20_HudBar.GUI.Templates
     /// <summary>
     /// Get; Set the items Foreground Color by the type of the Item
     /// </summary>
-    public GUI_Colors.ColorType ItemForeColor
-    {
+    public GUI_Colors.ColorType ItemForeColor {
       get => m_foreColorType;
-      set
-      {
+      set {
         m_foreColorType = value;
-        base.ForeColor = GUI_Colors.ItemColor(m_foreColorType);
+        base.ForeColor = GUI_Colors.ItemColor( m_foreColorType );
       }
     }
 
     /// <summary>
     /// Get; Set the items Foreground Color by the type of the Item
     /// </summary>
-    public GUI_Colors.ColorType ItemBackColor
-    {
+    public GUI_Colors.ColorType ItemBackColor {
       get => m_backColorType;
-      set
-      {
+      set {
         m_backColorType = value;
-        base.BackColor = GUI_Colors.ItemColor(m_backColorType);
+        base.BackColor = GUI_Colors.ItemColor( m_backColorType );
       }
     }
 
@@ -91,8 +84,8 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     public void UpdateColor( )
     {
-      base.ForeColor = GUI_Colors.ItemColor(m_foreColorType);
-      base.BackColor = GUI_Colors.ItemColor(m_backColorType);
+      base.ForeColor = GUI_Colors.ItemColor( m_foreColorType );
+      base.BackColor = GUI_Colors.ItemColor( m_backColorType );
     }
 
     // Implement IValue Metric IF (but it is not used)
@@ -115,8 +108,9 @@ namespace FS20_HudBar.GUI.Templates
       Cursor = Cursors.Default;                 // avoid the movement cross on the item controls
       Text = ""; // there is no Text supported
       BorderStyle = BorderStyle.FixedSingle; // Else the Graph is 'homeless'
+      Margin = new Padding( 0, 0, 3, 0 ); // right only
 
-      GUI_Colors.Register(this);
+      GUI_Colors.Register( this );
 
     }
 

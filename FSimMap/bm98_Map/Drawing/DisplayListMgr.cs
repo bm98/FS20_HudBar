@@ -15,12 +15,12 @@ using CoordLib;
 using dNetBm98;
 
 using FSimFacilityIF;
+using FSimFlightPlans;
 
 using static bm98_Map.Drawing.FontsAndColors;
+using static bm98_Map.WypExtensions;
+
 using bm98_Map.Drawing.DispItems;
-using System.Security.Cryptography;
-using System.Drawing.Drawing2D;
-using FlightplanLib.Flightplan;
 
 namespace bm98_Map.Drawing
 {
@@ -1232,7 +1232,7 @@ namespace bm98_Map.Drawing
         var bm = rp.OutboundLatLonAlt.IsEmpty ? Properties.Resources.route_waypoint_end : Properties.Resources.route_waypoint;
         var rtPoint = new RoutePointItem( bm ) {
           Key = GProc.DispID_Anon( ),
-          Active = !rp.HiddenInMap, // always true, we are using the ManagedHook
+          Active = !rp.HideInMap( ), // always true, we are using the ManagedHook
           SegmentMgr = segMgr,
           Pen = rp.OutboundIsApt ? PenRouteApt
                   : rp.OutboundIsSID ? PenRouteSid

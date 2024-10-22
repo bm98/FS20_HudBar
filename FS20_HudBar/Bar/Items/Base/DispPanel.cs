@@ -29,6 +29,10 @@ namespace FS20_HudBar.Bar.Items.Base
       this.TabStop = false;
     }
 
+    /// <summary>
+    /// Currently handled Number of engines
+    /// </summary>
+    public int NumEngines => _numEngines;
 
     /// <summary>
     /// Empty the Panel

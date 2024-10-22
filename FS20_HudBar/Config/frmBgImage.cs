@@ -100,7 +100,7 @@ namespace FS20_HudBar.Config
         catch (Exception ex) {
           // complain to user
           MessageBox.Show( this, "The selected image file failed to load\nPlease select another one.", "Image File Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
-          LOG.LogException( ex, "Image LoadFromFile failed with Exception" );
+          LOG.Error( ex, "Image LoadFromFile failed with Exception" );
         }
 
       }

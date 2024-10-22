@@ -49,6 +49,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "Auto Throttle / TOGA\nClick to toggle";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       _label = new V_Text( lblProto ) { Text = Short }; this.AddItem( _label );
 
       var item = VItem.AP_ATHR_armed;

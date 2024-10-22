@@ -28,7 +28,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "Distance to Dest. [nm]";
+    public static readonly string Desc = "GPS Distance to Dest. [nm]";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Gps_DST( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       var item = VItem.GPS_DST;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Dist( valueProto ) { ItemForeColor = cTxGps };
@@ -51,19 +52,13 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         // Distance to Destination
-        var d = SV.Get<float>( SItem.fG_Gps_DEST_dist_nm );
-        if (d > 0) {
-          _value1.Value = d;
-          _value1.ItemForeColor = cTxGps;
-        }
-        else if (HudBar.AtcFlightPlan.HasFlightPlan) {
-          _value1.Value = HudBar.AtcFlightPlan.RemainingDist_nm(
-               SV.Get<string>( SItem.sG_Gps_WYP_nextID ),
-               SV.Get<float>( SItem.fG_Gps_WYP_dist_nm ) );
+        if (HudBar.FlightPlanRef.Tracker.PlanDistanceRemaining_nm > 0) {
+          // if >0 use the Tracker data (includes GPS merges)
+          _value1.Value = (float)HudBar.FlightPlanRef.Tracker.PlanDistanceRemaining_nm;
           _value1.ItemForeColor = cTxGps;
         }
         else {
-          // calc straight distance if we don't have an ATC flightplan with waypoints
+          // calc straight distance if we don't have a tracked flightplan with waypoints
           var latLon = new LatLon( SV.Get<double>( SItem.dGS_Acft_Lat ), SV.Get<double>( SItem.dGS_Acft_Lon ) );
           _value1.Value = AirportMgr.ArrDistance_nm( latLon );
           _value1.ItemForeColor = cTxInfo;

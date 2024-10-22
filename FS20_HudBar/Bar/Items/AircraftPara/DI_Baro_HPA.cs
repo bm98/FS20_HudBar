@@ -38,6 +38,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "Barometer reading\nClick to set to adjust to Sim";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       var item = VItem.BARO_HPA;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_PressureHPA( value2Proto );

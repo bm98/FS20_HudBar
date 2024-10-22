@@ -37,7 +37,7 @@ namespace FS20_HudBar
         AppSettingsV2.Instance.FlowBreak_7 = AppSettings.Instance.FlowBreak_7;
         AppSettingsV2.Instance.FlowBreak_8 = AppSettings.Instance.FlowBreak_8;
         AppSettingsV2.Instance.FlowBreak_9 = AppSettings.Instance.FlowBreak_9;
-        AppSettingsV2.Instance.FltAutoSaveATC = AppSettings.Instance.FltAutoSaveATC;
+        AppSettingsV2.Instance.FltAutoSaveATC = AppSettings.Instance.FltAutoSaveATC; // restricted to 0,1 in AppSettingsV2
         AppSettingsV2.Instance.FormLocation = AppSettings.Instance.FormLocation;
         AppSettingsV2.Instance.FRecorder = AppSettings.Instance.FRecorder;
         AppSettingsV2.Instance.FreeText = AppSettings.Instance.FreeText;

@@ -27,7 +27,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "Cross track distance nm";
+    public static readonly string Desc = "GPS Cross track distance nm";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
@@ -35,6 +35,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Gps_XTK( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       var item = VItem.GPS_XTK;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Xtk( valueProto ) { ItemForeColor = cTxGps };
@@ -49,11 +50,13 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        if (SV.Get<float>( SItem.fG_Gps_WYP_dist_nm ) > 0) {
-          _value1.Value = SV.Get<float>( SItem.fG_Gps_WYP_XTRK_nm );
+        if (HudBar.FlightPlanRef.Tracker.WypDistRemaining_nm > 0) {
+          // if >0 use the Tracker data (includes GPS merges)
+          _value1.Value = (float)HudBar.FlightPlanRef.Tracker.XTK_nm;
+          _value1.ItemForeColor = cTxGps;
         }
         else {
-          // No SIM GPS - Flightplan active
+          // No Flightplan active
           _value1.Value = null;
         }
       }

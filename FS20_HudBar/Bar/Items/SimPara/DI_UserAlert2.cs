@@ -33,6 +33,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "Click to switch the Alert type";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.USR_ALERT_2;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
 

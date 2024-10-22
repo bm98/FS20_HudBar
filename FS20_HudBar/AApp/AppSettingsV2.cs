@@ -272,8 +272,15 @@ namespace FS20_HudBar
     // Backup Flag
     [DefaultSettingValue( "0" )] // ref enum FSimClientIF.FlightPlanMode  (0=Disabled, 1=AutoB, 2=AutoB+ATC)
     public int FltAutoSaveATC {
-      get { return (int)this["FltAutoSaveATC"]; }
-      set { this["FltAutoSaveATC"] = value; }
+      // BREAKING CHANGE: restrict ATC to Auto
+      get {
+        int aMode = (int)this["FltAutoSaveATC"];
+        aMode = (aMode > 1) ? 1 : aMode;
+        return aMode;
+      }
+      set {
+        this["FltAutoSaveATC"] = (value > 1) ? 1 : value;
+      }
     }
 
 
@@ -441,6 +448,16 @@ namespace FS20_HudBar
       get { return (string)this["ProfileColorsInv_1"]; }
       set { this["ProfileColorsInv_1"] = value; }
     }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileFrameItems_1 {
+      get { return (bool)this["ProfileFrameItems_1"]; }
+      set { this["ProfileFrameItems_1"] = value; }
+    }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileBoxDivider_1 {
+      get { return (bool)this["ProfileBoxDivider_1"]; }
+      set { this["ProfileBoxDivider_1"] = value; }
+    }
 
 
     // PROFILE 2
@@ -542,6 +559,17 @@ namespace FS20_HudBar
       get { return (string)this["ProfileColorsInv_2"]; }
       set { this["ProfileColorsInv_2"] = value; }
     }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileFrameItems_2 {
+      get { return (bool)this["ProfileFrameItems_2"]; }
+      set { this["ProfileFrameItems_2"] = value; }
+    }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileBoxDivider_2 {
+      get { return (bool)this["ProfileBoxDivider_2"]; }
+      set { this["ProfileBoxDivider_2"] = value; }
+    }
+
 
     // PROFILE 3
 
@@ -642,6 +670,17 @@ namespace FS20_HudBar
       get { return (string)this["ProfileColorsInv_3"]; }
       set { this["ProfileColorsInv_3"] = value; }
     }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileFrameItems_3 {
+      get { return (bool)this["ProfileFrameItems_3"]; }
+      set { this["ProfileFrameItems_3"] = value; }
+    }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileBoxDivider_3 {
+      get { return (bool)this["ProfileBoxDivider_3"]; }
+      set { this["ProfileBoxDivider_3"] = value; }
+    }
+
 
     // PROFILE 4
 
@@ -742,6 +781,17 @@ namespace FS20_HudBar
       get { return (string)this["ProfileColorsInv_4"]; }
       set { this["ProfileColorsInv_4"] = value; }
     }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileFrameItems_4 {
+      get { return (bool)this["ProfileFrameItems_4"]; }
+      set { this["ProfileFrameItems_4"] = value; }
+    }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileBoxDivider_4 {
+      get { return (bool)this["ProfileBoxDivider_4"]; }
+      set { this["ProfileBoxDivider_4"] = value; }
+    }
+
 
     // PROFILE 5
 
@@ -842,6 +892,17 @@ namespace FS20_HudBar
       get { return (string)this["ProfileColorsInv_5"]; }
       set { this["ProfileColorsInv_5"] = value; }
     }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileFrameItems_5 {
+      get { return (bool)this["ProfileFrameItems_5"]; }
+      set { this["ProfileFrameItems_5"] = value; }
+    }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileBoxDivider_5 {
+      get { return (bool)this["ProfileBoxDivider_5"]; }
+      set { this["ProfileBoxDivider_5"] = value; }
+    }
+
 
     // PROFILE 6
 
@@ -942,6 +1003,17 @@ namespace FS20_HudBar
       get { return (string)this["ProfileColorsInv_6"]; }
       set { this["ProfileColorsInv_6"] = value; }
     }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileFrameItems_6 {
+      get { return (bool)this["ProfileFrameItems_6"]; }
+      set { this["ProfileFrameItems_6"] = value; }
+    }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileBoxDivider_6 {
+      get { return (bool)this["ProfileBoxDivider_6"]; }
+      set { this["ProfileBoxDivider_6"] = value; }
+    }
+
 
     // PROFILE 7
 
@@ -1042,6 +1114,17 @@ namespace FS20_HudBar
       get { return (string)this["ProfileColorsInv_7"]; }
       set { this["ProfileColorsInv_7"] = value; }
     }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileFrameItems_7 {
+      get { return (bool)this["ProfileFrameItems_7"]; }
+      set { this["ProfileFrameItems_7"] = value; }
+    }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileBoxDivider_7 {
+      get { return (bool)this["ProfileBoxDivider_7"]; }
+      set { this["ProfileBoxDivider_7"] = value; }
+    }
+
 
     // PROFILE 8
 
@@ -1142,6 +1225,17 @@ namespace FS20_HudBar
       get { return (string)this["ProfileColorsInv_8"]; }
       set { this["ProfileColorsInv_8"] = value; }
     }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileFrameItems_8 {
+      get { return (bool)this["ProfileFrameItems_8"]; }
+      set { this["ProfileFrameItems_8"] = value; }
+    }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileBoxDivider_8 {
+      get { return (bool)this["ProfileBoxDivider_8"]; }
+      set { this["ProfileBoxDivider_8"] = value; }
+    }
+
 
     // PROFILE 9
 
@@ -1242,6 +1336,17 @@ namespace FS20_HudBar
       get { return (string)this["ProfileColorsInv_9"]; }
       set { this["ProfileColorsInv_9"] = value; }
     }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileFrameItems_9 {
+      get { return (bool)this["ProfileFrameItems_9"]; }
+      set { this["ProfileFrameItems_9"] = value; }
+    }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileBoxDivider_9 {
+      get { return (bool)this["ProfileBoxDivider_9"]; }
+      set { this["ProfileBoxDivider_9"] = value; }
+    }
+
 
     // PROFILE 10
 
@@ -1342,6 +1447,17 @@ namespace FS20_HudBar
       get { return (string)this["ProfileColorsInv_10"]; }
       set { this["ProfileColorsInv_10"] = value; }
     }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileFrameItems_10 {
+      get { return (bool)this["ProfileFrameItems_10"]; }
+      set { this["ProfileFrameItems_10"] = value; }
+    }
+    [DefaultSettingValue( "False" )]
+    public bool ProfileBoxDivider_10 {
+      get { return (bool)this["ProfileBoxDivider_10"]; }
+      set { this["ProfileBoxDivider_10"] = value; }
+    }
+
 
     #endregion // ConfigSettings
 

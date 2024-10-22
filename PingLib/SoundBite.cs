@@ -69,7 +69,7 @@ namespace PingLib
       var tune = WaveProc.GetInstalledSounds( ).Where( x => x.Melody == melody ).FirstOrDefault( );
       if (tune == null) {
         // sould not happen .....
-        LOG.LogError( "SoundBite", $"Cannot find the Melody: {melody}" );
+        LOG.Error( "SoundBite", $"Cannot find the Melody: {melody}" );
         Melody = Melody.Silence;
         return;
       }
@@ -94,7 +94,7 @@ namespace PingLib
       var tune = WaveProc.GetInstalledSounds( ).Where( x => x.Melody == melody ).FirstOrDefault( );
       if (tune == null) {
         // sould not happen .....
-        LOG.LogError( "SoundBite", $"Cannot find the Melody: {melody}" );
+        LOG.Error( "SoundBite", $"Cannot find the Melody: {melody}" );
         Melody = Melody.Silence;
         return;
       }

@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Compass( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       // Wind Direction, Speed
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
 

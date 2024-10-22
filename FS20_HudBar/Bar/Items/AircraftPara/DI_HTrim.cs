@@ -42,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "Heli Trim value\nClick to reset to 0 %";
 
       LabelID = LItem;
-
+      DiLayout = ItemLayout.ValueRight;
       // All ERA-Trim label get a button to activate the 0 Trim action
       var item = VItem.HTRIM_LON;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );

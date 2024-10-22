@@ -67,6 +67,10 @@
     <Reference Include="FSimFacilityIF">
       <HintPath>..\..\..\Redist\FSimFacilityIF.dll</HintPath>
     </Reference>
+    <Reference Include="FSimFlightPlans, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Redist\FSimFlightPlans.dll</HintPath>
+    </Reference>
     <Reference Include="FSimIF">
       <HintPath>..\..\..\Redist\FSimIF.dll</HintPath>
     </Reference>
@@ -102,7 +106,7 @@
       <DependentUpon>UC_ETable.cs</DependentUpon>
     </Compile>
     <Compile Include="FPlans\FpWrapper.cs" />
-    <Compile Include="FPlans\WypExtensions.cs" />
+    <Compile Include="FPlans\FlightPlanArrivedEventArgs.cs" />
     <Compile Include="frmShelf.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -160,10 +164,6 @@
     <ProjectReference Include="..\DbgLib\DbgLib.csproj">
       <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
       <Name>DbgLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FlightplanLib\FlightplanLib.csproj">
-      <Project>{4766e323-833c-42b5-88ed-dafb25e934ef}</Project>
-      <Name>FlightplanLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\FSimMap\bm98_Map\bm98_Map.csproj">
       <Project>{a840b347-f147-45bd-b84b-b400f1b3deca}</Project>

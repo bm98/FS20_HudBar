@@ -33,6 +33,7 @@ namespace bm98_hbControls
       // UC_Scale
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+      this.CausesValidation = false;
       this.DoubleBuffered = true;
       this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.ForeColor = System.Drawing.Color.GreenYellow;

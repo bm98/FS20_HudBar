@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_FuelGraph( ValueItemCat vCat, Label lblProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.GraphX2;
       var item = VItem.FUEL_ANI_C;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _scaleC = new A_Scale( ) { Minimum = 0, Maximum = 60000, AlertValue = 1, ItemForeColor_Alert = cWarn }; // limits are set while updating

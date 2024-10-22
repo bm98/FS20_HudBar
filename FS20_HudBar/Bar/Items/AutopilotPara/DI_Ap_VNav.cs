@@ -39,6 +39,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "VNAV Hold\nClick to toggle";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.AP_VNAV; // Button Handler
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
 

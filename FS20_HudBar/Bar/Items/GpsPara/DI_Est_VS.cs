@@ -28,7 +28,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "Estimate VS to WYP@ALT";
+    public static readonly string Desc = "GPS Estimate VS to WYP@ALT";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Est_VS( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       var item = VItem.EST_VS;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_VSpeedPerMin( valueProto ) { ItemForeColor = cTxEst };

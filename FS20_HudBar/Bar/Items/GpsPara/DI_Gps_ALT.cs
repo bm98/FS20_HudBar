@@ -27,7 +27,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "Waypoint ALT ft";
+    public static readonly string Desc = "GPS Waypoint ALT ft";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
@@ -35,6 +35,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Gps_ALT( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       var item = VItem.GPS_ALT;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Alt( valueProto ) { ItemForeColor = cTxGps };

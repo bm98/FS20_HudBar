@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using DbgLib;
 using static dNetBm98.Units;
 
-using FSimClientIF.Flightplan;
 using SC = SimConnectClient;
 
 using FS20_HudBar.Bar.Items.Base;
@@ -23,6 +22,7 @@ using FSimClientIF.Modules;
 using static FSimClientIF.Sim;
 using FSimClientIF;
 using PingLib;
+using FSFData;
 
 namespace FS20_HudBar.Bar
 {
@@ -44,21 +44,20 @@ namespace FS20_HudBar.Bar
 
     // this part is maintaned only once for all HudBar Instances (there is only One Instance at any given time - else it breaks...)
 
-    // FLT ATC Flightplan
     /// <summary>
-    /// The current ATC Flightplan (actually a copy of it)
+    /// The current Shelf Flightplan
     /// </summary>
-    public static FSimClientIF.Flightplan.FlightPlan AtcFlightPlan => AtcFltPlanMgr.AtcFlightPlan;
-    /// <summary>
-    /// The current Shelf Flightplan (loaded by the user)
-    /// </summary>
-    public static FlightplanLib.Flightplan.FlightPlan UserFlightPlan => _userFlightPlanRef;
+    public static FSimFlightPlans.FlightPlan FlightPlanRef => _flightPlanRef;
     /// <summary>
     /// Update the Shelf Flightplan (loaded by the user)
     /// </summary>
-    /// <param name="userFlightPlan">A user loaded Flightplan</param>
-    public static void UpdateUserFlightplan( FlightplanLib.Flightplan.FlightPlan userFlightPlan ) => _userFlightPlanRef = userFlightPlan;
-    private static FlightplanLib.Flightplan.FlightPlan _userFlightPlanRef = new FlightplanLib.Flightplan.FlightPlan( ); // init empty
+    /// <param name="flightPlanRef">A user loaded Flightplan</param>
+    public static void UpdateFlightplanReference( FSimFlightPlans.FlightPlan flightPlanRef )
+    {
+      _flightPlanRef = flightPlanRef;
+    }
+    private static FSimFlightPlans.FlightPlan _flightPlanRef = new FSimFlightPlans.FlightPlan( ); // init empty
+
 
     // voice and sounds  - static, will never be disposed
     private static readonly PingLib.Loops m_ping = new PingLib.Loops( ); // Ping, Sound looping, Tone=0 will be Silence
@@ -315,7 +314,7 @@ namespace FS20_HudBar.Bar
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
                    WinHotkeyCat hotkeys, Configuration config )
     {
-      LOG.Log( "cTor HudBar: Start" );
+      LOG.Info( "HudBar.cTor", "Start" );
 
       // use config items here
       _configRef = config;
@@ -345,7 +344,7 @@ namespace FS20_HudBar.Bar
       ToolTipFP.ResetDrawList( );
 
       // init the Fontprovider from the submitted labels
-      LOG.Log( "cTor HudBar: Init Fontprovider" );
+      LOG.Info( "HudBar.cTor", "Init Fontprovider" );
       FONTS = new GUI_Fonts( _configRef.UsedProfile.Condensed ); // get all fonts from built in
       FONTS.FromConfigString( _configRef.UsedFontsConfigString ); // and load from Config
 
@@ -367,7 +366,7 @@ namespace FS20_HudBar.Bar
       // We need all as there might be Breaks assigned to some that are not currently visible but 
       // we take those and realize the Breaks at the proper location
 
-      LOG.Log( "cTor HudBar: Adding DI Items" );
+      LOG.Info( "HudBar.cTor", "Adding DI Items" );
 
       // Sim Status
       m_dispItems.AddDisp( new DI_MsFS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -550,49 +549,53 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_ToeBrakes( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_THook( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
 
-      LOG.Log( $"cTor HudBar: {m_dispItems.Count} items loaded" );
+      LOG.Info( "HudBar.cTor", $"{m_dispItems.Count} items loaded" );
+
+      // add border if asked for
+      foreach (var lx in m_dispItems) {
+        lx.Value.BorderStyle = _configRef.UsedProfile.FrameItems ? BorderStyle.FixedSingle : BorderStyle.None;
+        // single adds 1 pix frame to each side of the DI-Item (need to account for it when having 2row items shown)
+        // DI autosizes to the height of the content but adds the frame
+      }
 
       // **** post processing
 
       // Apply Metric Setting from AppSettings
       // Apply Unit modifier (shown, not shown) to all Values
-      LOG.Log( $"cTor HudBar: Post Processing" );
+      LOG.Info( "HudBar.cTor", $"Post Processing" );
       foreach (var lx in m_valueItems) {
         SetAltitudeMetric( AppSettingsV2.Instance.Altitude_Metric );
         SetDistanceMetric( AppSettingsV2.Instance.Distance_Metric );
         SetShowUnits( AppSettingsV2.Instance.ShowUnits );
       }
 
-      // Align the Vertical alignment accross the bar
-      if (_configRef.UsedProfile.Placement == Placement.Top
-        || _configRef.UsedProfile.Placement == Placement.TopStack
-        || _configRef.UsedProfile.Placement == Placement.Bottom) {
+      // Set min size of the labels in order to have them better aligned
+      // Using arrow chars gets a larger height than regular ASCII chars (odd autosize behavior)
+      // Setting minSize to the Max found height of any at least allows for some hotizontal alignment
+      LOG.Info( "HudBar.cTor", $"Size DI items" );
+      int mh = 0;
+      foreach (var lx in m_valueItems) {
+        mh = (lx.Value.Ctrl.Height > mh) ? lx.Value.Ctrl.Height : mh;
+      }
+      foreach (var lx in m_dispItems) {
+        mh = (lx.Value.Label.Height > mh) ? lx.Value.Label.Height : mh;
+      }
 
-        // Set min size of the labels in order to have them better aligned
-        // Using arrow chars gets a larger height than regular ASCII chars (odd autosize behavior)
-        // Setting minSize to the Max found height of any at least allows for some hotizontal alignment
-        int mh = 0;
-        foreach (var lx in m_valueItems) {
-          mh = (lx.Value.Ctrl.Height > mh) ? lx.Value.Ctrl.Height : mh;
-        }
-        foreach (var lx in m_dispItems) {
-          mh = (lx.Value.Label.Height > mh) ? lx.Value.Label.Height : mh;
-        }
-
-        // set MinHeight for value Labels
-        foreach (var lx in m_valueItems) {
-          lx.Value.Ctrl.MinimumSize = new Size( 1, mh );
-        }
-        // define MinHeight for the Group Labels
-        foreach (var lx in m_dispItems) {
-          lx.Value.Label.MinimumSize = new Size( 1, mh );
-        }
+      // set MinHeight for value Labels
+      foreach (var lx in m_valueItems) {
+        lx.Value.Ctrl.MinimumSize = new Size( 1, mh );
+      }
+      // define MinHeight for the Group Labels
+      foreach (var lx in m_dispItems) {
+        lx.Value.Label.MinimumSize = new Size( 1, mh );
       }
 
       // Align the Value columns on left and right bound bar or tile
-      LOG.Log( $"cTor HudBar: Aligning DI items" );
       if (_configRef.UsedProfile.Placement == Placement.Left
         || _configRef.UsedProfile.Placement == Placement.Right) {
+
+        LOG.Info( "HudBar.cTor", $"Aligning DI items" );
+
         // Determine max width and make them aligned
         int maxLabelWidth = 0;
         int max1ValueWidth = 0; // the Single Value DispItems Value label 
@@ -615,6 +618,7 @@ namespace FS20_HudBar.Bar
         max1ValueWidthList.Enqueue( max1ValueWidth ); // last width
 
         // pad the label control to the right to have the value columns aligned
+        LOG.Trace( "HudBar.cTor", $"Padding for width now" );
         max1ValueWidth = max1ValueWidthList.Dequeue( );
         foreach (var lItem in _configRef.UsedProfile.ItemPosList( )) {
           var dix = DispItem( lItem );
@@ -623,27 +627,53 @@ namespace FS20_HudBar.Bar
             if (_configRef.UsedProfile.IsBreakItem( lItem )) {
               max1ValueWidth = max1ValueWidthList.Dequeue( );
             }
-            if (dix.Controls.Count == 2 && !(dix.Controls[1] is V_Steps) && !(dix.Controls[1] is V_Text)) {
-              dix.Controls[0].Padding = new Padding( 0, 0, maxLabelWidth - dix.Controls[0].Width, 0 );
-              // align single Value ones to the max right (pad left)
-              dix.Controls[1].Padding = new Padding( max1ValueWidth - dix.Controls[1].Width, 0, 0, 0 );
+            /* DEBUG LAYOUT
+            if (dix.Controls.Count == 1) {
+              var c0 = dix.Controls[0];
+              LOG.Trace( $"{dix.LabelID}.WxH: Label {c0.Width:##0}x{c0.Height:##0} M:{c0.Margin} P:{c0.Padding}" );
             }
             else {
-              // others just column align the Value Items by adding a right Padding to the Label
-              dix.Controls[0].Padding = new Padding( 0, 0, maxLabelWidth - dix.Controls[0].Width, 0 );
-
+              var c0 = dix.Controls[0];
+              var c1 = dix.Controls[1];
+              LOG.Trace( $"{dix.LabelID}.WxH: Label {c0.Width:##0}x{c0.Height:##0} M:{c0.Margin} P:{c0.Padding} Value {c1.Width:##0}x{c1.Height:##0} M:{c1.Margin} P:{c1.Padding}" );
+            }
+            */
+            // align Labels to have a common right anchor for further items (add right padding)
+            dix.Controls[0].SetRightPadding( maxLabelWidth - dix.Controls[0].Width );
+            // align single value Items right aligned
+            if (dix.Is1xRightLayout) {
+              // align single Value ones to the max right (left margin)
+              dix.Controls[1].SetLeftMargin( max1ValueWidth - dix.Controls[1].Width );
+            }
+            else {
               // For Left and Right Bars - Handle two row items, assuming they get 1 Label and 2 + 2  Value controls
-              if (dix.TwoRows) {
-                // Shift the 2nd row Value to the same location as the 1st Value right with some padding
-                dix.Controls[3].Padding = new Padding( dix.Controls[1].Location.X, 0, 0, 0 );
-                dix.WrapContents = true;
+              if (dix.Is2x2Layout) {
+                // break after value 2
+                dix.SetValueFlowBreak( true, 2 );
+                // Shift the 2nd row Value to the same location as the 1st Value right with some margin
+                // align margins of the 2 rows
+                if (_configRef.UsedProfile.FrameItems) {
+                  // add top/ bottom to compensate for a framed row with a pixel gapping / initially top/bottom is 0
+                  dix.AddSecondRowMargin(
+                    new Padding( dix.Controls[1].Location.X, 1, dix.Controls[1].Margin.Right, 1 ),
+                    new Padding( dix.Controls[2].Margin.Left, 1, dix.Controls[2].Margin.Right, 1 )
+                    );
+                }
+                else {
+                  dix.AddSecondRowMargin(
+                    new Padding( dix.Controls[1].Location.X, 0, dix.Controls[1].Margin.Right, 0 ),
+                    new Padding( dix.Controls[2].Margin.Left, 0, dix.Controls[2].Margin.Right, 0 )
+                    );
+                }
               }
             }
           }
         }
       }
+
+
       // VoicePack Data Registration
-      LOG.Log( $"cTor HudBar: Re-Register Observers for Voice Pack" );
+      LOG.Info( "HudBar.cTor", $"Re-Register Observers for Voice Pack" );
       m_voicePack.UnRegisterObservers( ); // clear from previous run
       m_voicePack.RegisterObservers( ); // add used ones
       // we want to know when an Aircraft is changed
@@ -651,7 +681,7 @@ namespace FS20_HudBar.Bar
       // init RA Limit
       Calculator.SetRA_Limit( SV.Get<EngineType>( SItem.etG_Cfg_EngineType ) );
 
-      LOG.Log( $"cTor HudBar: End" );
+      LOG.Info( "HudBar.cTor", $"End of cTor" );
     }
 
     #region Update Content and Settings
@@ -671,99 +701,46 @@ namespace FS20_HudBar.Bar
       // update calculations
       Calculator.PaceCalculator( );
 
-      // try to get the WYPs
-      //  SimConnect GPS Waypoint IDs are not always available - depends on acft implementation...
-      string prevWypID = SV.Get<bool>( SItem.bG_Gps_FP_tracking ) ? SV.Get<string>( SItem.sG_Gps_WYP_prevID ) : "";
-      string nextWypID = SV.Get<bool>( SItem.bG_Gps_FP_tracking ) ? SV.Get<string>( SItem.sG_Gps_WYP_nextID ) : "";
-      // update from flightplans, user has prio over ATC
-      if (UserFlightPlan.IsValid) {
-        // User Loaded has prio
+      if (FlightPlanRef.IsValid) {
+        // update from flightplans when we have a valid location
         AirportMgr.Update(
-          UserFlightPlan.Origin.IsValid ? UserFlightPlan.Origin.Icao_Ident.ICAO : "",
-          UserFlightPlan.Destination.IsValid ? UserFlightPlan.Destination.Icao_Ident.ICAO : ""
+          FlightPlanRef.Origin.IsValid ? FlightPlanRef.Origin.Icao_Ident : "",
+          FlightPlanRef.Destination.IsValid ? FlightPlanRef.Destination.Icao_Ident : ""
         );
-        // if we don't know the next WYP from SimConnect, try to use the UserFPlan
-        if (string.IsNullOrEmpty( nextWypID ) && UserFlightPlan.NextRoutePoint.IsValid) {
-          nextWypID = UserFlightPlan.NextRoutePoint.Icao_Ident.ICAO;
-          prevWypID = UserFlightPlan.PrevRoutePoint.Icao_Ident.ICAO;
-        }
-      }
-      else if (AtcFlightPlan.HasFlightPlan) {
-        // ATC Airport - maintain APTs (we should always have a Destination here)
-        AirportMgr.Update( AtcFlightPlan.Departure, AtcFlightPlan.Destination );
-        // does not track Waypoints, so no such option with the ATC Plan
-      }
-
-      // Maintain the WaypointID Tracker to support the GPS Flightplan 
-      // WP Enroute Tracker
-      WPTracker.Track(
-           prevWypID, nextWypID,
-           SV.Get<double>( SItem.dG_Env_Time_loc_sec ),
-           SV.Get<bool>( SItem.bG_Sim_OnGround )
-      );
-
-      // load Tooltips of Waypoints - will show a remaining ATC plan if there is any
-      // Load Remaining Plan if the WYP or Flightplan has changed
-      if (WPTracker.HasChanged || AtcFltPlanMgr.HasChanged) {
-        LOG.Log( $"UpdateGUI: WP or FlightPlan has changed" );
-        string tt = AtcFlightPlan.RemainingPlan( WPTracker.Read( ) );
-        var di = this.DispItem( LItem.GPS_WYP );
-        if (di != null) {
-          this.ToolTipFP.SetToolTip( di.Label, tt );
-          di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
-        }
-        tt = AtcFlightPlan.WaypointByName( WPTracker.PrevWP ).PrettyDetailed;
-        var vc = this.ValueControl( VItem.GPS_PWYP );
-        if (vc != null) {
-          this.ToolTipFP.SetToolTip( vc, tt );
-          vc.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
-        }
-        tt = AtcFlightPlan.WaypointByName( WPTracker.NextWP ).PrettyDetailed;
-        vc = this.ValueControl( VItem.GPS_NWYP );
-        if (vc != null) {
-          this.ToolTipFP.SetToolTip( vc, tt );
-          vc.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
-        }
-        tt = AtcFlightPlan.Pretty;
-        di = this.DispItem( LItem.ATC_ALT_HDG );
-        if (di != null) {
-          this.ToolTipFP.SetToolTip( di.Label, tt );
-          di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
-        }
-        // commit that we read the changes of the Flight Plan
-        AtcFltPlanMgr.Read( );
       }
 
       // update Aircraft Props - Fuel has probably changed, sometimes Speeds depending on configuration, or a different aircraft at all
       if (_aircraftChanged || (secondsTic > _nextSecTic)) {
         if (_aircraftChanged) {
           Calculator.SetRA_Limit( SV.Get<EngineType>( SItem.etG_Cfg_EngineType ) ); // set RA Limit
-          LOG.Log( $"UpdateGUI: Aircraft has changed to {SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )}" );
+          LOG.Info( "UpdateGUI", $"Aircraft has changed to {SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )}" );
         }
 
-        string tt = "";
-        if (!string.IsNullOrWhiteSpace( SV.Get<string>( SItem.sG_Cfg_AcftConfigFile ) )) {
-          tt = $"Aircraft Type:     {SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )}\n\n"
-             + $"Cruise Altitude:   {SV.Get<float>( SItem.fG_Dsg_CruiseAlt_ft ):##,##0} ft\n"
-             + $"Vc  Cruise Speed:  {SV.Get<float>( SItem.fG_Dsg_SpeedVC_kt ):##0} kt\n"
-             + $"Vy  Climb Speed    {SV.Get<float>( SItem.fG_Dsg_SpeedClimb_kt ):##0} kt\n"
-             + $"Vmu Takeoff Speed: {SV.Get<float>( SItem.fG_Dsg_SpeedTakeoff_kt ):##0} kt\n"
-             + $"Vr  Min Rotation:  {SV.Get<float>( SItem.fG_Dsg_SpeedMinRotation_kt ):##0} kt\n"
-             + $"Vs1 Stall Speed:   {SV.Get<float>( SItem.fG_Dsg_SpeedVS1_kt ):##0} kt\n"
-             + $"Vs0 Stall Speed:   {SV.Get<float>( SItem.fG_Dsg_SpeedVS0_kt ):##0} kt\n\n"
-             + $"Fuel Weight:       {SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ):###,##0} kg)\n"
-             + $"Payload Weight:    {SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ) ):###,##0} kg)\n"
-             + $"TOTAL Weight:      {SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) ):###,##0} kg)\n"
-             + $"Zero Fuel Weight:  {SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ):###,##0} kg)\n"
-             + $"CG lon / lat:      {SV.Get<float>( SItem.fG_Acft_AcftCGlong_perc ):#0.0} % / {SV.Get<float>( SItem.fG_Acft_AcftCGlat_perc ):#0.0} %\n"
-             + $"Empty Weight:      {SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) ):###,##0} kg)\n"
-             + $"Max. Weight:       {SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ) ):###,##0} kg)\n"
-             ;
-        }
-        var di = this.DispItem( LItem.IAS );
-        if (di != null) {
-          this.ToolTipFP.SetToolTip( di.Label, tt );
-          di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+        if (this.m_dispItems.ContainsKey( LItem.IAS )) {
+          string tt = "";
+          if (!string.IsNullOrWhiteSpace( SV.Get<string>( SItem.sG_Cfg_AcftConfigFile ) )) {
+            tt = $"Aircraft Type:     {SV.Get<string>( SItem.sG_Cfg_AcftConfigFile )}\n\n"
+               + $"Cruise Altitude:   {SV.Get<float>( SItem.fG_Dsg_CruiseAlt_ft ):##,##0} ft\n"
+               + $"Vc  Cruise Speed:  {SV.Get<float>( SItem.fG_Dsg_SpeedVC_kt ):##0} kt\n"
+               + $"Vy  Climb Speed    {SV.Get<float>( SItem.fG_Dsg_SpeedClimb_kt ):##0} kt\n"
+               + $"Vmu Takeoff Speed: {SV.Get<float>( SItem.fG_Dsg_SpeedTakeoff_kt ):##0} kt\n"
+               + $"Vr  Min Rotation:  {SV.Get<float>( SItem.fG_Dsg_SpeedMinRotation_kt ):##0} kt\n"
+               + $"Vs1 Stall Speed:   {SV.Get<float>( SItem.fG_Dsg_SpeedVS1_kt ):##0} kt\n"
+               + $"Vs0 Stall Speed:   {SV.Get<float>( SItem.fG_Dsg_SpeedVS0_kt ):##0} kt\n\n"
+               + $"Fuel Weight:       {SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ):###,##0} kg)\n"
+               + $"Payload Weight:    {SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_PayloadWeight_lbs ) ):###,##0} kg)\n"
+               + $"TOTAL Weight:      {SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) ):###,##0} kg)\n"
+               + $"Zero Fuel Weight:  {SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Acft_TotalAcftWeight_lbs ) - SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) ):###,##0} kg)\n"
+               + $"CG lon / lat:      {SV.Get<float>( SItem.fG_Acft_AcftCGlong_perc ):#0.0} % / {SV.Get<float>( SItem.fG_Acft_AcftCGlat_perc ):#0.0} %\n"
+               + $"Empty Weight:      {SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_EmptyAcftWeight_lbs ) ):###,##0} kg)\n"
+               + $"Max. Weight:       {SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ):###,##0} lbs ({Kg_From_Lbs( SV.Get<float>( SItem.fG_Dsg_MaxAcftWeight_lbs ) ):###,##0} kg)\n"
+               ;
+          }
+          var di = this.DispItem( LItem.IAS );
+          if (di != null) {
+            this.ToolTipFP.SetToolTip( di.Label, tt );
+            di.Label.Cursor = string.IsNullOrEmpty( tt ) ? Cursors.Default : Cursors.PanEast;
+          }
         }
         _aircraftChanged = false; // no longer
         _nextSecTic = secondsTic + c_paceSec;
@@ -830,7 +807,11 @@ namespace FS20_HudBar.Bar
     /// <param name="flp"></param>
     public void LoadFLPanel( FlowLayoutPanel flp )
     {
+      LOG.Info( "LoadFLPanel", "Start" );
       if (flp == null) return; // Sanity check
+
+      LOG.Info( "LoadFLPanel", "Start loading" );
+
       // release the docking for a freeflow alignment  
       flp.Dock = DockStyle.None;
       flp.AutoSize = true; // don't know if this changes by some Magic in WinForms - just make sure it is set properly
@@ -863,7 +844,8 @@ namespace FS20_HudBar.Bar
               // take any
               registeredBreak = _configRef.UsedProfile.IsBreakItem( key ) ? GUI.BreakType.FlowBreak :
                                 _configRef.UsedProfile.IsDivItem1( key ) ? GUI.BreakType.DivBreak1 :
-                                _configRef.UsedProfile.IsDivItem2( key ) ? GUI.BreakType.DivBreak2 : GUI.BreakType.None;
+                                _configRef.UsedProfile.IsDivItem2( key ) ? GUI.BreakType.DivBreak2 :
+                                GUI.BreakType.None;
             }
             else if (registeredBreak == GUI.BreakType.FlowBreak) {
               // take no further
@@ -895,10 +877,14 @@ namespace FS20_HudBar.Bar
               else {
                 dSep.Dock = DockStyle.Top;// vertical Bar
               }
+              if (_configRef.UsedProfile.BoxDivider) {
+                dSep.SetGapSize( (ushort)this.DispItem( LItem.MSFS ).Height );
+              }
               GUI.GUI_Colors.Register( dSep ); // register for color management
               flp.Controls.Add( dSep ); // add it to the Main FlowPanel
               registeredBreak = GUI.BreakType.None; // reset
             }
+
             // add the item 
             di.SetLabelFlowBreak( this.Placement == Placement.TopStack ); // 20240222 added for Blinds mode
 
@@ -922,6 +908,8 @@ namespace FS20_HudBar.Bar
       // controls are loaded now
       // reapply Docking - the form will Autosize itself
       flp.Dock = DockStyle.Fill;
+
+      LOG.Info( "LoadFLPanel", $"End loading, {flp.Controls.Count} items loaded" );
     }
 
     #endregion

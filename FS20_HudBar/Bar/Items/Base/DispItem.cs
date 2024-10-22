@@ -28,12 +28,52 @@ namespace FS20_HudBar.Bar.Items.Base
     // Colors are used from default or set here explicitely 
 
     /// <summary>
+    /// Layout options for an Item
+    /// </summary>
+    public enum ItemLayout
+    {
+      /// <summary>
+      /// Generic Layout (left aligned)
+      /// </summary>
+      Generic = 0,
+      /// <summary>
+      /// One Value Right aligned
+      /// </summary>
+      ValueRight,
+      /// <summary>
+      /// Two Row x two values (4 engine layout)
+      /// </summary>
+      Value2x2,
+      /// <summary>
+      /// One Symbol Item
+      /// </summary>
+      Symbol,
+      /// <summary>
+      /// One Graph item
+      /// </summary>
+      GraphX1,
+      /// <summary>
+      /// One or 2 Graph items 
+      /// </summary>
+      GraphX2,
+      /// <summary>
+      /// A Separator Item
+      /// </summary>
+      Separator,
+    }
+
+    /// <summary>
     /// The Label ID 
     /// </summary>
     public LItem LabelID { get; protected set; }
 
     // The Label (first item)
     private Control m_label = null;
+
+    /// <summary>
+    /// The expected Layout of this Item
+    /// </summary>
+    public ItemLayout DiLayout { get; protected set; } = ItemLayout.Generic;
 
     /// <summary>
     /// Returns the Label of this group (first added control)
@@ -57,6 +97,20 @@ namespace FS20_HudBar.Bar.Items.Base
     /// i.e. Must contain 4 Value items which represent Engine 1..4 in this order
     /// </summary>
     public bool IsEngineItem { get; protected set; } = false;
+
+    /// <summary>
+    /// True for generic layout
+    /// </summary>
+    public bool IsGenericLayout => DiLayout == ItemLayout.Generic;
+    /// <summary>
+    /// True for 1 Value Right Aligned Layout
+    /// </summary>
+    public bool Is1xRightLayout => DiLayout == ItemLayout.ValueRight;
+    /// <summary>
+    /// True for 2 rows, 2 values layout (4 engine layout)
+    /// </summary>
+    public bool Is2x2Layout => DiLayout == ItemLayout.Value2x2;
+
 
     protected readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
 
@@ -121,6 +175,8 @@ namespace FS20_HudBar.Bar.Items.Base
       this.Cursor = Cursors.Default; // avoid the movement cross on the item controls
       this.BackColor = GUI_Colors.ItemColor( GUI_Colors.ColorType.cBG ); // default (should be transparent - ex. for debugging)
       this.TabStop = false;
+      this.Margin = new Padding( 0, 0, 0, 0 );  // no spacing around the DI item
+      this.Padding = new Padding( 0 ); // no inner spacing
 
 #if DEBUG
       // this.BackColor = Color.SteelBlue; // DEBUG color
@@ -141,20 +197,12 @@ namespace FS20_HudBar.Bar.Items.Base
         // the Label
         m_label = control;
       }
-
-      // Extend for 3 and 4 Value Items
-      // the 4th (and 5) would go on a second line (must be tagged as TwoRows ==> true)
-      if (TwoRows && (this.Controls.Count == 3)) {
-        // this is the 3rd Value item
-        this.SetFlowBreak( this.Controls[2], true ); // on prev element
-      }
       // Make Items which implement IAlign to have the Label height and AutoSize their Width when loading (e.g. WindArrow)
       if (control is IAlign) {
         (control as IAlign).AutoSizeHeight = false;
         (control as IAlign).AutoSizeWidth = true;
         control.Height = Label.Height;
       }
-
       this.Controls.Add( control );
     }
 
@@ -174,6 +222,20 @@ namespace FS20_HudBar.Bar.Items.Base
     }
 
     /// <summary>
+    /// Add a margin to 2Row Items 
+    /// </summary>
+    /// <param name="margin3">A Margin for the 3rd value</param>
+    /// <param name="margin4">A Margin for the 4th value</param>
+    public void AddSecondRowMargin( Padding margin3, Padding margin4 )
+    {
+      // sanity
+      if (!this.TwoRows) return;
+
+      if (this.Controls.Count > 3) this.Controls[3].Margin = margin3;
+      if (this.Controls.Count > 4) this.Controls[4].Margin = margin4;
+    }
+
+    /// <summary>
     /// Set Values 1..n (4) visible and the rest invisible
     /// </summary>
     /// <param name="n">MaxVisible Item (1..N)</param>
@@ -187,13 +249,32 @@ namespace FS20_HudBar.Bar.Items.Base
     }
 
     /// <summary>
-    /// Set a flowbreak after the Lable
+    /// Set a flowbreak for a Value Item
+    /// </summary>
+    /// <param name="break">True to set, false to remove</param>
+    public void SetValueFlowBreak( bool @break, uint valueIndex )
+    {
+      // sanity
+      if (valueIndex < 1) return; // values are index 1..max
+
+      if (this.Controls.Count > valueIndex) {
+        if (@break) {
+          this.WrapContents = true;    // if break - enable wrapping with flowbreaks // else leave it alone...
+        }
+        this.SetFlowBreak( this.Controls[(int)valueIndex], @break ); // on prev element = Label
+      }
+    }
+
+    /// <summary>
+    /// Set a flowbreak after the Label
     /// </summary>
     /// <param name="break">True to set, false to remove</param>
     public void SetLabelFlowBreak( bool @break )
     {
       if (this.Controls.Count > 0) {
-        this.WrapContents = @break;    // if b enable wrapping with flowbreaks
+        if (@break) {
+          this.WrapContents = true;    // if break - enable wrapping with flowbreaks // else leave it alone...
+        }
         this.Dock = @break ? DockStyle.Top : this.Dock;   // to make single buttons top aligned
         //this.BorderStyle= BorderStyle.FixedSingle; // DEBUG Layout only
         this.SetFlowBreak( this.Controls[0], @break ); // on prev element = Label

@@ -30,7 +30,7 @@ namespace SpeechLib
     // Static cTor: Just report the Library to Dbg
     static Speech( )
     {
-      LOG.Log( $"Init Module" );
+      LOG.Info( $"Init Module" );
     }
 
     /// <summary>

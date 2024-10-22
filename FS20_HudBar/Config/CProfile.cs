@@ -49,6 +49,8 @@ namespace FS20_HudBar.Config
       sColorReg,
       sColorDim,
       sColorInv,
+      bFrameItems,
+      bBoxDivider,
     }
 
     // return an initialized properties catalog, mapps profile setting enum to a distinct profile 
@@ -71,7 +73,9 @@ namespace FS20_HudBar.Config
         { ProfileSettings.sFonts, $"ProfileFonts_{profileNumber}" },// string
         { ProfileSettings.sColorReg, $"ProfileColorsReg_{profileNumber}" },// string
         { ProfileSettings.sColorDim, $"ProfileColorsDim_{profileNumber}" },// string
-        { ProfileSettings.sColorInv, $"ProfileColorsInv_{profileNumber}" }// string
+        { ProfileSettings.sColorInv, $"ProfileColorsInv_{profileNumber}" },// string
+        { ProfileSettings.bFrameItems, $"ProfileFrameItems_{profileNumber}" },// bool
+        { ProfileSettings.bBoxDivider, $"ProfileBoxDivider_{profileNumber}" },// bool
       };
 
       return sCat;
@@ -105,6 +109,8 @@ namespace FS20_HudBar.Config
           GetSetting<string>( sCat[ProfileSettings.sColorReg], "" ),
           GetSetting<string>( sCat[ProfileSettings.sColorDim], "" ),
           GetSetting<string>( sCat[ProfileSettings.sColorInv], "" ),
+          GetSetting<bool>( sCat[ProfileSettings.bFrameItems], false ),
+          GetSetting<bool>( sCat[ProfileSettings.bBoxDivider], false ),
           GetSetting<string>( sCat[ProfileSettings.sHotKey], "" )
        );
     }
@@ -138,6 +144,8 @@ namespace FS20_HudBar.Config
       SetSetting<string>( sCat[ProfileSettings.sColorReg], profile.ColorReg );
       SetSetting<string>( sCat[ProfileSettings.sColorDim], profile.ColorDim );
       SetSetting<string>( sCat[ProfileSettings.sColorInv], profile.ColorInv );
+      SetSetting<bool>( sCat[ProfileSettings.bFrameItems], profile.FrameItems );
+      SetSetting<bool>( sCat[ProfileSettings.bBoxDivider], profile.BoxDivider );
       SetSetting<string>( sCat[ProfileSettings.sHotKey], profile.HKProfile );
     }
 
@@ -167,6 +175,8 @@ namespace FS20_HudBar.Config
     private string m_profileColorReg = ""; // 20240226
     private string m_profileColorDim = ""; // 20240226
     private string m_profileColorInv = ""; // 20240226
+    private bool m_frameItems = false; // 20241011
+    private bool m_boxDivider = false; // 20241011
     private string m_hkProfile = "";
 
     /// <summary>
@@ -194,10 +204,10 @@ namespace FS20_HudBar.Config
     public static readonly char DivBreakTag2 = BreakTagFromEnum( GUI.BreakType.DivBreak2 );
 
     /// <summary>
-    /// Returns the Break Tag from its Enum
+    /// Returns the Break Tag (digit character) from its Enum
     /// </summary>
     /// <param name="breakType">The BreakType Enum</param>
-    /// <returns>A Break Tag</returns>
+    /// <returns>A Break Tag character</returns>
     public static char BreakTagFromEnum( GUI.BreakType breakType )
     {
       return Convert.ToChar( Convert.ToByte( '0' ) + (byte)breakType );
@@ -318,6 +328,14 @@ namespace FS20_HudBar.Config
     /// </summary>
     public string ColorInv => m_profileColorInv;
     /// <summary>
+    /// Frame Items flag
+    /// </summary>
+    public bool FrameItems => m_frameItems;
+    /// <summary>
+    /// Box Divider Flag
+    /// </summary>
+    public bool BoxDivider => m_boxDivider;
+    /// <summary>
     /// The Profile switching hotkey as ConfigString
     /// </summary>
     public string HKProfile => m_hkProfile;
@@ -352,6 +370,7 @@ namespace FS20_HudBar.Config
         other.FontSize, other.Placement, other.Kind, other.Location, other.Condensed, other.Transparency,
         other.BgImageName, other.BgImageBorder,
         other.Fonts, other.ColorReg, other.ColorDim, other.ColorInv,
+        other.FrameItems, other.BoxDivider,
         other.HKProfile );
     }
 
@@ -372,12 +391,15 @@ namespace FS20_HudBar.Config
     /// <param name="colReg">The Color string regular</param>
     /// <param name="colDim">The Color string dimmed</param>
     /// <param name="colInv">The Color string inverser</param>
+    /// <param name="frameItems">Frame Items flag</param>
+    /// <param name="boxDivider">Box Divider flag</param>
     /// <param name="hk">The Hotkey config string</param>
     public CProfile( int pNum, string profileName,
                      string profile, string flowBreak, string sequence,
                      int fontSize, int placement, int kind, Point location, bool condensed, int transparent,
                      string bgImageName, Padding bgImageBorder,
                      string fonts, string colReg, string colDim, string colInv,
+                     bool frameItems, bool boxDivider,
                      string hk )
     {
       m_pNumber = pNum;
@@ -386,6 +408,7 @@ namespace FS20_HudBar.Config
                     location, condensed, (GUI.Transparent)transparent,
                     bgImageName, bgImageBorder,
                     fonts, colReg, colDim, colInv,
+                    frameItems, boxDivider,
                     hk );
     }
 
@@ -584,6 +607,18 @@ namespace FS20_HudBar.Config
     }
 
     /// <summary>
+    /// Set the FrameItems flag
+    /// </summary>
+    /// <param name="value">Flag</param>
+    public void SetFrameItemsFromValue(bool value )=>      m_frameItems = value;
+
+    /// <summary>
+    /// Set the BoxDivider flag
+    /// </summary>
+    /// <param name="value">Flag</param>
+    public void SetBoxDividerFromValue(bool value)=>m_boxDivider = value;
+
+    /// <summary>
     /// Update this profile from Hotkey string
     /// </summary>
     /// <param name="hk">Hotkey config string</param>
@@ -596,6 +631,7 @@ namespace FS20_HudBar.Config
                                 Point location, bool condensed, GUI.Transparent transparent,
                                 string bgImageName, Padding bgImageBorder,
                                 string fonts, string colReg, string colDim, string colInv,
+                                bool frameItems, bool boxDivider,
                                 string hk )
     {
       // save props in Profile
@@ -612,6 +648,8 @@ namespace FS20_HudBar.Config
       m_profileColorReg = colReg;
       m_profileColorDim = colDim;
       m_profileColorInv = colInv;
+      m_frameItems = frameItems;
+      m_boxDivider = boxDivider;
       m_hkProfile = hk;
 
       // The Dictionaries and stored strings of it maintain the Enum Sequence
@@ -655,11 +693,12 @@ namespace FS20_HudBar.Config
     public bool IsBreakItem( LItem item ) => m_items.FlowBreakFor( item ) == GUI.BreakType.FlowBreak;
 
     /// <summary>
-    /// Returns True for a Divider/Separator Break Type 1 OR 2
+    /// Returns True for a Divider/Separator Break Type 1 OR 2 OR GAP
     /// </summary>
     /// <param name="item">An item</param>
     /// <returns>True if it a separator is needed</returns>
-    public bool IsDivItem( LItem item ) => (m_items.FlowBreakFor( item ) == GUI.BreakType.DivBreak1) || (m_items.FlowBreakFor( item ) == GUI.BreakType.DivBreak2);
+    public bool IsDivItem( LItem item ) => (m_items.FlowBreakFor( item ) == GUI.BreakType.DivBreak1)
+      || (m_items.FlowBreakFor( item ) == GUI.BreakType.DivBreak2);
 
     /// <summary>
     /// Returns True for a Divider/Separator Break Type 1

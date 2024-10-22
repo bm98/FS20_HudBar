@@ -69,8 +69,8 @@ namespace FS20_HudBar.GUI
   {
     None = 0,
     FlowBreak = 1,
-    DivBreak1 = 2, // Type 1
-    DivBreak2 = 3, // Type 2
+    DivBreak1 = 2, // Color Line Type 1
+    DivBreak2 = 3, // Color Line Type 2
   }
 
   /// <summary>
@@ -160,7 +160,7 @@ namespace FS20_HudBar.GUI
         }
       }
       catch (Exception e) {
-        LOG.LogError( $"static cTor GUI_Fonts: Cannot create Memory Font\n{e.Message}" );
+        LOG.Error( $"static cTor GUI_Fonts: Cannot create Memory Font\n{e.Message}" );
       }
     }
 
@@ -180,7 +180,7 @@ namespace FS20_HudBar.GUI
       else {
         // get a generic font
         ret = FontFamily.GenericSansSerif;
-        LOG.LogError( $"GetFontFamily: Cannot load: {ffName} - using a generic font" );
+        LOG.Error( $"GetFontFamily: Cannot load: {ffName} - using a generic font" );
       }
       return ret;
     }
@@ -575,7 +575,7 @@ namespace FS20_HudBar.GUI
       }
       else {
         // or first start
-        LOG.Log( $"Read Font Config: did not found all entries - resetting user fonts to defaults" );
+        LOG.Info( $"Read Font Config: did not found all entries - resetting user fonts to defaults" );
         ResetUserFonts( );
       }
     }

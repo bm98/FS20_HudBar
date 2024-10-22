@@ -39,6 +39,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "Autopilot Master\nClick to toggle";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.AP;
       _label = new B_Text( item, value2Proto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += DI_Ap_ButtonClicked;

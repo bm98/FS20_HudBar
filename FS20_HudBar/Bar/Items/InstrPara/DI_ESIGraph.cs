@@ -37,6 +37,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_ESIGraph( ValueItemCat vCat, Label lblProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.GraphX2;
       var item = VItem.ATT_ANI;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _scale1 = new A_AHor( ) { Minimum = -10, Maximum = 10, ItemForeColor = cOK };

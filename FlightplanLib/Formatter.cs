@@ -19,7 +19,6 @@ using static FSimFacilityIF.Extensions;
 using FSFData;
 
 using FlightplanLib.Flightplan;
-using System.Xml.Linq;
 
 namespace FlightplanLib
 {

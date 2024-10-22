@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -57,7 +56,7 @@ namespace bm98_Html
       catch (Exception ex) {
         s_Deployment = null;
 
-        LOG.LogException( "HtmlRenderer.InitConverter", ex, "Init Converters failed" );
+        LOG.Error( "HtmlRenderer.InitConverter", ex, "Init Converters failed" );
       }
     }
 
@@ -117,11 +116,11 @@ namespace bm98_Html
             workItem.docTitle, workItem.header );     // Perform task.
 
           if (!result) {
-            LOG.LogError( "ConverterTask", $"Error failed for: {workItem.Job.ToString( )}" );
+            LOG.Error( "ConverterTask", $"Error failed for: {workItem.Job.ToString( )}" );
           }
         }
         catch (Exception ex) {
-          LOG.LogException( "ConverterTask", ex, $"Error failed for: {workItem.Job.ToString( )}" );
+          LOG.Error( "ConverterTask", ex, $"Error failed for: {workItem.Job.ToString( )}" );
         }
       }
     }
@@ -194,7 +193,7 @@ namespace bm98_Html
       }
       catch (Exception ex) {
         // may fail for missing exe files or SHA256 verification 
-        LOG.LogException( "Html2PDF.Convert", ex, "Rendering or saving to PDF failed" );
+        LOG.Error( "Html2PDF.Convert", ex, "Rendering or saving to PDF failed" );
         return false;
       }
     }

@@ -9,19 +9,21 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-using FSimFacilityIF;
-using static FSimFacilityIF.Extensions;
 using static dNetBm98.Units;
 using static dNetBm98.XString;
+
 using CoordLib;
 using CoordLib.Extensions;
+
+using FSimFacilityIF;
+using static FSimFacilityIF.Extensions;
+using FSimFlightPlans;
 using MapLib;
 
 using bm98_Map.Drawing;
 using bm98_Map.Data;
 using bm98_Map.UI;
 using bm98_VProfile;
-using FlightplanLib.Flightplan;
 
 namespace bm98_Map
 {
@@ -287,16 +289,16 @@ namespace bm98_Map
         var wypList = new List<UC_VProfile.UC_VProfilePropsRoutepoint>( );
         double dist = 0;
         // evaluate where we are within the current DispRoute
-        Waypoint nextRp = _flightPlanRef.NextRoutePoint;
+        Waypoint nextRp = _flightPlanRef.Tracker.NextRoutePoint;
         if (nextRp.IsValid) {
           // having a valid NextPoint...
           // subtract distance traveled from Prev to Next Point for the VProfile
-          dist = nextRp.InboundDistance_nm - _flightPlanRef.DistTraveled_nm;
+          dist = _flightPlanRef.Tracker.WypDistRemaining_nm;
           var nextWyp = new UC_VProfile.UC_VProfilePropsRoutepoint( ) {
-            Ident = nextRp.Ident.LeftString( 5 ),
+            Ident = nextRp.Ident7,
             Distance_nm = dist,
             TargetAlt_ft = nextRp.TargetAltitude_ft,
-            VPAltS=nextRp.VPAltitudeS,
+            VPAltS = nextRp.VPAltitudeS,
           };
           wypList.Add( nextWyp );
 
@@ -305,7 +307,7 @@ namespace bm98_Map
           while (nextRp.IsValid) {
             dist += nextRp.InboundDistance_nm;
             nextWyp = new UC_VProfile.UC_VProfilePropsRoutepoint( ) {
-              Ident = nextRp.Ident.LeftString( 5 ),
+              Ident = nextRp.Ident7,
               Distance_nm = dist,
               TargetAlt_ft = nextRp.TargetAltitude_ft,
               VPAltS = nextRp.VPAltitudeS,
@@ -403,7 +405,7 @@ namespace bm98_Map
       _airportDisplayMgr.SetFlightplan( flightplan );
 
       // Set when already selected and the selected destination
-      if (_airportRef.ICAO == flightplan.Destination.Icao_Ident.ICAO) {
+      if (_airportRef.ICAO == flightplan.Destination.Icao_Ident) {
         _flightPlanRef?.SetSelectedRunwayApproachID(
           _airportDisplayMgr.GetSelectedNavIdRunway( ),
           _airportDisplayMgr.GetSelectedNavIdRunwayApproach( )
@@ -414,9 +416,6 @@ namespace bm98_Map
       }
       // Extend route with Approach if one is selected
       _flightPlanRef?.ExtendWithApproach( _fixesRef );
-      // init route tracking from the current position
-      _flightPlanRef?.TrackAircraft( _trackedAircraft.Position );
-
       // Trigger Update the View
       _renderStaticNeeded = true;
     }
@@ -691,7 +690,7 @@ namespace bm98_Map
     {
       var iata = $"({airport.IATA})";
       lblAirport.Text = $"{airport.ICAO,-4} {iata,-6}   {airport.Name}\n"
-        + $"{Dms.ToLat( airport.Coordinate.Lat, "dm", "", 0 )} {Dms.ToLon( airport.Coordinate.Lon, "dm", "", 0 )}   {airport.Elevation_ft:####0} ft ({airport.Elevation_m:###0} m)";
+        + $"{Dms.ToLat( airport.Coordinate.Lat, "dm", '\0', 0 )} {Dms.ToLon( airport.Coordinate.Lon, "dm", '\0', 0 )}   {airport.Elevation_ft:####0} ft ({airport.Elevation_m:###0} m)";
     }
 
     #region Tower Panel

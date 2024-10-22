@@ -39,6 +39,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_VarioMCS_mps( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.MCRAD_MPS_SPD;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Speed( valueProto );

@@ -35,7 +35,7 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,3:x#0.##} " ); // x 2.2 digits
+          this.Text = UnitString( $"{value,6:x#0.##} " ); // x 2.2 digits
         }
       }
     }

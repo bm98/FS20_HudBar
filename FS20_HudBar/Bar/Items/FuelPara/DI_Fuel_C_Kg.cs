@@ -34,6 +34,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Fuel_C_Kg( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.FUEL_C_kg;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Kilograms( value2Proto );

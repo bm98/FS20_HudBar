@@ -12,7 +12,7 @@ using FS20_HudBar.GUI.Templates.Base;
 namespace FS20_HudBar.GUI.Templates
 {
   /// <summary>
-  /// Distance indicator with a directional arrow up to 99.9 shown
+  /// Distance indicator with a directional arrow up to 999.9 shown
   /// </summary>
   class V_AptDist : V_Base
   {
@@ -56,13 +56,13 @@ namespace FS20_HudBar.GUI.Templates
         else {
           float uValue = _distance_metric ? (float)Km_From_Nm( (float)value ) : (float)value;
           if (uValue < 0 ) {
-            this.Text = UnitString( $"{-uValue,4:#0.0}{c_to}" );
+            this.Text = UnitString( $"{-uValue,5:##0.0}{c_to}" );
           }
           else if (uValue > 0 ) {
-            this.Text = UnitString( $"{uValue,4:#0.0}{c_from}" );
+            this.Text = UnitString( $"{uValue,5:##0.0}{c_from}" );
           }
           else {
-            this.Text = UnitString( $"{uValue,4:#0.0}{c_flat}" );
+            this.Text = UnitString( $"{uValue,5:##0.0}{c_flat}" );
           }
         }
       }

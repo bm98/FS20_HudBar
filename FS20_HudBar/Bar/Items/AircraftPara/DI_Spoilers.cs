@@ -37,6 +37,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Spoilers( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Symbol;
       var item = VItem.SPOLIER;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += _label_ButtonClicked;

@@ -27,7 +27,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "WYP Distance nm";
+    public static readonly string Desc = "GPS WYP Distance nm";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
@@ -35,6 +35,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Gps_WP_Dist( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       var item = VItem.GPS_WP_DIST;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Dist( valueProto ) { ItemForeColor = cTxGps };
@@ -49,9 +50,15 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        var d = SV.Get<float>( SItem.fG_Gps_WYP_dist_nm );
-        _value1.Value = (d > 0) ? d : float.NaN;
-        // No SIM GPS - Flightplan active
+        if (HudBar.FlightPlanRef.Tracker.WypDistRemaining_nm > 0) {
+          // if >0 use the Tracker data (includes GPS merges)
+          _value1.Value = (float)HudBar.FlightPlanRef.Tracker.WypDistRemaining_nm;
+          _value1.ItemForeColor = cTxGps;
+        }
+        else {
+          // No Flightplan active
+          _value1.Value = null;
+        }
       }
     }
 

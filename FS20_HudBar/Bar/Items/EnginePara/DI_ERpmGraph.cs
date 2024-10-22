@@ -38,6 +38,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_ERpmGraph( ValueItemCat vCat, Label lblProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.GraphX2;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       var item = VItem.E1_RPM_ANI;
       _scale1 = new A_Scale( ) { Minimum = 0, Maximum = 110, AlertValue = 101, ItemForeColor_Alert = cAlert, ItemForeColor = cOK };

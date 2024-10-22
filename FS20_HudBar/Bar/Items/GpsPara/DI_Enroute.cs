@@ -9,6 +9,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+
 using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
@@ -37,6 +38,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "Time since last Waypoint - Time since restart\nClick to restart the Enroute timers";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.ENR_WP;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_TimeHHMMSS( value2Proto );
@@ -53,7 +55,7 @@ namespace FS20_HudBar.Bar.Items
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
     {
-      WPTracker.InitFlight( );
+      HudBar.FlightPlanRef.Tracker.InitFlight( ); // reset Time Tracking
     }
 
     /// <summary>
@@ -63,8 +65,8 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         if (SV.Get<bool>( SItem.bG_Gps_FP_tracking )) {
-          _value1.Value = WPTracker.WPTimeEnroute_sec;
-          _value2.Value = WPTracker.TimeEnroute_sec;
+          _value1.Value = HudBar.FlightPlanRef.Tracker.TimeEnrouteWYP_sec;
+          _value2.Value = HudBar.FlightPlanRef.Tracker.TimeEnroute_sec;
         }
         else {
           // No SIM GPS - Flightplan active

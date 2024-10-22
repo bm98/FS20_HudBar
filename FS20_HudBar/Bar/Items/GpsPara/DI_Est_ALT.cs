@@ -28,7 +28,7 @@ namespace FS20_HudBar.Bar.Items
     /// <summary>
     /// The Configuration Description
     /// </summary>
-    public static readonly string Desc = "Estimated ALT @WYP";
+    public static readonly string Desc = "GPS Estimated ALT @WYP";
 
     private readonly V_Base _label;
     private readonly V_Base _value1;
@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Est_ALT( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       var item = VItem.EST_ALT;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Alt( valueProto ) { ItemForeColor = cTxEst };

@@ -26,7 +26,7 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     public float? Value {
       set {
-        if ( value == null ) {
+        if (value == null) {
           base.Enabled = false;
         }
         else {
@@ -41,7 +41,7 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     public float? ValueLScale {
       set {
-        if ( value == null ) {
+        if (value == null) {
           base.Enabled = false;
         }
         else {
@@ -147,6 +147,7 @@ namespace FS20_HudBar.GUI.Templates
       Cursor = Cursors.Default;                 // avoid the movement cross on the item controls
       Text = ""; // there is no Text supported
       BorderStyle = BorderStyle.FixedSingle; // Else the Graph is 'homeless'
+      Margin = new Padding( 0, 0, 3, 0 ); // right only
 
       GUI_Colors.Register( this );
 

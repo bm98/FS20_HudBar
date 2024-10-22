@@ -126,12 +126,10 @@ namespace FShelf
       this.txAiFilter = new System.Windows.Forms.TextBox();
       this.cbxCfgShowOtherAcft = new System.Windows.Forms.CheckBox();
       this.cbxCfgAcftWind = new System.Windows.Forms.CheckBox();
-      this.btCfgRequestFLT = new System.Windows.Forms.Button();
       this.btCfgMsSelectPlan = new System.Windows.Forms.Button();
-      this.lblCfgMsPlanData = new System.Windows.Forms.Label();
       this.btCfgMsLoadPlan = new System.Windows.Forms.Button();
       this.label29 = new System.Windows.Forms.Label();
-      this.lblCfgSbPlanData = new System.Windows.Forms.Label();
+      this.lblCfgPlanMessage = new System.Windows.Forms.Label();
       this.btCfgSbLoadPlan = new System.Windows.Forms.Button();
       this.label25 = new System.Windows.Forms.Label();
       this.txCfgSbPilotID = new System.Windows.Forms.TextBox();
@@ -395,7 +393,7 @@ namespace FShelf
       this.aMap.ShowMapGrid = false;
       this.aMap.ShowNavaids = false;
       this.aMap.ShowOtherAircrafts = bm98_Map.AcftAiDisplayMode.None;
-      this.aMap.ShowOtherAircraftsEnabled = true;
+      this.aMap.ShowOtherAircraftsEnabled = false;
       this.aMap.ShowRoute = false;
       this.aMap.ShowTrackedAircraft = false;
       this.aMap.ShowVFRMarks = false;
@@ -1328,12 +1326,10 @@ namespace FShelf
       this.tabConfig.Controls.Add(this.txAiFilter);
       this.tabConfig.Controls.Add(this.cbxCfgShowOtherAcft);
       this.tabConfig.Controls.Add(this.cbxCfgAcftWind);
-      this.tabConfig.Controls.Add(this.btCfgRequestFLT);
       this.tabConfig.Controls.Add(this.btCfgMsSelectPlan);
-      this.tabConfig.Controls.Add(this.lblCfgMsPlanData);
       this.tabConfig.Controls.Add(this.btCfgMsLoadPlan);
       this.tabConfig.Controls.Add(this.label29);
-      this.tabConfig.Controls.Add(this.lblCfgSbPlanData);
+      this.tabConfig.Controls.Add(this.lblCfgPlanMessage);
       this.tabConfig.Controls.Add(this.btCfgSbLoadPlan);
       this.tabConfig.Controls.Add(this.label25);
       this.tabConfig.Controls.Add(this.txCfgSbPilotID);
@@ -1406,17 +1402,6 @@ namespace FShelf
       this.cbxCfgAcftWind.Text = "Show Wind arrow";
       this.cbxCfgAcftWind.UseVisualStyleBackColor = true;
       // 
-      // btCfgRequestFLT
-      // 
-      this.btCfgRequestFLT.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCfgRequestFLT.Location = new System.Drawing.Point(125, 460);
-      this.btCfgRequestFLT.Name = "btCfgRequestFLT";
-      this.btCfgRequestFLT.Size = new System.Drawing.Size(96, 46);
-      this.btCfgRequestFLT.TabIndex = 31;
-      this.btCfgRequestFLT.Text = "Request Plan Download";
-      this.btCfgRequestFLT.UseVisualStyleBackColor = true;
-      this.btCfgRequestFLT.Click += new System.EventHandler(this.btCfgRequestFLT_Click);
-      // 
       // btCfgMsSelectPlan
       // 
       this.btCfgMsSelectPlan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1428,24 +1413,14 @@ namespace FShelf
       this.btCfgMsSelectPlan.UseVisualStyleBackColor = true;
       this.btCfgMsSelectPlan.Click += new System.EventHandler(this.btCfgMsSelectPlan_Click);
       // 
-      // lblCfgMsPlanData
-      // 
-      this.lblCfgMsPlanData.AutoSize = true;
-      this.lblCfgMsPlanData.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblCfgMsPlanData.Location = new System.Drawing.Point(329, 474);
-      this.lblCfgMsPlanData.Name = "lblCfgMsPlanData";
-      this.lblCfgMsPlanData.Size = new System.Drawing.Size(17, 17);
-      this.lblCfgMsPlanData.TabIndex = 29;
-      this.lblCfgMsPlanData.Text = "...";
-      // 
       // btCfgMsLoadPlan
       // 
       this.btCfgMsLoadPlan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btCfgMsLoadPlan.Location = new System.Drawing.Point(227, 460);
+      this.btCfgMsLoadPlan.Location = new System.Drawing.Point(126, 460);
       this.btCfgMsLoadPlan.Name = "btCfgMsLoadPlan";
       this.btCfgMsLoadPlan.Size = new System.Drawing.Size(96, 46);
       this.btCfgMsLoadPlan.TabIndex = 27;
-      this.btCfgMsLoadPlan.Text = "Load Default Plan";
+      this.btCfgMsLoadPlan.Text = "Load Default SIM Plan";
       this.btCfgMsLoadPlan.UseVisualStyleBackColor = true;
       this.btCfgMsLoadPlan.Click += new System.EventHandler(this.btCfgMsLoadPlan_Click);
       // 
@@ -1460,15 +1435,15 @@ namespace FShelf
       this.label29.TabIndex = 26;
       this.label29.Text = "MSFS Flightplan:";
       // 
-      // lblCfgSbPlanData
+      // lblCfgPlanMessage
       // 
-      this.lblCfgSbPlanData.AutoSize = true;
-      this.lblCfgSbPlanData.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.lblCfgSbPlanData.Location = new System.Drawing.Point(329, 394);
-      this.lblCfgSbPlanData.Name = "lblCfgSbPlanData";
-      this.lblCfgSbPlanData.Size = new System.Drawing.Size(17, 17);
-      this.lblCfgSbPlanData.TabIndex = 25;
-      this.lblCfgSbPlanData.Text = "...";
+      this.lblCfgPlanMessage.AutoSize = true;
+      this.lblCfgPlanMessage.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblCfgPlanMessage.Location = new System.Drawing.Point(228, 460);
+      this.lblCfgPlanMessage.Name = "lblCfgPlanMessage";
+      this.lblCfgPlanMessage.Size = new System.Drawing.Size(17, 17);
+      this.lblCfgPlanMessage.TabIndex = 25;
+      this.lblCfgPlanMessage.Text = "...";
       // 
       // btCfgSbLoadPlan
       // 
@@ -1477,7 +1452,7 @@ namespace FShelf
       this.btCfgSbLoadPlan.Name = "btCfgSbLoadPlan";
       this.btCfgSbLoadPlan.Size = new System.Drawing.Size(96, 46);
       this.btCfgSbLoadPlan.TabIndex = 23;
-      this.btCfgSbLoadPlan.Text = "Load Default Plan";
+      this.btCfgSbLoadPlan.Text = "Load Default SB Plan";
       this.btCfgSbLoadPlan.UseVisualStyleBackColor = true;
       this.btCfgSbLoadPlan.Click += new System.EventHandler(this.btCfgSbLoadPlan_Click);
       // 
@@ -1901,13 +1876,11 @@ namespace FShelf
     private System.Windows.Forms.TextBox txCfgSbPilotID;
     private System.Windows.Forms.Label label22;
     private System.Windows.Forms.Button btCfgSbLoadPlan;
-    private System.Windows.Forms.Label lblCfgSbPlanData;
-    private System.Windows.Forms.Label lblCfgMsPlanData;
+    private System.Windows.Forms.Label lblCfgPlanMessage;
     private System.Windows.Forms.Button btCfgMsLoadPlan;
     private System.Windows.Forms.Label label29;
     private System.Windows.Forms.Button btCfgMsSelectPlan;
     private System.Windows.Forms.OpenFileDialog OFD;
-    private System.Windows.Forms.Button btCfgRequestFLT;
     private System.Windows.Forms.CheckBox cbxCfgAcftWind;
     private System.Windows.Forms.TabPage tabEnergy;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;

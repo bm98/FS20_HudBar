@@ -45,6 +45,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "Auto Brake\nClick to toggle";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       _label = new V_Text( lblProto ) { Text = Short }; this.AddItem( _label );
 
       var item = VItem.AP_ABRK_armed;

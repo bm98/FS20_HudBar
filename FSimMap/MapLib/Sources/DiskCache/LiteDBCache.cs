@@ -163,7 +163,7 @@ namespace MapLib.Sources.DiskCache
     public bool PutImageToCache( byte[] cacheData, MapProvider mapProvider, TileXY tileXY, ushort zoom )
     {
       if (cacheData == null) {
-        LOG.Log( "DBLite-PutImageToCache", $"Tile with Null Data received - ignored" );
+        LOG.Info( "DBLite-PutImageToCache", $"Tile with Null Data received - ignored" );
         return false;
       }
       // using the string representation within the LiteDB 
@@ -184,7 +184,7 @@ namespace MapLib.Sources.DiskCache
         return true;
       }
       catch (Exception ex) {
-        LOG.LogException( "DBLite-PutImageToCache", ex, $"Exception while caching ({Tools.ToFullKey( mapProvider, tileXY, zoom )})" );
+        LOG.Error( "DBLite-PutImageToCache", ex, $"Exception while caching ({Tools.ToFullKey( mapProvider, tileXY, zoom )})" );
       }
       return false;
     }
@@ -230,7 +230,7 @@ namespace MapLib.Sources.DiskCache
         }
       }
       catch (Exception ex) {
-        LOG.LogException( "DBLite-PutImageToCache", ex, $"Exception while retrieving ({Tools.ToFullKey( mapProvider, tileXY, zoom )})" );
+        LOG.Error( "DBLite-PutImageToCache", ex, $"Exception while retrieving ({Tools.ToFullKey( mapProvider, tileXY, zoom )})" );
         mapImage = null;
       }
       return mapImage;
@@ -256,10 +256,10 @@ namespace MapLib.Sources.DiskCache
           var col = db.GetCollection<CacheTileDbRecord>( CacheTileDbRecord.CollectionName );
           result = col.DeleteMany( x => x.StoreTime < date );
         }
-        LOG.Log( "DBLite-DeleteOlderThan", $"Deleted {result} records" );
+        LOG.Info( "DBLite-DeleteOlderThan", $"Deleted {result} records" );
       }
       catch (Exception ex) {
-        LOG.LogException( "DBLite-DeleteOlderThan", ex, "Failed" );
+        LOG.Error( "DBLite-DeleteOlderThan", ex, "Failed" );
         result = 0;
       }
       return result;
@@ -288,10 +288,10 @@ namespace MapLib.Sources.DiskCache
             result = col.DeleteMany( x => q.Contains( x ) );
           }
         }
-        LOG.Log( "DBLite-DeleteByMaxRecNumber", $"Deleted {result} records" );
+        LOG.Info( "DBLite-DeleteByMaxRecNumber", $"Deleted {result} records" );
       }
       catch (Exception ex) {
-        LOG.LogException( "DBLite-DeleteByMaxRecNumber", ex, "Failed" );
+        LOG.Error( "DBLite-DeleteByMaxRecNumber", ex, "Failed" );
         result = 0;
       }
       return result;

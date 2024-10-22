@@ -137,7 +137,7 @@ namespace bm98_Map.Drawing
     private void OnLoadComplete( LoadCompleteEventArgs eventArgs )
     {
       if (LoadComplete == null)
-        LOG.LogError( "VPort2.OnLoadComplete", "NO EVENT RECEIVERS HAVE REGISTERED" );
+        LOG.Error( "VPort2.OnLoadComplete", "NO EVENT RECEIVERS HAVE REGISTERED" );
       LoadComplete?.Invoke( this, eventArgs );
     }
 
@@ -419,7 +419,7 @@ namespace bm98_Map.Drawing
       if (e.MatrixComplete) {
         // complete but may have failed tiles
         if (_tileMatrix.HasFailedTiles) {
-          LOG.Log( "VPort2._tileMatrix_LoadComplete", "HasFaileTiles - about to reload failed ones" );
+          LOG.Info( "VPort2._tileMatrix_LoadComplete", "HasFaileTiles - about to reload failed ones" );
           _tileMatrix.LoadFailedTiles( );
         }
         // need to render the map with new content
@@ -430,7 +430,7 @@ namespace bm98_Map.Drawing
         // not yet complete
         if (e.LoadFailed) {
           // Single tile load failed
-          LOG.Log( "VPort2._tileMatrix_LoadComplete", "LoadFailed" );
+          LOG.Info( "VPort2._tileMatrix_LoadComplete", "LoadFailed" );
           OnLoadComplete( e ); // is reported
         }
         else {

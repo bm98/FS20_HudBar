@@ -426,12 +426,12 @@ namespace MapLib.Sources.Providers
       }
       catch (Exception ex) {
         if ((ex is WebException) && (ex as WebException).Status == WebExceptionStatus.Timeout) {
-          LOG.Log( "MapProviderBase.GetTileImageUsingHttp", "WebExceptionStatus Timeout" );
+          LOG.Info( "MapProviderBase.GetTileImageUsingHttp", "WebExceptionStatus Timeout" );
           retry = true; // can retry on timeout
         }
         else if ((ex is WebException) && (ex as WebException).Status == WebExceptionStatus.ProtocolError) {
           var status = ((HttpWebResponse)(ex as WebException).Response).StatusCode;
-          LOG.Log( "MapProviderBase.GetTileImageUsingHttp", $"HttpWebResponse Status: {status} ({(int)status})" );
+          LOG.Info( "MapProviderBase.GetTileImageUsingHttp", $"HttpWebResponse Status: {status} ({(int)status})" );
           if ((status == HttpStatusCode.GatewayTimeout) || (status == HttpStatusCode.RequestTimeout)) {
             retry = true;
           }
@@ -439,17 +439,17 @@ namespace MapLib.Sources.Providers
         else if ((ex is WebException) && ((int)((HttpWebResponse)(ex as WebException).Response).StatusCode == 418)) {
           // seems OSM responds with the teapot code when blocking...
           var status = ((HttpWebResponse)(ex as WebException).Response).StatusCode;
-          LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", $"HttpWebResponse Status: {status} ({(int)status})" );
+          LOG.Error( "MapProviderBase.GetTileImageUsingHttp", $"HttpWebResponse Status: {status} ({(int)status})" );
           retry = false; // never retry
         }
         else if (ex is HttpRequestException) {
           // EnsureSuccessStatusCode throws - response code is not in 200-299
           // likely 404 or similar - provider does not have this tile or can/will not reply
-          LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", $"HttpRequestException: {ex.Message}" );
+          LOG.Error( "MapProviderBase.GetTileImageUsingHttp", $"HttpRequestException: {ex.Message}" );
           retry = false; // never retry
         }
         else {
-          LOG.LogError( "MapProviderBase.GetTileImageUsingHttp", $"Response Exception:\n{ex}\nURL:${url}" );
+          LOG.Error( "MapProviderBase.GetTileImageUsingHttp", $"Response Exception:\n{ex}\nURL:${url}" );
           retry = false; // never retry
         }
       }

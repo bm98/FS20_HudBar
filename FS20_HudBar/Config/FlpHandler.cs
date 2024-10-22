@@ -433,7 +433,7 @@ namespace FS20_HudBar.Config
         }
         else if ((char)cb.Tag == DivBreakTag2) {
           // change to none
-          cb.BackColor = GUI.GUI_Colors.c_NBCol; // m_flp.BackColor;
+          cb.BackColor = GUI.GUI_Colors.c_NBCol;
           cb.Tag = NoBreakTag;
         }
         else {

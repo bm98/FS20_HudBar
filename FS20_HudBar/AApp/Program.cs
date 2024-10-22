@@ -32,7 +32,7 @@ namespace FS20_HudBar
         Instance = cl[1];
       }
 
-      LOG.Log( $"Program Start with Instance ({Instance})" );
+      LOG.Info( $"Program Start with Instance ({Instance})" );
 #if DEBUG
       // TODO REMOVE FOR FINAL TEST AND RELEASE
       // Init the Folders Utility with our AppSettings File
@@ -48,7 +48,7 @@ namespace FS20_HudBar
 
       // check if never used and Upgrade if needed
       if (v2Used) {
-        LOG.Log( $"AppSettings V2 is used for Instance ({Instance})" );
+        LOG.Info( $"AppSettings V2 is used for Instance ({Instance})" );
       }
       else {
         // Init V1 settings with Instance
@@ -57,10 +57,10 @@ namespace FS20_HudBar
 
         var testLoc = AppSettings.Instance.FormLocation;
         if (testLoc.X == 10 && testLoc.Y == 10) {
-          LOG.Log( $"AppSettings V1 is not used for Instance ({Instance})" );
+          LOG.Info( $"AppSettings V1 is not used for Instance ({Instance})" );
         }
         // in any case Upgrade - else the V2Used flag will not be set
-        LOG.Log( $"Upgrading/Init AppSettings to V2 for Instance ({Instance})" );
+        LOG.Info( $"Upgrading/Init AppSettings to V2 for Instance ({Instance})" );
         AppSettingsUpgrade.UpgradeSettings( );
       }
 

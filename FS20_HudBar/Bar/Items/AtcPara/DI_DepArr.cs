@@ -39,6 +39,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_DepArr( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.DEPARR_DEP;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _label.Cursor = Cursors.Hand;
@@ -61,10 +62,10 @@ namespace FS20_HudBar.Bar.Items
 
       var TTX = new Config.frmApt( );
       // load default
-      if (AtcFltPlanMgr.AtcFlightPlan.HasFlightPlan) {
+      if (HudBar.FlightPlanRef.IsValid) {
         // dest from FPLan
-        TTX.DepAptICAO = AtcFltPlanMgr.AtcFlightPlan.Departure;
-        TTX.ArrAptICAO = AtcFltPlanMgr.AtcFlightPlan.Destination;
+        TTX.DepAptICAO = HudBar.FlightPlanRef.Origin.Icao_Ident;
+        TTX.ArrAptICAO = HudBar.FlightPlanRef.Destination.Icao_Ident;
       }
       else {
         // no Flightplan
@@ -91,9 +92,9 @@ namespace FS20_HudBar.Bar.Items
         // Update DEP
         if (string.IsNullOrWhiteSpace( TTX.DepAptICAO )) {
           // empty entry to clear
-          if (AtcFltPlanMgr.AtcFlightPlan.HasFlightPlan) {
-            // update with FP destination
-            AirportMgr.UpdateDep( AtcFltPlanMgr.AtcFlightPlan.Departure );
+          if (HudBar.FlightPlanRef.IsValid) {
+            // update with FP origin
+            AirportMgr.UpdateDep( HudBar.FlightPlanRef.Origin.Icao_Ident );
           }
           else {
             // clear with N.A. airport
@@ -107,9 +108,9 @@ namespace FS20_HudBar.Bar.Items
         // Update ARR
         if (string.IsNullOrWhiteSpace( TTX.ArrAptICAO )) {
           // empty entry to clear
-          if (AtcFltPlanMgr.AtcFlightPlan.HasFlightPlan) {
+          if (HudBar.FlightPlanRef.IsValid) {
             // update with FP destination
-            AirportMgr.UpdateArr( AtcFltPlanMgr.AtcFlightPlan.Destination );
+            AirportMgr.UpdateArr( HudBar.FlightPlanRef.Destination.Icao_Ident );
           }
           else {
             // clear with N.A. airport

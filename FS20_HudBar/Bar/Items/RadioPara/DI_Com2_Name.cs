@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Com2_Name( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.COM2_TYPE;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_ICAO_L( value2Proto ) { ItemForeColor = cTxInfo };
@@ -53,10 +54,20 @@ namespace FS20_HudBar.Bar.Items
     /// </summary>
     private void OnDataArrival( string dataRefName )
     {
-      if ( this.Visible ) {
+      if (this.Visible) {
         // seems that if no station is tuned in the reply is Type= ACTIVE, Id= COM
-        _value1.Text = SV.Get<string>( SItem.sG_Com_2_type );
-        _value2.Text = (SV.Get<string>( SItem.sG_Com_2_id ) == "COM") ? "..." : SV.Get<string>( SItem.sG_Com_2_id );
+        if (SV.Get<bool>( SItem.bG_Com_2_available )) {
+          _value1.Text = SV.Get<string>( SItem.sG_Com_2_type );
+          _value1.ItemForeColor = cTxInfo;
+          _value2.Text = SV.Get<string>( SItem.sG_Com_2_id );
+          _value2.ItemForeColor = SV.Get<bool>( SItem.bGS_Com_2_Tx_active ) ? cTxNav : cTxInfo;
+        }
+        else {
+          _value1.Text = "n.a.   ";
+          _value1.ItemForeColor = cTxDim;
+          _value2.Text = "       ";
+          _value2.ItemForeColor = cTxDim;
+        }
       }
     }
 

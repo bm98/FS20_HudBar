@@ -46,7 +46,7 @@ namespace MapLib.Tiles
     {
       //  Debug.WriteLine( $"{DateTime.Now.Ticks} MapTile.OnLoadComplete- Key: <{FullKey}> Failed: {failed}" );
       if (LoadComplete == null)
-        LOG.LogError( "MapTile.OnLoadComplete", "NO EVENT RECEIVERS HAVE REGISTERED" );
+        LOG.Error( "MapTile.OnLoadComplete", "NO EVENT RECEIVERS HAVE REGISTERED" );
 
       LoadComplete?.Invoke( this, new LoadCompleteEventArgs( tileKey, trackKey, failed, false ) ); // Tile cannot make the Matrix complete
     }
@@ -250,7 +250,7 @@ namespace MapLib.Tiles
     public void Configure( ushort zoomLevel, MapProvider provider, int version, EventHandler<LoadCompleteEventArgs> loadCompleteHandler )
     {
       if (provider == MapProvider.DummyProvider) {
-        LOG.LogError( "MapTile.Configure", "ERROR Invalid MapProvider" );
+        LOG.Error( "MapTile.Configure", "ERROR Invalid MapProvider" );
         throw new ArgumentException( "Invalid MapProvider" ); // cannot
       }
 
@@ -272,7 +272,7 @@ namespace MapLib.Tiles
       if (LoadingStatus == ImageLoadingStatus.Loading) {
         // the Tile is currently loading from a prev call
         // wait until this one has finished before loading a new one
-        LOG.Log( "MapTile.LoadTile", $"Busy Tile {TrackKey}" );
+        LOG.Info( "MapTile.LoadTile", $"Busy Tile {TrackKey}" );
         return false;// cannot load when loading
       }
       _providerInstance = Sources.Providers.MapProviderBase.GetProviderInstance( MapProvider );
@@ -297,10 +297,10 @@ namespace MapLib.Tiles
         LoadingStatus = ImageLoadingStatus.LoadFailed;
         // could not add tracking ??
         if (trackingList.ContainsKey( TrackKey )) {
-          LOG.LogError( "MapTile.LoadTile", $"_trackingList.TryAdd FAILED for {TrackKey} - Key exists" );
+          LOG.Error( "MapTile.LoadTile", $"_trackingList.TryAdd FAILED for {TrackKey} - Key exists" );
         }
         else {
-          LOG.LogError( "MapTile.LoadTile", $"_trackingList.TryAdd FAILED for {TrackKey} - Locked ??" );
+          LOG.Error( "MapTile.LoadTile", $"_trackingList.TryAdd FAILED for {TrackKey} - Locked ??" );
         }
 
       }
@@ -382,7 +382,7 @@ namespace MapLib.Tiles
       }
 
       // failed case
-      LOG.LogError( "MapTile.OnDone", $"Could not get the image: {TrackKey}" );
+      LOG.Error( "MapTile.OnDone", $"Could not get the image: {TrackKey}" );
       LoadingStatus = ImageLoadingStatus.LoadFailed;
       OnLoadComplete( FullKey, TrackKey, true );
     }

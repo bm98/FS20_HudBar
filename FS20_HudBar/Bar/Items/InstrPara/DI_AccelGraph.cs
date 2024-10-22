@@ -35,6 +35,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_AccelGraph( ValueItemCat vCat, Label lblProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.GraphX1;
       var item = VItem.ACCEL_ANI;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       // min/max: 1 g ~ 32 ft/sec2 - we use +- 1/4 g for now..

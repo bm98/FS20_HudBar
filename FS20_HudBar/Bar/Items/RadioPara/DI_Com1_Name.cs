@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Com1_Name( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.COM1_TYPE;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_ICAO_L( value2Proto ) { ItemForeColor = cTxInfo };
@@ -56,7 +57,8 @@ namespace FS20_HudBar.Bar.Items
       if (this.Visible) {
         // seems that if no station is tuned in the reply is Type= ACTIVE, Id= COM
         _value1.Text = SV.Get<string>( SItem.sG_Com_1_type );
-        _value2.Text = (SV.Get<string>( SItem.sG_Com_1_id ) == "COM") ? "..." : SV.Get<string>( SItem.sG_Com_1_id );
+        _value2.Text = SV.Get<string>( SItem.sG_Com_1_id );
+        _value2.ItemForeColor = SV.Get<bool>( SItem.bGS_Com_1_Tx_active ) ? cTxNav : cTxInfo;
       }
     }
 

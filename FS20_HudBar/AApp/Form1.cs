@@ -24,6 +24,7 @@ using FS20_HudBar.GUI;
 using FSimClientIF.Modules;
 using bm98_hbFolders;
 using FShelf;
+using FSimClientIF;
 
 namespace FS20_HudBar
 {
@@ -88,13 +89,13 @@ namespace FS20_HudBar
     private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
 
     // The Flightbag
-    private FShelf.frmShelf m_shelf;
+    private FShelf.frmShelf _Shelf;
 
     // Camera Selector
-    private FCamControl.frmCameraV2 m_camera;
+    private FCamControl.frmCameraV2 _Camera;
 
     // Checklist Box
-    private FChecklistBox.frmChecklistBox m_checklistBox;
+    private FChecklistBox.frmChecklistBox _ChecklistBox;
 
     // Configuration Dialog
     //    private readonly frmConfig CFG = new frmConfig( );
@@ -102,22 +103,6 @@ namespace FS20_HudBar
 
     // need to stop processing while reconfiguring the bar
     private bool m_initDone = false;
-
-    /// <summary>
-    /// Checks if a Point is visible on any screen
-    /// </summary>
-    /// <param name="point">The Location to check</param>
-    /// <returns>True if visible</returns>
-    private static bool IsOnScreen( Point point )
-    {
-      Screen[] screens = Screen.AllScreens;
-      foreach (Screen screen in screens) {
-        if (screen.WorkingArea.Contains( point )) {
-          return true;
-        }
-      }
-      return false;
-    }
 
     #region IColorType Interface
     public void UpdateColor( )
@@ -148,7 +133,7 @@ namespace FS20_HudBar
           AppSettings.Instance.CameraSlotFolder4,
           AppSettings.Instance.CameraSlotFolder5
           };
-        m_camera.UpdateSettings( settings );
+        _Camera.UpdateSettings( settings );
         AppSettings.Instance.CameraSlotFolder0 = "UPGRADED";
         AppSettings.Instance.Save( );
       }
@@ -160,7 +145,7 @@ namespace FS20_HudBar
 
       if (AppSettings.Instance.ShelfFolder != "UPGRADED") {
         string settings = AppSettings.Instance.ShelfFolder;
-        m_shelf.UpdateSettings( settings );
+        _Shelf.UpdateSettings( settings );
         AppSettings.Instance.ShelfFolder = "UPGRADED";
         AppSettings.Instance.Save( );
       }
@@ -530,7 +515,7 @@ namespace FS20_HudBar
       var AS = AppSettingsV2.Instance;
 
       AS.Reload( );
-      LOG.Log( "frmMain", "Load Configuration" );
+      LOG.Info( "frmMain", "Load Configuration" );
       m_config = Configuration.GetFromSettings( );
 
       // last from Setting
@@ -542,7 +527,7 @@ namespace FS20_HudBar
       // collect the Menus for the profiles
       m_profileMenu = new ToolStripMenuItem[] { mP1, mP2, mP3, mP4, mP5, mP6, mP7, mP8, mP9, mP10 };
 
-      LOG.Log( "frmMain", "Load Colors" );
+      LOG.Info( "frmMain", "Load Colors" );
       Colorset = ToColorSet( AS.Appearance );
 
       mAltMetric.CheckState = AS.Altitude_Metric ? CheckState.Checked : CheckState.Unchecked;
@@ -571,7 +556,7 @@ namespace FS20_HudBar
       }
 
       // ShowUnits and Opacity are set via HUD in InitGUI
-      LOG.Log( "frmMain", "Load GUI Forms" );
+      LOG.Info( "frmMain", "Load GUI Forms" );
       m_frmGui = new frmGui {
         AutoSize = true // Allow the GUIform to AutoSize (the one containing the FlowPanel)
       };
@@ -592,34 +577,34 @@ namespace FS20_HudBar
 #endif
 
       // SimConnect
-      LOG.Log( "frmMain", "Load SimConnectAdapter" );
+      LOG.Info( "frmMain", "Load SimConnectAdapter" );
       SCAdapter = new SCClient( );
       SCAdapter.Connected += SCAdapter_Connected;
       SCAdapter.Establishing += SCAdapter_Establishing;
       SCAdapter.Disconnected += SCAdapter_Disconnected;
 
+      // Setup the Shelf
+      LOG.Info( "frmMain", "Load Shelf" );
+      _Shelf = new FShelf.frmShelf( Program.Instance );
+      _Shelf.FlightPlanLoadedByUser += M_shelf_FlightPlanLoadedByUser; // attach FPlan loading event
+      UpdateShelfSettings( ); // needed for transition to new AppSettings concept
+
       // Setup the Camera
-      LOG.Log( "frmMain", "Load Camera" );
-      m_camera = new FCamControl.frmCameraV2( Program.Instance );
+      LOG.Info( "frmMain", "Load Camera" );
+      _Camera = new FCamControl.frmCameraV2( Program.Instance );
       UpdateCamSettings( ); // needed for transition to new AppSettings concept
 
       // Setup the Checklist Box
-      LOG.Log( "frmMain", "Load Checklist Box" );
-      m_checklistBox = new FChecklistBox.frmChecklistBox( Program.Instance );
+      LOG.Info( "frmMain", "Load Checklist Box" );
+      _ChecklistBox = new FChecklistBox.frmChecklistBox( Program.Instance );
       UpdateCheckListBoxSettings( ); // needed for transition to new AppSettings concept
 
-      // Setup the Shelf
-      LOG.Log( "frmMain", "Load Shelf" );
-      m_shelf = new FShelf.frmShelf( Program.Instance );
-      m_shelf.FlightPlanLoadedByUser += M_shelf_FlightPlanLoadedByUser; // attach FPlan loading event
-      UpdateShelfSettings( ); // needed for transition to new AppSettings concept
-
-      LOG.Log( "frmMain", "Init Form Done" );
+      LOG.Info( "frmMain", "Init Form Done" );
     }
 
     private void frmMain_Load( object sender, EventArgs e )
     {
-      LOG.Log( $"frmMain_Load", "Start" );
+      LOG.Info( "frmMain_Load", "Start" );
       // The FlowPanel in Design is not docked - do it here
       flp.Dock = DockStyle.Fill;
       flp.WrapContents = true; // Needs to wrap around for the FlowBreaks
@@ -644,15 +629,14 @@ namespace FS20_HudBar
 
       // attach a Callback for the SimClient
       SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
-      AtcFltPlanMgr.Enabled = false; // start disabled, will be re-checked in InitGUI
       // Layout may need to update when the Aircraft changes (due to Engine Count)
       SC.SimConnectClient.Instance.AircraftChange += Instance_AircraftChange;
 
       // Get the controls the first time from Config
       InitGUI( );
-      WPTracker.Reset( );
+      _Shelf.FlightPlanRef.Tracker.ResetWYP( ); // TODO check if needed
 
-      LOG.Log( $"frmMain_Load", "Connect to SimConnectAdapter" );
+      LOG.Info( "frmMain_Load", "Connect to SimConnectAdapter" );
       // SimConnect
       SCAdapter.Connect( );
       // Init Landing Performance Tracker
@@ -662,7 +646,7 @@ namespace FS20_HudBar
       timer1.Interval = 5000; // try to connect in 5 sec intervals
       timer1.Enabled = true;
 
-      LOG.Log( $"frmMain_Load", "End" );
+      LOG.Info( "frmMain_Load", "End" );
     }
 
     // Layout may need to update when the Aircraft changes (due to Engine Count)
@@ -721,12 +705,12 @@ namespace FS20_HudBar
     // Fired when about to Close, Cleanup
     private void frmMain_FormClosing( object sender, FormClosingEventArgs e )
     {
-      LOG.Log( $"frmMain_FormClosing", "Start" );
+      LOG.Info( "frmMain_FormClosing", "Start" );
 
       // Properly close to handle the cleanup
-      m_camera?.Close( );
-      m_checklistBox?.Close( );
-      m_shelf?.Close( );
+      _Camera?.Close( );
+      _ChecklistBox?.Close( );
+      _Shelf?.Close( );
 
       // Save all Settings
       Configuration.SaveToSettings( m_config );
@@ -750,7 +734,7 @@ namespace FS20_HudBar
         SCAdapter.Disconnect( );// close the connection
                                 //        SC.SimConnectClient.Instance.Disconnect( );
       }
-      LOG.Log( $"frmMain_FormClosing", "End" );
+      LOG.Info( "frmMain_FormClosing", "End" );
 
     }
 
@@ -775,7 +759,7 @@ namespace FS20_HudBar
     private void M_shelf_FlightPlanLoadedByUser( object sender, EventArgs e )
     {
       // update from shelf
-      HudBar.UpdateUserFlightplan( m_shelf.FlightPlanRef );
+      HudBar.UpdateFlightplanReference( _Shelf.FlightPlanRef );
     }
 
 
@@ -812,12 +796,12 @@ namespace FS20_HudBar
     // Menu Config Event
     private void mConfig_Click( object sender, EventArgs e )
     {
-      LOG.Log( $"mConfig_Click", "Start" );
+      LOG.Info( $"mConfig_Click", "Start" );
 
       // don't handle timer while in Config
       timer1.Enabled = false;
       // hide the Shelf while in config
-      m_shelf.Hide( );
+      _Shelf.Hide( );
 
       // Kill any Pings in Config - will restablish after getting back
       var muted = HudBar.PingLoop.Mute;
@@ -829,7 +813,7 @@ namespace FS20_HudBar
 
       // Show and see if the user Accepts the changes
       if (CFG.ShowDialog( this ) == DialogResult.OK) {
-        LOG.Log( $"mConfig_Click", "Dialog OK" );
+        LOG.Info( $"mConfig_Click", "Dialog OK" );
         // Get changes done while Config was open
         m_config = CFG.ConfigCopy.Clone( );
         // Then save all configuration settings
@@ -846,7 +830,7 @@ namespace FS20_HudBar
       // pacer is finally back
       timer1.Enabled = true;
 
-      LOG.Log( $"mConfig_Click", "End" );
+      LOG.Info( $"mConfig_Click", "End" );
     }
 
     #endregion
@@ -956,15 +940,15 @@ namespace FS20_HudBar
 
     private void mShelf_Click( object sender, EventArgs e )
     {
-      if (m_shelf == null) return; // sanity check 
+      if (_Shelf == null) return; // sanity check 
 
-      if (m_shelf.Visible) {
-        m_shelf.TopMost = false;
-        m_shelf.Hide( );
+      if (_Shelf.Visible) {
+        _Shelf.TopMost = false;
+        _Shelf.Hide( );
       }
       else {
-        m_shelf.TopMost = true;
-        m_shelf.Show( );
+        _Shelf.TopMost = true;
+        _Shelf.Show( );
       }
     }
 
@@ -975,15 +959,15 @@ namespace FS20_HudBar
     private void mCamera_Click( object sender, EventArgs e )
     {
       // sanity check 
-      if (m_camera == null) return;
+      if (_Camera == null) return;
 
-      if (m_camera.Visible) {
-        m_camera.TopMost = false;
-        m_camera.Hide( );
+      if (_Camera.Visible) {
+        _Camera.TopMost = false;
+        _Camera.Hide( );
       }
       else {
-        m_camera.TopMost = true;
-        m_camera.Show( );
+        _Camera.TopMost = true;
+        _Camera.Show( );
       }
     }
 
@@ -994,7 +978,7 @@ namespace FS20_HudBar
     private void mManBackup_Click( object sender, EventArgs e )
     {
       if (SC.SimConnectClient.Instance.IsConnected) {
-        SC.SimConnectClient.Instance.FlightPlanModule.RequestFlightBackup( );
+        SC.SimConnectClient.Instance.FltFileModule.RequestFlightBackup( );
       }
     }
 
@@ -1016,15 +1000,15 @@ namespace FS20_HudBar
     private void mChecklistBox_Click( object sender, EventArgs e )
     {
       // sanity check
-      if (m_checklistBox == null) return;
+      if (_ChecklistBox == null) return;
 
-      if (m_checklistBox.Visible) {
-        m_checklistBox.TopMost = false;
-        m_checklistBox.Hide( );
+      if (_ChecklistBox.Visible) {
+        _ChecklistBox.TopMost = false;
+        _ChecklistBox.Hide( );
       }
       else {
-        m_checklistBox.TopMost = true;
-        m_checklistBox.Show( );
+        _ChecklistBox.TopMost = true;
+        _ChecklistBox.Show( );
       }
     }
 
@@ -1103,7 +1087,7 @@ namespace FS20_HudBar
     // initialize the form, the labels and default values
     private void InitGUI( )
     {
-      LOG.Log( "InitGUI", "Start" );
+      LOG.Info( "InitGUI", "Start" );
 
       var AS = AppSettingsV2.Instance;
 
@@ -1111,16 +1095,18 @@ namespace FS20_HudBar
       m_initDone = false; // stop updating values while reconfiguring
       SynchGUIVisible( false ); // hide, else we see all kind of shaping
 
-      LOG.Log( "InitGUI", "FltPlanMgr Setup" );
-      AtcFltPlanMgr.FlightPlanMode = (FSimClientIF.FlightPlanMode)AS.FltAutoSaveATC;
-      AtcFltPlanMgr.Enabled = AS.FltAutoSaveATC > 0;
-      LOG.Log( "InitGUI", "FlightLogModule Setup" );
+      // Set FLT Backup Mode
+      LOG.Info( "InitGUI", "FlightPlanModule Setup" );
+      SC.SimConnectClient.Instance.FltFileModule.Enabled = (FltFileModuleMode)AS.FltAutoSaveATC == FltFileModuleMode.AutoSave;
+      SC.SimConnectClient.Instance.FltFileModule.ModuleMode = (FltFileModuleMode)AS.FltAutoSaveATC;
+
+      LOG.Info( "InitGUI", "FlightLogModule Setup" );
       SC.SimConnectClient.Instance.FlightLogModule.Enabled = AS.FRecorder;
-      LOG.Log( "InitGUI", "AirportMgr Reset" );
+      LOG.Info( "InitGUI", "AirportMgr Reset" );
       AirportMgr.Reset( );
 
       // Update profile selection item names
-      LOG.Log( "InitGUI", "Update profile selection" );
+      LOG.Info( "InitGUI", "Update profile selection" );
       foreach (DProfile pe in Enum.GetValues( typeof( DProfile ) )) {
         int index = (int)pe;
         m_profileMenu[index].Text = m_config.Profiles[pe].PName;
@@ -1128,13 +1114,13 @@ namespace FS20_HudBar
       }
       m_profileMenu[m_config.CurrentProfileIndex].Checked = true;
       mSelProfile.Text = m_config.UsedProfileName;
-      LOG.Log( "InitGUI", $"Selected profile {mSelProfile.Text}" );
+      LOG.Info( "InitGUI", $"Selected profile {mSelProfile.Text}" );
 
       // Set the Window Title
       this.Text = (string.IsNullOrEmpty( Program.Instance ) ? "Default" : Program.Instance) + $" HudBar: {m_config.UsedProfileName}          - by bm98ch";
 
       // create a catalog from Settings (serialized as item strings..)
-      LOG.Log( "InitGUI", "Setup Hotkeys" );
+      LOG.Info( "InitGUI", "Setup Hotkeys" );
       var _hotkeycat = new WinHotkeyCat( );
       _hotkeycat.MaintainHotkeyString( Hotkeys.Show_Hide, m_config.HKShowHide );
       _hotkeycat.MaintainHotkeyString( Hotkeys.Profile_1, m_config.Profiles[DProfile.Profile_1].HKProfile );
@@ -1152,11 +1138,11 @@ namespace FS20_HudBar
       _hotkeycat.MaintainHotkeyString( Hotkeys.ChecklistBox, m_config.HKChecklistBox );
       _hotkeycat.MaintainHotkeyString( Hotkeys.MoveBarToOtherWindow, "RShiftKey RControlKey Cancel" ); // not to configure (RCtrl-Shift-Break)
       foreach (var hk in _hotkeycat) {
-        LOG.Log( "InitGUI", $"{hk.Key} - {hk.Value.AsString}" );
+        LOG.Info( "InitGUI", $"{hk.Key} - {hk.Value.AsString}" );
       }
 
       // Init Colors from Config
-      LOG.Log( "InitGUI", "Setup Colors" );
+      LOG.Info( "InitGUI", "Setup Colors" );
       GUI_Colors.SetColorSet( ColorSet.BrightSet, m_config.UsedColorSet( ColorSet.BrightSet ) );
       GUI_Colors.SetColorSet( ColorSet.DimmedSet, m_config.UsedColorSet( ColorSet.DimmedSet ) );
       GUI_Colors.SetColorSet( ColorSet.InverseSet, m_config.UsedColorSet( ColorSet.InverseSet ) );
@@ -1173,7 +1159,7 @@ namespace FS20_HudBar
             this.BackgroundImageLayout = ImageLayout.Stretch;
           }
           catch (Exception ex) {
-            LOG.LogError( "InitGUI", $"Loading Background image failed with exception\n{ex}" );
+            LOG.Error( "InitGUI", $"Loading Background image failed with exception\n{ex}" );
           }
         }
       }
@@ -1185,18 +1171,18 @@ namespace FS20_HudBar
       m_frmGui.Padding = m_config.UsedProfile.BgImageBorder;
 
       // start the HudBar from scratch
-      LOG.Log( "InitGUI", "Create HudBar" );
+      LOG.Info( "InitGUI", "Create HudBar" );
       HUD?.Dispose( ); // MUST ..
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto, _hotkeycat, m_config );
 
       // reread from config (change)
-      LOG.Log( "InitGUI", "Reread Config changes" );
+      LOG.Info( "InitGUI", "Reread Config changes" );
       SetupKeyboardHook( true, AS.KeyboardHook );
       SetupInGameHook( AS.InGameHook );
 
       // Prepare FLPanel to load controls
       // DON'T Suspend the Layout else the calculations below will not be valid, the form is invisible and no painting is done here
-      LOG.Log( "InitGUI", $"Reload FlowPanel with Kind: {m_config.UsedProfile.Kind}, Placement: {HUD.Placement}" );
+      LOG.Info( "InitGUI", $"Reload FlowPanel with Kind: {m_config.UsedProfile.Kind}, Placement: {HUD.Placement}" );
 
       // suspend intermediate Size change Events as they are immediately obsolete
       _inLayout = true;
@@ -1204,12 +1190,13 @@ namespace FS20_HudBar
       flp.ClearPanel( );
       // Load visible controls into the FLP
       HUD.LoadFLPanel( flp );
+
       _inLayout = false;
 
       // post proc - reset some properties and the location of the MainWindow
       //   A window is essentially a tile with border and will later be positioned at the last stored location
       //   A Bar or Tile is following along the edges of the primary screen
-      LOG.Log( "InitGUI", "Post Processing" );
+      LOG.Info( "InitGUI", "Post Processing" );
       // no border for most
       this.FormBorderStyle = FormBorderStyle.None;
       if (HUD.Kind == GUI.Kind.Window) this.FormBorderStyle = FormBorderStyle.FixedToolWindow; // apply the border if needed
@@ -1222,12 +1209,10 @@ namespace FS20_HudBar
       UpdateColor( ); // apply initial setting 
 
 
-      // init with the proposed location from profile
-      if (IsOnScreen( m_config.UsedProfile.Location )) {
+      // init with the proposed location from profile (check within a virtual box)
+      this.Location = new Point( 0, 0 ); // safe location
+      if (dNetBm98.Utilities.IsOnScreen( m_config.UsedProfile.Location, new Size( 100, 100 ) )) {
         this.Location = m_config.UsedProfile.Location;
-      }
-      else {
-        this.Location = new Point( 0, 0 ); // safe location
       }
 
       // realign all
@@ -1250,7 +1235,7 @@ namespace FS20_HudBar
       m_initDone = true;
       timer1.Enabled = true; // and enable the pacer
 
-      LOG.Log( $"InitGUI", "End" );
+      LOG.Info( "InitGUI", "End" );
     }
 
 
@@ -1269,18 +1254,21 @@ namespace FS20_HudBar
       flp.SetEnginesVisible( SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num ) );
       // It is called prematurely when the Bar connects or a flight is loaded - reset if no acft is selected
       if (string.IsNullOrEmpty( SV.Get<string>( SItem.sG_Cfg_AcftConfigFile ) )) {
+        // reset as long as there is no flight active
         AirportMgr.Reset( );
-        WPTracker.Reset( );
+        _Shelf.FlightPlanRef.Tracker.ResetWYP( );
       }
       else {
+        // update FP Ref  from shelf
+        HudBar.UpdateFlightplanReference( _Shelf.FlightPlanRef );
         // The Bar has it's own logic for data updates
         HUD.UpdateGUI( dataRefName, sec );
         // update map airports if there are 
         if (AirportMgr.HasChanged) {
           if (AirportMgr.IsDepAvailable)
-            m_shelf.DEP_Airport = AirportMgr.DepAirportICAO;
+            _Shelf.DEP_Airport = AirportMgr.DepAirportICAO;
           if (AirportMgr.IsArrAvailable)
-            m_shelf.ARR_Airport = AirportMgr.ArrAirportICAO;
+            _Shelf.ARR_Airport = AirportMgr.ArrAirportICAO;
 
           AirportMgr.Read( ); // reset changed flag
         }
@@ -1315,34 +1303,38 @@ namespace FS20_HudBar
     // establishing event
     private void SCAdapter_Establishing( object sender, EventArgs e )
     {
+      LOG.Info( "SCAdapter_Establishing", "State change received" );
+
       HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cTxInfo;
       HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse;
       //signalling the connection state on the topmost Bar Item
       HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.MediumPurple;
 
-      LOG.Log( $"SCAdapter", "Establishing now" );
     }
 
     // connect event - ASYNC CALL, GUI changes need to be invoked on this form
     private void SCAdapter_Connected( object sender, EventArgs e )
     {
+      LOG.Info( "SCAdapter_Connected", "State change received" );
+
       HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cTxInfo;
       HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse;
       //signalling the connection state on the topmost Bar Item
       HUD.DispItem( LItem.MSFS ).Label.ForeColor = Color.LimeGreen;
 
-      AtcFltPlanMgr.Enabled = AppSettingsV2.Instance.FltAutoSaveATC > 0;
       // enable game hooks if newly connected and desired
       SetupInGameHook( AppSettingsV2.Instance.InGameHook );
       // Set Engines 
       this.Invoke( (MethodInvoker)delegate { flp.SetEnginesVisible( SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num ) ); } );
 
-      LOG.Log( $"SCAdapter", "Connected now" );
+      LOG.Info( $"SCAdapter_Connected", "Connected now" );
     }
 
     // disconnect event
     private void SCAdapter_Disconnected( object sender, EventArgs e )
     {
+      LOG.Info( "SCAdapter_Disconnected", "State change received" );
+
       HUD.DispItem( LItem.MSFS ).ColorType.ItemForeColor = ColorType.cTxInfo;
       HUD.DispItem( LItem.MSFS ).ColorType.ItemBackColor = ColorType.cInverse;
       //signalling the connection state on the topmost Bar Item
@@ -1350,10 +1342,9 @@ namespace FS20_HudBar
 
       // Disconnect from Input and SimConnect
       SetupInGameHook( false );
-      flp.SetEnginesVisible( -1 ); // reset for the next attempt
+      flp.SetEnginesVisible( -1 ); // reset for the next attempt      
 
-      AtcFltPlanMgr.Enabled = false; // disable when disconnecting
-      LOG.Log( $"SCAdapter", "Disconnected now" );
+      LOG.Info( $"SCAdapter_Disconnected", "Disconnected now" );
     }
 
 
@@ -1374,10 +1365,14 @@ namespace FS20_HudBar
 
     /// <summary>
     /// SimConnect chores on a timer, mostly reconnecting and monitoring the connection status
-    /// Intender to be called about every 5 seconds
+    /// Intended to be called about every 5 seconds
     /// </summary>
     private void SimConnectPacer( )
     {
+#if DEBUG
+      //flp.SetEnginesVisible( 4 ); // DEBUG ONLY - show 2x2 layout
+#endif
+
       if (SC.SimConnectClient.Instance.IsConnected) {
         // Voice is disabled when a new HUD is created, so enable if not yet done
         // The timer is enabled after InitGUI - so this one is always 5 sec later which should avoid some of the early talking..

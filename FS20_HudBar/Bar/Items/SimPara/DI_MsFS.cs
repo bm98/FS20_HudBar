@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using SC = SimConnectClient;
-using FSimClientIF.Modules;
 using static FS20_HudBar.GUI.GUI_Colors;
 
 using FS20_HudBar.Bar.Items.Base;
@@ -45,6 +43,7 @@ namespace FS20_HudBar.Bar.Items
     {
       //TText = "Click to change the text appearance\nSteps through Bright, Dim, Dark ";
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.Ad;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
 
@@ -62,6 +61,8 @@ namespace FS20_HudBar.Bar.Items
     // Disconnect from updates
     protected override void UnregisterDataSource( )
     {
+      base.UnregisterDataSource( );
+
       _tTip.RemoveAll( );
       _tTip.Dispose( );
       if (_label.Tag is Bitmap) {

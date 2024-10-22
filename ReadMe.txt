@@ -1,5 +1,5 @@
-FS20_HudBar V 0.70 - Build 70 BETA
-(c) M. Burri - 25-Sep-2024
+FS20_HudBar V 0.71 - Build 71 BETA
+(c) M. Burri - 21-Oct-2024
 
 Contains files:
 
@@ -87,6 +87,22 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.71-B71
+- Update FacilityDataLoader (bug fix) - pls run again
+
+- Add Per Profile Item Framed option (in Config)
+- Add Per Profile Box Divider option (in Config)
+- Add COM active freq. change on mouse click
+- Update Alignment of L/R Bar items
+- Update Colors for transmitting COM frequency (green, inactive Tx unit is white)
+- Update Colors for CDI selected NAV frequency (green, inactive unit is white)
+- Update Color for XPDR code (green when Ident, else white)
+- Update of Location detection (should really stay on the last used screen)
+- Update of aircraft data capture and control modules – fixes some issues
+- Update Sim Connection - should more reliably connect when Sim starts
+- Removed options for Sim ATC flight plan capture (it got really unusable)
+- Update QuickGuide
 
 V 0.70-B70
 - Please UPDATE the WASM Module (from BM98CH_DataConnector_Wasm-V0.5.zip) !!!

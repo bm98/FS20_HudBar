@@ -63,9 +63,10 @@ namespace FChecklistBox
     private void frmChecklistBox_Load( object sender, EventArgs e )
     {
       // Init GUI
-      Location = AppSettings.Instance.ChecklistBoxLocation;
-      if (!dNetBm98.Utilities.IsOnScreen( Location )) {
-        Location = new Point( 20, 20 );
+      Location = new Point( 20, 20 );
+      // init with the proposed location from profile (check within a virtual box)
+      if (dNetBm98.Utilities.IsOnScreen( AppSettings.Instance.ChecklistBoxLocation, new Size( 100, 100 ) )) {
+        Location = AppSettings.Instance.ChecklistBoxLocation;
       }
       _lastLiveLocation = Location;
 

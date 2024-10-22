@@ -38,6 +38,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_N1Graph( ValueItemCat vCat, Label lblProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.GraphX2;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       var item = VItem.E1_N1_ANI;
       _scale1 = new A_Scale( ) { Minimum = 0, Maximum = 110, AlertValue = 101, ItemForeColor_Alert = cAlert, ItemForeColor = cOK };
@@ -47,8 +48,7 @@ namespace FS20_HudBar.Bar.Items
       _scale2 = new A_TwinScale( ) { Visible = false, Minimum = 0, Maximum = 110, AlertValue = 101, ItemForeColor_Alert = cAlert, ItemForeColor = cOK, ItemForeColor_LScale = cOK };
       this.AddItem( _scale2 ); vCat.AddLbl( item, _scale2 );
 
-      // add 2 more values
-      //this.TwoRows = true;
+      // add 2 more scales
       item = VItem.E3_N1_ANI;
       _scale3 = new A_Scale( ) { Visible = false, Minimum = 0, Maximum = 110, AlertValue = 101, ItemForeColor_Alert = cAlert, ItemForeColor = cOK };
       this.AddItem( _scale3 ); vCat.AddLbl( item, _scale3 );

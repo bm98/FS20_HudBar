@@ -8,7 +8,6 @@ using System.Windows.Forms;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
-using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
 using static FSimClientIF.Sim;
@@ -36,6 +35,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_FlapsGraph( ValueItemCat vCat, Label lblProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.GraphX1;
       var item = VItem.FLAPS_ANI;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _scale1 = new A_Scale( ) { Minimum = 0, Maximum = 100, AlertEnabled = false, ItemForeColor = cStep };

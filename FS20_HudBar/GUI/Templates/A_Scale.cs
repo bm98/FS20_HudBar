@@ -25,7 +25,7 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     public new float? Value {
       set {
-        if ( value == null ) {
+        if (value == null) {
           base.Enabled = false;
         }
         else {
@@ -110,7 +110,7 @@ namespace FS20_HudBar.GUI.Templates
     public A_Scale( )
     {
       ItemForeColor = GUI_Colors.ColorType.cInfo;
-      ItemForeColor_Alert= GUI_Colors.ColorType.cWarn;
+      ItemForeColor_Alert = GUI_Colors.ColorType.cWarn;
       ItemBackColor = GUI_Colors.ColorType.cBG; // force our common BG color here
       AutoSize = false;  // MUST REMAIN FALSE !!! else the Sizing does not work properly
       AutoSizeHeight = false;   // The HudBar default behavior is scaling with fixed Height
@@ -118,6 +118,7 @@ namespace FS20_HudBar.GUI.Templates
       Cursor = Cursors.Default;                 // avoid the movement cross on the item controls
       Text = ""; // there is no Text supported
       BorderStyle = BorderStyle.FixedSingle; // Else the Graph is 'homeless'
+      Margin = new Padding( 0, 0, 3, 0 ); // right only
 
       GUI_Colors.Register( this );
 

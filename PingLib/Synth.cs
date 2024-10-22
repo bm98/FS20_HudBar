@@ -26,7 +26,7 @@ namespace PingLib
     // Static cTor: Just report the Library to Dbg
     static Synth( )
     {
-      LOG.Log( $"Init Module" );
+      LOG.Info( $"Init Module" );
     }
 
     /// <summary>

@@ -16,7 +16,6 @@ using FSimFacilityIF;
 using static FSimFacilityIF.Extensions;
 
 using static FlightplanLib.Formatter;
-using Windows.Management.Deployment;
 
 namespace FlightplanLib.Flightplan
 {

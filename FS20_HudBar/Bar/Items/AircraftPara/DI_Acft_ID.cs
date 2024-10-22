@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     {
       LabelID = LItem;
       var item = VItem.ACFT_ID;
+      DiLayout = ItemLayout.Generic; // leave it left aligned - else the ID is lost to the right
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Text( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );

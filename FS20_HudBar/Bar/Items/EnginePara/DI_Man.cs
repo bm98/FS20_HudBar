@@ -36,7 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Man( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
-      // Wind Direction, Speed
+      DiLayout = ItemLayout.Value2x2;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       var item = VItem.E1_MAN;
       _value1 = new V_PressureInHg( value2Proto );

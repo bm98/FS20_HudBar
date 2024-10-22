@@ -39,6 +39,7 @@ namespace FS20_HudBar.Bar.Items
     {
       TText = "Fligh Recorder\nClick to toggle recording on/off";
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       var item = VItem.LOG;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Text( value2Proto );

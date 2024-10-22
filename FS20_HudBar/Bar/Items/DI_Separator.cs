@@ -50,10 +50,30 @@ namespace FS20_HudBar.Bar.Items
       this.AutoSize = true;           // expand to full extent
       this.Margin = new Padding( 3 ); // have some spaceing around
 
+      DiLayout = ItemLayout.Separator;
+
       // need a control with content to expand the DI in its container
       // uses a 3x3 fully transparent image - color of the separator is given by ItemBackColor
       _pic = new S_Image( ) { BackgroundImage = Properties.Resources._3x3void, BackgroundImageLayout = ImageLayout.Zoom, Margin = new Padding( 0 ), MaximumSize = new Size( 3, 3 ) };
       this.AddItem( _pic );
+    }
+
+    /// <summary>
+    /// Set the Gap Pixel dimension
+    /// </summary>
+    /// <param name="pixels">Gap Dimension in pixels</param>
+    virtual public void SetGapSize( ushort pixels )
+    {
+      if (this.Dock == DockStyle.Left) {
+        int left = ((int)pixels - _pic.Height) / 2;
+        int right = ((int)pixels - _pic.Height) - left;
+        this.Margin = new Padding( left, 0, right, 0 );
+      }
+      else if (this.Dock == DockStyle.Top) {
+        int top = ((int)pixels - _pic.Height) / 2;
+        int bottom = ((int)pixels - _pic.Height) - top;
+        this.Margin = new Padding( 0, top, 0, bottom );
+      }
     }
 
     /// <summary>

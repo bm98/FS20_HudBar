@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Wind_XY( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       // Wind XY
       var item = VItem.WIND_LAT;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );

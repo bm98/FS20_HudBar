@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_CompTime( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       var item = VItem.CTIME;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_Clock( value2Proto ) { ItemForeColor = cTxDim };

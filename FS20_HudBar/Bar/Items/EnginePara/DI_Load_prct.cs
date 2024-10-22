@@ -67,7 +67,7 @@ namespace FS20_HudBar.Bar.Items
       var maxHP = Calculator.MaxHPCalibration( torq, erpm ) * 2; // CALIBRATE @ 50% Load
       if (maxHP > 0) {
         s_maxHP[engine - 1] = maxHP;
-        LOG.Log( $"CalEngine: engine {engine} max HP {maxHP}" );
+        LOG.Info( $"CalEngine: engine {engine} max HP {maxHP}" );
       }
     }
 
@@ -95,6 +95,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Load_prct( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Value2x2;
       var item = VItem.E1_LOAD_P;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += _label_ButtonClicked;

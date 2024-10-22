@@ -36,6 +36,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_RRpmGraph( ValueItemCat vCat, Label lblProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.GraphX1;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       var item = VItem.HROT_RPM_ANI;
       _scale1 = new A_TwinScale( ) { Minimum = 0, Maximum = 120, AlertValue = 110, ItemForeColor_Alert = cAlert, ItemForeColor = cOK, ItemForeColor_LScale = cOK };

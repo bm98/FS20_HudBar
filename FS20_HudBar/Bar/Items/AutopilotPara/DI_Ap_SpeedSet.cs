@@ -41,6 +41,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "IAS Hold\nClick to toggle";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.AP_SPD; // Button Handler
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
 

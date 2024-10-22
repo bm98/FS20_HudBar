@@ -124,30 +124,30 @@ namespace FS20_HudBar.GUI.Templates
             case AlertType.ALT:
             case AlertType.AOG:
               uValue = _altitude_metric ? (float)M_From_Ft( (float)value ) : (float)value;
-              this.Text = UnitString( RightAlign( $"{uValue,7:##,##0} " ) );
+              this.Text = UnitString( RightAlign( $"{uValue,7:##,##0} " ) ); // sign 6 digits
               break;
 
             case AlertType.VS:
               uValue = _altitude_metric ? (float)Mps_From_Ftpm( (float)value ) : (float)value;
               if (value <= -5) {
-                this.Text = UnitString( RightAlign( $"{-uValue,4:###0}{c_do}" ) );
+                this.Text = UnitString( RightAlign( $"{-uValue,7:###0}{c_do}" ) );
               }
               else if (value >= 5) {
-                this.Text = UnitString( RightAlign( $"{uValue,4:###0}{c_up}" ) );
+                this.Text = UnitString( RightAlign( $"{uValue,7:###0}{c_up}" ) );
               }
               else {
-                this.Text = UnitString( RightAlign( $"{0,4:###0}{c_flat}" ) );
+                this.Text = UnitString( RightAlign( $"{0,7:###0}{c_flat}" ) );
               }
               break;
 
             case AlertType.SPD:
               uValue = _distance_metric ? (float)Kmh_From_Kt( (float)value ) : (float)value;
-              this.Text = UnitString( RightAlign( $"{uValue,4:###0} " ) );
+              this.Text = UnitString( RightAlign( $"{uValue,7:###0} " ) );
               break;
 
             case AlertType.DIST:
               uValue = _distance_metric ? (float)Km_From_Nm( (float)value ) : (float)value;
-              this.Text = UnitString( RightAlign( $"{uValue,6:###0.0} " ) );
+              this.Text = UnitString( RightAlign( $"{uValue,7:###0.0} " ) );
               break;
 
             case AlertType.TIME:

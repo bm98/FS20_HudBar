@@ -8,9 +8,6 @@ using System.Threading.Tasks;
 using FS20_HudBar.GUI;
 
 using FSimClientIF;
-using FSimClientIF.Modules;
-
-using Windows.Globalization.Collation;
 
 using static FS20_HudBar.GUI.GUI_Colors;
 
@@ -37,7 +34,7 @@ namespace FS20_HudBar.Config
       cfg.VoiceName = AS.VoiceName;
       cfg.VoiceCalloutProfile = AS.VoiceCalloutProfile;
       cfg.FRecorder = AS.FRecorder;
-      cfg.FltAutoSaveATC = (FlightPlanMode)AS.FltAutoSaveATC;
+      cfg.FltAutoSaveATC = (FltFileModuleMode)AS.FltAutoSaveATC; // restricted to 0, 1 in AppSettingsV2
 
       cfg.InGameHook = AS.InGameHook;
       cfg.KeyboardHook = AS.KeyboardHook;
@@ -74,7 +71,7 @@ namespace FS20_HudBar.Config
       AS.VoiceName = config.VoiceName;
       AS.VoiceCalloutProfile = config.VoiceCalloutProfile;
       AS.FRecorder = config.FRecorder;
-      AS.FltAutoSaveATC = (int)config.FltAutoSaveATC;
+      AS.FltAutoSaveATC = (int)config.FltAutoSaveATC; // restricted to 0, 1 in AppSettingsV2
 
       AS.InGameHook = config.InGameHook;
       AS.KeyboardHook = config.KeyboardHook;
@@ -153,7 +150,7 @@ namespace FS20_HudBar.Config
     /// <summary>
     /// Backup Mode
     /// </summary>
-    public FlightPlanMode FltAutoSaveATC { get; protected set; } = FlightPlanMode.Disabled;
+    public FltFileModuleMode FltAutoSaveATC { get; protected set; } = FltFileModuleMode.Disabled;
 
     /// <summary>
     /// InGame Hotkeys enabled flag
@@ -322,7 +319,7 @@ namespace FS20_HudBar.Config
     /// Set the current FltAutoSave
     /// </summary>
     /// <param name="autoSave">Backup enum</param>
-    public void SetFltAutoSave( FlightPlanMode autoSave ) => FltAutoSaveATC = autoSave;
+    public void SetFltAutoSave( FltFileModuleMode autoSave ) => FltAutoSaveATC = autoSave;
     /// <summary>
     /// Set the current VoiceName
     /// </summary>

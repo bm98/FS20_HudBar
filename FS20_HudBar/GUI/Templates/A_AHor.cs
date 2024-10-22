@@ -74,7 +74,7 @@ namespace FS20_HudBar.GUI.Templates
     // Implement IValue Metric IF (but it is not used)
     public bool Altitude_metric { get => false; set => _ = value; }
     public bool Speed_metric { get => false; set => _ = value; }
-    public bool Distance_metric { get => false; set => _=value; }
+    public bool Distance_metric { get => false; set => _ = value; }
 
 
     /// <summary>
@@ -91,6 +91,7 @@ namespace FS20_HudBar.GUI.Templates
       Cursor = Cursors.Default;                 // avoid the movement cross on the item controls
       Text = ""; // there is no Text supported
       BorderStyle = BorderStyle.FixedSingle; // Else the Graph is 'homeless'
+      Margin = new Padding( 0, 0, 3, 0 ); // right only
 
       GUI_Colors.Register( this );
 

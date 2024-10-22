@@ -108,10 +108,6 @@
       <Project>{6c729d4d-fe93-4794-8320-af00c90d016d}</Project>
       <Name>bm98_hbFolders</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\FlightplanLib\FlightplanLib.csproj">
-      <Project>{4766e323-833c-42b5-88ed-dafb25e934ef}</Project>
-      <Name>FlightplanLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

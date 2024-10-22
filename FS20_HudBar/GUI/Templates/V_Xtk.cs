@@ -24,7 +24,7 @@ namespace FS20_HudBar.GUI.Templates
     : base( proto )
     {
       m_unit = "nm";
-      m_default = DefaultString( "__.__◄" ); // direction sign NN.NN   3.2 format
+      m_default = DefaultString( "__.__◄ " ); // direction sign NN.NN   3.2 format
       Text = UnitString( m_default );
     }
 
@@ -51,13 +51,13 @@ namespace FS20_HudBar.GUI.Templates
         else {
           double uValue = _distance_metric ? (float)Km_From_Nm( (float)value ) : (float)value;
           if ( value <= -0.01 ) {
-            this.Text = UnitString( $"{-uValue,5:#0.00}{c_left}" );
+            this.Text = UnitString( $"{-uValue,5:#0.00}{c_left} " );
           }
           else if ( value >= 0.01 ) {
-            this.Text = UnitString( $"{uValue,5:#0.00}{c_right}" );
+            this.Text = UnitString( $"{uValue,5:#0.00}{c_right} " );
           }
           else {
-            this.Text = UnitString( $"{uValue,5:#0.00}{c_flat}" );
+            this.Text = UnitString( $"{uValue,5:#0.00}{c_flat} " );
           }
         }
       }

@@ -37,6 +37,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_Atc_RWY( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.ATC_RWY_LON;
       _label = new L_Text( lblProto ) { Text = Short }; this.AddItem( _label );
       _value1 = new V_AptDist( value2Proto );

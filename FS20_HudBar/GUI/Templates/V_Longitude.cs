@@ -38,7 +38,7 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = m_default;
         }
         else {
-          string l = CoordLib.Dms.ToLon( (double)value, "dm", "", 0 );
+          string l = CoordLib.Dms.ToLon( (double)value, "dm", '\0', 0 );
           this.Text = $"{l,8}";
         }
       }

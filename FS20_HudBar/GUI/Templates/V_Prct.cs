@@ -39,7 +39,7 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:##0}%" );  // sign 3 digits %
+          this.Text = UnitString( $"{value,4:##0}%" );  // sign 3 digits %
         }
       }
     }

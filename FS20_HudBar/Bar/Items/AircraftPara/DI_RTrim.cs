@@ -40,6 +40,7 @@ namespace FS20_HudBar.Bar.Items
       TText = "Rudder Trim value\nClick to reset to 0 %";
 
       LabelID = LItem;
+      DiLayout = ItemLayout.ValueRight;
       // Rudder
       // All ERA-Trim label get a button to activate the 0 Trim action
       var item = VItem.RTRIM;

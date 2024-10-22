@@ -39,6 +39,7 @@ namespace FS20_HudBar.Bar.Items
     public DI_VarioTEGraph( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       LabelID = LItem;
+      DiLayout = ItemLayout.Generic;
       var item = VItem.VARIO_ANI;
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += DI_Vario_ButtonClicked;
