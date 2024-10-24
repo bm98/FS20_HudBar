@@ -60,7 +60,7 @@ namespace bm98_Checklist
       this.tableLayoutPanel1.RowCount = 2;
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
       this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 80F));
-      this.tableLayoutPanel1.Size = new System.Drawing.Size(953, 779);
+      this.tableLayoutPanel1.Size = new System.Drawing.Size(953, 815);
       this.tableLayoutPanel1.TabIndex = 0;
       // 
       // tabCfg
@@ -74,7 +74,7 @@ namespace bm98_Checklist
       this.tabCfg.Multiline = true;
       this.tabCfg.Name = "tabCfg";
       this.tabCfg.SelectedIndex = 0;
-      this.tabCfg.Size = new System.Drawing.Size(947, 691);
+      this.tabCfg.Size = new System.Drawing.Size(947, 727);
       this.tabCfg.TabIndex = 0;
       // 
       // tPage1
@@ -84,7 +84,7 @@ namespace bm98_Checklist
       this.tPage1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
       this.tPage1.Name = "tPage1";
       this.tPage1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-      this.tPage1.Size = new System.Drawing.Size(939, 661);
+      this.tPage1.Size = new System.Drawing.Size(939, 697);
       this.tPage1.TabIndex = 0;
       this.tPage1.Text = "Check 1";
       this.tPage1.UseVisualStyleBackColor = true;
@@ -101,7 +101,7 @@ namespace bm98_Checklist
       this.panel1.Controls.Add(this.btCancel);
       this.panel1.Controls.Add(this.btAccept);
       this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.panel1.Location = new System.Drawing.Point(3, 702);
+      this.panel1.Location = new System.Drawing.Point(3, 738);
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(947, 74);
       this.panel1.TabIndex = 1;
@@ -179,6 +179,7 @@ namespace bm98_Checklist
       // 
       // btCancel
       // 
+      this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
       this.btCancel.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btCancel.Location = new System.Drawing.Point(852, 39);
@@ -191,6 +192,7 @@ namespace bm98_Checklist
       // 
       // btAccept
       // 
+      this.btAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btAccept.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.btAccept.Location = new System.Drawing.Point(742, 39);
       this.btAccept.Name = "btAccept";
@@ -213,14 +215,17 @@ namespace bm98_Checklist
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
       this.CancelButton = this.btCancel;
-      this.ClientSize = new System.Drawing.Size(953, 779);
+      this.ClientSize = new System.Drawing.Size(953, 815);
       this.Controls.Add(this.tableLayoutPanel1);
       this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
       this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+      this.MaximumSize = new System.Drawing.Size(1480, 1024);
+      this.MinimumSize = new System.Drawing.Size(969, 780);
       this.Name = "frmConfig";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Configure Checklists";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmConfig_FormClosing);
       this.Load += new System.EventHandler(this.frmConfig_Load);
       this.tableLayoutPanel1.ResumeLayout(false);
       this.tabCfg.ResumeLayout(false);

@@ -1,4 +1,5 @@
 ﻿using bm98_Checklist.Properties;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -95,8 +96,9 @@ namespace bm98_Checklist
           case SwitchColor.Red: m_imageON = Resources.button_Rect_LEDstripe_red; break;
           case SwitchColor.Green: m_imageON = Resources.button_Rect_LEDstripe_green; break;
           case SwitchColor.Blue: m_imageON = Resources.button_Rect_LEDstripe_lightblue; break;
-          case SwitchColor.Amber: m_imageON = Resources.button_Rect_LEDstripe_amber; break;
+          case SwitchColor.Yellow: m_imageON = Resources.button_Rect_LEDstripe_yellow; break;
           case SwitchColor.White: m_imageON = Resources.button_Rect_LEDstripe_white; break;
+          case SwitchColor.Amber: m_imageON = Resources.button_Rect_LEDstripe_amber; break;
           case SwitchColor.Dark: m_imageON = Resources.button_Rect_LEDstripe_off; break;
           default: m_imageON = Resources.button_Rect_LEDstripe_red; break;
         }
@@ -116,8 +118,9 @@ namespace bm98_Checklist
           case SwitchColor.Red: m_imageOFF = Resources.button_Rect_LEDstripe_red; break;
           case SwitchColor.Green: m_imageOFF = Resources.button_Rect_LEDstripe_green; break;
           case SwitchColor.Blue: m_imageOFF = Resources.button_Rect_LEDstripe_lightblue; break;
-          case SwitchColor.Amber: m_imageOFF = Resources.button_Rect_LEDstripe_amber; break;
+          case SwitchColor.Yellow: m_imageOFF = Resources.button_Rect_LEDstripe_yellow; break;
           case SwitchColor.White: m_imageOFF = Resources.button_Rect_LEDstripe_white; break;
+          case SwitchColor.Amber: m_imageOFF = Resources.button_Rect_LEDstripe_amber; break;
           case SwitchColor.Dark: m_imageOFF = Resources.button_Rect_LEDstripe_off; break;
           default: m_imageOFF = Resources.button_Rect_LEDstripe_off; break;
         }
@@ -162,7 +165,7 @@ namespace bm98_Checklist
     private void lblText_ClientSizeChanged( object sender, EventArgs e )
     {
 #if DEBUG
-      Debug.WriteLine( $"BT {this.Name} - Label Size: {lblText.Size} - ClientSize: {lblText.ClientSize- lblText.Padding.Size}" );
+      Debug.WriteLine( $"BT {this.Name} - Label Size: {lblText.Size} - ClientSize: {lblText.ClientSize - lblText.Padding.Size}" );
 #endif
     }
   }

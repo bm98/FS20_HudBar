@@ -24,6 +24,8 @@ namespace bm98_Checklist
 
     private frmConfig CFG;
 
+    private readonly UC_PushButton _btNext;
+
     // Current Config
     private Json.ChecklistCat _currentCatalog = null;
     // The Checklist in use
@@ -31,13 +33,29 @@ namespace bm98_Checklist
     // The selected Phase
     private Json.CheckPhase _currentPhase = null;
 
+    // store the selected phase to apply the checkmarks
+    private ToolStripMenuItem _checkedChecklist = new ToolStripMenuItem( );
+    // store the selected phase to apply the checkmarks
+    private ToolStripMenuItem _checkedPhase = new ToolStripMenuItem( );
+
     /// <summary>
     /// Hide was selected from the Menu
     /// </summary>
-    public event EventHandler HideClicked;
+    [Description( "Hide was selected from the Menu" ), Category( "Action" )]
+    public event EventHandler<EventArgs> HideClicked;
     private void OnHideClicked( )
     {
       HideClicked?.Invoke( this, new EventArgs( ) );
+    }
+
+    /// <summary>
+    /// NEXT button was clicked
+    /// </summary>
+    [Description( "NEXT button was clicked" ), Category( "Action" )]
+    public event EventHandler<EventArgs> NextPhaseClicked;
+    private void OnNextPhaseClicked( )
+    {
+      NextPhaseClicked?.Invoke( this, new EventArgs( ) );
     }
 
     /// <summary>
@@ -52,17 +70,82 @@ namespace bm98_Checklist
       }
     }
 
+    /// <summary>
+    /// Last known Config Location
+    /// </summary>
+    public Point ConfigLocation { get; set; } = new Point( 10, 10 );
+    /// <summary>
+    /// Last known Config Size
+    /// </summary>
+    public Size ConfigSize { get; set; } = new Size( );
+
+
     // Create the Selection Menu for all Checklists
     private void PopulateChecklists( )
     {
       if (_currentCatalog == null) return; // ??
 
+      int checklistIndex = 0; // Index: 0..N-1
       mChecklist.DropDownItems.Clear( );
       foreach (var checklist in _currentCatalog.Checklists) {
-        var tsi = mChecklist.DropDownItems.Add( checklist.Name );
-        tsi.Tag = mChecklist.DropDownItems.Count - 1; // Index: 0..N-1
+        ToolStripMenuItem tsi = new ToolStripMenuItem( checklist.Name );
         tsi.Click += mCList_Click;
+        tsi.Tag = checklistIndex;
+        // on load check the first phase as it is the default start
+        if (checklistIndex == 0) {
+          tsi.Checked = true;
+          _checkedChecklist = tsi; // remember
+        }
+        mChecklist.DropDownItems.Add( tsi );
+        checklistIndex++;
       }
+    }
+
+    // select the Checklist of the menu item, loads the Phase and Checks
+    // base SelecteChecklist() method - does all 
+    private void SelectChecklist( ToolStripMenuItem tsi )
+    {
+      int checklistIndex = (tsi.Tag is int @tag) ? @tag : -1;
+      if (checklistIndex < 0) return;
+
+      // maintain checked state
+      _checkedChecklist.Checked = false;
+      tsi.Checked = true;
+      _checkedChecklist = tsi;
+      // select checklist and load
+      _currentChecklist = _currentCatalog.Checklists[checklistIndex];
+      PopulatePhases( );
+      _currentPhase = _currentChecklist.Phases.FirstOrDefault( x => x.Enabled ); // only set enabled ones
+      PopulateChecks( );
+    }
+
+    // select the Checklist with index (bail out on invalid indexes)
+    private void SelectChecklist( int checklistIndex )
+    {
+      // sanity
+      if (checklistIndex < 0) return;
+      if (checklistIndex >= mChecklist.DropDownItems.Count) return;
+      if (checklistIndex >= _currentCatalog.Checklists.Count) return; // should really not..
+
+      var mi = mChecklist.DropDownItems[checklistIndex];
+      if (mi is ToolStripMenuItem tsi) {
+        SelectChecklist( tsi );
+      }
+    }
+
+    // select the Checklist with name or the first if not found
+    private void SelectChecklist( string checklistName )
+    {
+      foreach (var mi in mChecklist.DropDownItems) {
+        if (mi is ToolStripMenuItem tsi) {
+          if (tsi.Text == checklistName) {
+            SelectChecklist( tsi );
+            return;
+          }
+        }
+      }
+      // not found...
+      SelectChecklist( 0 );
     }
 
     // Create the Phase Menu for a Checklistst
@@ -86,6 +169,11 @@ namespace bm98_Checklist
           var tsi = new ToolStripMenuItem( phase.Name );
           tsi.Click += mChk_Click;
           tsi.Tag = phaseIndex;
+          // on load check the first phase as it is the default start
+          if (phaseIndex == 0) {
+            tsi.Checked = true;
+            _checkedPhase = tsi; // remember
+          }
           ctxMenu.Items.Insert( insertIndex++, tsi );
         }
         phaseIndex++; // 
@@ -95,14 +183,44 @@ namespace bm98_Checklist
       mListName.Text = _currentChecklist.Name;
     }
 
+    // select the Phase of the menu item
+    // base SelectPhase() method - does all 
+    private void SelectPhase( ToolStripMenuItem tsi )
+    {
+      int phaseIndex = (tsi.Tag is int @tag) ? @tag : -1;
+      if (phaseIndex < 0) return;
+      // load Phase with index
+      _checkedPhase.Checked = false;
+      tsi.Checked = true;
+      _checkedPhase = tsi; // remember last checked
+
+      _currentPhase = _currentChecklist.Phases[phaseIndex];
+      PopulateChecks( );
+    }
+
+    // select the next phase if there is any
+    private void SelectNextPhase( )
+    {
+      var cur = ctxMenu.Items.IndexOf( _checkedPhase );
+      if (cur == -1) return;
+      // next (no check as there is always that next
+      if (ctxMenu.Items[cur + 1] is ToolStripMenuItem tsi) {
+        SelectPhase( tsi );
+      };
+    }
+
     // Create the Checks Items for the current Phase
     private void PopulateChecks( )
     {
+      flp.Visible = false;
       flp.SuspendLayout( );
       while (flp.Controls.Count > 0) {
         var item = flp.Controls[0];
         flp.Controls.RemoveAt( 0 );
-        item.Dispose( );
+        // dispose all but our NEXT button
+        if (!item.Equals( _btNext )) {
+          item.Dispose( );
+        }
       }
       if (_currentPhase == null) return; // when all Phases are disabled ...
 
@@ -130,11 +248,17 @@ namespace bm98_Checklist
       lblPhase.Font = frmConfig.FontManager.GetFont( "PHASE" );
       lblPhase.Text = _currentPhase.Name;
       CheckAllDone( );
+      // add the NEXT button at the end
+      flp.Controls.Add( _btNext );
+      _btNext.Size = Helper.CheckBoxSizes[_currentCatalog.CheckSize];
+      _btNext.Visible = true;
+
       flp.ResumeLayout( );
+      flp.Visible = true;
     }
 
 
-    // Load a checklist
+    // Load a checklists from ConfigFile
     private void LoadConfigFile( )
     {
       string cFilename = frmConfig.ConfigFileName( );
@@ -166,13 +290,15 @@ namespace bm98_Checklist
         // assign only if needed
         flp.FlowDirection = newDirection;
       }
-//      flp.FlowDirection = (_currentCatalog.Horizontal) ? FlowDirection.LeftToRight : FlowDirection.TopDown;
+      //      flp.FlowDirection = (_currentCatalog.Horizontal) ? FlowDirection.LeftToRight : FlowDirection.TopDown;
+
+      // Reload and try to select the previously selected one
+      string lastChecklistName = _checkedChecklist.Text;
       PopulateChecklists( );
-      _currentChecklist = _currentCatalog.Checklists[0];
-      PopulatePhases( );
-      _currentPhase = _currentChecklist.Phases.FirstOrDefault( x => x.Enabled ); // only set enabled ones
-      PopulateChecks( );
+      // try to select the previous one if it still exists
+      SelectChecklist( lastChecklistName );
     }
+
 
     /// <summary>
     /// cTor:
@@ -181,14 +307,19 @@ namespace bm98_Checklist
     {
       InitializeComponent( );
 
+      // hold the Next Button Ref
+      _btNext = btNEXT_DONT_REMOVE; // take from Designer
+      _btNext.PushbuttonPressed += _btNext_PushbuttonPressed;
+      _btNext.ForeColor = c_CheckText;
+
       c_CheckTextDone = Color.FromArgb( c_CheckText.R - 75, c_CheckText.G - 75, c_CheckText.B - 75 ); // Dimm
 
       // register fonts on init
       frmConfig.FontManager.RegisterFont( "DEFAULT", ucPbReference.Font ); // base font
       frmConfig.FontManager.RegisterFont( "PHASE", lblPhase.Font );
-
     }
 
+    // load event
     private void UC_Checklist_Load( object sender, EventArgs e )
     {
       LoadConfigFile( );
@@ -199,39 +330,45 @@ namespace bm98_Checklist
     {
       if (!(sender is ToolStripMenuItem)) return;
       var tsi = sender as ToolStripMenuItem;
-      int checklistIndex = (tsi.Tag is int @tag) ? @tag : -1;
-      if (checklistIndex < 0) return;
-      // load the checklist with index and make the first phase visible
-      _currentChecklist = _currentCatalog.Checklists[checklistIndex];
-      PopulatePhases( );
-      _currentPhase = _currentChecklist.Phases.FirstOrDefault( x => x.Enabled ); // only set enabled ones
-      PopulateChecks( );
+      SelectChecklist( tsi );
     }
+
 
     // A Phase Item was clicked
     private void mChk_Click( object sender, EventArgs e )
     {
       if (!(sender is ToolStripMenuItem)) return;
       var tsi = sender as ToolStripMenuItem;
-      int phaseIndex = (tsi.Tag is int @tag) ? @tag : -1;
-      if (phaseIndex < 0) return;
-      // load Phase with index
-      _currentPhase = _currentChecklist.Phases[phaseIndex];
-      PopulateChecks( );
+      SelectPhase( tsi );
+    }
+
+    // NEXT button clicked
+    private void _btNext_PushbuttonPressed( object sender, MouseEventArgs e )
+    {
+      SelectNextPhase( );
+      OnNextPhaseClicked( );
     }
 
     // Configuration was clicked
     private void mConfig_Click( object sender, EventArgs e )
     {
       CFG = new frmConfig( );
+      CFG.LastLocation = ConfigLocation;
+      CFG.LastSize = ConfigSize;
 
       if (CFG.ShowDialog( this ) == DialogResult.OK) {
         // User Font may have changed
-
         // reload
         LoadConfigFile( );
+
       }
+      // save Config for Settings
+      ConfigLocation = CFG.Location;
+      ConfigSize = CFG.Size;
+
+      CFG.Dispose( );
     }
+
 
     // Reset was clicked
     private void mReset_Click( object sender, EventArgs e )
@@ -257,7 +394,7 @@ namespace bm98_Checklist
     private void Uc_PushbuttonPressed( object sender, MouseEventArgs e )
     {
       if (!(sender is UC_PushButtonLEDTop)) return; // Programm error - just don't fail..
-      if (e.Button != MouseButtons.Left) return; // Must use left button
+      if (e.Button != MouseButtons.Left) return; // Must use left button, right is context menu
 
       UC_PushButtonLEDTop bt = sender as UC_PushButtonLEDTop;
       bt.OnState = !bt.OnState; // toggle
@@ -265,7 +402,7 @@ namespace bm98_Checklist
       CheckAllDone( );
     }
 
-    // this will turn the lights green when all are checked
+    // turns the panel background green if allDone
     private void CheckAllDone( )
     {
       // set all current checks unchecked
@@ -279,6 +416,7 @@ namespace bm98_Checklist
       // turns the panel background green if allDone
       flp.BackColor = allDone ? c_AllDoneColor : Color.Transparent;
       /*
+    // this will turn the lights green when all are checked
       foreach (var obj in flp.Controls) {
         if (obj is UC_PushButtonLEDTop) {
           var bt = (obj as UC_PushButtonLEDTop);

@@ -70,6 +70,10 @@ namespace FChecklistBox
       }
       _lastLiveLocation = Location;
 
+      // load the Config Dialog props
+      chklistBox.ConfigLocation = AppSettings.Instance.ConfigLocation;
+      chklistBox.ConfigSize = AppSettings.Instance.ConfigSize;
+
       // standalone handling
       if (Standalone) {
         // File Access Check
@@ -92,6 +96,10 @@ namespace FChecklistBox
       else {
         AppSettings.Instance.ChecklistBoxLocation = _lastLiveLocation;
       }
+      // save the Config Dialog props
+      AppSettings.Instance.ConfigLocation = chklistBox.ConfigLocation;
+      AppSettings.Instance.ConfigSize = chklistBox.ConfigSize;
+
       AppSettings.Instance.Save( );
 
       if (Standalone) {

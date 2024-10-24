@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace bm98_Checklist
@@ -51,10 +49,21 @@ namespace bm98_Checklist
 
 
     // Limit for practical reasons
-    private const int c_MaxNumberOfChecklists = 20;
+    private const int c_MaxNumberOfChecklists = 30;
 
     // the default checklist with some values
     private Json.Checklist _defaultChecklist = null;
+
+
+    /// <summary>
+    /// Last known Location
+    /// </summary>
+    public Point LastLocation { get; set; } = new Point( 10, 10 );
+    /// <summary>
+    /// Last known Size
+    /// </summary>
+    public Size LastSize { get; set; } = new Size( );
+
 
     private void PopupateCheckSize( )
     {
@@ -72,6 +81,7 @@ namespace bm98_Checklist
       cbxCheckColor.Items.Add( "Green" );
       cbxCheckColor.Items.Add( "Yellow" );
       cbxCheckColor.Items.Add( "White" );
+      cbxCheckColor.Items.Add( "Amber" );
     }
 
     /// <summary>
@@ -88,6 +98,13 @@ namespace bm98_Checklist
     private void frmConfig_Load( object sender, EventArgs e )
     {
       string cFilename = ConfigFileName( );
+
+      this.Location = new Point( 10, 10 );
+      // init with the proposed location from profile (check within a virtual box)
+      if (dNetBm98.Utilities.IsOnScreen( LastLocation, new Size( 100, 100 ) )) {
+        this.Location = LastLocation;
+      }
+      this.Size = LastSize;
 
       // get the default checklist from the control
       _defaultChecklist = new UC_CheckPage( ).GetChecklist( );
@@ -246,15 +263,41 @@ namespace bm98_Checklist
         Console.WriteLine( $"Checklist.Config: Writing the Configfile failed" );
       }
 
+      if (this.Visible && (this.WindowState == FormWindowState.Normal)) {
+        LastLocation = this.Location;
+        LastSize = this.Size;
+      }
+      // Accept Config
       this.DialogResult = DialogResult.OK;
       this.Hide( );
     }
 
     private void btCancel_Click( object sender, EventArgs e )
     {
+      if (this.Visible && (this.WindowState == FormWindowState.Normal)) {
+        LastLocation = this.Location;
+        LastSize = this.Size;
+      }
+
       // Discard Config
       this.DialogResult = DialogResult.Cancel;
       this.Hide( );
     }
+
+    private void frmConfig_FormClosing( object sender, FormClosingEventArgs e )
+    {
+      if (this.Visible && (this.WindowState == FormWindowState.Normal)) {
+        LastLocation = this.Location;
+        LastSize = this.Size;
+      }
+
+      if (e.CloseReason == CloseReason.UserClosing) {
+        // we don't close if the User clicks the X Box, only Hide; else it will not maintain the content throughout
+        this.DialogResult = DialogResult.Cancel;
+        e.Cancel = true;
+        this.Hide( );
+      }
+    }
+
   }
 }

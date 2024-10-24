@@ -94,6 +94,7 @@ V 0.71-B71
 - Add Per Profile Item Framed option (in Config)
 - Add Per Profile Box Divider option (in Config)
 - Add COM active freq. change on mouse click
+- Add Transponder ident on mouse click
 - Update Alignment of L/R Bar items
 - Update Colors for transmitting COM frequency (green, inactive Tx unit is white)
 - Update Colors for CDI selected NAV frequency (green, inactive unit is white)
@@ -102,7 +103,14 @@ V 0.71-B71
 - Update of aircraft data capture and control modules – fixes some issues
 - Update Sim Connection - should more reliably connect when Sim starts
 - Removed options for Sim ATC flight plan capture (it got really unusable)
-- Update QuickGuide
+
+  ChecklistBox Update
+- Add 3 more Flightphases per Checklist (F,G,H)
+- Add Next Phase button at the end of each Checklist
+- Add Button Color Amber (in Config)
+- Update Config Dialog sizeable and stores location 
+
+- Update QuickGuides
 
 V 0.70-B70
 - Please UPDATE the WASM Module (from BM98CH_DataConnector_Wasm-V0.5.zip) !!!

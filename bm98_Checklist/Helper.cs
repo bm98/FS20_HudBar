@@ -14,7 +14,7 @@ namespace bm98_Checklist
   public enum SwitchColor
   {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    Blue, Red, Green, Amber, White, Dark,
+    Blue, Red, Green, Yellow, White, Amber, Dark,
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
   }
 

@@ -103,6 +103,16 @@ namespace bm98_Checklist.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap button_Rect_LEDstripe_empty {
+            get {
+                object obj = ResourceManager.GetObject("button_Rect_LEDstripe_empty", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap button_Rect_LEDstripe_green {
             get {
                 object obj = ResourceManager.GetObject("button_Rect_LEDstripe_green", resourceCulture);
@@ -146,6 +156,16 @@ namespace bm98_Checklist.Properties {
         internal static System.Drawing.Bitmap button_Rect_LEDstripe_white {
             get {
                 object obj = ResourceManager.GetObject("button_Rect_LEDstripe_white", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap button_Rect_LEDstripe_yellow {
+            get {
+                object obj = ResourceManager.GetObject("button_Rect_LEDstripe_yellow", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -53,6 +53,7 @@ namespace bm98_Checklist
       this.BackColor = System.Drawing.Color.Transparent;
       this.BackgroundImage = global::bm98_Checklist.Properties.Resources.button_Rect_LEDstripe_off;
       this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+      this.CausesValidation = false;
       this.Controls.Add(this.lblText);
       this.DoubleBuffered = true;
       this.Name = "UC_PushButtonLEDTop";
@@ -61,6 +62,7 @@ namespace bm98_Checklist
       this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lblText_MouseDown);
       this.MouseEnter += new System.EventHandler(this.lblText_MouseEnter);
       this.MouseLeave += new System.EventHandler(this.lblText_MouseLeave);
+      this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lblText_MouseUp);
       this.ResumeLayout(false);
 
     }

@@ -60,6 +60,19 @@ namespace FChecklistBox
       set { this["ChecklistBoxLocation"] = value; }
     }
 
+    // Control bound settings
+    [DefaultSettingValue( "10, 10" )]
+    public Point ConfigLocation {
+      get { return (Point)this["ConfigLocation"]; }
+      set { this["ConfigLocation"] = value; }
+    }
+
+    // Control bound settings
+    [DefaultSettingValue( "0, 0" )]
+    public Size ConfigSize {
+      get { return (Size)this["ConfigSize"]; }
+      set { this["ConfigSize"] = value; }
+    }
 
 
     #endregion

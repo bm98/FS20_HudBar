@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using bm98_Checklist.Json;
@@ -16,7 +11,7 @@ namespace bm98_Checklist
   internal partial class UC_CheckPage : UserControl
   {
     // number of Phases
-    private const int c_numPhase = 5;
+    private const int c_numPhase = 8;
     // number of Checks / Phase
     private const int c_numChecks = 10;
 
@@ -34,6 +29,9 @@ namespace bm98_Checklist
       foreach (var t in _pTxt[2]) t.Text = ""; chkPhaseC.Checked = false; txPhaseC.Text = "";
       foreach (var t in _pTxt[3]) t.Text = ""; chkPhaseD.Checked = false; txPhaseD.Text = "";
       foreach (var t in _pTxt[4]) t.Text = ""; chkPhaseE.Checked = false; txPhaseE.Text = "";
+      foreach (var t in _pTxt[5]) t.Text = ""; chkPhaseF.Checked = false; txPhaseF.Text = "";
+      foreach (var t in _pTxt[6]) t.Text = ""; chkPhaseG.Checked = false; txPhaseG.Text = "";
+      foreach (var t in _pTxt[7]) t.Text = ""; chkPhaseH.Checked = false; txPhaseH.Text = "";
     }
 
     /// <summary>
@@ -114,6 +112,21 @@ namespace bm98_Checklist
       _pName[phase] = txPhaseE; _pEnabled[phase] = chkPhaseE;
       _pTxt[phase][0] = txChkItem_E_0; _pTxt[phase][1] = txChkItem_E_1; _pTxt[phase][2] = txChkItem_E_2; _pTxt[phase][3] = txChkItem_E_3; _pTxt[phase][4] = txChkItem_E_4;
       _pTxt[phase][5] = txChkItem_E_5; _pTxt[phase][6] = txChkItem_E_6; _pTxt[phase][7] = txChkItem_E_7; _pTxt[phase][8] = txChkItem_E_8; _pTxt[phase][9] = txChkItem_E_9;
+
+      phase++;
+      _pName[phase] = txPhaseF; _pEnabled[phase] = chkPhaseF;
+      _pTxt[phase][0] = txChkItem_F_0; _pTxt[phase][1] = txChkItem_F_1; _pTxt[phase][2] = txChkItem_F_2; _pTxt[phase][3] = txChkItem_F_3; _pTxt[phase][4] = txChkItem_F_4;
+      _pTxt[phase][5] = txChkItem_F_5; _pTxt[phase][6] = txChkItem_F_6; _pTxt[phase][7] = txChkItem_F_7; _pTxt[phase][8] = txChkItem_F_8; _pTxt[phase][9] = txChkItem_F_9;
+
+      phase++;
+      _pName[phase] = txPhaseG; _pEnabled[phase] = chkPhaseG;
+      _pTxt[phase][0] = txChkItem_G_0; _pTxt[phase][1] = txChkItem_G_1; _pTxt[phase][2] = txChkItem_G_2; _pTxt[phase][3] = txChkItem_G_3; _pTxt[phase][4] = txChkItem_G_4;
+      _pTxt[phase][5] = txChkItem_G_5; _pTxt[phase][6] = txChkItem_G_6; _pTxt[phase][7] = txChkItem_G_7; _pTxt[phase][8] = txChkItem_G_8; _pTxt[phase][9] = txChkItem_G_9;
+
+      phase++;
+      _pName[phase] = txPhaseH; _pEnabled[phase] = chkPhaseH;
+      _pTxt[phase][0] = txChkItem_H_0; _pTxt[phase][1] = txChkItem_H_1; _pTxt[phase][2] = txChkItem_H_2; _pTxt[phase][3] = txChkItem_H_3; _pTxt[phase][4] = txChkItem_H_4;
+      _pTxt[phase][5] = txChkItem_H_5; _pTxt[phase][6] = txChkItem_H_6; _pTxt[phase][7] = txChkItem_H_7; _pTxt[phase][8] = txChkItem_H_8; _pTxt[phase][9] = txChkItem_H_9;
     }
 
     // Page Loading
@@ -219,9 +232,25 @@ namespace bm98_Checklist
       txPhaseE.BackColor = (chkPhaseE.Checked) ? Color.LightGreen : txChkItem_A_0.BackColor;
     }
 
+    private void chkPhaseF_CheckedChanged( object sender, EventArgs e )
+    {
+      txPhaseF.BackColor = (chkPhaseF.Checked) ? Color.LightGreen : txChkItem_A_0.BackColor;
+    }
+
+    private void chkPhaseG_CheckedChanged( object sender, EventArgs e )
+    {
+      txPhaseG.BackColor = (chkPhaseG.Checked) ? Color.LightGreen : txChkItem_A_0.BackColor;
+    }
+
+    private void chkPhaseH_CheckedChanged( object sender, EventArgs e )
+    {
+      txPhaseH.BackColor = (chkPhaseH.Checked) ? Color.LightGreen : txChkItem_A_0.BackColor;
+    }
+
     private void txChkItem_A_0_ClientSizeChanged( object sender, EventArgs e )
     {
       Debug.WriteLine( $"BT TextBox Size: {txChkItem_A_0.Size} - ClientSize: {txChkItem_A_0.ClientSize}" );
     }
+
   }
 }

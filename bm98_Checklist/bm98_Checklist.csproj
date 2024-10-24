@@ -53,6 +53,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dNetBm98">
+      <HintPath>..\..\..\..\Redist\dNetBm98.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -99,6 +102,12 @@
     <Compile Include="UC_CheckPage.Designer.cs">
       <DependentUpon>UC_CheckPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_PushButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_PushButton.Designer.cs">
+      <DependentUpon>UC_PushButton.cs</DependentUpon>
+    </Compile>
     <Compile Include="UC_PushButtonLEDTop.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -121,13 +130,13 @@
     <EmbeddedResource Include="UC_CheckPage.resx">
       <DependentUpon>UC_CheckPage.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UC_PushButton.resx">
+      <DependentUpon>UC_PushButton.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UC_PushButtonLEDTop.resx">
       <DependentUpon>UC_PushButtonLEDTop.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\button-Rect-LEDstripe-amber.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\button-Rect-LEDstripe-blue.png" />
@@ -157,6 +166,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\background-framed.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\button-Rect-LEDstripe-yellow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\button-Rect-LEDstripe-amber.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\button-Rect-LEDstripe-empty.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

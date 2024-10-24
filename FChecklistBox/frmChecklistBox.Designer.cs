@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace FChecklistBox
 {
   partial class frmChecklistBox
@@ -50,7 +52,7 @@ namespace FChecklistBox
       this.chklistBox.Size = new System.Drawing.Size(245, 367);
       this.chklistBox.TabIndex = 0;
       this.chklistBox.UserDir = "";
-      this.chklistBox.HideClicked += new System.EventHandler(this.chklistBox_HideClicked);
+      this.chklistBox.HideClicked += new System.EventHandler<EventArgs>(this.chklistBox_HideClicked);
       this.chklistBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.frmChecklistBox_MouseDown);
       this.chklistBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmChecklistBox_MouseMove);
       this.chklistBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frmChecklistBox_MouseUp);
