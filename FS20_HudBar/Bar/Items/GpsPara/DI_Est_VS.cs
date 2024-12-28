@@ -42,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_VSpeedPerMin( valueProto ) { ItemForeColor = cTxEst };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, 2, OnDataArrival );
+      AddObserver( Desc, 2, OnDataArrival );
     }
 
     /// <summary>
@@ -52,6 +52,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         if (SV.Get<bool>( SItem.bG_Gps_FP_tracking )) {
+          // only for the Sim GPS
           float tgtAlt = SV.Get<float>( SItem.fG_Gps_WYP_alt_ft );
           // Estimates use WYP ALT if >0 (there is no distinction if a WYP ALT is given - it is 0 if not)
           ColorType estCol = cTxEst;

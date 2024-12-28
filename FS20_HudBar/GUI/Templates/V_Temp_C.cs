@@ -38,7 +38,7 @@ namespace FS20_HudBar.GUI
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,5:###0} " ); // signed only 4 digits, add a blank for alignment
+          this.Text = UnitString( $"{value,4:###0} " ); // signed only 4 digits, add a blank for alignment
         }
       }
     }

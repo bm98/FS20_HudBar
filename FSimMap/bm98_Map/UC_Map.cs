@@ -99,7 +99,7 @@ namespace bm98_Map
     // Holding a ref to the current Airports
     private IList<IAirportDesc> _airportsRef = new List<IAirportDesc>( ); // empty list instead of null;;
     // Holding a ref to the current Flightplan
-    private FlightPlan _flightPlanRef = new FlightPlan( );
+    private FlightPlan _flightPlanRef = FlightPlan.Empty;
 
 
     // maintains all the visuals of the Airport
@@ -317,6 +317,15 @@ namespace bm98_Map
             nextRp = _flightPlanRef.GetWaypoint( nextRp.Index + 1 );
           }
         }
+
+        var tod = new UC_VProfile.UC_VProfilePropsRoutepoint( ) {
+          Ident = "T/D", // fixed
+          // ensure -1 if float.NaN (should not compare double and float NaNs...)
+          Distance_nm = float.IsNaN( trackedAircraft.DistanceToTOD_nm ) ? -1.0 : trackedAircraft.DistanceToTOD_nm,
+          TargetAlt_ft = -1, // not used
+          VPAltS = "", // not used
+        };
+
         // create the VProfile Props with current data
         var vpProps = new UC_VProfile.UC_VProfileProps( ) {
           ALT_ft = _trackedAircraft.AltitudeIndicated_ft,
@@ -324,6 +333,7 @@ namespace bm98_Map
           VS_fpm = _trackedAircraft.Vs_fpm,
           FPA_deg = _trackedAircraft.Fpa_deg,
           WaypointList = wypList,
+          TopOfDescentRtp = tod,
         };
         // and update the Control
         vpProfile.UpdatePanelProps( vpProps );

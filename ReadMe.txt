@@ -95,6 +95,8 @@ V 0.71-B71
 - Add Per Profile Box Divider option (in Config)
 - Add COM active freq. change on mouse click
 - Add Transponder ident on mouse click
+- Add Flight plan selection to RTE item
+- Add Route entry as route string
 - Update Alignment of L/R Bar items
 - Update Colors for transmitting COM frequency (green, inactive Tx unit is white)
 - Update Colors for CDI selected NAV frequency (green, inactive unit is white)
@@ -102,6 +104,7 @@ V 0.71-B71
 - Update of Location detection (should really stay on the last used screen)
 - Update of aircraft data capture and control modules – fixes some issues
 - Update Sim Connection - should more reliably connect when Sim starts
+- Update Flight plan decoders
 - Removed options for Sim ATC flight plan capture (it got really unusable)
 
   ChecklistBox Update
@@ -282,7 +285,7 @@ V 0.56-B56
 
 V 0.55-B55
 - Add VNAV Button (when using WASM module)
-- Add Item TOD (TopOfDescend for VNAV support)
+- Add Item TOD (TopOfDescent for VNAV support)
 - Add Move Bar/Tile to next screen (Monitor) with RShift+RCtrl+Break
 - Add Using the Facility DB for Aiport Management (replacing the FS20_AptLib)
 - Add Check if the Facility DB is available and pop a msg box if not

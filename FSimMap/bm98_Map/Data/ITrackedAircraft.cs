@@ -119,6 +119,11 @@ namespace bm98_Map.Data
     TcasFlag TCAS { get; }
 
     /// <summary>
+    /// Distance to T/D if available, else set negative or NaN
+    /// </summary>
+    float DistanceToTOD_nm { get; }
+
+    /// <summary>
     /// Flag to indicate the Acft is on Ground
     /// </summary>
     bool OnGround { get; }

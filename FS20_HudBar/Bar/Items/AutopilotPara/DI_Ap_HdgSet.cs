@@ -61,14 +61,14 @@ namespace FS20_HudBar.Bar.Items
       _value1.Scrollable = true;
       _value1.Cursor = Cursors.SizeNS;
 
-      AddObserver( Short, 10, OnDataArrival );
+      AddObserver( Desc, 10, OnDataArrival );
     }
 
     private void _value1_MouseClick( object sender, MouseEventArgs e )
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      SV.Set( SItem.S_Ap_HDG_Synch, true );
+      SV.Set( SItem.bS_Ap_HDG_Synch, true );
     }
 
     private void _value1_MouseWheel( object sender, MouseEventArgs e )

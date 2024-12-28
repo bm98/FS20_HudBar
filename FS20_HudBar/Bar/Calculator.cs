@@ -621,7 +621,8 @@ namespace FS20_HudBar.Bar
     }
 
     /// <summary>
-    /// Get: Positive Rate 
+    /// Get: Positive Rate detected 
+    ///   once detected it stays true until on ground or GoAround situation is detected
     /// </summary>
     public static bool PositiveRate => _posRate;
 

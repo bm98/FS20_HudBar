@@ -114,6 +114,7 @@ namespace bm98_Map.Data
       Gs_kt = aircraft.Gs_kt;
       Vs_fpm = aircraft.Vs_fpm;
       Fpa_deg = aircraft.Fpa_deg;
+      DistanceToTOD_nm = aircraft.DistanceToTOD_nm;
       OnGround = aircraft.OnGround;
 
       WindDirection_deg = (aircraft.WindSpeed_kt < 1) ? float.NaN : aircraft.WindDirection_deg; // avoid speeds <1

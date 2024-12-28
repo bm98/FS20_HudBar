@@ -56,7 +56,7 @@ namespace FS20_HudBar.Bar.Items
       _led.Click += _led_Click;
       _led.Cursor = Cursors.Hand;
 
-      AddObserver( Short, 3, OnDataArrival ); // 3/sec
+      AddObserver( Desc, 3, OnDataArrival ); // 3/sec
 
     }
 

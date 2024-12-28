@@ -57,7 +57,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_ICAO_L( value2Proto ) { Name = c_NWYP_Label, ItemForeColor = cTxGps };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      AddObserver( Short, 1, OnDataArrival ); // once per sec is enough
+      AddObserver( Desc, 1, OnDataArrival ); // once per sec is enough
 
       // tooltip - must provide some content, else it will not popup
       _tTip.SetToolTip( _label, " " ); // GPS Label
@@ -86,7 +86,7 @@ namespace FS20_HudBar.Bar.Items
       }
     }
 
-    // Disconnect from updates
+    // Disconnect from updates and dispose ToolTip
     protected override void UnregisterDataSource( )
     {
       base.UnregisterDataSource( );
@@ -94,6 +94,8 @@ namespace FS20_HudBar.Bar.Items
       _tTip.RemoveAll( );
       _tTip.Dispose( );
     }
+
+    #region FLplan ToolTip
 
     /// <summary>
     /// Make a monospace tooltip
@@ -245,6 +247,7 @@ namespace FS20_HudBar.Bar.Items
 
     }
 
+    #endregion
 
   }
 }

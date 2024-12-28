@@ -47,7 +47,7 @@ namespace FS20_HudBar.Bar.Items
       _scale2 = new A_FPA( ) { MinimumVer = -6, MaximumVer = 6, MinimumHor = -6 * 2, MaximumHor = 6 * 2, ItemForeColor = cOK };
       this.AddItem( _scale2 ); vCat.AddLbl( item, _scale2 );
 
-      AddObserver( Short, 1, OnDataArrival ); // use max data rate
+      AddObserver( Desc, 1, OnDataArrival ); // use max data rate
     }
 
     /// <summary>

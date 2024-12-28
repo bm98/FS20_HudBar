@@ -50,7 +50,7 @@ namespace FS20_HudBar.Bar.Items
 
       _label.ButtonClicked += _label_ButtonClicked;
 
-      AddObserver( Short, 1, OnDataArrival ); // once per sec
+      AddObserver( Desc, 1, OnDataArrival ); // once per sec
     }
 
     private void _label_ButtonClicked( object sender, ClickedEventArgs e )
@@ -64,7 +64,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        if (SV.Get<bool>( SItem.bG_Gps_FP_tracking )) {
+        if (SV.Get<bool>( SItem.bG_Gps_FP_tracking ) || FS20_HudBar.Bar.HudBar.FlightPlanRef.Tracker.IsTracking) {
           _value1.Value = HudBar.FlightPlanRef.Tracker.TimeEnrouteWYP_sec;
           _value2.Value = HudBar.FlightPlanRef.Tracker.TimeEnroute_sec;
         }

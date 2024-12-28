@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using SC = SimConnectClient;
+﻿using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
 using static FSimClientIF.Sim;
@@ -25,7 +19,7 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SV, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, 5, OnDataArrival );  // update 2/sec 
     }
     /// <summary>
     /// Calls to un-register for dataupdates
@@ -41,13 +35,19 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IGps object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if (!m_enabled) return; // not enabled
-      if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
+      // sanity
+      if (!_enabled) return; // not enabled
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // capture odd cases
       if (SV.Get<bool>( SItem.bG_Sim_OnGround )) return; // not while on ground
 
-      var ds = SV;
-      if (SV.Get<bool>( SItem.bG_Gps_FP_tracking )) {
-        DetectStateChange( (float)SV.Get<double>( SItem.dG_Gps_WYP_ete_sec ) );
+      // are we tracking a flightplan i.e. having GPS distance to waypoint
+      if (SV.Get<bool>( SItem.bG_Gps_FP_tracking ) || FS20_HudBar.Bar.HudBar.FlightPlanRef.Tracker.IsTracking) {
+        var time = (float)SV.Get<double>( SItem.dG_Gps_WYP_ete_sec );
+
+        // start detection only if in viable range and allow for reset
+        if ((time < 100) && (time > 15)) {
+          DetectStateChange( (float)SV.Get<double>( SItem.dG_Gps_WYP_ete_sec ) );
+        }
       }
     }
 
@@ -60,13 +60,13 @@ namespace FS20_HudBar.Triggers
     public T_WaypointETE( GUI.GUI_Speech speaker )
       : base( speaker )
     {
-      m_name = "GPS Waypoint sec.";
-      m_test = "Waypoint in 60";
+      _name = "GPS Waypoint sec.";
+      _test = "Waypoint in 60";
 
-      // add the proc most likely to be hit as the first - saves some computing time on the long run
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 90.0f, 8.0f ), Callback = Say, Text = "Waypoint in 90" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 60.0f, 6.0f ), Callback = Say, Text = "Waypoint in 60" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 30.0f, 5.0f ), Callback = Say, Text = "Waypoint in 30" } );
+      // add the closest band first
+      this.AddProc( new EventProcFloat( ) { Detector = new BandDetector<float>( 30.0f, 3.0f, 5.0f, true ), Callback = Say, Text = "Waypoint in 30" } ); // 33 .. 25
+      this.AddProc( new EventProcFloat( ) { Detector = new BandDetector<float>( 60.0f, 3.0f, 6.0f, true ), Callback = Say, Text = "Waypoint in 60" } ); // 63 .. 54
+      this.AddProc( new EventProcFloat( ) { Detector = new BandDetector<float>( 90.0f, 3.0f, 8.0f, true ), Callback = Say, Text = "Waypoint in 90" } ); // 93 .. 82
     }
 
   }

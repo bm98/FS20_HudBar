@@ -44,7 +44,7 @@ namespace FS20_HudBar.Bar.Items
       _label = new B_Text( item, value2Proto ) { Text = Short }; this.AddItem( _label );
       _label.ButtonClicked += DI_Ap_ButtonClicked;
 
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     private void DI_Ap_ButtonClicked( object sender, ClickedEventArgs e )

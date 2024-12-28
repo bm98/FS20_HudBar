@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 using SC = SimConnectClient;
 
@@ -15,12 +11,14 @@ namespace FS20_HudBar.Triggers
   {
     private TSmoother _smooth = new TSmoother( );
 
+    private float _curRotSpeed = float.MinValue;
+
     /// <summary>
     /// Calls to register for dataupdates
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SV, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, 2, OnDataArrival );  // update 5/sec 
     }
     /// <summary>
     /// Calls to un-register for dataupdates
@@ -36,8 +34,9 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAircraft object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if (!m_enabled) return; // not enabled
-      if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
+      // sanity
+      if (!_enabled) return; // not enabled
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // capture odd cases
       if (SV.Get<float>( SItem.fG_Eng_RotorMain_rpm ) > 0) return; // Not with HELI !!
 
       // Rotate is only triggered while OnGround and accelerating (else it calls on touchdown)
@@ -48,13 +47,18 @@ namespace FS20_HudBar.Triggers
       if (rotSpeed < 10) rotSpeed = SV.Get<float>( SItem.fG_Dsg_SpeedTakeoff_kt ); // try takeoff speed (some don't have Rot..)
       if (rotSpeed < 10) return; // not properly set or otherwise not meaningful value from SIM
 
-      this.m_actions.ElementAt( 0 ).Value.TriggerStateF.Level = rotSpeed; // set the trigger level
+      // having a RotSpeed here
+      if (rotSpeed != _curRotSpeed) {
+        this.SetLevel( rotSpeed, 0 );// set the new trigger level
+        _curRotSpeed = rotSpeed;
+      }
+
       _smooth.Add( SV.Get<float>( SItem.fG_Acft_IAS_kt ) ); // smoothen
       DetectStateChange( _smooth.GetFloat );
 
-      // reset when again on ground and below 10 kt - Rotate will only trigger if within limits +-2
+      // reset when below 10 kt - Rotate will only trigger if within limits +-2
       if (SV.Get<float>( SItem.fG_Acft_IAS_kt ) < 10) {
-        this.Reset( );
+        this.ResetTrigger( );
       }
     }
 
@@ -67,12 +71,11 @@ namespace FS20_HudBar.Triggers
     public T_IAS_Rotate( GUI.GUI_Speech speaker )
       : base( speaker )
     {
-      m_name = "IAS Rotate";
-      m_test = "Rotate";
+      _name = "IAS Rotate";
+      _test = "Rotate";
 
-      m_lastTriggered = 100.0f; // set triggered when starting up
       // add the proc most likely to be hit as the first - saves some computing time on the long run
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 100.0f, 2.0f ), Callback = Say, Text = "Rotate" } ); // take from design speeds
+      this.AddProc( new EventProcFloat( ) { Detector = new ClimbDetector( 100.0f, 10f, autoReset: false ), Callback = Say, Text = "Rotate" } ); // take from design speeds
     }
 
   }

@@ -54,7 +54,7 @@ namespace FS20_HudBar.Bar.Items
       _value3 = new V_DmeDist( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
-      AddObserver( Short, 2, OnDataArrival );
+      AddObserver( Desc, 2, OnDataArrival );
     }
 
     /// <summary>

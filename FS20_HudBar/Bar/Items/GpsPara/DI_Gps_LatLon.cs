@@ -46,7 +46,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Longitude( value2Proto ) { ItemForeColor = cTxGps };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      AddObserver( Short, 2, OnDataArrival ); // twice per sec
+      AddObserver( Desc, 2, OnDataArrival ); // twice per sec
     }
 
     /// <summary>

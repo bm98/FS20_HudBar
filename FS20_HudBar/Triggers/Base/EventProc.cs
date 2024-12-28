@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FS20_HudBar.Triggers.Base
 {
@@ -14,11 +10,11 @@ namespace FS20_HudBar.Triggers.Base
     /// <summary>
     /// Undef Initial Value
     /// </summary>
-    Undef=-1,
+    Undef = -1,
     /// <summary>
     /// A binary trigger
     /// </summary>
-    Binary=0,
+    Binary = 0,
     /// <summary>
     /// A level based trigger (float)
     ///  Requires a TriggerBand to be defined for each level
@@ -34,25 +30,31 @@ namespace FS20_HudBar.Triggers.Base
   /// <summary>
   /// Defines an event with it's callback
   /// </summary>
-  abstract class EventProc
+  abstract class EventProc<T>
   {
     /// <summary>
     /// The stored TriggerType
     /// </summary>
-    protected TriggerType m_triggerType = TriggerType.Undef;
+    protected TriggerType _triggerType = TriggerType.Undef;
 
     /// <summary>
-    /// The Boolean state to trigger the callback
+    /// The TriggerBand detecting InBand values
     /// </summary>
-    public virtual bool TriggerState { get => throw new NotImplementedException( ); set => throw new NotImplementedException( ); }
+    public abstract ILevelDetectorAPI Detector { get; set; }
+
     /// <summary>
-    /// The Float state to trigger the callback
+    /// Set a new Level for an item
     /// </summary>
-    public virtual TriggerBandF TriggerStateF { get => throw new NotImplementedException( ); set => throw new NotImplementedException( ); }
+    /// <param name="level">The new Level</param>
+    public abstract void SetLevel( T level );
     /// <summary>
-    /// The Int state to trigger the callback
+    /// Set triggers of this Proc
     /// </summary>
-    public virtual TriggerBandI TriggerStateI { get => throw new NotImplementedException( ); set => throw new NotImplementedException( ); }
+    public abstract void SetTrigger( );
+    /// <summary>
+    /// Reset triggers of this Proc
+    /// </summary>
+    public abstract void ResetTrigger( );
 
     /// <summary>
     /// Defines the action with one string parameter to execute

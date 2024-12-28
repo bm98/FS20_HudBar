@@ -10,7 +10,7 @@ using FS20_HudBar.GUI.Templates.Base;
 namespace FS20_HudBar.GUI.Templates
 {
   /// <summary>
-  /// Ratio with 2 digits
+  /// Ratio as N.NN if <2  else NN.N
   /// </summary>
   internal class V_Ratio2 : V_Base
   {
@@ -38,7 +38,12 @@ namespace FS20_HudBar.GUI.Templates
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,4:#.00} " ); // positive 1.2 digits, add a blank for alignment
+          if (value < 2) {
+            this.Text = UnitString( $"{value,4:#.00} " ); // positive 1.2 digits, add a blank for alignment
+          }
+          else {
+            this.Text = UnitString( $"{value,4:##.0} " ); // positive 2.1 digits, add a blank for alignment
+          }
         }
       }
     }

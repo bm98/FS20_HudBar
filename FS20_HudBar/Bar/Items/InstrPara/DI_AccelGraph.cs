@@ -42,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
       _scale1 = new A_Accel( ) { MinimumVer = -16, MaximumVer = 16, MinimumLon = -1.689f, MaximumLon = 1.689f, ItemForeColor = cOK };
       this.AddItem( _scale1 ); vCat.AddLbl( item, _scale1 );
 
-      AddObserver( Short, 5, OnDataArrival);
+      AddObserver( Desc, 5, OnDataArrival);
     }
 
     /// <summary>

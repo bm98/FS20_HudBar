@@ -41,7 +41,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Alt( valueProto ) { ItemForeColor = cTxRA };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     /// <summary>

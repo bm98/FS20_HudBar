@@ -41,7 +41,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_TimeHHMMSS( valueProto ) { ItemForeColor = cTxGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, 2, OnDataArrival ); // twice per sec
+      AddObserver( Desc, 2, OnDataArrival ); // twice per sec
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ namespace FS20_HudBar.Bar.Items
           _value1.ItemForeColor = cTxGps;
         }
         else {
-          // No Flightplan active
+          // No Flightplan active or arrived
           _value1.Value = null;
         }
       }

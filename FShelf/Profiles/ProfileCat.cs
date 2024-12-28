@@ -33,7 +33,7 @@ namespace FShelf.Profiles
     /// </summary>
     public const string TProfile_Prct = "Prct";
     /// <summary>
-    /// The Profile table column for Descend Rate Display string
+    /// The Profile table column for Descent Rate Display string
     /// </summary>
     public const string TProfile_DescRate = "DRate";
 

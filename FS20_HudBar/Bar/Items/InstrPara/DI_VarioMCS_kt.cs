@@ -51,7 +51,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_VSpeed_ktPM( value2Proto ) { ItemForeColor = cTxSet };
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     /// <summary>

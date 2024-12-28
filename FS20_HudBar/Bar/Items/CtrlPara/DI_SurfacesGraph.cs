@@ -42,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
       _surf1 = new A_Surfaces( ) { };
       this.AddItem( _surf1 ); vCat.AddLbl( item, _surf1 );
 
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     /// <summary>

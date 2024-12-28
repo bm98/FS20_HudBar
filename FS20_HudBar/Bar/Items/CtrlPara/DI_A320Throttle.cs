@@ -54,7 +54,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_Text( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     private void TSetValue( V_Text value, float tPerc )

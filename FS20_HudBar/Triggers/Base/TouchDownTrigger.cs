@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using SC = SimConnectClient;
 using FS20_HudBar.GUI;
@@ -33,7 +29,7 @@ namespace FS20_HudBar.Triggers.Base
   ///     count>0 -> Delay else {SimOnGround -> OnGround, else InAir}
   ///     
   /// </summary>
-  internal sealed class TouchDownTrigger : TriggerBase
+  internal sealed class TouchDownTrigger : TriggerBase<bool>
   {
     private enum TState
     {
@@ -59,7 +55,7 @@ namespace FS20_HudBar.Triggers.Base
 
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SV, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, 2, OnDataArrival );  // update 5/sec 
     }
 
     public override void UnRegisterObserver( )
@@ -95,7 +91,7 @@ namespace FS20_HudBar.Triggers.Base
           if (onGround) {
             // only when InAir -> OnGround triggers once a TouchDown
             _state = TState.TouchDown;
-            if (m_enabled) Say( "Touchdown" );
+            if (_enabled) Say( "Touchdown" );
           }
           else {
             ; // remains in air
@@ -109,7 +105,7 @@ namespace FS20_HudBar.Triggers.Base
           break;
 
         case TState.Delay:
-          if (_delay > 0) { _delay--; return; }  // wait for next round
+          if (_delay-- > 0) return;  // wait for next round
 
           // after a wait time decide on the next state
           if (onGround) {
@@ -124,13 +120,13 @@ namespace FS20_HudBar.Triggers.Base
       }
     }
 
-    public override void Reset( )
+    public override void ResetTrigger( )
     {
       _state = TState.Unknown;
     }
 
     // Procs are not used here
-    public override void AddProc( EventProc callback )
+    public override void AddProc( EventProc<bool> callback )
     {
       throw new NotImplementedException( );
     }
@@ -140,5 +136,14 @@ namespace FS20_HudBar.Triggers.Base
       throw new NotImplementedException( );
     }
 
+    protected override bool DetectStateChange( bool level )
+    {
+      throw new NotImplementedException( );
+    }
+
+    public override void SetLevel( bool level, int itemIndex )
+    {
+      throw new NotImplementedException( );
+    }
   }
 }

@@ -28,14 +28,17 @@ namespace FS20_HudBar.GUI.Templates
     /// </summary>
     override public float? Value {
       set {
-        if ( value == null ) {
+        if (value == null) {
           this.Text = UnitString( m_default );
         }
-        else if ( float.IsNaN( (float)value ) ) {
+        else if (float.IsNaN( (float)value )) {
           this.Text = UnitString( m_default );
         }
         else {
-          this.Text = UnitString( $"{value,4:###0} " ); // positive only 4 digits, add a blank for alignment
+          if (value < 100)
+            this.Text = UnitString( $"{value,4:#0.0} " );    // 0..99.9 positive only 2+1 digits, add a blank for alignment
+          else this.Text = UnitString( $"{value,4:###0} " ); // 1000..9999 positive only 4 digits, add a blank for alignment
+
         }
       }
     }

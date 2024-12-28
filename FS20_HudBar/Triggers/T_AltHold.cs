@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 using SC = SimConnectClient;
 
@@ -26,7 +22,7 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SV, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, 5, OnDataArrival );  // update 2/sec 
     }
     /// <summary>
     /// Calls to un-register for dataupdates
@@ -121,7 +117,7 @@ namespace FS20_HudBar.Triggers
 
     // delay the readout after ALT is hold (the AltHold altitude seems to be delayed in certain cases)
     // as we have only one shoot - delay the readout for some cycles
-    private const int c_readDelay = 5; // update cycles
+    private const int c_readDelay = 10; // update cycles ~5sec
     private int _delay;
 
     // Alt holding state 
@@ -133,8 +129,9 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataRefName">Source of the data</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if (!m_enabled) return; // not enabled
-      if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
+      // sanity
+      if (!_enabled) return; // not enabled
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // capture odd cases
       if (SV.Get<bool>( SItem.bG_Sim_OnGround )) return; // not while on ground
 
       // get the ALT to readout and assign the words, while ALT is holding (and AP is on)
@@ -143,7 +140,7 @@ namespace FS20_HudBar.Triggers
 
         if (altHolding != _curAltHolding) {
           // only redo the translation when needed
-          m_actions.First( ).Value.Text = AltText( altHolding, SV.Get<bool>( SItem.bGS_Acft_Altimeter1_mode_Std ) );
+          _actions.First( ).Value.Text = AltText( altHolding, SV.Get<bool>( SItem.bGS_Acft_Altimeter1_mode_Std ) );
           _curAltHolding = altHolding;
         }
       }
@@ -153,11 +150,12 @@ namespace FS20_HudBar.Triggers
       DetectStateChange(
         (_delay-- <= 0) // delay the readout for a number of cycles
         && SV.Get<bool>( SItem.bG_Ap_AP_active )    // AP must be ON
-        && SV.Get<bool>( SItem.bGS_Ap_ALT_active )  // ALT must be holding
+        && SV.Get<bool>( SItem.bG_Ap_ALT_holding )  // ALT must be holding
       );
 
-      if (SV.Get<bool>( SItem.bGS_Ap_ALT_active ) == false) {
-        m_lastTriggered = false; // RESET if no longer captured
+      // reset condition ?
+      if (SV.Get<bool>( SItem.bG_Ap_ALT_holding ) == false) {
+        this.ResetTrigger();
         _delay = c_readDelay; // RESET delay count as well while not ALT holding
       }
     }
@@ -171,13 +169,14 @@ namespace FS20_HudBar.Triggers
     public T_AltHold( GUI.GUI_Speech speaker )
           : base( speaker )
     {
-      m_name = "AP ALT Hold";
-      m_test = $"Holding {AvTextAlt( 5500 )} feet";
-      m_test = $"Holding Flightlevel {AvTextFL( 190 )}";
+      _name = "AP ALT Hold";
+      _test = $"Holding {AvTextAlt( 5500 )} feet";
+      _test = $"Holding Flightlevel {AvTextFL( 190 )}";
 
       // add the proc most likely to be hit as the first - saves some computing time on the long run
-      m_lastTriggered = false;
-      this.AddProc( new EventProcBinary( ) { TriggerState = true, Callback = Say, Text = "Holding" } );
+      this.AddProc( new EventProcBinary( ) { Detector = new BinaryDetector( level: true, autoReset: false ), Callback = Say, Text = "Holding" } );
+
+      this.ResetTrigger( );
     }
 
   }

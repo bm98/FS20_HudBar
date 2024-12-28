@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FS20_HudBar.Triggers.Base
 {
   /// <summary>
   /// A template for Binary Triggers
+  ///  triggers the action when the BinaryEventProcs TriggerState is seen
+  ///  There can only be one True and one False EventProc
   /// </summary>
-  abstract class TriggerBinary : TriggerBase
+  abstract class TriggerBinary : TriggerBase<bool>
   {
-    // the internal state, nullable to provide a distinct reset/default level
-    protected bool? m_lastTriggered = false;
-
-    // the registered callback list
-    protected ConcurrentDictionary<bool, EventProcBinary> m_actions = new ConcurrentDictionary<bool, EventProcBinary>( );
-
     /// <summary>
     /// cTor: get the speaker 
     /// </summary>
@@ -30,49 +23,62 @@ namespace FS20_HudBar.Triggers.Base
     /// Detect binary state changes and trigger registered callbacks if there are
     /// </summary>
     /// <param name="state"></param>
-    protected void DetectStateChange( bool state )
+    protected override bool DetectStateChange( bool level )
     {
-      if (state != m_lastTriggered) {
-        try {
-          if (m_actions.ContainsKey( state )) {
-            m_actions[state].Callback.Invoke( m_actions[state].Text ); // trigger the callback
+      bool callout = false;
+      // goes through all registered levels and triggers the first fitting one if not done before
+      // will fire/reset the rest if needed
+      try {
+        EventProc<bool> todo = null;
+
+        foreach (var action in _actions) {
+          if ((action.Value.Detector as LevelDetectorBase<bool>).LevelDetected( level )) {
+            // capture the first to trigger
+            if (!_inhibited) {
+              todo = action.Value;
+            }
           }
-          m_lastTriggered = state; // save new state in any case
         }
-        catch {
-          // ignore, just don't bail out...
+        // call if needed
+        if (todo != null) {
+          todo.Callback.Invoke( todo.Text );
+          callout = true;
         }
       }
+      catch {
+        // ignore, just don't bail out...
+      }
+      return callout;
     }
 
+    /// <summary>
+    /// Set a new Level for an item
+    /// </summary>
+    /// <param name="level">The new Level</param>
+    /// <param name="itemIndex">the item index</param>
+    public override void SetLevel( bool level, int itemIndex )
+    {
+      // sanity 
+      if (itemIndex >= _actions.Count) return;
+
+      (_actions.ElementAt( itemIndex ).Value.Detector as LevelDetectorBase<bool>).Level = level;
+    }
 
     /// <summary>
     /// Add one Callback (a parameterless void method) for a distinct state
-    ///  Overwrites any existing one for the new state
+    ///  There can only be one True and one False EventProc
+    ///  Overwrites any existing one for the submitted state
     /// </summary>
     /// <param name="callback">A Callback EventProc</param>
-    public override void AddProc( EventProc callback )
+    public override void AddProc( EventProc<bool> callback )
     {
       if (!(callback is EventProcBinary)) throw new ArgumentException( "Requires a BinaryEventProc as argument" ); // Program ERROR
 
       // override existing ones
-      m_actions.TryRemove( callback.TriggerState, out _ );
-      m_actions.TryAdd( callback.TriggerState, (EventProcBinary)callback );
+      _actions.TryRemove( (callback.Detector as LevelDetectorBase<bool>).Level, out _ );
+      _actions.TryAdd( (callback.Detector as LevelDetectorBase<bool>).Level, callback );
 
     }
-
-    /// <summary>
-    /// Clears the Event Proc Stack
-    /// </summary>
-    public override void ClearProcs( )
-    {
-      m_actions.Clear( );
-    }
-
-    /// <summary>
-    /// Reset the trigger to callout the current state on the next update
-    /// </summary>
-    public override void Reset( ) => m_lastTriggered = null;
 
   }
 }

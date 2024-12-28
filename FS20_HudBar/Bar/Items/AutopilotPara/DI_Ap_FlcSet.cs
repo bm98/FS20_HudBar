@@ -60,7 +60,7 @@ namespace FS20_HudBar.Bar.Items
       _value1.Scrollable = true;
       _value1.Cursor = Cursors.SizeNS;
 
-      AddObserver( Short, 10, OnDataArrival );
+      AddObserver( Desc, 10, OnDataArrival );
     }
 
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
@@ -77,7 +77,7 @@ namespace FS20_HudBar.Bar.Items
           SV.Set<float>( SItem.fGS_Ap_IAS_setting_kt, value );
         }
         else {
-          SV.Set( SItem.cmS_Ap_IAS_setting_step, CmdMode.Inc );
+          SV.Set( SItem.cmS_Ap_SPD_setting_step, CmdMode.Inc );
         }
       }
       else if (e.Delta < 0) {
@@ -88,7 +88,7 @@ namespace FS20_HudBar.Bar.Items
           SV.Set<float>( SItem.fGS_Ap_IAS_setting_kt, value );
         }
         else {
-          SV.Set( SItem.cmS_Ap_IAS_setting_step, CmdMode.Dec );
+          SV.Set( SItem.cmS_Ap_SPD_setting_step, CmdMode.Dec );
         }
       }
     }

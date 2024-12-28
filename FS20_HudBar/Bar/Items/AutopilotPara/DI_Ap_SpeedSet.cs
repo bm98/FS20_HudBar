@@ -60,7 +60,7 @@ namespace FS20_HudBar.Bar.Items
       _value1.Scrollable = true;
       _value1.Cursor = Cursors.SizeNS;
 
-      AddObserver( Short, 10, OnDataArrival );
+      AddObserver( Desc, 10, OnDataArrival );
     }
 
     private void _value1_MouseWheel( object sender, MouseEventArgs e )
@@ -72,8 +72,8 @@ namespace FS20_HudBar.Bar.Items
 
       if (e.Delta > 0) {
         // Up
-        if (SV.Get<bool>( SItem.bGS_Ap_MACH_mode )) {
-          SV.Set<CmdMode>( SItem.cmS_Ap_MACH_setting_step, CmdMode.Inc );
+        if (SV.Get<bool>( SItem.bGS_Ap_MACH_dial )) {
+          SV.Set<CmdMode>( SItem.cmS_Ap_SPD_setting_step, CmdMode.Inc );
         }
         else {
           if (largeChange) {
@@ -81,14 +81,14 @@ namespace FS20_HudBar.Bar.Items
             SV.Set<float>( SItem.fGS_Ap_IAS_setting_kt, value );
           }
           else {
-            SV.Set<CmdMode>( SItem.cmS_Ap_IAS_setting_step, CmdMode.Inc );
+            SV.Set<CmdMode>( SItem.cmS_Ap_SPD_setting_step, CmdMode.Inc );
           }
         }
       }
       else if (e.Delta < 0) {
         // Down
-        if (SV.Get<bool>( SItem.bGS_Ap_MACH_mode )) {
-          SV.Set<CmdMode>( SItem.cmS_Ap_MACH_setting_step, CmdMode.Dec );
+        if (SV.Get<bool>( SItem.bGS_Ap_MACH_dial )) {
+          SV.Set<CmdMode>( SItem.cmS_Ap_SPD_setting_step, CmdMode.Dec );
         }
         else {
           if (largeChange) {
@@ -97,7 +97,7 @@ namespace FS20_HudBar.Bar.Items
             SV.Set<float>( SItem.fGS_Ap_IAS_setting_kt, value );
           }
           else {
-            SV.Set<CmdMode>( SItem.cmS_Ap_IAS_setting_step, CmdMode.Dec );
+            SV.Set<CmdMode>( SItem.cmS_Ap_SPD_setting_step, CmdMode.Dec );
           }
         }
       }
@@ -108,7 +108,7 @@ namespace FS20_HudBar.Bar.Items
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
       //      SV.SPDhold_active = true; // toggles independent of the set value
-      SV.Set( SItem.cmS_Ap_IAS_hold_current, CmdMode.Toggle );
+      SV.Set( SItem.cmS_Ap_SPD_hold_current, CmdMode.Toggle );
     }
 
     /// <summary>
@@ -118,9 +118,9 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         // set MACH mode
-        (_value1 as V_Speed).MachMode = SV.Get<bool>( SItem.bGS_Ap_MACH_mode );
+        (_value1 as V_Speed).MachMode = SV.Get<bool>( SItem.bGS_Ap_MACH_dial );
         // Set Value and color
-        if (SV.Get<bool>( SItem.bGS_Ap_MACH_mode )) {
+        if (SV.Get<bool>( SItem.bGS_Ap_MACH_dial )) {
           Label.Text = Short + "m";
           this.ColorType.ItemForeColor = SV.Get<bool>( SItem.bGS_Ap_SPD_active ) ? cTxAPActive : cTxLabel;
           _value1.Value = SV.Get<float>( SItem.fG_Ap_MACH_setting_mach );

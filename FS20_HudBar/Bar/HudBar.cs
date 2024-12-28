@@ -21,8 +21,7 @@ using FS20_HudBar.Config;
 using FSimClientIF.Modules;
 using static FSimClientIF.Sim;
 using FSimClientIF;
-using PingLib;
-using FSFData;
+using FShelf;
 
 namespace FS20_HudBar.Bar
 {
@@ -45,6 +44,13 @@ namespace FS20_HudBar.Bar
     // this part is maintaned only once for all HudBar Instances (there is only One Instance at any given time - else it breaks...)
 
     /// <summary>
+    /// Returns a ref for the FlightBag main API
+    /// TODO - may be using an Interface ??
+    /// </summary>
+    public static IFlightBagAPI FlightBagRef => _flightBagRef;
+    private static IFlightBagAPI _flightBagRef;
+
+    /// <summary>
     /// The current Shelf Flightplan
     /// </summary>
     public static FSimFlightPlans.FlightPlan FlightPlanRef => _flightPlanRef;
@@ -56,7 +62,7 @@ namespace FS20_HudBar.Bar
     {
       _flightPlanRef = flightPlanRef;
     }
-    private static FSimFlightPlans.FlightPlan _flightPlanRef = new FSimFlightPlans.FlightPlan( ); // init empty
+    private static FSimFlightPlans.FlightPlan _flightPlanRef = FSimFlightPlans.FlightPlan.Empty; // init empty
 
 
     // voice and sounds  - static, will never be disposed
@@ -88,7 +94,7 @@ namespace FS20_HudBar.Bar
 
     // An alert chime: 2 bright bell rings
     private static readonly PingLib.SoundBite _soundChime
-      = new SoundBite( Melody.Bell_1, 45, 1.2f, 2, 0.2f, 2f ); // rate=2 to play and end it faster, volume is lowered
+      = new PingLib.SoundBite( PingLib.Melody.Bell_1, 45, 1.2f, 2, 0.2f, 2f ); // rate=2 to play and end it faster, volume is lowered
     /// <summary>
     /// The Chime Sound
     /// </summary>
@@ -310,14 +316,17 @@ namespace FS20_HudBar.Bar
     /// <param name="valueProto">A GUI prototype value, carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="value2Proto">A GUI prototype value type 2, carrying fonts, colors etc (set in GUI design mode)</param>
     /// <param name="signProto">A GUI prototype icon(Wingdings), carrying fonts, colors etc (set in GUI design mode)</param>
+    /// <param name="hotkeys">Ref for the Hotkey handler</param>
     /// <param name="config">The actual configuration obj</param>
+    /// <param name="flightBag">Ref for the Flightbag API</param>
     public HudBar( Label lblProto, Label valueProto, Label value2Proto, Label signProto,
-                   WinHotkeyCat hotkeys, Configuration config )
+                   WinHotkeyCat hotkeys, Configuration config, IFlightBagAPI flightBag )
     {
       LOG.Info( "HudBar.cTor", "Start" );
 
       // use config items here
       _configRef = config;
+      _flightBagRef = flightBag;
 
       Hotkeys = hotkeys.Copy( );
       // Voice and Sounds

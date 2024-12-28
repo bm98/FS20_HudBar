@@ -51,7 +51,7 @@ namespace FS20_HudBar.Bar.Items
       _value3 = new V_ICAO( value2Proto );
       this.AddItem( _value3 ); vCat.AddLbl( item, _value3 );
 
-      AddObserver( Short, 0.5f, OnDataArrival ); // once per sec
+      AddObserver( Desc, 0.5f, OnDataArrival ); // once per sec
     }
 
     /// <summary>

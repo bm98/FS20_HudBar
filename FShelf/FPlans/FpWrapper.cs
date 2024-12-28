@@ -18,6 +18,7 @@ using FSimFlightPlans.SimBrief;
 using FSimFlightPlans.GPX;
 using FSimFlightPlans.RTE;
 using FSimFlightPlans.LNM;
+using FSimFlightPlans.GarminFPL;
 using bm98_hbFolders;
 using FSimClientIF.Modules;
 using static FSimClientIF.Sim;
@@ -42,7 +43,7 @@ namespace FShelf.FPlans
 
 
     // holds the currently loaded plan 
-    private FlightPlan _fPlan = new FlightPlan( );
+    private FlightPlan _fPlan = FlightPlan.Empty;
 
     // attach the property module - this does not depend on the connection established or not
     private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
@@ -62,6 +63,7 @@ namespace FShelf.FPlans
     private readonly LNMpln _lnmPln;
     private readonly GPXpln _lnmGpx;
     private readonly RTEpln _lnmRte;
+    private readonly GarminFpl _garFpl;
 
     private string _lastRequestedFile = ""; // debug info 
 
@@ -109,6 +111,11 @@ namespace FShelf.FPlans
     /// </summary>
     public bool IsGenRTE => _fPlan.IsValid && (_fPlan.Source == SourceOfFlightPlan.GEN_Rte);
 
+    /// <summary>
+    /// True if the GARMINfpl Export Plan is in use
+    /// </summary>
+    private bool IsGarminFPL => _fPlan.IsValid && (_fPlan.Source == SourceOfFlightPlan.GARMIN_Fpl);
+
 
     /// <summary>
     /// Get: the FlightPlan
@@ -138,10 +145,13 @@ namespace FShelf.FPlans
       _lnmRte = new RTEpln( );
       _lnmRte.RTEplnDataEvent += _generic_FlightPlanDataEvent;
 
+      _garFpl = new GarminFpl( );
+      _garFpl.GARMINfplDataEvent += _generic_FlightPlanDataEvent;
+
       // register DataUpdates if in HudBar mode and if not yet done 
-      if (SC.SimConnectClient.Instance.IsConnected && (_observerID < 0)) {
+      if (_observerID < 0) {
         LOG.Trace( "FpWrapper.cTor", "Start Observing" );
-        _observerID = SV.AddObserver( _observerName, 10, OnDataArrival, this ); // 1/sec
+        _observerID = SV.AddObserver( _observerName, 10, OnDataArrival, null ); // 1/sec
       }
     }
 
@@ -176,6 +186,9 @@ namespace FShelf.FPlans
       }
       else if (planFile.ToLowerInvariant( ).EndsWith( ".gpx" )) {
         _lnmGpx.PostDocument_Request( planFile );
+      }
+      else if (planFile.ToLowerInvariant( ).EndsWith( ".fpl" )) {
+        _garFpl.PostDocument_Request( planFile );
       }
       else if (planFile.ToLowerInvariant( ).EndsWith( ".rte" )) {
         _lnmRte.PostDocument_Request( planFile );
@@ -263,6 +276,20 @@ namespace FShelf.FPlans
           if (gpx.IsValid) {
             _fPlan = GPXpln.AsFlightPlan( gpx );
             LoadMessage = $"GPX: {FlightPlan.Origin.Icao_Ident} to {FlightPlan.Destination.Icao_Ident}";
+            okFlag = true;
+          }
+          else {
+            LoadMessage = $"No valid data received";
+          }
+          break;
+
+        case FSimFlightPlans.SourceOfFlightPlan.GARMIN_Fpl:
+          DebSaveRouteString( e.PlanData, "FPL" );
+          LoadMessage = "FPL data received";
+          var fplRte = FSimFlightPlans.GarminFPL.FPLDEC.GarminFplDecoder.FromString( e.PlanData );
+          if (fplRte.IsValid) {
+            _fPlan = GarminFpl.AsFlightPlan( fplRte );
+            LoadMessage = $"FPL: {FlightPlan.Origin.Icao_Ident} to {FlightPlan.Destination.Icao_Ident}";
             okFlag = true;
           }
           else {
@@ -377,6 +404,9 @@ namespace FShelf.FPlans
           ; // nothing
         }
         else if (IsLnmGPX) {
+          ; // nothing
+        }
+        else if (IsGarminFPL) {
           ; // nothing
         }
         else if (IsGenRTE) {

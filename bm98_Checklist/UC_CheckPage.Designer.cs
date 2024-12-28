@@ -823,7 +823,7 @@ namespace bm98_Checklist
       this.txPhaseE.Name = "txPhaseE";
       this.txPhaseE.Size = new System.Drawing.Size(152, 25);
       this.txPhaseE.TabIndex = 50;
-      this.txPhaseE.Text = "DESCEND";
+      this.txPhaseE.Text = "DESCENT";
       // 
       // txChkItem_E_2
       // 

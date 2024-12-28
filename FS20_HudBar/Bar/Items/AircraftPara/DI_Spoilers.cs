@@ -45,7 +45,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Steps( signProto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     private void _label_ButtonClicked( object sender, EventArgs e )
@@ -67,28 +67,28 @@ namespace FS20_HudBar.Bar.Items
 
         float sp = SV.Get<float>( SItem.fGS_Flp_SpoilerHandle_position_prct );
 
-        if (sp < 0.05) {
+        if (sp < 5) {
           return Steps.UpOK;
         }
-        else if (sp < 0.15) {
+        else if (sp < 15) {
           return Steps.P1;
         }
-        else if (sp < 0.25) {
+        else if (sp < 25) {
           return Steps.P2;
         }
-        else if (sp < 0.35) {
+        else if (sp < 35) {
           return Steps.P3;
         }
-        else if (sp < 0.45) {
+        else if (sp < 45) {
           return Steps.P4;
         }
-        else if (sp < 0.55) {
+        else if (sp < 55) {
           return Steps.P5;
         }
-        else if (sp < 0.65) {
+        else if (sp < 65) {
           return Steps.P6;
         }
-        else if (sp < 0.75) {
+        else if (sp < 75) {
           return Steps.P7;
         }
         return Steps.PEnd;

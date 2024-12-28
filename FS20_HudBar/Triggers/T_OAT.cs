@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using SC = SimConnectClient;
+﻿using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
 using static FSimClientIF.Sim;
@@ -21,16 +15,16 @@ namespace FS20_HudBar.Triggers
   class T_OAT : TriggerFloat
   {
     // the OAT we start processing (not above)
-    private const float c_detectionOAT = 5f;
+    private const float c_upperDetectionOAT = 5f;
 
-    private TSmoother _smooth = new TSmoother( );
+    private readonly TSmoother _smooth = new TSmoother( );
 
     /// <summary>
     /// Calls to register for dataupdates
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SV, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, 5, OnDataArrival );  // update 2/sec 
     }
     /// <summary>
     /// Calls to un-register for dataupdates
@@ -46,24 +40,20 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAircraft object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if (!m_enabled) return; // not enabled
-      if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
+      // sanity
+      if (!_enabled) return; // not enabled
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // capture odd cases
 
-      var ds = SV;
       _smooth.Add( SV.Get<float>( SItem.fG_Env_OutsideTemperature_degC ) ); // smoothen
 
-      if (_smooth.GetFloat > c_detectionOAT) {
-        // when OAT is above 5 retrigger the alert detection
-        m_lastTriggered = c_detectionOAT;
+      if (_smooth.GetFloat <= c_upperDetectionOAT) {
+        // in callout range
+        DetectStateChange( _smooth.GetFloat );
       }
       else {
-        // in callout range
-        if (_smooth.GetFloat < m_lastTriggered) {
-          // only if below last callout
-          DetectStateChange( _smooth.GetFloat );
-        }
+        // only when OAT gets above det. limit, retrigger the alert detection
+        this.ResetTrigger( );
       }
-
     }
 
 
@@ -76,13 +66,15 @@ namespace FS20_HudBar.Triggers
     public T_OAT( GUI.GUI_Speech speaker )
       : base( speaker )
     {
-      m_name = "OAT Icing";
-      m_test = "Icing Alert";
+      _name = "OAT Icing";
+      _test = "Icing Alert";
 
-      m_lastTriggered = 20; // trigger at start
       // add the proc most likely to be hit as the first - saves some computing time on the long run
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( 3.0f, 1.0f ), Callback = Say, Text = "Low Air Temperature" } ); // around 3 °C
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( -5.0f, 5.0f ), Callback = Say, Text = "Icing Alert" } );  // capture 0..-10 change
+      this.AddProc( new EventProcFloat( ) { Detector = new BandDetector<float>( 3.0f, 1.0f, 2.0f, autoReset: false ), Callback = Say, Text = "Low Air Temperature" } ); //4 .. 1
+      this.AddProc( new EventProcFloat( ) { Detector = new BandDetector<float>( 0.0f, 0.5f, 7.0f, autoReset: false ), Callback = Say, Text = "Icing Alert" } );  //0.5 .. -7
+
+      // start triggered to avoid callout at start, will reset if above det. limit
+      this.SetTrigger( );
     }
 
   }

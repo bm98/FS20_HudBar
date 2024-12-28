@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using SC = SimConnectClient;
+﻿using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
 using FS20_HudBar.Bar;
@@ -26,9 +20,9 @@ namespace FS20_HudBar.Triggers
     /// Get;Set; enabled state of this Voice Trigger Element
     /// </summary>
     public override bool Enabled {
-      get => m_enabled;
+      get => _enabled;
       set {
-        m_enabled = value;
+        _enabled = value;
       }
     }
 
@@ -37,7 +31,7 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SV, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, 5, OnDataArrival );  // update 2/sec 
     }
     /// <summary>
     /// Calls to un-register for dataupdates
@@ -53,26 +47,20 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IHudBar object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
+      // sanity
       if (!Enabled) return; // not enabled
-      if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // capture odd cases
+      if (SV.Get<float>( SItem.fG_Eng_RotorMain_rpm ) > 0) return; // Not with HELI !!
+      if (SV.Get<float>( SItem.fG_Acft_Accel_acftZ_fps2 ) < 0.1f) return; // not accelerating (enough to be considered as takeoff..)
 
-      if (SV.Get<float>( SItem.fG_Eng_RotorMain_rpm) > 0 ) return; // Not with HELI !!
 
-      if (SV.Get<bool>( SItem.bG_Sim_OnGround)) {
-        // on ground we disable callouts, this lasts on the way up until a positive rate is detected
-        m_lastTriggered = false;
+      if (SV.Get<bool>( SItem.bG_Sim_OnGround )) {
+        this.ResetTrigger( ); // reset        
+        return; // on ground we don't callout
       }
-      else {
-        // in air
-        if (m_lastTriggered ?? false) {
-          // was already triggered 
-          m_lastTriggered = Calculator.PositiveRate; // this would retrigger in case the detector is reset
-        }
-        else {
-          // wait until triggered
-          DetectStateChange( Calculator.PositiveRate );
-        }
-      }
+
+      // in air
+      DetectStateChange( Calculator.PositiveRate );
     }
 
 
@@ -83,13 +71,14 @@ namespace FS20_HudBar.Triggers
     public T_PositiveRate( GUI.GUI_Speech speaker )
     : base( speaker )
     {
-      m_name = "Positive Rate";
-      m_test = "Positive Rate";
+      _name = "Positive Rate";
+      _test = "Positive Rate";
 
       // need to set this below the lowest callout level, it will be activated only once we are above our detection RA
-      m_lastTriggered = false;
+      this.AddProc( new EventProcBinary( ) { Detector = new BinaryDetector( level: true, autoReset: false ), Callback = Say, Text = "Positive Rate" } );
 
-      this.AddProc( new EventProcBinary( ) { TriggerState = true, Callback = Say, Text = "Positive Rate" } );
+      // start with fired, will be reset when on ground, otherwise if created in flight will not trigger
+      this.SetTrigger( );
     }
 
   }

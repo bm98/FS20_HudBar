@@ -52,7 +52,7 @@ namespace FS20_HudBar.Bar.Items
       _label.Scrollable = true;
       _label.Cursor = Cursors.SizeNS;
 
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     private void _label_MouseWheel( object sender, MouseEventArgs e )

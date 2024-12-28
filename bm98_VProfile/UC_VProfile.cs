@@ -87,6 +87,10 @@ namespace bm98_VProfile
       /// A list of Waypoints, where the first is expected to be the Next Routepoint
       /// </summary>
       public List<UC_VProfilePropsRoutepoint> WaypointList { get; set; }
+      /// <summary>
+      /// TopOfDescent 'Routepoint'
+      /// </summary>
+      public UC_VProfilePropsRoutepoint TopOfDescentRtp { get; set; }
 
       /// <summary>
       /// cTor: Copy constructor
@@ -102,6 +106,7 @@ namespace bm98_VProfile
         if (other.WaypointList != default) {
           this.WaypointList = other.WaypointList.ToList( );
         }
+        this.TopOfDescentRtp = other.TopOfDescentRtp;
       }
 
     }

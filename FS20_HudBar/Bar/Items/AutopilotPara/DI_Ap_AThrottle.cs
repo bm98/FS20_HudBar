@@ -64,14 +64,14 @@ namespace FS20_HudBar.Bar.Items
       _value2.Click += _value2_Click;
       _value2.Cursor = Cursors.Hand;
 
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     private void _value1_Click( object sender, EventArgs e )
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      SV.Set( SItem.S_Ap_ATHR_toggle, true ); // toggles
+      SV.Set( SItem.bS_Ap_ATHR_toggle, true ); // toggles
     }
 
     private void _value2_Click( object sender, EventArgs e )

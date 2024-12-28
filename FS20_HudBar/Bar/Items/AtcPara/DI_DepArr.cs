@@ -10,7 +10,6 @@ using SC = SimConnectClient;
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
-using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -52,7 +51,7 @@ namespace FS20_HudBar.Bar.Items
       _value2 = new V_ICAO( value2Proto );
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
 
-      AddObserver( Short, 0.5f, OnDataArrival );
+      AddObserver( Desc, 0.5f, OnDataArrival );
     }
 
     // User Enty of Airport ICAOs
@@ -61,66 +60,7 @@ namespace FS20_HudBar.Bar.Items
       // if (!SC.SimConnectClient.Instance.IsConnected) return; // need to set it even if the Sim is not connected
 
       var TTX = new Config.frmApt( );
-      // load default
-      if (HudBar.FlightPlanRef.IsValid) {
-        // dest from FPLan
-        TTX.DepAptICAO = HudBar.FlightPlanRef.Origin.Icao_Ident;
-        TTX.ArrAptICAO = HudBar.FlightPlanRef.Destination.Icao_Ident;
-      }
-      else {
-        // no Flightplan
-        if (AirportMgr.IsDepAvailable) {
-          // departure from Mgr (prev entry)
-          TTX.DepAptICAO = AirportMgr.DepAirportICAO;
-        }
-        else {
-          // no preset
-          TTX.DepAptICAO = "";
-        }
-
-        if (AirportMgr.IsArrAvailable) {
-          // destination from Mgr (prev entry)
-          TTX.ArrAptICAO = AirportMgr.ArrAirportICAO;
-        }
-        else {
-          // no preset
-          TTX.ArrAptICAO = "";
-        }
-      }
-
       if (TTX.ShowDialog( this ) == DialogResult.OK) {
-        // Update DEP
-        if (string.IsNullOrWhiteSpace( TTX.DepAptICAO )) {
-          // empty entry to clear
-          if (HudBar.FlightPlanRef.IsValid) {
-            // update with FP origin
-            AirportMgr.UpdateDep( HudBar.FlightPlanRef.Origin.Icao_Ident );
-          }
-          else {
-            // clear with N.A. airport
-            AirportMgr.UpdateDep( AirportMgr.AirportNA_Icao );
-          }
-        }
-        else {
-          // user entry - will be checked in the Mgr
-          AirportMgr.UpdateDep( TTX.DepAptICAO );
-        }
-        // Update ARR
-        if (string.IsNullOrWhiteSpace( TTX.ArrAptICAO )) {
-          // empty entry to clear
-          if (HudBar.FlightPlanRef.IsValid) {
-            // update with FP destination
-            AirportMgr.UpdateArr( HudBar.FlightPlanRef.Destination.Icao_Ident );
-          }
-          else {
-            // clear with N.A. airport
-            AirportMgr.UpdateArr( AirportMgr.AirportNA_Icao );
-          }
-        }
-        else {
-          // user entry - will be checked in the Mgr
-          AirportMgr.UpdateArr( TTX.ArrAptICAO );
-        }
       }
     }
 

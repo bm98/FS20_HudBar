@@ -41,7 +41,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Deg( valueProto ) { ItemForeColor = cTxGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, 2, OnDataArrival);
+      AddObserver( Desc, 2, OnDataArrival);
     }
 
     /// <summary>
@@ -51,6 +51,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         if (SV.Get<bool>( SItem.bG_Gps_FP_tracking )) {
+          // Wyp BRG is available from GPS (not in our Tracker)
           _value1.Value = SV.Get<float>( SItem.fG_Gps_WYP_brg_mag_degm );
         }
         else {

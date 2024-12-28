@@ -39,7 +39,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Pounds( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, 1, OnDataArrival ); // once per sec
+      AddObserver( Desc, 1, OnDataArrival ); // once per sec
     }
 
     /// <summary>

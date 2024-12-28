@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="txRoute.Text" xml:space="preserve">
+    <value>EDDF/07R N0496F340 MARU1D MARUN Y152 ARPEG Z850 HMM L602 SUPUR P1 ROLUM P13 ASKAM L7 TIMUP DCT SOSAR/M085F340 DCT 69N010W/M086F360 75N020W 80N040W 82N060W/N0489F360 82N080W 82N100W 81N120W/N0494F380 DCT OMEKA DCT JUJXI DCT MARCC R338 NATES R220 NANAC Y810 OLDIV Y809 SUPOK SUPOKT RJAA/34L RJSF/01</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

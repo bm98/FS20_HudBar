@@ -55,7 +55,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value2 ); vCat.AddLbl( item, _value2 );
       _value2.Cursor = Cursors.Hand;
       _value2.MouseClick += _value2_MouseClick;
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     // Inc/Dec Standby Frequ

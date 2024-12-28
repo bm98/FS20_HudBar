@@ -42,8 +42,9 @@ namespace FShelf
 {
   /// <summary>
   /// FlightBag (Shelf) Form
+  ///   Provides an API
   /// </summary>
-  public partial class frmShelf : Form
+  public partial class frmShelf : Form, IFlightBagAPI
   {
     // A logger
     private static readonly IDbg LOG = Dbg.Instance.GetLogger(
@@ -53,6 +54,8 @@ namespace FShelf
     // RA display limits (Should match the ones in HudBar Calculator - but there is no sensible shared library to place them)
     private const float c_raDefault_ft = 1500;
     private const float c_raAirliner_ft = 2500;
+    // ICAO display for airport not available
+    private const string c_airportNA = "n.a.";
 
     // SimConnect Client Adapter
     // (!! used only to establish the connection and handle the Online color label !!)
@@ -131,7 +134,11 @@ namespace FShelf
     /// Fired when the user loaded a valid flightplan
     /// </summary>
     public event EventHandler<EventArgs> FlightPlanLoadedByUser;
-    private void OnFlightPlanLoadedByUser( ) => FlightPlanLoadedByUser?.Invoke( this, new EventArgs( ) );
+    private void OnFlightPlanLoadedByUser( )
+    {
+      FlightPlanLoadedByUser?.Invoke( this, new EventArgs( ) );
+      aMap?.RenderItems( ); // will update if there is a need for it
+    }
 
 
     /// <summary>
@@ -142,7 +149,7 @@ namespace FShelf
     public FSimFlightPlans.FlightPlan FlightPlanRef => _flightPlanHandler.FlightPlan;
 
     /// <summary>
-    /// Departure Airport IlsID
+    /// Departure Airport ICAO ID
     /// </summary>
     public string DEP_Airport {
       get => _dep_Airport;
@@ -152,9 +159,9 @@ namespace FShelf
         lblDEP.Text = value; // maintain in MAP
       }
     }
-    private string _dep_Airport = "n.a.";
+    private string _dep_Airport = c_airportNA;
     /// <summary>
-    /// Arrival Airport IlsID
+    /// Arrival Airport ICAO ID
     /// </summary>
     public string ARR_Airport {
       get => _arr_Airport;
@@ -164,7 +171,111 @@ namespace FShelf
         lblARR.Text = value; // maintain in MAP
       }
     }
-    private string _arr_Airport = "n.a.";
+    private string _arr_Airport = c_airportNA;
+
+    /// <summary>
+    /// The active SimBrief Pilot ID
+    /// </summary>
+    public string SimBriefID => AppSettings.Instance.SbPilotID;
+
+    /// <summary>
+    /// Load the active FP from SimBrief - reports via FlightPlanLoadedByUser Event
+    /// using the Setting ID
+    /// </summary>
+    /// <returns>True if loading</returns>
+    public bool LoadFromSimBrief( )
+    {
+      if (SimBrief.IsSimBriefUserID( SimBriefID )) {
+        _flightPlanHandler.RequestSBDownload( SimBriefID );
+        // will report in the Event
+        return true;
+      }
+      return false;
+    }
+
+    /// <summary>
+    /// Open a Dialog to load a FLightPlan from File - reports via FlightPlanLoadedByUser Event
+    /// </summary>
+    /// <returns>True if loading</returns>
+    public bool LoadFlightPlanFile( )
+    {
+      // override GUI
+      OFD.Filter = "MSFS Flightplans|*.pln;*.flt|LittleNavMap Plan|*.lnmpln|Garmin FPL file|*.fpl|GPX File|*.gpx|Route String|*.rte|All files|*.*";
+      OFD.Title = "Select and Load a Flightplan";
+      // usually it is the last selected one
+      var path = AppSettings.Instance.LastMsfsPlan;
+      path = string.IsNullOrWhiteSpace( path ) ? "DUMMY" : path; // cannot handle empty strings..
+      if (Directory.Exists( Path.GetDirectoryName( path ) )) {
+        // path exists - use it
+        OFD.FileName = Path.GetFileName( path );
+        OFD.InitialDirectory = Path.GetDirectoryName( path );
+        OFD.FilterIndex = (Path.GetExtension( path ).ToLowerInvariant( ) == ".rte") ? 5
+          : (Path.GetExtension( path ).ToLowerInvariant( ) == ".gpx") ? 4
+          : (Path.GetExtension( path ).ToLowerInvariant( ) == ".fpl") ? 3
+          : (Path.GetExtension( path ).ToLowerInvariant( ) == ".lnmpln") ? 2
+          : (Path.GetExtension( path ).ToLowerInvariant( ) == ".pln") ? 1
+          : (Path.GetExtension( path ).ToLowerInvariant( ) == ".flt") ? 1
+          : 6;
+      }
+      else {
+        // set a default path if the last one does not longer exists
+        OFD.FileName = "CustomFlight.pln";
+        OFD.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
+        OFD.FilterIndex = 1;
+      }
+
+      if (OFD.ShowDialog( this ) == DialogResult.OK) {
+        //selected
+        lblCfgPlanMessage.Text = "loading...";
+        if (_flightPlanHandler.RequestPlan( OFD.FileName )) {
+          return true;
+          // will report in the Event
+        }
+      }
+      return false;
+    }
+
+    /// <summary>
+    /// Loads the default PLN file - reports via FlightPlanLoadedByUser Event
+    /// </summary>
+    /// <returns>True if loading</returns>
+    public bool LoadDefaultPLN( )
+    {
+      // call for a XML PLN
+      if (_flightPlanHandler.RequestPlan( MSFSPln.CustomFlightPlan_filename )) {
+        return true;
+        // will report in the Event
+      };
+      return false;
+    }
+
+    /// <summary>
+    /// Load a Route String - reports via FlightPlanLoadedByUser Event
+    /// </summary>
+    /// <returns>True if loading</returns>
+    public bool LoadRouteString( string routeString )
+    {
+      // never fail
+      try {
+        // create a tempfile for this route
+        string tmpFile = Path.GetTempFileName( );
+        string useFile = tmpFile + ".rte"; // must have .rte extension
+        File.Move( tmpFile, useFile );
+        using (var sw = new StreamWriter( useFile )) {
+          sw.WriteLine( routeString );
+        }
+        lblCfgPlanMessage.Text = "loading...";
+        if (_flightPlanHandler.RequestPlan( useFile )) {
+          return true;
+          // will report in the Event
+        }
+      }
+      catch (Exception ex) {
+        LOG.Error( ex, "LoadRouteString: failed with exception" );
+      }
+
+      return false;
+    }
 
     #region AppSettingUpdate
 
@@ -486,9 +597,13 @@ namespace FShelf
       rbKLbs.Checked = AppSettings.Instance.WeightLbs; // will toggle if needed
       rtbNotes.Text = AppSettings.Instance.NotePadText;
 
-      // set prev. used airports
-      DEP_Airport = AppSettings.Instance.DepICAO;
-      ARR_Airport = AppSettings.Instance.ArrICAO;
+      // set prev. used airports if not already set
+      if (DEP_Airport == c_airportNA) {
+        DEP_Airport = AppSettings.Instance.DepICAO;
+      }
+      if (ARR_Airport == c_airportNA) {
+        ARR_Airport = AppSettings.Instance.ArrICAO;
+      }
       // defaults in config from prev use as well (not updated through the Property above)
       txCfgDep.Text = DEP_Airport;
       txCfgArr.Text = ARR_Airport;
@@ -524,7 +639,7 @@ namespace FShelf
       txCfgSbPilotID.Text = AppSettings.Instance.SbPilotID;
 
       try {// don't ever fail
-        comboCfgRunwayLength.SelectedIndex = AppSettings.Instance.MinRwyLengthCombo;
+        comboCfgRunwayLength.SelectedIndex = (AppSettings.Instance.MinRwyLengthCombo >= 0) ? AppSettings.Instance.MinRwyLengthCombo : 0;
       }
       catch { comboCfgRunwayLength.SelectedIndex = 0; }
 
@@ -603,46 +718,57 @@ namespace FShelf
     // about to close the form
     private void frmShelf_FormClosing( object sender, FormClosingEventArgs e )
     {
+      LOG.Info( "ShelfForm about to close" );
+
       this.TopMost = false;
 
-      // save last known good form location and size
-      if (this.Visible && this.WindowState == FormWindowState.Normal) {
-        AppSettings.Instance.ShelfLocation = this.Location;
-        AppSettings.Instance.ShelfSize = this.Size;
+      // Check if Form was not initialized
+      if (!this.Created || (comboCfgRunwayLength.SelectedIndex < 0)) {
+        // happens when flightplan processing is active but the Form was never called by the user
+        // DON'T SAVE SETTINGS, 
+        LOG.Info( "ShelfForm was not yet created - omit save of Settings" );
+        ; // DEBUG STOP
       }
       else {
-        AppSettings.Instance.ShelfLocation = _lastLiveLocation;
-        AppSettings.Instance.ShelfSize = _lastLiveSize;
-      }
-      // save last known config and Airport settings for the next start
-      AppSettings.Instance.WeightLbs = rbKLbs.Checked;
-      AppSettings.Instance.NotePadText = rtbNotes.Text;
-      AppSettings.Instance.MinRwyLengthCombo = comboCfgRunwayLength.SelectedIndex;
-      AppSettings.Instance.DepICAO = DEP_Airport;
-      AppSettings.Instance.ArrICAO = ARR_Airport;
-      // map settings
-      AppSettings.Instance.MapGrid = aMap.ShowMapGrid;
-      AppSettings.Instance.AirportRings = aMap.ShowAirportRange;
-      AppSettings.Instance.FlightplanRoute = aMap.ShowRoute;
-      AppSettings.Instance.VorNdb = aMap.ShowNavaids;
-      AppSettings.Instance.VFRmarks = aMap.ShowVFRMarks;
-      AppSettings.Instance.AptMarks = aMap.ShowAptMarks;
-      AppSettings.Instance.AcftMark = aMap.ShowTrackedAircraft;
-      AppSettings.Instance.AutoRange = aMap.AutoRange;
-      AppSettings.Instance.AcftAI = cbxCfgShowOtherAcft.Checked // must be checked, else set None
-        ? (int)aMap.ShowOtherAircrafts
-        : (int)AcftAiDisplayMode.None;
+        // save last known good form location and size
+        if (this.Visible && this.WindowState == FormWindowState.Normal) {
+          AppSettings.Instance.ShelfLocation = this.Location;
+          AppSettings.Instance.ShelfSize = this.Size;
+        }
+        else {
+          AppSettings.Instance.ShelfLocation = _lastLiveLocation;
+          AppSettings.Instance.ShelfSize = _lastLiveSize;
+        }
+        // save last known config and Airport settings for the next start
+        AppSettings.Instance.WeightLbs = rbKLbs.Checked;
+        AppSettings.Instance.NotePadText = rtbNotes.Text;
+        AppSettings.Instance.MinRwyLengthCombo = comboCfgRunwayLength.SelectedIndex;
+        AppSettings.Instance.DepICAO = DEP_Airport;
+        AppSettings.Instance.ArrICAO = ARR_Airport;
+        // map settings
+        AppSettings.Instance.MapGrid = aMap.ShowMapGrid;
+        AppSettings.Instance.AirportRings = aMap.ShowAirportRange;
+        AppSettings.Instance.FlightplanRoute = aMap.ShowRoute;
+        AppSettings.Instance.VorNdb = aMap.ShowNavaids;
+        AppSettings.Instance.VFRmarks = aMap.ShowVFRMarks;
+        AppSettings.Instance.AptMarks = aMap.ShowAptMarks;
+        AppSettings.Instance.AcftMark = aMap.ShowTrackedAircraft;
+        AppSettings.Instance.AutoRange = aMap.AutoRange;
+        AppSettings.Instance.AcftAI = cbxCfgShowOtherAcft.Checked // must be checked, else set None
+          ? (int)aMap.ShowOtherAircrafts
+          : (int)AcftAiDisplayMode.None;
 
-      // config settings
-      AppSettings.Instance.PrettyMetar = cbxCfgPrettyMetar.Checked;
-      AppSettings.Instance.AcftRange = cbxCfgAcftRange.Checked;
-      AppSettings.Instance.AcftWind = cbxCfgAcftWind.Checked;
-      AppSettings.Instance.AcftTrack = cbxCfgAcftTrack.Checked;
-      AppSettings.Instance.AcftAIChecked = cbxCfgShowOtherAcft.Checked;
-      AppSettings.Instance.AcftAIFilter = txAiFilter.Text.Trim( );
-      AppSettings.Instance.SbPilotID = txCfgSbPilotID.Text.Trim( );
-      //--
-      AppSettings.Instance.Save( );
+        // config settings
+        AppSettings.Instance.PrettyMetar = cbxCfgPrettyMetar.Checked;
+        AppSettings.Instance.AcftRange = cbxCfgAcftRange.Checked;
+        AppSettings.Instance.AcftWind = cbxCfgAcftWind.Checked;
+        AppSettings.Instance.AcftTrack = cbxCfgAcftTrack.Checked;
+        AppSettings.Instance.AcftAIChecked = cbxCfgShowOtherAcft.Checked;
+        AppSettings.Instance.AcftAIFilter = txAiFilter.Text.Trim( );
+        AppSettings.Instance.SbPilotID = txCfgSbPilotID.Text.Trim( );
+        //--
+        AppSettings.Instance.Save( );
+      }
 
       if (Standalone) {
         timer1.Enabled = false;
@@ -905,7 +1031,7 @@ namespace FShelf
       var apt = GetAirport( txEntry.Text.Trim( ) );
       if (apt == null) {
         txEntry.ForeColor = Color.Red; // clear the one not available
-        txEntry.Text = "n.a.";
+        txEntry.Text = c_airportNA;
         // don't change the _airport when nothing is found
       }
       else {
@@ -970,6 +1096,7 @@ namespace FShelf
         _tAircraft.Trk_degm = SV.Get<bool>( SItem.bG_Sim_OnGround ) ? float.NaN : SV.Get<float>( SItem.fG_Gps_GTRK_mag_degm );
         _tAircraft.TrueTrk_deg = SV.Get<bool>( SItem.bG_Sim_OnGround ) ? float.NaN : SV.Get<float>( SItem.fG_Gps_GTRK_true_deg );
 
+        _tAircraft.DistanceToTOD_nm = SV.Get<float>( SItem.fG_Gps_TOD_dist_nm );
         _tAircraft.WindSpeed_kt = SV.Get<float>( SItem.fG_Acft_WindSpeed_kt );
         _tAircraft.WindDirection_deg = SV.Get<float>( SItem.fG_Acft_WindDirection_deg );
 
@@ -1099,7 +1226,7 @@ namespace FShelf
       var apt = GetAirport( txCfgDep.Text );
       if (apt == null) {
         txCfgDep.ForeColor = Color.Red;
-        this.DEP_Airport = "n.a.";
+        this.DEP_Airport = c_airportNA;
         lblCfgDep.Text = this.DEP_Airport;
       }
       else {
@@ -1112,7 +1239,7 @@ namespace FShelf
       apt = GetAirport( txCfgArr.Text );
       if (apt == null) {
         txCfgArr.ForeColor = Color.Red;
-        this.ARR_Airport = "n.a.";
+        this.ARR_Airport = c_airportNA;
         lblCfgArr.Text = this.ARR_Airport;
       }
       else {
@@ -1125,6 +1252,7 @@ namespace FShelf
       aMap.SetFlightplan( _flightPlanHandler.FlightPlan );
       // Announce plan loading
       OnFlightPlanLoadedByUser( );
+
     }
 
     #endregion
@@ -1333,7 +1461,7 @@ namespace FShelf
         var apt = GetAirport( txCfgDep.Text );
         if (apt == null) {
           txCfgDep.ForeColor = Color.Red;
-          this.DEP_Airport = "n.a.";
+          this.DEP_Airport = c_airportNA;
           lblCfgDep.Text = this.DEP_Airport;
         }
         else {
@@ -1353,7 +1481,7 @@ namespace FShelf
         var apt = GetAirport( txCfgArr.Text );
         if (apt == null) {
           txCfgArr.ForeColor = Color.Red;
-          this.ARR_Airport = "n.a.";
+          this.ARR_Airport = c_airportNA;
           lblCfgArr.Text = this.ARR_Airport;
         }
         else {

@@ -48,9 +48,12 @@ namespace bm98_Map.Data
       TCAS = aircraft.TCAS;
       OnGround = aircraft.OnGround;
 
+      // not for AI acft
+      DistanceToTOD_nm = float.NaN;
       WindDirection_deg = 0;
       WindSpeed_kt = 0;
       WindSpeedS = $"n.a."; // default
+
 
       ShowAircraftRings = false;
       ShowAircraftRange = false;

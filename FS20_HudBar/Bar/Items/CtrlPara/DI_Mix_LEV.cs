@@ -59,7 +59,7 @@ namespace FS20_HudBar.Bar.Items
 
 
       this.IsEngineItem = true;
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     /// <summary>

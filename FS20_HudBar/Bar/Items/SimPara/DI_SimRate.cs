@@ -50,7 +50,7 @@ namespace FS20_HudBar.Bar.Items
       _value1.Scrollable=true;
       _value1.Cursor = Cursors.SizeNS;
 
-      AddObserver( Short, 5, OnDataArrival ); // 5/sec
+      AddObserver( Desc, 5, OnDataArrival ); // 5/sec
     }
 
     private void _value1_MouseWheel( object sender, MouseEventArgs e )

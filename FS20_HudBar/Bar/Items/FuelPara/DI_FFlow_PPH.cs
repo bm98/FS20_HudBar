@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+
 using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
@@ -57,7 +58,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
 
       this.IsEngineItem = true;
-      AddObserver( Short, 2, OnDataArrival ); // twice per sec
+      AddObserver( Desc, 2, OnDataArrival ); // twice per sec
     }
 
     /// <summary>

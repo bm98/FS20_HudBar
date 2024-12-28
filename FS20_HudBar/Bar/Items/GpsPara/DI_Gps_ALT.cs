@@ -11,6 +11,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
 using static FSimClientIF.Sim;
+using dNetBm98;
 
 namespace FS20_HudBar.Bar.Items
 {
@@ -41,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Alt( valueProto ) { ItemForeColor = cTxGps };
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, 2, OnDataArrival );
+      AddObserver( Desc, 2, OnDataArrival );
     }
 
     /// <summary>
@@ -51,7 +52,8 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         var a = SV.Get<float>( SItem.fG_Gps_WYP_alt_ft );
-        _value1.Value = (a < 60_000) ? a : float.NaN; // limit by ceiling
+        a = ((a < 60_000) && (a > 0)) ? a : float.NaN; // limit by alt range
+        _value1.Value = a;
       }
     }
 

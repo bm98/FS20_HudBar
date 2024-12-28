@@ -58,7 +58,7 @@ namespace FS20_HudBar.Bar.Items
       _scale4 = new A_TwinScale( ) { Visible = false, Minimum = 0, Maximum = 100, AlertEnabled = false, ItemForeColor = cStep, ItemForeColor_LScale = cStep };
       this.AddItem( _scale4 ); vCat.AddLbl( item, _scale4 );
 
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     /// <summary>

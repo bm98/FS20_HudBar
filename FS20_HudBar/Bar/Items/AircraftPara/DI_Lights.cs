@@ -42,7 +42,7 @@ namespace FS20_HudBar.Bar.Items
       _value1 = new V_Lights( value2Proto );
       this.AddItem( _value1 ); vCat.AddLbl( item, _value1 );
 
-      AddObserver( Short, 2, OnDataArrival ); // twice per sec
+      AddObserver( Desc, 2, OnDataArrival ); // twice per sec
     }
 
     // True when On or NormOn

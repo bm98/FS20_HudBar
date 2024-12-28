@@ -46,7 +46,7 @@ namespace FS20_HudBar.Bar.Items
       _scaleFlow = new A_Scale( ) { Minimum = 0, Maximum = 500, AlertValue = 0, ItemForeColor_Alert = cWarn, BorderStyle = BorderStyle.FixedSingle };
       this.AddItem( _scaleFlow ); vCat.AddLbl( item, _scaleFlow );
 
-      AddObserver( Short, 0.5f, OnDataArrival); // once per 2 sec
+      AddObserver( Desc, 0.5f, OnDataArrival); // once per 2 sec
     }
 
     // flow has strange units should be gallons/hour but is very small ~0.00013 for 0.055 gal/sec

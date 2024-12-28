@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using DbgLib;
@@ -23,7 +19,6 @@ using System.IO;
 using FS20_HudBar.GUI;
 using FSimClientIF.Modules;
 using bm98_hbFolders;
-using FShelf;
 using FSimClientIF;
 
 namespace FS20_HudBar
@@ -1173,7 +1168,7 @@ namespace FS20_HudBar
       // start the HudBar from scratch
       LOG.Info( "InitGUI", "Create HudBar" );
       HUD?.Dispose( ); // MUST ..
-      HUD = new HudBar( lblProto, valueProto, value2Proto, signProto, _hotkeycat, m_config );
+      HUD = new HudBar( lblProto, valueProto, value2Proto, signProto, _hotkeycat, m_config, _Shelf );
 
       // reread from config (change)
       LOG.Info( "InitGUI", "Reread Config changes" );

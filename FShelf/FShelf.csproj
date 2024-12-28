@@ -113,6 +113,7 @@
     <Compile Include="frmShelf.Designer.cs">
       <DependentUpon>frmShelf.cs</DependentUpon>
     </Compile>
+    <Compile Include="IFlightBagAPI.cs" />
     <Compile Include="LandPerf\LandingImage.cs" />
     <Compile Include="LandPerf\PerfTracker.cs" />
     <Compile Include="LandPerf\UC_AcftLand.cs">

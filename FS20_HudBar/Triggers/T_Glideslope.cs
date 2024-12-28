@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using SC = SimConnectClient;
+﻿using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
 using static FSimClientIF.Sim;
@@ -25,12 +19,15 @@ namespace FS20_HudBar.Triggers
     private const string _path = "Glidepath";
     private string _text = _slope;
 
+    // flag GP mode
+    private bool _curPathMode = false;
+
     /// <summary>
     /// Calls to register for dataupdates
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SV, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, 5, OnDataArrival );  // update 2/sec 
     }
     /// <summary>
     /// Calls to un-register for dataupdates
@@ -46,17 +43,25 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAP_G1000 object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if (!m_enabled) return; // not enabled
-      if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
+      // sanity
+      if (!_enabled) return; // not enabled
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // capture odd cases
       if (SV.Get<bool>( SItem.bG_Sim_OnGround )) return; // not while on ground
 
-      this.m_actions[true].Text = SV.Get<bool>( SItem.bG_Ap_GP_tracking ) ? _path : _slope; // GS may be active even on GP (then both are..)
+      // assign GS or GP text if changed
+      var pathMode = SV.Get<bool>( SItem.bG_Ap_GP_tracking );
+      if (pathMode != _curPathMode) {
+        this._actions[true].Text = pathMode ? _path : _slope; // GS may be active even on GP (then both are..)
+        _curPathMode = pathMode;
+      }
 
       DetectStateChange( SV.Get<bool>( SItem.bG_Ap_GS_tracking ) || SV.Get<bool>( SItem.bG_Ap_GP_tracking ) );
 
+      // reset condition ?
       if ((SV.Get<bool>( SItem.bG_Ap_GS_tracking ) == false)
-        && (SV.Get<bool>( SItem.bG_Ap_GP_tracking ) == false))
-        m_lastTriggered = false; // RESET if no longer captured
+        && (SV.Get<bool>( SItem.bG_Ap_GP_tracking ) == false)) {
+        this.ResetTrigger( );// RESET if no longer captured
+      }
     }
 
     // Implements the means to speak out the AP Glideslope Active State
@@ -68,12 +73,12 @@ namespace FS20_HudBar.Triggers
     public T_Glideslope( GUI.GUI_Speech speaker )
       : base( speaker )
     {
-      m_name = "AP GS Capture";
-      m_test = _slope;
+      _name = "AP GS Capture";
+      _test = _slope;
 
       // add the proc most likely to be hit as the first - saves some computing time on the long run
-      m_lastTriggered = false;
-      this.AddProc( new EventProcBinary( ) { TriggerState = true, Callback = Say, Text = _text } );
+      this.AddProc( new EventProcBinary( ) { Detector = new BinaryDetector( level: true, autoReset: false ), Callback = Say, Text = _text } );
+      this.ResetTrigger( );
     }
 
   }

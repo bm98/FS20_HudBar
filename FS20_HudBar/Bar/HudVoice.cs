@@ -86,7 +86,7 @@ namespace FS20_HudBar.Bar
     #endregion
 
     // collect all triggers here (used for batch processing)
-    private Dictionary<Callouts, ITriggers> m_triggerCat = new Dictionary<Callouts, ITriggers>( );
+    private Dictionary<Callouts, ITriggersAPI> m_triggerCat = new Dictionary<Callouts, ITriggersAPI>( );
 
     // All voice out items
     private T_Brakes v_parkbrake;
@@ -105,7 +105,7 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// Provide the list of installed Voice Triggers
     /// </summary>
-    public IDictionary<Callouts, ITriggers> TriggerCat => m_triggerCat;
+    public IDictionary<Callouts, ITriggersAPI> TriggerCat => m_triggerCat;
 
 
     /// <summary>

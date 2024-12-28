@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using SC = SimConnectClient;
+﻿using SC = SimConnectClient;
 
 using FS20_HudBar.Triggers.Base;
 using FS20_HudBar.GUI.Templates;
@@ -38,10 +32,10 @@ namespace FS20_HudBar.Triggers
     /// <param name="alertType"></param>
     public void IssueState( AlertType alertType )
     {
-      if (!m_enabled) return; // not enabled
+      if (!_enabled) return; // not enabled
 
       DetectStateChange( (int)alertType );
-      Reset( ); // immediately reset and accept new ones
+      this.ResetTrigger( ); // immediately reset and accept new ones
     }
 
     /// <summary>
@@ -50,8 +44,9 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAircraft object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
-      if (!m_enabled) return; // not enabled
-      if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
+      // sanity
+      if (!_enabled) return; // not enabled
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // capture odd cases
 
       // not used
     }
@@ -65,16 +60,16 @@ namespace FS20_HudBar.Triggers
     public T_Alert( GUI.GUI_Speech speaker )
       : base( speaker )
     {
-      m_name = "Alerts";
-      m_test = "Alert";
+      _name = "Alerts";
+      _test = "Alert";
 
       // add the proc most likely to be hit as the first - saves some computing time on the long run
-      this.AddProc( new EventProcInteger( ) { TriggerStateI = new TriggerBandI( (int)AlertType.ALT, 0 ), Callback = Say, Text = "Altitude" } );
-      this.AddProc( new EventProcInteger( ) { TriggerStateI = new TriggerBandI( (int)AlertType.AOG, 0 ), Callback = Say, Text = "Ground" } );
-      this.AddProc( new EventProcInteger( ) { TriggerStateI = new TriggerBandI( (int)AlertType.VS, 0 ), Callback = Say, Text = "Vertical Rate" } );
-      this.AddProc( new EventProcInteger( ) { TriggerStateI = new TriggerBandI( (int)AlertType.SPD, 0 ), Callback = Say, Text = "Airspeed" } );
-      this.AddProc( new EventProcInteger( ) { TriggerStateI = new TriggerBandI( (int)AlertType.DIST, 0 ), Callback = Say, Text = "Distance" } );
-      this.AddProc( new EventProcInteger( ) { TriggerStateI = new TriggerBandI( (int)AlertType.TIME, 0 ), Callback = Say, Text = "Time" } );
+      this.AddProc( new EventProcInteger( ) { Detector = new BandDetector<int>( (int)AlertType.ALT, 0, 0, autoReset: false ), Callback = Say, Text = "Altitude" } );
+      this.AddProc( new EventProcInteger( ) { Detector = new BandDetector<int>( (int)AlertType.AOG, 0, 0, autoReset: false ), Callback = Say, Text = "Ground" } );
+      this.AddProc( new EventProcInteger( ) { Detector = new BandDetector<int>( (int)AlertType.VS, 0, 0, autoReset: false ), Callback = Say, Text = "Vertical Rate" } );
+      this.AddProc( new EventProcInteger( ) { Detector = new BandDetector<int>( (int)AlertType.SPD, 0, 0, autoReset: false ), Callback = Say, Text = "Airspeed" } );
+      this.AddProc( new EventProcInteger( ) { Detector = new BandDetector<int>( (int)AlertType.DIST, 0, 0, autoReset: false ), Callback = Say, Text = "Distance" } );
+      this.AddProc( new EventProcInteger( ) { Detector = new BandDetector<int>( (int)AlertType.TIME, 0, 0, autoReset: false ), Callback = Say, Text = "Time" } );
     }
   }
 }

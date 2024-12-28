@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
+
 using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
@@ -60,7 +61,7 @@ namespace FS20_HudBar.Bar.Items
       this.AddItem( _value4 ); vCat.AddLbl( item, _value4 );
 
       this.IsEngineItem = true;
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
     /// <summary>
@@ -69,10 +70,15 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = SV.Get<float>( SItem.fG_Eng_T1_EPR_ratio );
-        _value2.Value = SV.Get<float>( SItem.fG_Eng_T2_EPR_ratio );
-        _value3.Value = SV.Get<float>( SItem.fG_Eng_T3_EPR_ratio );
-        _value4.Value = SV.Get<float>( SItem.fG_Eng_T4_EPR_ratio );
+        var v1 = SV.Get<float>( SItem.fG_Eng_T1_EPR_ratio );
+        var v2 = SV.Get<float>( SItem.fG_Eng_T2_EPR_ratio );
+        var v3 = SV.Get<float>( SItem.fG_Eng_T3_EPR_ratio );
+        var v4 = SV.Get<float>( SItem.fG_Eng_T4_EPR_ratio );
+        _label.Text = (v1+v2+v3+v4) > 10 ? "THR" : "EPR"; // cheat, if not an EPR ratio its Thrust %
+        _value1.Value = v1;
+        _value2.Value = v2;
+        _value3.Value = v3;
+        _value4.Value = v4;
       }
     }
 

@@ -44,7 +44,7 @@ namespace FS20_HudBar.Bar.Items
       _scale1 = new A_Scale( ) { Minimum = 0, Maximum = 100, AlertEnabled = false, ItemForeColor = cStep };
       this.AddItem( _scale1 ); vCat.AddLbl( item, _scale1 );
 
-      AddObserver( Short, 5, OnDataArrival );
+      AddObserver( Desc, 5, OnDataArrival );
     }
 
 
@@ -65,8 +65,8 @@ namespace FS20_HudBar.Bar.Items
         if (SV.Get<bool>( SItem.bG_Flp_HasSpoilers )) {
           _label.ItemForeColor = SV.Get<bool>( SItem.bG_Flp_Spoilers_armed ) ? cTxLabelArmed : cTxLabel;
 
-          _scale1.Value = SV.Get<float>( SItem.fGS_Flp_SpoilerHandle_position_prct ) * 100; // 0..100
-          _scale1.ItemForeColor = (SV.Get<float>( SItem.fGS_Flp_SpoilerHandle_position_prct ) < 0.05) ? cOK : cStep;
+          _scale1.Value = SV.Get<float>( SItem.fGS_Flp_SpoilerHandle_position_prct ); // 0..100
+          _scale1.ItemForeColor = (SV.Get<float>( SItem.fGS_Flp_SpoilerHandle_position_prct ) < 5) ? cOK : cStep;
         }
         else {
           _scale1.Value = null;

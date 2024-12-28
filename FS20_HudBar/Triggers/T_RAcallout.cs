@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using static dNetBm98.Units;
 
 using SC = SimConnectClient;
-
-using static dNetBm98.Units;
 
 using FS20_HudBar.Triggers.Base;
 using static FSimClientIF.Sim;
@@ -39,9 +32,9 @@ namespace FS20_HudBar.Triggers
     /// Get;Set; enabled state of this Voice Trigger Element
     /// </summary>
     public override bool Enabled {
-      get => m_enabled;
+      get => _enabled;
       set {
-        m_enabled = value;
+        _enabled = value;
         _tdTrigger.Enabled = value;
       }
     }
@@ -51,7 +44,7 @@ namespace FS20_HudBar.Triggers
     /// </summary>
     public override void RegisterObserver( )
     {
-      RegisterObserver_low( SV, OnDataArrival ); // use generic
+      RegisterObserver_low( SV, 2, OnDataArrival );  // update 5/sec 
       _tdTrigger.RegisterObserver( );
     }
     /// <summary>
@@ -69,23 +62,25 @@ namespace FS20_HudBar.Triggers
     /// <param name="dataSource">An IAircraft object from the FSim library</param>
     protected override void OnDataArrival( string dataRefName )
     {
+      // sanity
       if (!Enabled) return; // not enabled
-      if (!SC.SimConnectClient.Instance.IsConnected) return; // sanity, capture odd cases
+      if (!SC.SimConnectClient.Instance.IsConnected) return; // capture odd cases
 
       if (SV.Get<bool>( SItem.bG_Sim_OnGround )) {
-        // on ground we disable callouts, this lasts on the way up until we are above our highest RA level
-        m_lastTriggered = -1;
+        this.Inhibit( true ); // disable when on ground (until reaching det height)
+
+        // on ground we don't callout
+        return;
       }
-      else if (SV.Get<float>( SItem.fGS_Acft_AltAoG_ft ) >= c_detectionRA) {
-        // in air and above our detection RA - reset callout sequence
-        m_lastTriggered = c_detectionRA; // set this above the initial callout level to start callouts if we get lower later
+
+      if (SV.Get<float>( SItem.fGS_Acft_AltAoG_ft ) < c_detectionRA) {
+        // in air and in the callout range
+        // detect only when the current RA has not been called yet
+        DetectStateChange( SV.Get<float>( SItem.fGS_Acft_AltAoG_ft ) );
       }
       else {
-        // in air and in the callout range
-        if (SV.Get<float>( SItem.fGS_Acft_AltAoG_ft ) < m_lastTriggered) {
-          // detect only when the current RA is lower than the last called out one
-          DetectStateChange( SV.Get<float>( SItem.fGS_Acft_AltAoG_ft ) );
-        }
+        // enable when in air and above our detection RA
+        this.Inhibit( false ); // enable when reaching det. height
       }
     }
 
@@ -103,6 +98,7 @@ namespace FS20_HudBar.Triggers
         SetImperialCallout( );
     }
 
+    // Imperial units (ft)
     private void SetImperialCallout( )
     {
       this.ClearProcs( );
@@ -115,19 +111,20 @@ namespace FS20_HudBar.Triggers
       // In the final flare at 20,10 are with way less VS (else the plane has crashed..) - 
 
       // VS >500
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + 400.0f, 10.0f ), Callback = Say, Text = "400" } ); // detect in 410..390
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + 300.0f, 10.0f ), Callback = Say, Text = "300" } ); // detect in 310..290
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + 200.0f, 10.0f ), Callback = Say, Text = "200" } ); // detect in 210..190
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + 100.0f, 10.0f ), Callback = Say, Text = "100" } ); // detect in 110.. 90
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + 410.0f, 80f, autoReset: true ), Callback = Say, Text = "400" } ); // detect 410, reset +-80
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + 310.0f, 80f, autoReset: true ), Callback = Say, Text = "300" } ); // detect 310, reset +-80
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + 210.0f, 80f, autoReset: true ), Callback = Say, Text = "200" } ); // detect 210, reset +-80
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + 110.0f, 50f, autoReset: true ), Callback = Say, Text = "100" } ); // detect 110, reset +-50
       // VS ~500
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + 54.0f, 4.0f ), Callback = Say, Text = "50" } ); // detect in 58..50
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + 44.0f, 4.0f ), Callback = Say, Text = "40" } ); // detect in 48..40
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + 34.0f, 4.0f ), Callback = Say, Text = "30" } ); // detect in 38..30
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + 58.0f, 20f, autoReset: true ), Callback = Say, Text = "50" } ); // detect 58, reset +-20
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + 48.0f, 20f, autoReset: true ), Callback = Say, Text = "40" } ); // detect 48, reset +-20
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + 38.0f, 20f, autoReset: true ), Callback = Say, Text = "30" } ); // detect 38, reset +-20
       // VS << 500
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + 23.0f, 3.0f ), Callback = Say, Text = "20" } ); // detect in 26..20
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + 13.0f, 2.0f ), Callback = Say, Text = "10" } ); // detect in 15..11
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + 26.0f, 10f, autoReset: true ), Callback = Say, Text = "20" } ); // detect 26, reset +-10
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + 15.0f, 10f, autoReset: true ), Callback = Say, Text = "10" } ); // detect 15, reset +-10
     }
 
+    // Metruc units (m)
     private void SetMetricCallout( )
     {
       this.ClearProcs( );
@@ -135,17 +132,17 @@ namespace FS20_HudBar.Triggers
       // logic see above calls for meters at 120, 90, 60, 30,   15, 12, 9,   6, 3 (input and detector is still feet)
 
       // VS >500
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 120 ), 10.0f ), Callback = Say, Text = "120" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 90 ), 10.0f ), Callback = Say, Text = "90" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 60 ), 10.0f ), Callback = Say, Text = "60" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 30 ), 10.0f ), Callback = Say, Text = "30" } );
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + (float)Ft_From_M( 123 ), 80f, autoReset: true ), Callback = Say, Text = "120" } );
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + (float)Ft_From_M( 93 ), 80f, autoReset: true ), Callback = Say, Text = "90" } );
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + (float)Ft_From_M( 63 ), 80f, autoReset: true ), Callback = Say, Text = "60" } );
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + (float)Ft_From_M( 33 ), 50f, autoReset: true ), Callback = Say, Text = "30" } );
       // VS ~500
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 15 ), 4.0f ), Callback = Say, Text = "15" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 12 ), 4.0f ), Callback = Say, Text = "12" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 9 ), 4.0f ), Callback = Say, Text = "9" } );
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + (float)Ft_From_M( 16.3 ), 20f, autoReset: true ), Callback = Say, Text = "15" } );
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + (float)Ft_From_M( 13.3 ), 20f, autoReset: true ), Callback = Say, Text = "12" } );
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + (float)Ft_From_M( 10.3 ), 20f, autoReset: true ), Callback = Say, Text = "9" } );
       // VS << 500
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 6 ) + 3f, 3.0f ), Callback = Say, Text = "6" } );
-      this.AddProc( new EventProcFloat( ) { TriggerStateF = new TriggerBandF( c_RAgroundOffset + (float)Ft_From_M( 3 ) + 3f, 2.0f ), Callback = Say, Text = "3" } );
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + (float)Ft_From_M( 7 ), 10f, autoReset: true ), Callback = Say, Text = "6" } );
+      this.AddProc( new EventProcFloat( ) { Detector = new DiveDetector( c_RAgroundOffset + (float)Ft_From_M( 4 ), 10f, autoReset: true ), Callback = Say, Text = "3" } );
     }
 
 
@@ -156,15 +153,16 @@ namespace FS20_HudBar.Triggers
     public T_RAcallout( GUI.GUI_Speech speaker )
     : base( speaker )
     {
-      m_name = "RA Callout";
-      m_test = "100";
+      _name = "RA Callout";
+      _test = "100";
 
       _tdTrigger = new TouchDownTrigger( speaker );
 
       // need to set this below the lowest callout level, it will be activated only once we are above our detection RA
-      m_lastTriggered = -1;
-
       SetImperialCallout( );
+
+      // start with disabled, will be reset when above det. height
+      this.Inhibit( true );
     }
 
   }

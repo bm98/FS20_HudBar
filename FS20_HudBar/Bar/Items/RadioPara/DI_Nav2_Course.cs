@@ -52,7 +52,7 @@ namespace FS20_HudBar.Bar.Items
       _obs.Heading = 180; // Wind indicator is used - so inverse direction
       this.AddItem( _obs ); vCat.AddLbl( item, _obs );
 
-      AddObserver( Short, 2, OnDataArrival );
+      AddObserver( Desc, 2, OnDataArrival );
     }
 
     // Synch with Radial
@@ -60,7 +60,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if (!SC.SimConnectClient.Instance.IsConnected) return;
 
-      SV.Set( SItem.S_Nav_2_OBS_Synch, true );
+      SV.Set( SItem.bS_Nav_2_OBS_Synch, true );
     }
 
     // Inc/Dec OBS 2

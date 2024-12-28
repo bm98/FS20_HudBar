@@ -40,6 +40,9 @@ namespace bm98_VProfile
       Wyp9,
       Wyp10,
 
+      // T/D indicator
+      TOD,
+
       // Text
       DstMidGraph,
       DstEndGraph,
@@ -102,6 +105,14 @@ namespace bm98_VProfile
           String = $"WYP{i}",
         }; drawings.AddItem( nextWyp );
       }
+
+      // T/D Waypoint
+      var todWyp = new WypItem( protoWyp ) {
+        Key = (int)DItems.TOD,
+        FillBrush = BrushRef,
+        TextBrushActive = BrushRef, // T/D is cyan
+        String = $"T/D",
+      }; drawings.AddItem( todWyp );
 
       // Text Labels
       var protoText = new TextItem( ) {
@@ -287,22 +298,35 @@ namespace bm98_VProfile
             }
           } // all Wyps in list
         }
+        else {
+          // switch all off (could be done with a Hook item...)
+          gProc.Drawings.DispItem( (int)DItems.ALTtape ).Active = ActiveState.Off;
+          gProc.Drawings.DispItem( (int)DItems.DstMidGraph ).Active = ActiveState.Off;
+          gProc.Drawings.DispItem( (int)DItems.DstEndGraph ).Active = ActiveState.Off;
+          gProc.Drawings.DispItem( (int)DItems.MinEndGraph ).Active = ActiveState.Off;
+          gProc.Drawings.DispItem( (int)DItems.NextWyp ).Active = ActiveState.Off;
+          for (int i = 1; i < c_numWyp; i++) {
+            gProc.Drawings.DispItem( (int)DItems.NextWyp + i ).Active = ActiveState.Off;
+          }
+        }// waypoint list
 
-      }
-      else {
-        // switch all off (could be done with a Hook item...)
-        gProc.Drawings.DispItem( (int)DItems.ALTtape ).Active = ActiveState.Off;
-        gProc.Drawings.DispItem( (int)DItems.DstMidGraph ).Active = ActiveState.Off;
-        gProc.Drawings.DispItem( (int)DItems.DstEndGraph ).Active = ActiveState.Off;
-        gProc.Drawings.DispItem( (int)DItems.MinEndGraph ).Active = ActiveState.Off;
-        gProc.Drawings.DispItem( (int)DItems.NextWyp ).Active = ActiveState.Off;
-        for (int i = 1; i < c_numWyp; i++) {
-          gProc.Drawings.DispItem( (int)DItems.NextWyp + i ).Active = ActiveState.Off;
+        // T/D marker on the middle line
+        di = gProc.Drawings.DispItem( (int)DItems.TOD );
+        var tdRtp = props.TopOfDescentRtp;
+        if (tdRtp.IsValid && (tdRtp.Distance_nm > 0)) {
+          // draw only if Dist>0 ..
+          di.Active = ActiveState.Engaged;
+          // draw without Alt - slightly below the Acft Line
+          di.String = $"{tdRtp.Ident}";
+          (di as WypItem).WypPoint = new PointF( (float)tdRtp.Distance_nm / (2 * hScale), 0.55f );
         }
-      }
+        else {
+          // don't show
+          di.Active = ActiveState.Off;
+        }
 
+      }// acft ALT>0
     }
-
     // calc the Altitude scaling for given delta Alt - the graph shows +- 2.5 unit steps
     // avoiding switching between scale values for unstable (varying VS) deltaAlts
 
