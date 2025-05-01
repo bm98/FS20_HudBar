@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using DbgLib;
@@ -208,6 +205,7 @@ namespace FS20_HudBar.Bar
       {LItem.AOA, DI_Aoa.Desc },              {LItem.FP_ANGLE, DI_FPAngle.Desc },
       {LItem.ESI_ANI, DI_ESIGraph.Desc },     {LItem.ACCEL_ANI,DI_AccelGraph.Desc },
       {LItem.GFORCE, DI_GForce.Desc },        {LItem.GFORCE_MM, DI_Gforce_MM.Desc },
+      {LItem.SBALL_ANI,DI_SlipBallGraph.Desc },
 
       {LItem.AP, DI_Ap.Desc },
       {LItem.AP_HDGs, DI_Ap_HdgSet.Desc },
@@ -236,6 +234,7 @@ namespace FS20_HudBar.Bar
       {LItem.USR_ALERT_1,DI_UserAlert.Desc },  {LItem.USR_ALERT_2,DI_UserAlert2.Desc },  {LItem.USR_ALERT_3,DI_UserAlert3.Desc },
 
       {LItem.THR_LEV, DI_Thr_LEV.Desc },      {LItem.MIX_LEV, DI_Mix_LEV.Desc }, {LItem.PROP_LEV, DI_Prop_LEV.Desc },
+      {LItem.H_COLL_LEV,DI_HColl_LEV.Desc },
       {LItem.TBRAKE, DI_ToeBrakes.Desc },     {LItem.THOOK, DI_THook.Desc },
       {LItem.A320THR, DI_A320Throttle.Desc },
       {LItem.SURF_ANI, DI_SurfacesGraph.Desc },
@@ -497,6 +496,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_AccelGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_GForce( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Gforce_MM( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_SlipBallGraph( m_valueItems, lblProto, valueProto, value2Proto ) );
       m_dispItems.AddDisp( new DI_Nav1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Nav2( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Adf1( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -553,6 +553,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Thr_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Mix_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Prop_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_HColl_LEV( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_SurfacesGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_A320Throttle( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_ToeBrakes( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );

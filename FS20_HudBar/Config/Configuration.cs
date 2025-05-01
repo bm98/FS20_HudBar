@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 using FS20_HudBar.GUI;
 
@@ -28,27 +24,27 @@ namespace FS20_HudBar.Config
     {
       var AS = AppSettingsV2.Instance;
 
-      var cfg = new Configuration( );
+      var cfg = new Configuration {
+        OutputDeviceName = AS.OutputDeviceName,
+        VoiceName = AS.VoiceName,
+        VoiceCalloutProfile = AS.VoiceCalloutProfile,
+        FRecorder = AS.FRecorder,
+        FltAutoSaveATC = (FltFileModuleMode)AS.FltAutoSaveATC, // restricted to 0, 1 in AppSettingsV2
 
-      cfg.OutputDeviceName = AS.OutputDeviceName;
-      cfg.VoiceName = AS.VoiceName;
-      cfg.VoiceCalloutProfile = AS.VoiceCalloutProfile;
-      cfg.FRecorder = AS.FRecorder;
-      cfg.FltAutoSaveATC = (FltFileModuleMode)AS.FltAutoSaveATC; // restricted to 0, 1 in AppSettingsV2
+        InGameHook = AS.InGameHook,
+        KeyboardHook = AS.KeyboardHook,
+        HKShowHide = AS.HKShowHide,
+        HKCamera = AS.HKCamera,
+        HKShelf = AS.HKShelf,
+        HKChecklistBox = AS.HKChecklistBox,
 
-      cfg.InGameHook = AS.InGameHook;
-      cfg.KeyboardHook = AS.KeyboardHook;
-      cfg.HKShowHide = AS.HKShowHide;
-      cfg.HKCamera = AS.HKCamera;
-      cfg.HKShelf = AS.HKShelf;
-      cfg.HKChecklistBox = AS.HKChecklistBox;
+        UserFonts = AS.UserFonts,
+        UserColorsReg = AS.UserColorsReg,
+        UserColorsDim = AS.UserColorsDim,
+        UserColorsInv = AS.UserColorsInv,
 
-      cfg.UserFonts = AS.UserFonts;
-      cfg.UserColorsReg = AS.UserColorsReg;
-      cfg.UserColorsDim = AS.UserColorsDim;
-      cfg.UserColorsInv = AS.UserColorsInv;
-
-      cfg.CurrentProfile = (DProfile)AS.SelProfile;
+        CurrentProfile = (DProfile)AS.SelProfile
+      };
 
       // load all Profiles
       int profileNumber = 1;
@@ -220,9 +216,26 @@ namespace FS20_HudBar.Config
     /// <summary>
     /// The Profile with index
     /// </summary>
-    /// <param name="index">Profile Index</param>
+    /// <param name="index">Profile Index 0..</param>
     /// <returns>A Profile</returns>
     public CProfile ProfileAt( int index ) => Profile( (DProfile)index );
+
+    /// <summary>
+    /// Replace the existing Profile with the supplied one
+    /// </summary>
+    /// <param name="profile">A Profile enum</param>
+    /// <param name="cp">A CProfile</param>
+    public void ReplaceProfile( DProfile profile, CProfile cp )
+    {
+      _profiles.Remove( profile );
+      _profiles.Add( profile, cp );
+    }
+    /// <summary>
+    /// Replace the existing Profile with the supplied one
+    /// </summary>
+    /// <param name="profile">A Profile Index 0..</param>
+    /// <param name="cp">A CProfile</param>
+    public void ReplaceProfile( int profileIndex, CProfile cp ) => ReplaceProfile( (DProfile)profileIndex, cp );
 
 
     /// <summary>

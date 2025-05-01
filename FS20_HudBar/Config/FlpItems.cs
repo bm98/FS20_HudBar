@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using FS20_HudBar.Bar.Items;
+
 using static FS20_HudBar.Config.CProfile;
 
 namespace FS20_HudBar.Config

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
+
+using CoordLib;
 
 using static dNetBm98.XPoint;
-using CoordLib;
 
 
 namespace bm98_Map.Drawing.DispItems

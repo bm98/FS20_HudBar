@@ -151,7 +151,7 @@ namespace FShelf.AptReport
     {
       // create used templates
       // rule is to leave the template with with \n where needed \n will be read by the Renderer as CR(LF)
-      t_timestamp = $"<h6>FS20_FlightBag create date: {c_MARK}</h6>\n";
+      t_timestamp = $"<h6>HudBar-FlightBag create date: {c_MARK}</h6>\n";
       t_title = $"<h2>{c_MARK}</h2>\n";
       t_stitle = $"<h3>{c_MARK}</h3>\n";
       t_rwyTable = $"<h3>Runways</h3>\n<table>\n{c_MARK}\n</table>\n";
@@ -169,10 +169,10 @@ namespace FShelf.AptReport
     ///  then reset the formatter
     /// </summary>
     /// <returns>The document as HTML</returns>
-    public string CommitDocument( string titleContent, List<string> subTitles )
+    public string CommitDocument( string titleContent, List<string> subTitles, string dbSource )
     {
       //  finalize by replacing the marks in the templates
-      _htmlDoc.AddBodyHtml( t_timestamp.Replace( c_MARK, DateTime.Now.ToString( "g" ) ) );
+      _htmlDoc.AddBodyHtml( t_timestamp.Replace( c_MARK, DateTime.Now.ToString( "g" ) + $" source: {dbSource}" ) );
       _htmlDoc.AddBodyHtml( t_title.Replace( c_MARK, titleContent ) );
       foreach (var subTitle in subTitles) {
         if (string.IsNullOrWhiteSpace( subTitle )) continue; // ignore empty subtitle lines

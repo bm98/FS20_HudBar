@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
@@ -37,6 +35,8 @@ using FSimFlightPlans.MSFSPln;
 using FShelf.Profiles;
 using FShelf.FPlans;
 using FShelf.LandPerf;
+using dNetBm98.Job;
+using System.Threading;
 
 namespace FShelf
 {
@@ -91,6 +91,7 @@ namespace FShelf
 
     // Plan Handler
     private readonly FpWrapper _flightPlanHandler = new FpWrapper( ); // only one instance, don't null it !!
+    private JobRunner _jobRunner;
 
     // track the last known live location in order to save the proper one
     private Point _lastLiveLocation;
@@ -185,7 +186,7 @@ namespace FShelf
     /// <returns>True if loading</returns>
     public bool LoadFromSimBrief( )
     {
-      if (SimBrief.IsSimBriefUserID( SimBriefID )) {
+      if (SimBriefHandler.IsSimBriefUserID( SimBriefID )) {
         _flightPlanHandler.RequestSBDownload( SimBriefID );
         // will report in the Event
         return true;
@@ -227,7 +228,7 @@ namespace FShelf
       if (OFD.ShowDialog( this ) == DialogResult.OK) {
         //selected
         lblCfgPlanMessage.Text = "loading...";
-        if (_flightPlanHandler.RequestPlan( OFD.FileName )) {
+        if (_flightPlanHandler.RequestPlanFile( OFD.FileName )) {
           return true;
           // will report in the Event
         }
@@ -241,11 +242,37 @@ namespace FShelf
     /// <returns>True if loading</returns>
     public bool LoadDefaultPLN( )
     {
-      // call for a XML PLN
-      if (_flightPlanHandler.RequestPlan( MSFSPln.CustomFlightPlan_filename )) {
+      lblCfgPlanMessage.Text = "loading...";
+      // FS2020 call for a XML PLN, FS2024 call for EFB Planned Route
+      var fsVersion = SV.Get<FSimVersion>( SItem.fv_Sim_FSVersion );
+      if (fsVersion == FSimVersion.MSFS2020) {
+        if (_flightPlanHandler.RequestPlanFile( MSFSPlnHandler.CustomFlightPlan_filename )) {
+          return true;
+          // will report in the Event
+        }
+        ;
+      }
+      else if (fsVersion == FSimVersion.MSFS2024) {
+        // trigger download
+        SV.Set( SItem.sGS_Gps_EFB_route, "" );
+        // delayed job... to get the EFB file and issue a load request
+        _jobRunner.AddJob( new JobObj( ( ) => {
+          // max 10 tries, else give up
+          string efbS = "";
+          for (int i = 0; i < 10; i++) {
+            Thread.Sleep( 1000 ); // Wait until retrieved
+            efbS = SV.Get<string>( SItem.sGS_Gps_EFB_route, "" ); // get string
+            if (!string.IsNullOrWhiteSpace( efbS )) { break; }
+          }
+          if (!string.IsNullOrWhiteSpace( efbS )) {
+            _flightPlanHandler.RequestPlanData( efbS, FSimFlightPlans.SourceOfFlightPlan.MS_Efb24 );
+            // will report in event later
+          }
+        }, "Get EFB24 Route" ) );
+        Thread.Yield( );
         return true;
-        // will report in the Event
-      };
+      }
+
       return false;
     }
 
@@ -257,18 +284,9 @@ namespace FShelf
     {
       // never fail
       try {
-        // create a tempfile for this route
-        string tmpFile = Path.GetTempFileName( );
-        string useFile = tmpFile + ".rte"; // must have .rte extension
-        File.Move( tmpFile, useFile );
-        using (var sw = new StreamWriter( useFile )) {
-          sw.WriteLine( routeString );
-        }
         lblCfgPlanMessage.Text = "loading...";
-        if (_flightPlanHandler.RequestPlan( useFile )) {
-          return true;
-          // will report in the Event
-        }
+        return _flightPlanHandler?.RequestPlanData( routeString, FSimFlightPlans.SourceOfFlightPlan.GEN_Rte ) ?? false;
+        // will report in the Event
       }
       catch (Exception ex) {
         LOG.Error( ex, "LoadRouteString: failed with exception" );
@@ -321,25 +339,6 @@ namespace FShelf
       }
     }
 
-    // save the last loaded plan to the MyDocuments Folder of HudBar
-    private static void DebSaveRouteString( string content, string ext )
-    {
-      var fName = $".\\LastPlanDownload.{ext}";
-#if DEBUG
-      fName = $".\\LastPlanDownload_{DateTime.Now:s}.{ext}".Replace( ":", "_" );
-#endif
-      // shall never fail...
-      try {
-        // save to current Dir while in debug
-        var fname = Path.Combine( Folders.UserFilePath, fName );
-        // Write UTF8 with BOM
-        using (var sw = new StreamWriter( fname, false, new UTF8Encoding( true ) )) {
-          sw.WriteLine( content );
-        }
-      }
-      catch { }
-    }
-
     // Helper for Runways
     private class RwyLenItem
     {
@@ -360,7 +359,7 @@ namespace FShelf
     {
       cx.Items.Clear( );
 
-      cx.Items.Add( new RwyLenItem( "Any length", 0f ) );
+      cx.Items.Add( new RwyLenItem( "Runway any length", 0f ) );
       cx.Items.Add( new RwyLenItem( "  300 m ( 1 000 ft)", 300f ) );
       cx.Items.Add( new RwyLenItem( "  600 m ( 2 000 ft)", 600f ) );
       cx.Items.Add( new RwyLenItem( "  900 m ( 3 000 ft)", 900f ) );
@@ -371,6 +370,7 @@ namespace FShelf
       cx.Items.Add( new RwyLenItem( "2 400 m ( 8 000 ft)", 2400f ) );
       cx.Items.Add( new RwyLenItem( "3 000 m (10 000 ft)", 3000f ) );
       cx.Items.Add( new RwyLenItem( "4 000 m (13 000 ft)", 4000f ) );
+      cx.Items.Add( new RwyLenItem( "Helipad only", float.MinValue ) ); // add for Helipads
     }
 
     #region Profile Handling 
@@ -521,7 +521,7 @@ namespace FShelf
       _dbMissing = !File.Exists( Folders.GenAptDBFile ); // facilities DB missing
       MapLib.MapManager.Instance.InitMapLib( Folders.UserFilePath ); // Init before anything else
       MapLib.MapManager.Instance.SetDiskCacheLocation( Folders.CachePath ); // Map cache location
-      // ---------------
+                                                                            // ---------------
 
       InitializeComponent( );
 
@@ -536,6 +536,7 @@ namespace FShelf
 
       // Flightplan Handler
       _flightPlanHandler.FlightPlanArrived += _flightPlanHandler_FlightPlanArrived;
+      _jobRunner = new JobRunner( );
 
       // handle some Map Events
       aMap.MapCenterChanged += AMap_MapCenterChanged;
@@ -543,6 +544,7 @@ namespace FShelf
       aMap.TeleportAircraft += AMap_TeleportAircraft;
 
       InitRunwayCombo( comboCfgRunwayLength );
+
 
       // Handle the Standalone version
       if (Standalone) {
@@ -915,14 +917,14 @@ namespace FShelf
 
         // get the the Quads around
         var qs = Quad.Around49EX( latLon.AsQuadMax( ).AtZoom( (int)MapRange.FarFar ) ); // FF level
-        if (minRwyLength <= 1) {
-          // short if no length is selected
-          aList = _db.DbReader.AirportDescList_ByQuadList( qs ).ToList( );
+        aList = _db.DbReader.AirportDescList_ByQuadList( qs ).ToList( );
+        // select the ones asked for in Config (min length or helipads)
+        if (minRwyLength >= 0) {
+          aList = aList.Where( x => x.HasRunways && x.LongestRwyLength_m >= minRwyLength ).ToList( );
         }
         else {
-          aList = _db.DbReader.AirportDescList_ByQuadList( qs ).ToList( );
-          // select the ones asked for in Config (min length)
-          aList = aList.Where( x => x.LongestRwyLength_m >= minRwyLength ).ToList( );
+          // All Airports with Helipad 
+          aList = aList.Where( x => x.HasHelipads ).ToList( );
         }
       }
       return aList;
@@ -1039,8 +1041,9 @@ namespace FShelf
         _airport = apt;
         LoadAirport( );
 
+        string dbSource = Folders.FS2024Used ? "MSFS2024" : "MSFS2020";
         var aptReport = new AptReport.AptReportTable( );
-        aptReport.SaveDocument( _airport, _navaidList, _fixList,
+        aptReport.SaveDocument( _airport, _navaidList, _fixList, dbSource,
                             Path.Combine( AppSettings.Instance.ShelfFolder, Folders.AptReportSubfolder ) );
       }
     }
@@ -1070,7 +1073,7 @@ namespace FShelf
 
       // Map update pace slowed down to an acceptable CPU load - (native is 100ms)
       if ((_updates++ % 5) == 0) { // 500ms pace - slow enough ?? performance penalty...
-        // track waypoints on data arrival
+                                   // track waypoints on data arrival
         _tAircraft.AircraftID = SV.Get<string>( SItem.sG_Cfg_AircraftID );
         _tAircraft.OnGround = SV.Get<bool>( SItem.bG_Sim_OnGround );
         _tAircraft.TrueHeading_deg = SV.Get<float>( SItem.fG_Nav_HDG_true_deg );
@@ -1504,7 +1507,7 @@ namespace FShelf
       txCfgSbPilotID.ForeColor = _txForeColorDefault; // clear the one not available
       if (e.KeyChar == (char)Keys.Return) {
         e.Handled = true;
-        if (SimBrief.IsSimBriefUserID( txCfgSbPilotID.Text )) {
+        if (SimBriefHandler.IsSimBriefUserID( txCfgSbPilotID.Text )) {
           txCfgSbPilotID.ForeColor = Color.GreenYellow;
         }
         else {
@@ -1517,7 +1520,7 @@ namespace FShelf
     private void btCfgSbLoadPlan_Click( object sender, EventArgs e )
     {
       lblCfgPlanMessage.Text = "...";
-      if (SimBrief.IsSimBriefUserID( txCfgSbPilotID.Text )) {
+      if (SimBriefHandler.IsSimBriefUserID( txCfgSbPilotID.Text )) {
         lblCfgPlanMessage.Text = "loading...";
         _flightPlanHandler.RequestSBDownload( txCfgSbPilotID.Text );
         // will report in the Event
@@ -1557,7 +1560,7 @@ namespace FShelf
       if (OFD.ShowDialog( this ) == DialogResult.OK) {
         //selected
         lblCfgPlanMessage.Text = "loading...";
-        if (!_flightPlanHandler.RequestPlan( OFD.FileName )) {
+        if (!_flightPlanHandler.RequestPlanFile( OFD.FileName )) {
           lblCfgPlanMessage.Text = "unknown file, aborted";
         }
         // will report in the Event
@@ -1569,9 +1572,10 @@ namespace FShelf
     {
       lblCfgPlanMessage.Text = "loading...";
       // call for a XML OFP
-      if (!_flightPlanHandler.RequestPlan( MSFSPln.CustomFlightPlan_filename )) {
+      if (!_flightPlanHandler.RequestPlanFile( MSFSPlnHandler.CustomFlightPlan_filename )) {
         lblCfgPlanMessage.Text = "unknown file, aborted";
-      };
+      }
+      ;
       // will report in the Event
     }
 

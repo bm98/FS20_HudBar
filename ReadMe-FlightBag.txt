@@ -1,5 +1,5 @@
-FS20_FlightBag V 0.70 - Build 70 BETA
-(c) M. Burri - 22-Aug-2024
+FS20_FlightBag V 0.72 - Build 72 BETA
+(c) M. Burri - 02-May-2025
 
 Contains files:
 
@@ -40,9 +40,12 @@ wkhtmltopdf.exe             3rd party HTML formatting library wrapper /replaces 
 
 From MSFS2020 Developer Kit for convenience included:
   SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
-  Microsoft.FlightSimulator.SimConnect.dll 
-  SimConnect.dll
+  Microsoft.FlightSimulator.SimConnect.dll  MSFS2020 latest C# assembly 
+  SimConnect.dll	                        MSFS2020 latest C++ module
 
+Simulator Extension Module (extr. to Community folder)
+  BM98CH_DataConnector_Wasm-V0.8.zip  
+  BM98CH_DataConnector_Wasm2024-V4.8.zip  
 
 dataLoader\ folder:
 FacilityDataLoader.exe      MSFS Facility conversion tool
@@ -56,7 +59,12 @@ LiteDB.dll                  3rd party data management library
 System.Data.SQLite.dll      3rd party data management library
 x64\SQLite.Interop.dll      3rd party data management library 64bit C-library
 x86\SQLite.Interop.dll      3rd party data management library 32bit C-library
-
+V2020\MSFSPlug.dll			MSFS2020 SimConnect Adapter
+V2020\Microsoft.FlightSimulator.SimConnect.dll  MSFS2020 latest C# assembly 
+V2020\SimConnect.dll        MSFS2020 latest C++ module
+V2024\MSFSPlug.dll			MSFS2024 SimConnect Adapter
+V2024\Microsoft.FlightSimulator.SimConnect.dll  MSFS2024 latest C# assembly 
+V2024\SimConnect.dll        MSFS2024 latest C++ module
 
 ReadMe-FlightBag.txt                   This file
 
@@ -73,6 +81,12 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.72-B72
+- Please UPDATE the WASM Module (sww quick guide) !!!
+
+- Add FS2024 native WASM module (V4.x for FS2024)
+- Update To select only Airports with Helipads in FlightBag-Config Runways
 
 V 0.70-B70
 - Please UPDATE the WASM Module (from BM98CH_DataConnector_Wasm-V0.5.zip) !!!

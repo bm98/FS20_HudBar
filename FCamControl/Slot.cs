@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -10,6 +6,7 @@ using FSimClientIF;
 using System.Numerics;
 using System.Drawing;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace FCamControl
 {
@@ -202,7 +199,7 @@ namespace FCamControl
 
     // AppSettings Tools support V2 format
     // format is per slot:  "[V2_]SlotNo;SettingNo;[6Dof|IndexNo];zoomlvl¦"
-    // 6Dof: "xfyfzfpfbfhf"  xyzpbh: floats
+    // 6Dof: "xfyfzfpfbfhf"  xyzpbh: floats USING DECIMAL POINT 
     private static Regex c_slotRegex = new Regex( @"(?<v2>V2_)?(?<slot>\d+);(?<setting>\d+);(((?<dof6>([-]?[0-9]*\.?[0-9]+f){6})|(?<index>\d+))(;(?<zoom>\d{1,3}|-1))?)¦"
                                                     , RegexOptions.Compiled );
 
@@ -212,7 +209,9 @@ namespace FCamControl
     /// </summary>
     internal static MatchCollection SlotMatches( string profileString )
     {
-      return c_slotRegex.Matches( profileString );
+      string valueIn = profileString.Replace( ",", "." ); // BUG avoidance if a profile string contains 6DOF with Commas
+
+      return c_slotRegex.Matches( valueIn );
     }
 
     // a Slot with starting requirement ^
@@ -222,25 +221,23 @@ namespace FCamControl
     /// Get; Set: The setting string for this slot
     /// </summary>
     public string SlotSettingString {
+      // ENSURE InvariantCulture (BUG fix)
       get {
         return SlotSettingStringV2; // Upgrade to V2
-        /*
-        return (_camSetting == CameraSetting.Cam_6DOF)
-          ? $"{_slotNo};{(int)_camSetting};{_position.X:##0.00}f{_position.Y:##0.00}f{_position.Z:##0.00}f{_gimbal.X:##0.00}f{_gimbal.Y:##0.00}f{_gimbal.Z:##0.00}f¦"
-          : $"{_slotNo};{(int)_camSetting};{_camIndex}¦";
-        */
       }
       set {
-        Match match = c_rx.Match( value );
+        string valueIn = value.Replace( ",", "." ); // BUG avoidance if a profile string contains 6DOF with Commas
+
+        Match match = c_rx.Match( valueIn );
         if (match.Success) {
           bool isV2 = (match.Groups["v2"].Success);
 
           if (isV2) {
-            SlotSettingStringV2 = value;
+            SlotSettingStringV2 = valueIn;
             return;
           }
           // Continue with V1
-          _camSetting = (CameraSetting)int.Parse( match.Groups["setting"].Value );
+          _camSetting = (CameraSetting)int.Parse( match.Groups["setting"].Value, NumberStyles.Integer, CultureInfo.InvariantCulture );
           _camIndex = 1;
           _zoomLevel = -1;
           _position = new Vector3( );
@@ -249,15 +246,21 @@ namespace FCamControl
           if ((_camSetting == CameraSetting.Cam_6DOF) && match.Groups["dof6"].Success) {
             string[] e = match.Groups["dof6"].Value.Split( new char[] { 'f' }, StringSplitOptions.RemoveEmptyEntries );
             try {
-              _position = new Vector3( float.Parse( e[0] ), float.Parse( e[1] ), float.Parse( e[2] ) );
-              _gimbal = new Vector3( float.Parse( e[3] ), float.Parse( e[4] ), float.Parse( e[5] ) );
+              _position = new Vector3(
+                float.Parse( e[0], NumberStyles.Number, CultureInfo.InvariantCulture ),
+                float.Parse( e[1], NumberStyles.Number, CultureInfo.InvariantCulture ),
+                float.Parse( e[2], NumberStyles.Number, CultureInfo.InvariantCulture ) );
+              _gimbal = new Vector3(
+                float.Parse( e[3], NumberStyles.Number, CultureInfo.InvariantCulture ),
+                float.Parse( e[4], NumberStyles.Number, CultureInfo.InvariantCulture ),
+                float.Parse( e[5], NumberStyles.Number, CultureInfo.InvariantCulture ) );
             }
             catch (Exception) {
               ;// would be a mismatch of the setting string
             }
           }
           else if (match.Groups["index"].Success) {
-            _camIndex = int.Parse( match.Groups["index"].Value );
+            _camIndex = int.Parse( match.Groups["index"].Value, NumberStyles.Integer, CultureInfo.InvariantCulture );
           }
         }
 
@@ -320,21 +323,25 @@ namespace FCamControl
     /// V2 changed to CamereaMode and added the ZoomLevel
     /// </summary>
     private string SlotSettingStringV2 {
+      // ENSURE InvariantCulture (BUG fix)
       get {
-        return (_camMode == CameraMode.DOF6)
-          // Added V2 tag
-          ? $"V2_{_slotNo};{(int)_camMode};{_position.X:##0.00}f{_position.Y:##0.00}f{_position.Z:##0.00}f{_gimbal.X:##0.00}f{_gimbal.Y:##0.00}f{_gimbal.Z:##0.00}f;{_zoomLevel}¦"
-          : $"V2_{_slotNo};{(int)_camMode};{_camIndex};{_zoomLevel}¦";
+        FormattableString setting = (_camMode == CameraMode.DOF6)
+          // Added V2 tag - MUST BE WITH DECIMAL POINT not according to locale
+          ? (FormattableString)$"V2_{_slotNo};{(int)_camMode};{_position.X:##0.00}f{_position.Y:##0.00}f{_position.Z:##0.00}f{_gimbal.X:##0.00}f{_gimbal.Y:##0.00}f{_gimbal.Z:##0.00}f;{_zoomLevel}¦"
+          : (FormattableString)$"V2_{_slotNo};{(int)_camMode};{_camIndex};{_zoomLevel}¦";
+        return FormattableString.Invariant( setting );
       }
       set {
+        string valueIn = value.Replace( ",", "." ); // BUG avoidance if a profile string contains 6DOF with Commas
+
         // this should be only called when a V2 string has to be handled
-        Match match = c_rx.Match( value );
+        Match match = c_rx.Match( valueIn );
         if (match.Success) {
           // sanity
           bool isV2 = match.Groups["v2"].Success;
           Debug.Assert( isV2 );
 
-          _camMode = (CameraMode)int.Parse( match.Groups["setting"].Value );
+          _camMode = (CameraMode)int.Parse( match.Groups["setting"].Value, NumberStyles.Integer, CultureInfo.InvariantCulture );
           _camIndex = 1;
           _zoomLevel = -1;
           _position = new Vector3( );
@@ -343,19 +350,25 @@ namespace FCamControl
           if ((_camMode == CameraMode.DOF6) && match.Groups["dof6"].Success) {
             string[] e = match.Groups["dof6"].Value.Split( new char[] { 'f' }, StringSplitOptions.RemoveEmptyEntries );
             try {
-              _position = new Vector3( float.Parse( e[0] ), float.Parse( e[1] ), float.Parse( e[2] ) );
-              _gimbal = new Vector3( float.Parse( e[3] ), float.Parse( e[4] ), float.Parse( e[5] ) );
+              _position = new Vector3(
+                float.Parse( e[0], NumberStyles.Number, CultureInfo.InvariantCulture ),
+                float.Parse( e[1], NumberStyles.Number, CultureInfo.InvariantCulture ),
+                float.Parse( e[2], NumberStyles.Number, CultureInfo.InvariantCulture ) );
+              _gimbal = new Vector3(
+                float.Parse( e[3], NumberStyles.Number, CultureInfo.InvariantCulture ),
+                float.Parse( e[4], NumberStyles.Number, CultureInfo.InvariantCulture ),
+                float.Parse( e[5], NumberStyles.Number, CultureInfo.InvariantCulture ) );
             }
             catch (Exception) {
               ;// would be a mismatch of the setting string
             }
           }
           else if (match.Groups["index"].Success) {
-            _camIndex = int.Parse( match.Groups["index"].Value );
+            _camIndex = int.Parse( match.Groups["index"].Value, NumberStyles.Integer, CultureInfo.InvariantCulture );
           }
           // get Zoom if set
           if (match.Groups["zoom"].Success) {
-            if (int.TryParse( match.Groups["zoom"].Value, out int zoom )) {
+            if (int.TryParse( match.Groups["zoom"].Value, NumberStyles.Number, CultureInfo.InvariantCulture, out int zoom )) {
               _zoomLevel = dNetBm98.XMath.Clip( zoom, -1, 100 );
             }
           }
@@ -370,9 +383,12 @@ namespace FCamControl
     /// <returns>The SlotNo or -1 </returns>
     public static int SlotNo( string appSetting )
     {
-      Match match = c_rx.Match( appSetting );
+      // ENSURE InvariantCulture (BUG fix)
+      string valueIn = appSetting.Replace( ",", "." ); // BUG avoidance if a profile string contains 6DOF with Commas
+
+      Match match = c_rx.Match( valueIn );
       if (match.Success) {
-        return int.Parse( match.Groups["slot"].Value );
+        return int.Parse( match.Groups["slot"].Value, NumberStyles.Number, CultureInfo.InvariantCulture );
       }
       return -1;
     }

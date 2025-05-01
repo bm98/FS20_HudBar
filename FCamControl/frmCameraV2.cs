@@ -1,22 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using bm98_hbFolders;
 
-using dNetBm98.Job;
-
 using FSimClientIF;
 
-using SC = SimConnectClient;
 using SimConnectClientAdapter;
 
 namespace FCamControl

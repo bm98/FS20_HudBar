@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,7 +10,6 @@ using Windows.Media.Render;
 using Windows.Media.SpeechSynthesis;
 
 using DbgLib;
-using System.IO;
 using Windows.Devices.Enumeration;
 
 namespace SpeechLib

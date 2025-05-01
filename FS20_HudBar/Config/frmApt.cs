@@ -133,6 +133,11 @@ namespace FS20_HudBar.Config
       lblSBPilotID.Text = HudBar.FlightBagRef.SimBriefID;
     }
 
+    private void frmApt_Activated( object sender, EventArgs e )
+    {
+      lblDataSource.Text = bm98_hbFolders.Folders.FS2024Used ? "MSFS 2024" : "MSFS 2020";
+    }
+
     private void frmApt_FormClosing( object sender, FormClosingEventArgs e )
     {
       HudBar.FlightBagRef.FlightPlanLoadedByUser -= FlightBagRef_FlightPlanLoadedByUser;
@@ -211,7 +216,7 @@ namespace FS20_HudBar.Config
     {
       _planLoaded = false;
       lblLoading.Text = "requested";
-      lblLoading.Text = HudBar.FlightBagRef.LoadDefaultPLN( ) ? "loading" : "failedload ";
+      lblLoading.Text = HudBar.FlightBagRef.LoadDefaultPLN( ) ? "loading" : "load failed ";
     }
 
     // load a plan from file
@@ -240,9 +245,12 @@ namespace FS20_HudBar.Config
     // Load event
     private void FlightBagRef_FlightPlanLoadedByUser( object sender, EventArgs e )
     {
-      lblLoading.Text = "loaded";
-      LoadFromPlan( );
-      _planLoaded = HudBar.FlightPlanRef.IsValid;
+      var dd = new dNetBm98.Win.WinFormInvoker( this );
+      dd.HandleEvent( ( ) => {
+        lblLoading.Text = "loaded";
+        LoadFromPlan( );
+        _planLoaded = HudBar.FlightPlanRef.IsValid;
+      } );
     }
 
   }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FS20_HudBar.Bar.Items
+﻿namespace FS20_HudBar.Bar.Items
 {
   /// <summary>
   /// All Labels (Topics etc.) shown in the HudBar 
@@ -215,6 +209,9 @@ namespace FS20_HudBar.Bar.Items
     USR_ALERT_2, // Alert set by user No2
     USR_ALERT_3, // Alert set by user No3
     THOOK,       // Tail Hook
+
+    SBALL_ANI,   // SlipBall Graph
+    H_COLL_LEV,  // Heli Collective Lever prct
   }
 
 
@@ -484,6 +481,7 @@ namespace FS20_HudBar.Bar.Items
     GFORCE_Max,    // GForce Maximum
     COMPASS,       // Mag Compass
     COMPASS_ANI,   // Mag Compass Arrow
+    SBALL_ANI,     // SlipBall Graph
 
     // AVIONICS NAV
     NAV1_ID,      // NAV1 ID

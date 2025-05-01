@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using static dNetBm98.XMath;
 using CoordLib;
 using CoordLib.MercatorTiles;
 using CoordLib.LLShapes;
-using System.ComponentModel;
-using System.Threading;
 using DbgLib;
 
 namespace MapLib.Tiles

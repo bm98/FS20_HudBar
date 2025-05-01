@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 using DbgLib;
 
-using SC = SimConnectClient;
-using SimConnectClientAdapter;
-using static FS20_HudBar.GUI.GUI_Colors;
+using FSimClientIF;
+using FSimClientIF.Modules;
 using static FSimClientIF.Sim;
 
+using SC = SimConnectClient;
+using SimConnectClientAdapter;
+
+using bm98_hbFolders;
+
+using static FS20_HudBar.GUI.GUI_Colors;
 using FS20_HudBar.GUI.Templates.Base;
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.Bar.Items;
 using FS20_HudBar.Bar;
 using FS20_HudBar.Config;
-using System.IO;
 using FS20_HudBar.GUI;
-using FSimClientIF.Modules;
-using bm98_hbFolders;
-using FSimClientIF;
 
 namespace FS20_HudBar
 {
@@ -50,7 +52,7 @@ namespace FS20_HudBar
     #endregion
 
     // SimConnect Client Adapter
-    private SCClient SCAdapter;
+    private readonly SCClient SCAdapter;
 
     // Handle of the Primary Screen to attach bar and tile
     private readonly Screen m_mainScreen;
@@ -60,11 +62,11 @@ namespace FS20_HudBar
     private int m_barScreenNumber = 0;
 
     // This will be the GUI form
-    private frmGui m_frmGui;
-    private DispPanel flp;
+    private readonly frmGui m_frmGui;
+    private readonly DispPanel flp;
 
     // A HudBar standard ToolTip for the Button Helpers
-    private ToolTip_Base m_toolTip = new ToolTip_Base( );
+    private readonly ToolTip_Base m_toolTip = new ToolTip_Base( );
 
     // The configuration 
     private Configuration m_config = null;
@@ -72,32 +74,42 @@ namespace FS20_HudBar
     // The profiles
     //    private List<CProfile> m_profiles = new List<CProfile>( );
     //    private int m_selProfile = 0;
-    private ToolStripMenuItem[] m_profileMenu; // enable array access for the MenuItems
+    private readonly ToolStripMenuItem[] m_profileMenu; // enable array access for the MenuItems
 
     // Handles the RawInput from HID Keyboards
     Win.HotkeyController _keyHook;
 
     // MSFS Input handlers
-    private Dictionary<Hotkeys, SC.SimEvents.SimEventAdapter> _fsInputCat = new Dictionary<Hotkeys, SC.SimEvents.SimEventAdapter>( );
-
+    private readonly Dictionary<Hotkeys, SC.SimEvents.SimEventAdapter> _fsInputCat = new Dictionary<Hotkeys, SC.SimEvents.SimEventAdapter>( );
     // SimVar access
     private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
-
     // The Flightbag
-    private FShelf.frmShelf _Shelf;
-
+    private readonly FShelf.frmShelf _Shelf;
     // Camera Selector
-    private FCamControl.frmCameraV2 _Camera;
-
+    private readonly FCamControl.frmCameraV2 _Camera;
     // Checklist Box
-    private FChecklistBox.frmChecklistBox _ChecklistBox;
-
+    private readonly FChecklistBox.frmChecklistBox _ChecklistBox;
     // Configuration Dialog
     //    private readonly frmConfig CFG = new frmConfig( );
     private readonly frmConfigV2 CFG = new frmConfigV2( ); // 20240223
 
     // need to stop processing while reconfiguring the bar
     private bool m_initDone = false;
+
+    private readonly string c_facDBmsg
+  = "The Facility Database could not be found!\n\nPlease visit the QuickGuide, head for 'DataLoader' and proceed accordingly"
+  + "\n\nDo you want to check next startup again - click YES\n"
+  + "\nClicking NO will no longer check for the Database to exist.";
+    private void CheckFacilityDB( )
+    {
+      if (!File.Exists( Folders.GenAptDBFile )) {
+        if (AppSettingsV2.Instance.OmitDBCheck) { return; }
+        if (MessageBox.Show( c_facDBmsg, "Facility Database Missing", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.No) {
+          AppSettingsV2.Instance.OmitDBCheck = true;
+          AppSettingsV2.Instance.Save( );
+        }
+      }
+    }
 
     #region IColorType Interface
     public void UpdateColor( )
@@ -483,21 +495,7 @@ namespace FS20_HudBar
 
     #endregion
 
-    private readonly string c_facDBmsg
-      = "The Facility Database could not be found!\n\nPlease visit the QuickGuide, head for 'DataLoader' and proceed accordingly"
-      + "\n\nDo you want to check next startup again - click YES\n"
-      + "\nClicking NO will no longer check for the Database to exist.";
-    private void CheckFacilityDB( )
-    {
-      if (!File.Exists( Folders.GenAptDBFile )) {
-        if (AppSettingsV2.Instance.OmitDBCheck) { return; }
-        if (MessageBox.Show( c_facDBmsg, "Facility Database Missing", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.No) {
-          AppSettingsV2.Instance.OmitDBCheck = true;
-          AppSettingsV2.Instance.Save( );
-        }
-      }
-    }
-
+    #region Form Handlings
 
     /// <summary>
     /// Main Form Init
@@ -597,6 +595,7 @@ namespace FS20_HudBar
       LOG.Info( "frmMain", "Init Form Done" );
     }
 
+    // Form Load Event
     private void frmMain_Load( object sender, EventArgs e )
     {
       LOG.Info( "frmMain_Load", "Start" );
@@ -615,13 +614,6 @@ namespace FS20_HudBar
       this.TopMost = true; // make sure we float on top
       UpdateColor( ); // Set the Background color of this form
 
-      // File Access Check
-      if (Dbg.Instance.AccessCheck( Folders.UserFilePath ) != AccessCheckResult.Success) {
-        string msg = $"MyDocuments Folder Access Check Failed:\n{Dbg.Instance.AccessCheckResult}\n\n{Dbg.Instance.AccessCheckMessage}";
-        MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
-      }
-      CheckFacilityDB( );
-
       // attach a Callback for the SimClient
       SC.SimConnectClient.Instance.DataArrived += Instance_DataArrived;
       // Layout may need to update when the Aircraft changes (due to Engine Count)
@@ -636,6 +628,17 @@ namespace FS20_HudBar
       SCAdapter.Connect( );
       // Init Landing Performance Tracker
       _ = FShelf.LandPerf.PerfTracker.Instance;
+
+      // File Access Check
+      if (Dbg.Instance.AccessCheck( Folders.UserFilePath ) != AccessCheckResult.Success) {
+        string msg = $"MyDocuments Folder Access Check Failed:\n{Dbg.Instance.AccessCheckResult}\n\n{Dbg.Instance.AccessCheckMessage}";
+        MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
+      }
+      // Facility DB
+      if (SCAdapter.FSimVersion != FSimVersion.None) {
+        Folders.SelectFSVersion( SCAdapter.FSimVersion == FSimVersion.MSFS2024 );
+      }
+      CheckFacilityDB( );
 
       // Pacer to connect and other repetitive chores
       timer1.Interval = 5000; // try to connect in 5 sec intervals
@@ -744,19 +747,20 @@ namespace FS20_HudBar
     {
       // SimConnect stuff
       SimConnectPacer( );
-
-      //DEBUG
-      SynchGUISize( ); // first time align the size
-
+      // First time align the size
+      SynchGUISize( );
+      // Select Facility DB based on the version detected
+      Folders.SelectFSVersion( SCAdapter.FSimVersion == FSimVersion.MSFS2024 );
     }
 
-    // fired when the user has loaded a flightplan
+    // Fired when the user has loaded a flightplan
     private void M_shelf_FlightPlanLoadedByUser( object sender, EventArgs e )
     {
-      // update from shelf
+      // Update from shelf
       HudBar.UpdateFlightplanReference( _Shelf.FlightPlanRef );
     }
 
+    #endregion
 
     #region Units Menu
 

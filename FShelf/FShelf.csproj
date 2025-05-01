@@ -67,12 +67,12 @@
     <Reference Include="FSimFacilityIF">
       <HintPath>..\..\..\Redist\FSimFacilityIF.dll</HintPath>
     </Reference>
+    <Reference Include="FSimFlightPlanDoc">
+      <HintPath>..\..\..\Redist\FSimFlightPlanDoc.dll</HintPath>
+    </Reference>
     <Reference Include="FSimFlightPlans, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\FSimFlightPlans.dll</HintPath>
-    </Reference>
-    <Reference Include="FSimIF">
-      <HintPath>..\..\..\Redist\FSimIF.dll</HintPath>
     </Reference>
     <Reference Include="SimConnectClient">
       <HintPath>..\..\..\Redist\SimConnectClient.dll</HintPath>

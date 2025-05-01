@@ -1,5 +1,5 @@
-FS20_HudBar V 0.71 - Build 71 BETA
-(c) M. Burri - 21-Oct-2024
+FS20_HudBar V 0.72 - Build 72 BETA
+(c) M. Burri - 02-May-2025
 
 Contains files:
 
@@ -51,12 +51,13 @@ From Google Fonts Library embedded:
   Share_Tech_Mono			(Used as condensed font)
 
 From MSFS2020 Developer Kit for convenience included:
-  Microsoft.FlightSimulator.SimConnect.dll 
-  SimConnect.dll
+  Microsoft.FlightSimulator.SimConnect.dll  MSFS2020 latest C# assembly 
+  SimConnect.dll	                        MSFS2020 latest C++ module
   SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
 
 Simulator Extension Module (extr. to Community folder)
-  BM98CH_DataConnector_Wasm-V0.5.zip  
+  BM98CH_DataConnector_Wasm-V0.8.zip  
+  BM98CH_DataConnector_Wasm2024-V4.8.zip  
 
 
 dataLoader\ folder:
@@ -71,6 +72,12 @@ LiteDB.dll                  3rd party data management library
 System.Data.SQLite.dll      3rd party data management library
 x64\SQLite.Interop.dll      3rd party data management library 64bit C-library
 x86\SQLite.Interop.dll      3rd party data management library 32bit C-library
+V2020\MSFSPlug.dll			MSFS2020 SimConnect Adapter
+V2020\Microsoft.FlightSimulator.SimConnect.dll  MSFS2020 latest C# assembly 
+V2020\SimConnect.dll        MSFS2020 latest C++ module
+V2024\MSFSPlug.dll			MSFS2024 SimConnect Adapter
+V2024\Microsoft.FlightSimulator.SimConnect.dll  MSFS2024 latest C# assembly 
+V2024\SimConnect.dll        MSFS2024 latest C++ module
 
 ReadMe.txt                   This file
 
@@ -87,6 +94,20 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.72-B72
+- Please UPDATE the WASM Module (see quick guide) !!!
+
+- Add FS2024 native WASM module (V4.x for FS2024)
+- Add Ball, Slip indicator graph item
+- Add Collective Handle Position
+- Add Sim EFB Planned Route decoding for FS2024 (preliminary due to issues in EFB export)
+- Add Pull Sim EFB Planned Route as Flight Plan for FS2024
+- Add Export/Import of individual Profiles in Config (context menu)
+- Update To select only Airports with Helipads in FlightBag-Config Runways
+- Fix CameraControl cannot read saved slots when the locale decimal sign is not a decimal point
+
+- Update QuickGuides
 
 V 0.71-B71
 - Update FacilityDataLoader (bug fix) - pls run again

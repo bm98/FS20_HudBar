@@ -45,8 +45,10 @@ namespace FS20_HudBar.Config
       this.label2 = new System.Windows.Forms.Label();
       this.btRouteString = new System.Windows.Forms.Button();
       this.groupBox1 = new System.Windows.Forms.GroupBox();
-      this.txRoute = new System.Windows.Forms.TextBox();
       this.lblRouteStatus = new System.Windows.Forms.Label();
+      this.txRoute = new System.Windows.Forms.TextBox();
+      this.label6 = new System.Windows.Forms.Label();
+      this.lblDataSource = new System.Windows.Forms.Label();
       this.groupBox1.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -213,16 +215,6 @@ namespace FS20_HudBar.Config
       this.groupBox1.TabStop = false;
       this.groupBox1.Text = "Route";
       // 
-      // txRoute
-      // 
-      this.txRoute.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txRoute.Location = new System.Drawing.Point(6, 26);
-      this.txRoute.Multiline = true;
-      this.txRoute.Name = "txRoute";
-      this.txRoute.Size = new System.Drawing.Size(666, 98);
-      this.txRoute.TabIndex = 0;
-      this.txRoute.Text = resources.GetString("txRoute.Text");
-      // 
       // lblRouteStatus
       // 
       this.lblRouteStatus.AutoSize = true;
@@ -234,10 +226,42 @@ namespace FS20_HudBar.Config
       this.lblRouteStatus.TabIndex = 15;
       this.lblRouteStatus.Text = "RTE help";
       // 
+      // txRoute
+      // 
+      this.txRoute.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.txRoute.Location = new System.Drawing.Point(6, 26);
+      this.txRoute.Multiline = true;
+      this.txRoute.Name = "txRoute";
+      this.txRoute.Size = new System.Drawing.Size(666, 98);
+      this.txRoute.TabIndex = 0;
+      this.txRoute.Text = resources.GetString("txRoute.Text");
+      // 
+      // label6
+      // 
+      this.label6.AutoSize = true;
+      this.label6.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label6.Location = new System.Drawing.Point(284, 9);
+      this.label6.Name = "label6";
+      this.label6.Size = new System.Drawing.Size(95, 15);
+      this.label6.TabIndex = 19;
+      this.label6.Text = "Using data from:";
+      // 
+      // lblDataSource
+      // 
+      this.lblDataSource.AutoSize = true;
+      this.lblDataSource.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblDataSource.Location = new System.Drawing.Point(385, 9);
+      this.lblDataSource.Name = "lblDataSource";
+      this.lblDataSource.Size = new System.Drawing.Size(60, 15);
+      this.lblDataSource.TabIndex = 20;
+      this.lblDataSource.Text = "MSFS2020";
+      // 
       // frmApt
       // 
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
       this.ClientSize = new System.Drawing.Size(702, 308);
+      this.Controls.Add(this.lblDataSource);
+      this.Controls.Add(this.label6);
       this.Controls.Add(this.groupBox1);
       this.Controls.Add(this.btRouteString);
       this.Controls.Add(this.label2);
@@ -264,6 +288,7 @@ namespace FS20_HudBar.Config
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Route Departure - Destination";
       this.TopMost = true;
+      this.Activated += new System.EventHandler(this.frmApt_Activated);
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmApt_FormClosing);
       this.Load += new System.EventHandler(this.frmApt_Load);
       this.groupBox1.ResumeLayout(false);
@@ -292,5 +317,7 @@ namespace FS20_HudBar.Config
     private System.Windows.Forms.GroupBox groupBox1;
     private System.Windows.Forms.TextBox txRoute;
     private System.Windows.Forms.Label lblRouteStatus;
+    private System.Windows.Forms.Label label6;
+    private System.Windows.Forms.Label lblDataSource;
   }
 }

@@ -92,6 +92,8 @@
       this.btAccept = new System.Windows.Forms.Button();
       this.btCancel = new System.Windows.Forms.Button();
       this.timer1 = new System.Windows.Forms.Timer(this.components);
+      this.OFD = new System.Windows.Forms.OpenFileDialog();
+      this.SFD = new System.Windows.Forms.SaveFileDialog();
       this.tlpMain.SuspendLayout();
       this.tlpProfile.SuspendLayout();
       this.flpP1.SuspendLayout();
@@ -871,6 +873,21 @@
       this.timer1.Interval = 5000;
       this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
       // 
+      // OFD
+      // 
+      this.OFD.DefaultExt = "hbsetting";
+      this.OFD.FileName = "Profile";
+      this.OFD.Filter = "HudBar Settings|*.hbsetting";
+      this.OFD.SupportMultiDottedExtensions = true;
+      this.OFD.Title = "Load Profile Setting";
+      // 
+      // SFD
+      // 
+      this.SFD.DefaultExt = "hbsetting";
+      this.SFD.Filter = "HudBar Settings|*.hbsetting";
+      this.SFD.SupportMultiDottedExtensions = true;
+      this.SFD.Title = "Save Profile Setting";
+      // 
       // frmConfigV2
       // 
       this.AcceptButton = this.btAccept;
@@ -976,5 +993,7 @@
     private System.Windows.Forms.Button btTestVoice;
     private System.Windows.Forms.CheckBox cbxBoxDivider;
     private System.Windows.Forms.CheckBox cbxFrameItems;
+    private System.Windows.Forms.OpenFileDialog OFD;
+    private System.Windows.Forms.SaveFileDialog SFD;
   }
 }

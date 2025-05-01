@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using FS20_HudBar.Bar;
-
-using SC = SimConnectClient;
+﻿using SC = SimConnectClient;
 using static FSimClientIF.Sim;
 using MetarLib;
 using FSimClientIF.Modules;

@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
+
+using CoordLib;
 
 using static dNetBm98.XSize;
-using CoordLib;
 
 namespace bm98_Map.Drawing.DispItems
 {

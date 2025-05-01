@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using static dNetBm98.XPoint;
-using static dNetBm98.XSize;
-using CoordLib;
-using MapLib;
-using MapLib.Tiles;
 using System.Threading;
 using System.Drawing.Imaging;
 using System.Collections.Concurrent;
+
+using CoordLib;
 using DbgLib;
+using static dNetBm98.XPoint;
+using static dNetBm98.XSize;
+using MapLib;
+using MapLib.Tiles;
 
 namespace bm98_Map.Drawing
 {
@@ -155,7 +150,7 @@ namespace bm98_Map.Drawing
     /// Fired when the map was moved around
     /// </summary>
     internal event EventHandler<EventArgs> MapMoved;
-    private void OnMapMoved( )=> MapMoved?.Invoke( this, EventArgs.Empty );
+    private void OnMapMoved( ) => MapMoved?.Invoke( this, EventArgs.Empty );
 
     /// <summary>
     /// The Map 

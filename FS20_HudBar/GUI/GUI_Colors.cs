@@ -1,15 +1,10 @@
-﻿using dNetBm98;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
-using static FS20_HudBar.GUI.GUI_Colors;
+using dNetBm98;
 
 namespace FS20_HudBar.GUI
 {

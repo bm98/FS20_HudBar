@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using FSimFacilityIF;
 
@@ -75,13 +73,20 @@ namespace bm98_Map.Data
     /// <returns>A string</returns>
     public static string RunwayString( this IRunway runway, IList<INavaid> navaids )
     {
-      if (runway.Surface == "WATER") {
-        // "COMPASSDIR (hhh°) lenxwidth material"
-        return $"{runway.Ident,-9} ({runway.Bearing_deg:000}°)   {runway.Length_m,4:###0}x{runway.Width_m,-3:##0} m  - {runway.Surface}";
+      if (runway.IsRunway) {
+        if (runway.Surface == "WATER") {
+          // "COMPASSDIR (hhh°) lenxwidth material"
+          return $"{runway.Ident,-9} ({runway.Bearing_deg:000}°)   {runway.Length_m,4:###0}x{runway.Width_m,-3:##0} m  - {runway.Surface}";
+        }
+        else {
+          // "RRR (hhh°) ILS  lenxwidth material"
+          return $"{runway.Ident,-3} ({runway.Bearing_deg:000}°)  {RunwayIlsString( runway, navaids )} {runway.Length_m,4:###0}x{runway.Width_m,-3:##0} m  - {runway.Surface}";
+        }
       }
       else {
-        // "RRR (hhh°) ILS  lenxwidth material"
-        return $"{runway.Ident,-3} ({runway.Bearing_deg:000}°)  {RunwayIlsString( runway, navaids )} {runway.Length_m,4:###0}x{runway.Width_m,-3:##0} m  - {runway.Surface}";
+        // Helipad
+        // "RRR (hhh°) "HELIPAD                   " lenxwidth material"
+        return $"{runway.Ident,-3} ({runway.Bearing_deg:000}°)  {"HELIPAD                   "} {runway.Length_m,4:###0}x{runway.Width_m,-3:##0} m  - {runway.Surface}";
       }
     }
 

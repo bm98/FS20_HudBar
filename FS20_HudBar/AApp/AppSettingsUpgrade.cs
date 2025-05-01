@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FS20_HudBar
+﻿namespace FS20_HudBar
 {
   /// <summary>
   /// Methods to upgrade from Old to New Settings

@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using FS20_HudBar.Bar;
@@ -51,43 +47,43 @@ namespace FS20_HudBar.Config
     private int _selProfileIndex = 0;
 
     // per profile access
-    private FlowLayoutPanel m_pFlp;
-    private FlpHandler m_flpHandler;
-    private TextBox m_pName;
-    private ComboBox m_pFont;
-    private ComboBox m_pPlace;
-    private ComboBox m_pKind;
-    private ComboBox m_pCondensed;
-    private ComboBox m_pTransparency;
-    private TextBox m_pHotkey;
-    private TextBox m_pBgImageName;
-    private TextBox m_pBgImageBorder;
+    private FlowLayoutPanel _pFlp;
+    private FlpHandler _flpHandler;
+    private TextBox _pName;
+    private ComboBox _pFont;
+    private ComboBox _pPlace;
+    private ComboBox _pKind;
+    private ComboBox _pCondensed;
+    private ComboBox _pTransparency;
+    private TextBox _pHotkey;
+    private TextBox _pBgImageName;
+    private TextBox _pBgImageBorder;
     private Padding _bgImageBorder = Padding.Empty;
-    private CheckBox m_pFrameItems;
-    private CheckBox m_pBoxDivider;
+    private CheckBox _pFrameItems;
+    private CheckBox _pBoxDivider;
 
     // Dialogs
     private FrmHotkey HKdialog = new FrmHotkey( );
 
     private FrmFonts FONTSdialog;
-    private GUI_Fonts m_configFontsObj; // User Fonts obj
-    private string m_configFonts = "";
-    private bool UsingDefaultFonts => string.IsNullOrEmpty( m_configFonts );
+    private GUI_Fonts _configFontsObj; // User Fonts obj
+    private string _configFonts = "";
+    private bool UsingDefaultFonts => string.IsNullOrEmpty( _configFonts );
     private bool m_applyUserFontChanges = false;
 
     private FrmColors COLORSdialog;
-    private string m_configColorReg = ""; // User Colors
-    private string m_configColorDim = "";
-    private string m_configColorInv = "";
-    private bool UsingDefaultColors => string.IsNullOrEmpty( m_configColorReg );
+    private string _configColorReg = ""; // User Colors
+    private string _configColorDim = "";
+    private string _configColorInv = "";
+    private bool UsingDefaultColors => string.IsNullOrEmpty( _configColorReg );
 
-    private ToolTip_Base m_tooltip = new ToolTip_Base( );
+    private ToolTip_Base _tooltip = new ToolTip_Base( );
 
     // local instance for tests
     private GUI_Speech _speech = new GUI_Speech( );
 
     // concurency avoidance
-    private bool initDone = false;
+    private bool _initDone = false;
 
     // fill the list with items and check them from the Instance
     private void PopulateASave( ComboBox cbx )
@@ -236,33 +232,33 @@ namespace FS20_HudBar.Config
     {
       var profile = ConfigCopy.ProfileAt( profileIndex );
 
-      m_pName.Text = profile.PName;
+      _pName.Text = profile.PName;
       // the GUI column has its FlpHandler
-      m_flpHandler?.Dispose( );
-      m_flpHandler = new FlpHandler(
-        m_pFlp, 0,
+      _flpHandler?.Dispose( );
+      _flpHandler = new FlpHandler(
+        _pFlp, 0,
         profile.ProfileString( ),
         profile.FlowBreakString( ),
         profile.ItemPosString( )
       );
-      m_flpHandler.LoadFlp( HudBarRef );
+      _flpHandler.LoadFlp( HudBarRef );
 
-      profile.LoadFontSize( m_pFont );
-      profile.LoadPlacement( m_pPlace );
-      profile.LoadKind( m_pKind );
-      profile.LoadCond( m_pCondensed );
-      profile.LoadTrans( m_pTransparency );
+      profile.LoadFontSize( _pFont );
+      profile.LoadPlacement( _pPlace );
+      profile.LoadKind( _pKind );
+      profile.LoadCond( _pCondensed );
+      profile.LoadTrans( _pTransparency );
 
-      m_pFrameItems.Checked = profile.FrameItems;
-      m_pBoxDivider.Checked = profile.BoxDivider;
+      _pFrameItems.Checked = profile.FrameItems;
+      _pBoxDivider.Checked = profile.BoxDivider;
 
-      m_pHotkey.Text = profile.HKProfile;
-      m_pBgImageName.Text = profile.BgImageName;
+      _pHotkey.Text = profile.HKProfile;
+      _pBgImageName.Text = profile.BgImageName;
       _bgImageBorder = profile.BgImageBorder; // maintain Master value as Struct
-      m_pBgImageBorder.Text = _bgImageBorder.ToString( );
+      _pBgImageBorder.Text = _bgImageBorder.ToString( );
 
       // mark the selected one 
-      m_pName.BackColor = (ConfigCopy.CurrentProfileIndex == profileIndex) ? c_profileColSel : c_profileCol;
+      _pName.BackColor = (ConfigCopy.CurrentProfileIndex == profileIndex) ? c_profileColSel : c_profileCol;
       // Color/Font entry indication
       btProfileColors.ForeColor = profile.UsingDefaultColors ? c_entryDefault : c_entryAvailable;
       btProfileFonts.ForeColor = profile.UsingDefaultFonts ? c_entryDefault : c_entryAvailable;
@@ -274,18 +270,18 @@ namespace FS20_HudBar.Config
       var profile = ConfigCopy.ProfileAt( profileIndex );
 
       // record profile Updates from the controls
-      profile.PName = m_pName.Text.Trim( );
-      profile.GetItemsFromFlp( m_pFlp, 0 );
-      profile.GetFontSizeFromCombo( m_pFont );
-      profile.GetPlacementFromCombo( m_pPlace );
-      profile.GetKindFromCombo( m_pKind );
-      profile.GetCondensedFromCombo( m_pCondensed );
-      profile.GetTransparencyFromCombo( m_pTransparency );
-      profile.SetFrameItemsFromValue( m_pFrameItems.Checked );
-      profile.SetBoxDividerFromValue(m_pBoxDivider.Checked );
+      profile.PName = _pName.Text.Trim( );
+      profile.GetItemsFromFlp( _pFlp, 0 );
+      profile.GetFontSizeFromCombo( _pFont );
+      profile.GetPlacementFromCombo( _pPlace );
+      profile.GetKindFromCombo( _pKind );
+      profile.GetCondensedFromCombo( _pCondensed );
+      profile.GetTransparencyFromCombo( _pTransparency );
+      profile.SetFrameItemsFromValue( _pFrameItems.Checked );
+      profile.SetBoxDividerFromValue( _pBoxDivider.Checked );
 
-      profile.SetHKfromValue( m_pHotkey.Text );
-      profile.SetBgImageFromValues( m_pBgImageName.Text, _bgImageBorder );
+      profile.SetHKfromValue( _pHotkey.Text );
+      profile.SetBgImageFromValues( _pBgImageName.Text, _bgImageBorder );
       // color and font is cached on Color/FontDialog OK exit
     }
 
@@ -294,7 +290,7 @@ namespace FS20_HudBar.Config
     /// </summary>
     public frmConfigV2( )
     {
-      initDone = false;
+      _initDone = false;
       InitializeComponent( );
 
       // indexed TabButton access
@@ -309,6 +305,9 @@ namespace FS20_HudBar.Config
       ctxMenu.Items.Add( "Paste items here", null, ctxPaste_Click );
       ctxMenu.Items.Add( "Re-Order items", null, ctxReOrder_Click );
       ctxMenu.Items.Add( new ToolStripSeparator( ) );
+      ctxMenu.Items.Add( "Export Profile...", null, ctxExport_Click );
+      ctxMenu.Items.Add( "Import Profile...", null, ctxImport_Click );
+      ctxMenu.Items.Add( new ToolStripSeparator( ) );
 
       // Add Aircraft Merges
       var menu = new ToolStripMenuItem( "Aircraft Merges" );
@@ -319,34 +318,34 @@ namespace FS20_HudBar.Config
       menu = new ToolStripMenuItem( "Default Profiles" );
       ctxMenu.Items.Add( menu );
       DefaultProfiles.AddMenuItems( menu, ctxDP_Click );
-      m_tooltip.ReshowDelay = 100; // pop a bit faster
-      m_tooltip.InitialDelay = 300; // pop a bit faster
-      m_tooltip.SetToolTip( txHkShowHide, "Hotkey to Show/Hide the Bar\nDouble click to edit the Hotkey" );
-      m_tooltip.SetToolTip( txHkP1, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
-      m_tooltip.SetToolTip( txHkShelf, "Hotkey to toggle the Flight Bag\nDouble click to edit the Hotkey" );
-      m_tooltip.SetToolTip( txHkCamera, "Hotkey to toggle the Camera Selector\nDouble click to edit the Hotkey" );
-      m_tooltip.SetToolTip( txHkChecklistBox, "Hotkey to toggle the Checklist Box Selector\nDouble click to edit the Hotkey" );
+      _tooltip.ReshowDelay = 100; // pop a bit faster
+      _tooltip.InitialDelay = 300; // pop a bit faster
+      _tooltip.SetToolTip( txHkShowHide, "Hotkey to Show/Hide the Bar\nDouble click to edit the Hotkey" );
+      _tooltip.SetToolTip( txHkP1, "Hotkey to select this Profile\nDouble click to edit the Hotkey" );
+      _tooltip.SetToolTip( txHkShelf, "Hotkey to toggle the Flight Bag\nDouble click to edit the Hotkey" );
+      _tooltip.SetToolTip( txHkCamera, "Hotkey to toggle the Camera Selector\nDouble click to edit the Hotkey" );
+      _tooltip.SetToolTip( txHkChecklistBox, "Hotkey to toggle the Checklist Box Selector\nDouble click to edit the Hotkey" );
 
       // access for profile controls in the Form
-      m_pFlp = flpP1;
-      m_pName = txP1;
-      m_pFont = cbxFontP1;
-      m_pPlace = cbxPlaceP1;
-      m_pKind = cbxKindP1;
-      m_pCondensed = cbxCondP1;
-      m_pTransparency = cbxTransP1;
-      m_pHotkey = txHkP1;
-      m_pBgImageName = txBgFileP1;
-      m_pBgImageBorder = txBgFileBorderP1;
-      m_pFrameItems = cbxFrameItems;
-      m_pBoxDivider = cbxBoxDivider;
+      _pFlp = flpP1;
+      _pName = txP1;
+      _pFont = cbxFontP1;
+      _pPlace = cbxPlaceP1;
+      _pKind = cbxKindP1;
+      _pCondensed = cbxCondP1;
+      _pTransparency = cbxTransP1;
+      _pHotkey = txHkP1;
+      _pBgImageName = txBgFileP1;
+      _pBgImageBorder = txBgFileBorderP1;
+      _pFrameItems = cbxFrameItems;
+      _pBoxDivider = cbxBoxDivider;
 
       // init combos values
-      PopulateFonts( m_pFont );
-      PopulatePlacement( m_pPlace );
-      PopulateKind( m_pKind );
-      PopulateCond( m_pCondensed );
-      PopulateTrans( m_pTransparency );
+      PopulateFonts( _pFont );
+      PopulatePlacement( _pPlace );
+      PopulateKind( _pKind );
+      PopulateCond( _pCondensed );
+      PopulateTrans( _pTransparency );
 
       PopulateASave( cbxASave ); //20211204
     }
@@ -411,16 +410,16 @@ namespace FS20_HudBar.Config
       // use a Config Copy to allow Cancel changes
       FONTSdialog = new FrmFonts( );
       // use our own Font Obj to work with
-      m_configFontsObj = new GUI_Fonts( HudBarRef.FontRef );
-      m_configFonts = ConfigCopy.UserFonts;
-      m_configFontsObj.FromConfigString( m_configFonts ); // Init with User Fonts from Config
+      _configFontsObj = new GUI_Fonts( HudBarRef.FontRef );
+      _configFonts = ConfigCopy.UserFonts;
+      _configFontsObj.FromConfigString( _configFonts ); // Init with User Fonts from Config
 
       // init Color Config and temp stores
       COLORSdialog = new FrmColors( );
       // use our own Color Config Strings to work with
-      m_configColorReg = ConfigCopy.UserColorsReg;
-      m_configColorDim = ConfigCopy.UserColorsDim;
-      m_configColorInv = ConfigCopy.UserColorsInv;
+      _configColorReg = ConfigCopy.UserColorsReg;
+      _configColorDim = ConfigCopy.UserColorsDim;
+      _configColorInv = ConfigCopy.UserColorsInv;
 
       // Color/Font entry indication
       btColors.ForeColor = ConfigCopy.UsingDefaultColors ? c_entryDefault : c_entryAvailable;
@@ -437,7 +436,7 @@ namespace FS20_HudBar.Config
 #endif
 
 
-      initDone = true;
+      _initDone = true;
     }
 
     private void frmConfig_VisibleChanged( object sender, EventArgs e )
@@ -448,7 +447,7 @@ namespace FS20_HudBar.Config
     private void frmConfig_FormClosing( object sender, FormClosingEventArgs e )
     {
       // reset Sel Color
-      m_pName.BackColor = this.BackColor;
+      _pName.BackColor = this.BackColor;
       _speech.Enabled = false;
       FONTSdialog?.Dispose( );
       COLORSdialog?.Dispose( );
@@ -490,10 +489,10 @@ namespace FS20_HudBar.Config
       ConfigCopy.SetVoiceCalloutConfigString( HudVoice.AsConfigString( flags ) );
 
       // Update User fonts
-      ConfigCopy.SetUserFontsConfigString( m_configFonts );
+      ConfigCopy.SetUserFontsConfigString( _configFonts );
 
       // Update User colors
-      ConfigCopy.SetUserColorsConfigString( m_configColorReg, m_configColorDim, m_configColorInv );
+      ConfigCopy.SetUserColorsConfigString( _configColorReg, _configColorDim, _configColorInv );
 
       // get last changes of the current profile
       UpdateProfile( _selProfileIndex );
@@ -530,7 +529,7 @@ namespace FS20_HudBar.Config
     {
       if (clbVoice.SelectedIndex < 0) return;
       if (!clbVoice.GetItemChecked( clbVoice.SelectedIndex )) return;
-      if (!initDone) return; // don't talk at startup
+      if (!_initDone) return; // don't talk at startup
 
       // Test when checked
       HudBar.VoicePack.TriggerCat[(Callouts)clbVoice.SelectedIndex].Test( _speech );
@@ -554,7 +553,7 @@ namespace FS20_HudBar.Config
     {
       if (sender is ContextMenuStrip) {
         if (ctxMenu.SourceControl is FlowLayoutPanel) {
-          e.Cancel = m_flpHandler.MouseOverItem;
+          e.Cancel = _flpHandler.MouseOverItem;
         }
       }
     }
@@ -563,23 +562,52 @@ namespace FS20_HudBar.Config
     // Copy Items is clicked
     private void ctxCopy_Click( object sender, EventArgs e )
     {
-      m_copyBuffer = m_flpHandler.GetProfileStoreFromFlp( );
+      m_copyBuffer = _flpHandler.GetProfileStoreFromFlp( );
     }
 
     // Paste items is clicked
     private void ctxPaste_Click( object sender, EventArgs e )
     {
       if (m_copyBuffer != null) {
-        m_flpHandler.LoadDefaultProfile( m_copyBuffer );
-        m_flpHandler.LoadFlp( HudBarRef );
+        _flpHandler.LoadDefaultProfile( m_copyBuffer );
+        _flpHandler.LoadFlp( HudBarRef );
       }
     }
 
     // ReOrder items is clicked
     private void ctxReOrder_Click( object sender, EventArgs e )
     {
-      m_flpHandler.ReOrderProfile( HudBarRef );
-      m_flpHandler.LoadFlp( HudBarRef );
+      _flpHandler.ReOrderProfile( HudBarRef );
+      _flpHandler.LoadFlp( HudBarRef );
+    }
+
+    // Export items is clicked
+    private void ctxExport_Click( object sender, EventArgs e )
+    {
+      string serString = ConfigCopy.ProfileAt( _selProfileIndex ).GetAsSerString( );
+      SFD.FileName = dNetBm98.Utilities.MakeValidFileName( ConfigCopy.ProfileAt( _selProfileIndex ).PName );
+      if (SFD.ShowDialog( this ) == DialogResult.OK) {
+        using (var sw = new StreamWriter( SFD.FileName, false )) {
+          sw.Write( serString );
+          sw.Flush( );
+        }
+      }
+    }
+    // Import items is clicked
+    private void ctxImport_Click( object sender, EventArgs e )
+    {
+      string serString = "";
+      if (OFD.ShowDialog( this ) == DialogResult.OK) {
+        using (var sr = new StreamReader( OFD.FileName )) {
+          serString = sr.ReadToEnd( );
+        }
+        var cp = CProfile.GetFromSerString( serString );
+        if (cp != null) {
+          ConfigCopy.ReplaceProfile( _selProfileIndex, cp );
+          SelectProfileIndex( _selProfileIndex, false );
+          txP1_Validating( this, new CancelEventArgs( ) ); // update as if typed
+        }
+      }
     }
 
     // A default profile is clicked
@@ -599,9 +627,9 @@ namespace FS20_HudBar.Config
 
       var dp = DefaultProfiles.GetDefaultProfile( tsi.Text );
       if (dp != null) {
-        m_flpHandler.LoadDefaultProfile( dp );
-        m_flpHandler.LoadFlp( HudBarRef );
-        m_pName.Text = dp.Name;
+        _flpHandler.LoadDefaultProfile( dp );
+        _flpHandler.LoadFlp( HudBarRef );
+        _pName.Text = dp.Name;
       }
     }
 
@@ -622,9 +650,9 @@ namespace FS20_HudBar.Config
 
       var dp = AcftMerges.GetAircraftProfile( tsi.Text );
       if (dp != null) {
-        m_flpHandler.MergeProfile( dp.Profile );
-        m_flpHandler.LoadFlp( HudBarRef );
-        m_pName.Text = dp.Name;
+        _flpHandler.MergeProfile( dp.Profile );
+        _flpHandler.LoadFlp( HudBarRef );
+        _pName.Text = dp.Name;
       }
     }
 
@@ -731,20 +759,20 @@ namespace FS20_HudBar.Config
       FONTSdialog.ProtoValueRef = HudBarRef.ProtoValueRef;
       FONTSdialog.ProtoValue2Ref = HudBarRef.ProtoValue2Ref;
       FONTSdialog.Fonts?.Dispose( );
-      FONTSdialog.Fonts = new GUI_Fonts( m_configFontsObj ); // let the Config use a clone to apply changes for preview
+      FONTSdialog.Fonts = new GUI_Fonts( _configFontsObj ); // let the Config use a clone to apply changes for preview
       FONTSdialog.DefaultFontsConfig = ""; // use system defaults
 
       if (FONTSdialog.ShowDialog( this ) == DialogResult.OK) {
         if (FONTSdialog.UsingDefault) {
-          m_configFontsObj = new GUI_Fonts( HudBarRef.FontRef ); // set default
-          m_configFontsObj.ResetUserFonts( );
-          m_configFonts = "";
+          _configFontsObj = new GUI_Fonts( HudBarRef.FontRef ); // set default
+          _configFontsObj.ResetUserFonts( );
+          _configFonts = "";
         }
         else {
           // store User fonts in cache
-          m_configFontsObj.Dispose( );
-          m_configFontsObj = new GUI_Fonts( FONTSdialog.Fonts ); // maintain the changes
-          m_configFonts = m_configFontsObj.AsConfigString( );
+          _configFontsObj.Dispose( );
+          _configFontsObj = new GUI_Fonts( FONTSdialog.Fonts ); // maintain the changes
+          _configFonts = _configFontsObj.AsConfigString( );
         }
       }
       btFonts.ForeColor = this.UsingDefaultFonts ? c_entryDefault : c_entryAvailable;
@@ -762,7 +790,7 @@ namespace FS20_HudBar.Config
       FONTSdialog.ProtoValueRef = HudBarRef.ProtoValueRef;
       FONTSdialog.ProtoValue2Ref = HudBarRef.ProtoValue2Ref;
       FONTSdialog.Fonts?.Dispose( );
-      FONTSdialog.Fonts = new GUI_Fonts( m_configFontsObj ); // let the Config use a clone to apply changes for preview
+      FONTSdialog.Fonts = new GUI_Fonts( _configFontsObj ); // let the Config use a clone to apply changes for preview
       FONTSdialog.Fonts.FromConfigString( profile.Fonts ); // set current from Profile Cache
       FONTSdialog.DefaultFontsConfig = ""; // use AppFonts as Fallback
 
@@ -814,21 +842,21 @@ namespace FS20_HudBar.Config
       COLORSdialog.DefaultDimColors = GUI_Colors.GetDefaultColorSet( ColorSet.DimmedSet );
       COLORSdialog.DefaultInvColors = GUI_Colors.GetDefaultColorSet( ColorSet.InverseSet );
       // prep dialog from cached values 
-      COLORSdialog.RegColors = GUI_Colors.FromConfigString( m_configColorReg );
-      COLORSdialog.DimColors = GUI_Colors.FromConfigString( m_configColorDim );
-      COLORSdialog.InvColors = GUI_Colors.FromConfigString( m_configColorInv );
+      COLORSdialog.RegColors = GUI_Colors.FromConfigString( _configColorReg );
+      COLORSdialog.DimColors = GUI_Colors.FromConfigString( _configColorDim );
+      COLORSdialog.InvColors = GUI_Colors.FromConfigString( _configColorInv );
 
       if (COLORSdialog.ShowDialog( this ) == DialogResult.OK) {
         if (COLORSdialog.UsingDefault) {
-          m_configColorReg = "";
-          m_configColorDim = "";
-          m_configColorInv = "";
+          _configColorReg = "";
+          _configColorDim = "";
+          _configColorInv = "";
         }
         else {
           // store User colors in User cache
-          m_configColorReg = GUI_Colors.AsConfigString( COLORSdialog.RegColors );
-          m_configColorDim = GUI_Colors.AsConfigString( COLORSdialog.DimColors );
-          m_configColorInv = GUI_Colors.AsConfigString( COLORSdialog.InvColors );
+          _configColorReg = GUI_Colors.AsConfigString( COLORSdialog.RegColors );
+          _configColorDim = GUI_Colors.AsConfigString( COLORSdialog.DimColors );
+          _configColorInv = GUI_Colors.AsConfigString( COLORSdialog.InvColors );
         }
       }
       btColors.ForeColor = this.UsingDefaultColors ? c_entryDefault : c_entryAvailable;
@@ -874,14 +902,14 @@ namespace FS20_HudBar.Config
     private void btBgFile_Click( object sender, EventArgs e )
     {
       var BGF = new frmBgImage( ) {
-        BgImageFile = m_pBgImageName.Text,
+        BgImageFile = _pBgImageName.Text,
         BgImageBorderArea = _bgImageBorder
       };
       if (BGF.ShowDialog( this ) == DialogResult.OK) {
         // store for later use
-        m_pBgImageName.Text = BGF.BgImageFile;
+        _pBgImageName.Text = BGF.BgImageFile;
         _bgImageBorder = BGF.BgImageBorderArea;
-        m_pBgImageBorder.Text = _bgImageBorder.ToString( );
+        _pBgImageBorder.Text = _bgImageBorder.ToString( );
       }
       BGF.Close( );
       BGF.Dispose( );

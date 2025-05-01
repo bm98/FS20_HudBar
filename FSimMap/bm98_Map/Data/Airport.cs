@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using CoordLib;
+
+using dNetBm98;
 
 using FSimFacilityIF;
 using static FSimFacilityIF.Extensions;
-using static dNetBm98.Units;
-using CoordLib;
-using dNetBm98;
 
 namespace bm98_Map.Data
 {

@@ -35,14 +35,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs">
@@ -89,6 +84,12 @@
     </Compile>
     <Compile Include="UC_Scale.Designer.cs">
       <DependentUpon>UC_Scale.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UC_SlipBall.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_SlipBall.Designer.cs">
+      <DependentUpon>UC_SlipBall.cs</DependentUpon>
     </Compile>
     <Compile Include="UC_Surfaces.cs">
       <SubType>UserControl</SubType>
@@ -145,6 +146,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UC_Scale.resx">
       <DependentUpon>UC_Scale.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UC_SlipBall.resx">
+      <DependentUpon>UC_SlipBall.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UC_Surfaces.resx">
       <DependentUpon>UC_Surfaces.cs</DependentUpon>

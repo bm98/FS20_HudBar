@@ -1,5 +1,5 @@
-FS20_CamControl V 0.70 - Build 70 BETA
-(c) M. Burri - 20-May-2024
+FS20_CamControl V 0.72 - Build 72 BETA
+(c) M. Burri - 02-May-2025
 
 Contains files:
 
@@ -39,6 +39,9 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.72-B72
+- Fix CameraControl cannot read saved slots when the locale decimal sign is not a decimal point
 
 V 0.70-B70
 - Add FlyBy feature in Camera App

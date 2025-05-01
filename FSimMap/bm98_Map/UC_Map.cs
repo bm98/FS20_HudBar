@@ -2,15 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 
 using static dNetBm98.Units;
-using static dNetBm98.XString;
 
 using CoordLib;
 using CoordLib.Extensions;
@@ -376,7 +372,7 @@ namespace bm98_Map
     }
 
     /// <summary>
-    /// To set the shown Navaids
+    /// To set the shown Airports
     /// Overwrites the existing list
     /// </summary>
     /// <param name="airports">List of airports to show</param>

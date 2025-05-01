@@ -55,13 +55,13 @@ namespace FShelf.AptReport
     }
 
 
-    private string AsHTML( IAirport airport, IList<INavaid> navaidList, IList<IFix> fixList )
+    private string AsHTML( IAirport airport, IList<INavaid> navaidList, IList<IFix> fixList, string dbSource )
     {
       _formatter = new AptTableGen( );
       _fixDecoration.Clear( ); // reset
 
-      // stream Airport Runways + Approach(es)
-      var sortedRunways = airport.Runways.Where( rwy => rwy.Ident != RwALLIdent ).OrderBy( x => x.Ident ).ToList( );
+      // stream Airport Runways + Approach(es) Runways first then Helipads
+      var sortedRunways = airport.Runways.Where( rwy => rwy.Ident != RwALLIdent ).OrderByDescending( xx => xx.IsRunway ).ThenBy( x => x.Ident ).ToList( );
       foreach (var runway in sortedRunways) {
         StreamRunway( runway, navaidList );
 
@@ -119,7 +119,7 @@ namespace FShelf.AptReport
         + $" - {airport.Coordinate.Altitude:##,##0} ft ({M_From_Ft(airport.Coordinate.Altitude):##,##0} m)",
       };
 
-      var html = _formatter.CommitDocument( title, cmt );
+      var html = _formatter.CommitDocument( title, cmt, dbSource );
       return html;
     }
 
@@ -224,9 +224,11 @@ namespace FShelf.AptReport
           ilsRange = nav.GsRange_nm;
         }
       }
-      var rwString = (runway.Ident == RwALLIdent)
+      string rwString = (runway.Ident == RwALLIdent)
                         ? $"{HChar( SpclChar.BULLSEYE )} ALL"
                         : $"{ToDirectionArrow( Dms.CompassPoint( runway.Bearing_deg, 2 ) )} {runway.Ident}"; // outgoing arrow
+      rwString += (runway.IsHelipad ? " HP" : "   ");
+      string marks = (runway.IsHelipad && !string.IsNullOrEmpty( runway.HelipadMarks )) ? $" ({runway.HelipadMarks})" : "";
       var rwyData = new RwyRowData( ) {
         Rwy = rwString,
         Hdg_deg = (int)runway.Bearing_deg,
@@ -236,7 +238,7 @@ namespace FShelf.AptReport
         //IlsGsRange_nm = ilsRange,
         Dim_ft = len_ft,
         Dim_m = len_m,
-        Surface = runway.Surface,
+        Surface = runway.Surface + marks,
       };
       _formatter.AddRwyRow( rwyData );
     }
@@ -310,15 +312,16 @@ namespace FShelf.AptReport
     /// <param name="apt">An Airport</param>
     /// <param name="navaidList">A Navaids List</param>
     /// <param name="fixList">A Fix List</param>
+    /// <param name="dbSource">Source of the data</param>
     /// <param name="targetFolder">The target folder</param>
     /// <returns>True if successfull</returns>
-    public bool SaveDocument( IAirport apt, IList<INavaid> navaidList, IList<IFix> fixList, string targetFolder )
+    public bool SaveDocument( IAirport apt, IList<INavaid> navaidList, IList<IFix> fixList, string dbSource, string targetFolder )
     {
       // sanity
       if (apt == null) return false;
       if (navaidList == null) return false;
 
-      var html = AsHTML( apt, navaidList, fixList );
+      var html = AsHTML( apt, navaidList, fixList, dbSource );
 
       string fName = $"{apt.Ident}-{apt.IATA}-{apt.Name}.pdf";
       // remove invalid chars in filename

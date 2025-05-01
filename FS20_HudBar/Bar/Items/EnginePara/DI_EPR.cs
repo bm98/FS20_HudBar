@@ -70,11 +70,12 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
+        int nEngines = SV.Get<int>( SItem.iG_Cfg_NumberOfEngines_num );
         var v1 = SV.Get<float>( SItem.fG_Eng_T1_EPR_ratio );
         var v2 = SV.Get<float>( SItem.fG_Eng_T2_EPR_ratio );
         var v3 = SV.Get<float>( SItem.fG_Eng_T3_EPR_ratio );
         var v4 = SV.Get<float>( SItem.fG_Eng_T4_EPR_ratio );
-        _label.Text = (v1+v2+v3+v4) > 10 ? "THR" : "EPR"; // cheat, if not an EPR ratio its Thrust %
+        _label.Text = (v1 + v2 + v3 + v4) > (nEngines * 2.5) ? "THR" : "EPR"; // cheat, if not an EPR ratio its Thrust % EPR is below 2.5 I assume..
         _value1.Value = v1;
         _value2.Value = v2;
         _value3.Value = v3;

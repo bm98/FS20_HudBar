@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FS20_HudBar.GUI
+﻿namespace FS20_HudBar.GUI
 {
   /// <summary>
   /// An interface to support dynamic color handling

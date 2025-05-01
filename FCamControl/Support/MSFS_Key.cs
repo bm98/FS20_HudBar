@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-using static dNetBm98.Win.WinKbdSender;
+﻿using static dNetBm98.Win.WinKbdSender;
 
 namespace FCamControl
 {

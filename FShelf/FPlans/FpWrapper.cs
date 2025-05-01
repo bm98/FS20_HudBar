@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using DbgLib;
 
 using CoordLib;
 
 using SC = SimConnectClient;
+
+using FSimClientIF.Modules;
+using static FSimClientIF.Sim;
 
 using FSimFlightPlans;
 using FSimFlightPlans.MSFSPln;
@@ -19,9 +19,10 @@ using FSimFlightPlans.GPX;
 using FSimFlightPlans.RTE;
 using FSimFlightPlans.LNM;
 using FSimFlightPlans.GarminFPL;
+using FSimFlightPlans.EFB24;
+using FSimFlightPlanDoc;
+
 using bm98_hbFolders;
-using FSimClientIF.Modules;
-using static FSimClientIF.Sim;
 
 namespace FShelf.FPlans
 {
@@ -53,17 +54,18 @@ namespace FShelf.FPlans
     private const string _observerName = "FP_WRAPPER";
 
     // SimBrief Provider
-    private readonly SimBrief _simBrief;
+    private readonly SimBriefHandler _simBrief;
     // SB Helper
     private SbDocLoader _sbDocLoader = new SbDocLoader( );
 
     // Other Pln Providers
-    private readonly MSFSPln _msfsPln;
-    private readonly MSFSFlt _msfsFlt;
-    private readonly LNMpln _lnmPln;
-    private readonly GPXpln _lnmGpx;
-    private readonly RTEpln _lnmRte;
-    private readonly GarminFpl _garFpl;
+    private readonly MSFSPlnHandler _msfsPln;
+    private readonly MSFSFltHandler _msfsFlt;
+    private readonly MSFSefb24Handler _msfsEfb24;
+    private readonly LNMplnHandler _lnmPln;
+    private readonly GPXplnHandler _lnmGpx;
+    private readonly RTEplnHandler _lnmRte;
+    private readonly GarminFplHandler _garFpl;
 
     private string _lastRequestedFile = ""; // debug info 
 
@@ -98,6 +100,11 @@ namespace FShelf.FPlans
     public bool IsMsFsFLT => _fPlan.IsValid && (_fPlan.Source == SourceOfFlightPlan.MS_Flt);
 
     /// <summary>
+    /// True if a MSFS EFB Plan is in use
+    /// </summary>
+    public bool IsMsFsEFB24 => _fPlan.IsValid && (_fPlan.Source == SourceOfFlightPlan.MS_Efb24);
+
+    /// <summary>
     /// True if a LNM Exported Plan is in use
     /// </summary>
     public bool IsLnmPLN => _fPlan.IsValid && (_fPlan.Source == SourceOfFlightPlan.LNM_Pln);
@@ -128,25 +135,27 @@ namespace FShelf.FPlans
     public FpWrapper( )
     {
       // Flightplan decoders
-      _simBrief = new SimBrief( );
-      _simBrief.SimBriefDataEvent += _generic_FlightPlanDataEvent;
+      _simBrief = new SimBriefHandler( );
+      _simBrief.FlightPlanDataEvent += _generic_FlightPlanDataEvent;
       _simBrief.SimBriefDownloadEvent += _simBrief_SimBriefDownloadEvent;
 
-      _msfsPln = new MSFSPln( );
-      _msfsPln.MSFSPlnDataEvent += _generic_FlightPlanDataEvent;
-      _msfsFlt = new MSFSFlt( );
-      _msfsFlt.MSFSFltDataEvent += _generic_FlightPlanDataEvent;
+      _msfsPln = new MSFSPlnHandler( );
+      _msfsPln.FlightPlanDataEvent += _generic_FlightPlanDataEvent;
+      _msfsFlt = new MSFSFltHandler( );
+      _msfsFlt.FlightPlanDataEvent += _generic_FlightPlanDataEvent;
+      _msfsEfb24 = new MSFSefb24Handler( );
+      _msfsEfb24.FlightPlanDataEvent += _generic_FlightPlanDataEvent;
 
-      _lnmPln = new LNMpln( );
-      _lnmPln.LNMplnDataEvent += _generic_FlightPlanDataEvent;
-      _lnmGpx = new GPXpln( );
-      _lnmGpx.GPXplnDataEvent += _generic_FlightPlanDataEvent;
+      _lnmPln = new LNMplnHandler( );
+      _lnmPln.FlightPlanDataEvent += _generic_FlightPlanDataEvent;
+      _lnmGpx = new GPXplnHandler( );
+      _lnmGpx.FlightPlanDataEvent += _generic_FlightPlanDataEvent;
 
-      _lnmRte = new RTEpln( );
-      _lnmRte.RTEplnDataEvent += _generic_FlightPlanDataEvent;
+      _lnmRte = new RTEplnHandler( );
+      _lnmRte.FlightPlanDataEvent += _generic_FlightPlanDataEvent;
 
-      _garFpl = new GarminFpl( );
-      _garFpl.GARMINfplDataEvent += _generic_FlightPlanDataEvent;
+      _garFpl = new GarminFplHandler( );
+      _garFpl.FlightPlanDataEvent += _generic_FlightPlanDataEvent;
 
       // register DataUpdates if in HudBar mode and if not yet done 
       if (_observerID < 0) {
@@ -173,16 +182,19 @@ namespace FShelf.FPlans
     /// </summary>
     /// <param name="planFile">FlightPlan file fully qualified</param>
     /// <returns>True when loading started</returns>
-    public bool RequestPlan( string planFile )
+    public bool RequestPlanFile( string planFile )
     {
       LOG.Trace( "RequestSBDownload", $"File: <{planFile}>" );
 
       _lastRequestedFile = planFile;
       if (planFile.ToLowerInvariant( ).EndsWith( ".pln" )) {
-        _msfsPln.PostDocument_Request( planFile );
+        _msfsPln.PostDocument_Request( planFile ); // can be 2020 or 2024 format, handler has to deal with it...
       }
       else if (planFile.ToLowerInvariant( ).EndsWith( ".flt" )) {
         _msfsFlt.PostDocument_Request( planFile );
+      }
+      else if (planFile.ToLowerInvariant( ).EndsWith( ".efb24" )) {
+        _msfsEfb24.PostDocument_Request( planFile );
       }
       else if (planFile.ToLowerInvariant( ).EndsWith( ".gpx" )) {
         _lnmGpx.PostDocument_Request( planFile );
@@ -208,6 +220,49 @@ namespace FShelf.FPlans
     }
 
 
+    /// <summary>
+    /// Request a FlightPlan data to be loadeded based on SourceFormat
+    /// 
+    /// </summary>
+    /// <param name="content">FlightPlan content string</param>
+    /// <param name="fpSource">Flightplan source format</param>
+    /// <returns>True when loading started</returns>
+    public bool RequestPlanData( string content, SourceOfFlightPlan fpSource )
+    {
+      LOG.Trace( "RequestPlanData", $"Format: <{fpSource}>" );
+
+      _lastRequestedFile = "<data>";
+      if (fpSource == SourceOfFlightPlan.MS_Pln) {
+        return _msfsPln.PostData_Request( content );
+      }
+      else if (fpSource == SourceOfFlightPlan.MS_Flt) {
+        return _msfsFlt.PostData_Request( content );
+      }
+      else if (fpSource == SourceOfFlightPlan.MS_Efb24) {
+        return _msfsEfb24.PostData_Request( content );
+      }
+      else if (fpSource == SourceOfFlightPlan.LNM_Gpx) {
+        return _lnmGpx.PostData_Request( content );
+      }
+      else if (fpSource == SourceOfFlightPlan.GARMIN_Fpl) {
+        return _garFpl.PostData_Request( content );
+      }
+      else if (fpSource == SourceOfFlightPlan.GEN_Rte) {
+        return _lnmRte.PostData_Request( content );
+      }
+      else if (fpSource == SourceOfFlightPlan.LNM_Pln) {
+        return _lnmPln.PostData_Request( content );
+      }
+      else if (fpSource == SourceOfFlightPlan.SimBrief) {
+        return _simBrief.PostData_Request( content );
+      }
+      else {
+        _lastRequestedFile = ""; // unknown type
+        return false;
+      }
+      // will report in the Event
+    }
+
     #region FlighPlan Data Events
 
     /// <summary>
@@ -232,7 +287,7 @@ namespace FShelf.FPlans
           LoadMessage = "OFP data received";
           var sb = FSimFlightPlans.SimBrief.SBDEC.JsonDecoder.FromString( e.PlanData );
           if (sb.IsValid) {
-            _fPlan = SimBrief.AsFlightPlan( sb );
+            _fPlan = SimBriefHandler.AsFlightPlan( sb );
             LoadMessage = $"OFP: {FlightPlan.Origin.Icao_Ident} to {FlightPlan.Destination.Icao_Ident}";
             okFlag = true;
           }
@@ -246,7 +301,7 @@ namespace FShelf.FPlans
           LoadMessage = "PLN data received";
           var pln = FSimFlightPlans.MSFSPln.PLNDEC.PlnDecoder.FromString( e.PlanData );
           if (pln.IsValid) {
-            _fPlan = MSFSPln.AsFlightPlan( pln );
+            _fPlan = MSFSPlnHandler.AsFlightPlan( pln );
             LoadMessage = $"PLN: {FlightPlan.Origin.Icao_Ident} to {FlightPlan.Destination.Icao_Ident}";
             okFlag = true;
           }
@@ -260,8 +315,22 @@ namespace FShelf.FPlans
           LoadMessage = "FLT file received";
           var flt = FSimFlightPlans.MSFSFlt.FLTDEC.FltDecoder.FromString( e.PlanData );
           if (flt.IsValid) {
-            _fPlan = MSFSFlt.AsFlightPlan( flt );
+            _fPlan = MSFSFltHandler.AsFlightPlan( flt );
             LoadMessage = $"FLT: {FlightPlan.Origin.Icao_Ident} to {FlightPlan.Destination.Icao_Ident}";
+            okFlag = true;
+          }
+          else {
+            LoadMessage = $"No valid data received";
+          }
+          break;
+
+        case FSimFlightPlans.SourceOfFlightPlan.MS_Efb24:
+          DebSaveRouteString( e.PlanData, "EFB24" );
+          LoadMessage = "EFB24 file received";
+          var eFB24 = FSimFlightPlans.EFB24.EFB24DEC.Efb24Decoder.FromString( e.PlanData );
+          if (eFB24.IsValid) {
+            _fPlan = MSFSefb24Handler.AsFlightPlan( eFB24 );
+            LoadMessage = $"EFB24: {FlightPlan.Origin.Icao_Ident} to {FlightPlan.Destination.Icao_Ident}";
             okFlag = true;
           }
           else {
@@ -274,7 +343,7 @@ namespace FShelf.FPlans
           LoadMessage = "GPX data received";
           var gpx = FSimFlightPlans.GPX.GPXDEC.GpxDecoder.FromString( e.PlanData );
           if (gpx.IsValid) {
-            _fPlan = GPXpln.AsFlightPlan( gpx );
+            _fPlan = GPXplnHandler.AsFlightPlan( gpx );
             LoadMessage = $"GPX: {FlightPlan.Origin.Icao_Ident} to {FlightPlan.Destination.Icao_Ident}";
             okFlag = true;
           }
@@ -288,7 +357,7 @@ namespace FShelf.FPlans
           LoadMessage = "FPL data received";
           var fplRte = FSimFlightPlans.GarminFPL.FPLDEC.GarminFplDecoder.FromString( e.PlanData );
           if (fplRte.IsValid) {
-            _fPlan = GarminFpl.AsFlightPlan( fplRte );
+            _fPlan = GarminFplHandler.AsFlightPlan( fplRte );
             LoadMessage = $"FPL: {FlightPlan.Origin.Icao_Ident} to {FlightPlan.Destination.Icao_Ident}";
             okFlag = true;
           }
@@ -302,7 +371,7 @@ namespace FShelf.FPlans
           LoadMessage = "LNM data received";
           var lnm = FSimFlightPlans.LNM.LNMDEC.LnmPlnDecoder.FromString( e.PlanData );
           if (lnm.IsValid) {
-            _fPlan = LNMpln.AsFlightPlan( lnm );
+            _fPlan = LNMplnHandler.AsFlightPlan( lnm );
             LoadMessage = $"LNM: {FlightPlan.Origin.Icao_Ident} to {FlightPlan.Destination.Icao_Ident}";
             okFlag = true;
           }
@@ -316,7 +385,7 @@ namespace FShelf.FPlans
           LoadMessage = "RTE data received";
           var rte = FSimFlightPlans.RTE.RTEDEC.RteDecoder.FromString( e.PlanData );
           if (rte.IsValid) {
-            _fPlan = RTEpln.AsFlightPlan( rte );
+            _fPlan = RTEplnHandler.AsFlightPlan( rte );
             LoadMessage = $"RTE: {FlightPlan.Origin.Icao_Ident} to {FlightPlan.Destination.Icao_Ident}";
             okFlag = true;
           }

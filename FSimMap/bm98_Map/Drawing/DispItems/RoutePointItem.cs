@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using CoordLib;
+
 using bm98_Map.Drawing.DispItems.Routes;
 
 namespace bm98_Map.Drawing.DispItems

@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Text;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace bm98_Map.Drawing
 {
@@ -42,9 +34,13 @@ namespace bm98_Map.Drawing
 
     public readonly static Color ColRwBorder = Color.FromArgb( 0, 166, 81 );    // green
     public readonly static Brush BrushRwBorder = new SolidBrush( ColRwBorder );
+    public readonly static Color ColHpBorder = Color.FromArgb( 81, 81, 0 );    // yellow
+    public readonly static Brush BrushHpBorder = new SolidBrush( ColHpBorder );
 
     public readonly static Color ColRwPavement = Color.FromArgb( 45, 44, 44 );  // dark grey
     public readonly static Brush BrushRwPavement = new SolidBrush( ColRwPavement );
+    public readonly static Color ColHpPavement = Color.FromArgb( 145, 144, 144 );  // light grey
+    public readonly static Brush BrushHpPavement = new SolidBrush( ColHpPavement );
 
     public readonly static Color ColRwBorderWater = Color.Aqua;    // bright Blue
     public readonly static Brush BrushRwBorderWater = new SolidBrush( ColRwBorderWater );

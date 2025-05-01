@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace bm98_VProfile
+﻿namespace bm98_VProfile
 {
   /// <summary>
   /// String tag supporting various display kinds

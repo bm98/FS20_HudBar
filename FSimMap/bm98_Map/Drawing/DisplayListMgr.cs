@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 using bm98_Map.Data;
 
@@ -18,7 +13,6 @@ using FSimFacilityIF;
 using FSimFlightPlans;
 
 using static bm98_Map.Drawing.FontsAndColors;
-using static bm98_Map.WypExtensions;
 
 using bm98_Map.Drawing.DispItems;
 
@@ -400,36 +394,65 @@ namespace bm98_Map.Drawing
       // create the needed Runway Text lines
       for (int i = 0; i < runways.Count( ); i++) {
         var rwy = runways.ElementAt( i );
-        // get the the the Runway Pairs if not done
-        var isWaterRwy = rwy.Surface == "WATER";
-        if (!runwaysDone.Contains( rwy.Ident )) {
-          var otherEnd = runways.First( x => x.Ident == rwy.OtherIdent );
-          if (otherEnd != null) {
-            var rwBox = new RunwayItem( ) {
-              Key = GProc.DispID_Anon( ),
-              Active = true, // always
-              StartID = rwy.Ident,
-              Start = rwy.StartCoordinate,
-              EndID = otherEnd.Ident,
-              End = otherEnd.StartCoordinate,
-              Lenght = rwy.Length_m,
-              Width = rwy.Width_m,
-              IsWater = isWaterRwy,
-              // Runway Fill
-              FillBrushAlt = isWaterRwy ? BrushRwBorderWater : BrushRwBorder,
-              FillBrush = isWaterRwy ? BrushRwPavementWater : BrushRwPavement,
-              Pen = PenInfo,
-              // Text
-              TextBrush = BrushRwNumber,
-              TextRectFillBrush = null,
-              TextRectPen = PenInfo,
-              Font = isWaterRwy ? FtSmall : FtMid,
-            };
-            runwaysDone.Add( rwy.Ident ); // track done runways
-            runwaysDone.Add( otherEnd.Ident );// track done runways
-            // add to displaylist
-            rwyList.AddItem( rwBox );
+        if (rwy.IsRunway) {
+          // get the the the Runway Pairs if not done
+          var isWaterRwy = rwy.Surface == "WATER";
+          if (!runwaysDone.Contains( rwy.Ident )) {
+            var otherEnd = runways.First( x => x.Ident == rwy.OtherIdent );
+            if (otherEnd != null) {
+              var rwBox = new RunwayItem( ) {
+                Key = GProc.DispID_Anon( ),
+                Active = true, // always
+                StartID = rwy.Ident,
+                Start = rwy.StartCoordinate,
+                EndID = otherEnd.Ident,
+                End = otherEnd.StartCoordinate,
+                Lenght = rwy.Length_m,
+                Width = rwy.Width_m,
+                IsWater = isWaterRwy,
+                IsHelipad = false,
+                // Runway Fill
+                FillBrushAlt = isWaterRwy ? BrushRwBorderWater : BrushRwBorder,
+                FillBrush = isWaterRwy ? BrushRwPavementWater : BrushRwPavement,
+                Pen = PenInfo,
+                // Text
+                TextBrush = BrushRwNumber,
+                TextRectFillBrush = null,
+                TextRectPen = PenInfo,
+                Font = isWaterRwy ? FtSmall : FtMid,
+              };
+              runwaysDone.Add( rwy.Ident ); // track done runways
+              runwaysDone.Add( otherEnd.Ident );// track done runways
+                                                // add to displaylist
+              rwyList.AddItem( rwBox );
+            }
           }
+        }
+        else {
+          // Helipads
+          var rwBox = new RunwayItem( ) {
+            Key = GProc.DispID_Anon( ),
+            Active = true, // always
+            StartID = rwy.Ident,
+            Start = rwy.StartCoordinate,
+            EndID = "",
+            End = LatLon.Empty,
+            Lenght = rwy.Length_m,
+            Width = rwy.Width_m,
+            IsWater = false,
+            IsHelipad = true,
+            // Runway Fill
+            FillBrushAlt = BrushHpBorder,
+            FillBrush = BrushHpPavement,
+            Pen = PenInfo,
+            // Text
+            TextBrush = BrushRwNumber,
+            TextRectFillBrush = null,
+            TextRectPen = PenInfo,
+            Font = FtSmall,
+          };
+          // add to displaylist
+          rwyList.AddItem( rwBox );
         }
       }
     }
@@ -680,51 +703,58 @@ namespace bm98_Map.Drawing
     /// and will have the Left Turn pattern in the prominent color
     /// If only one runway is provided the 'End' will have no drawings
     /// </summary>
-    /// <param name="runways">A pair of runways which represent the same physical runway, null to clear all</param>
-    public void SetRunwayVFRDispItems( IEnumerable<IRunway> runways )
+    /// <param name="runwayPair">A pair of runways which represent the same physical runway, null to clear all</param>
+    public void SetRunwayVFRDispItems( IEnumerable<IRunway> runwayPair )
     {
       // all VFR marks items
       var vfrList = _viewportRef.GProc.Drawings.DispItem( (int)DItems.VFRMARKS )?.SubItemList;
       if (vfrList == null) return; // CANNOT (yet)
       vfrList.Clear( );
-      if (runways == null) { return; } // unselected
+      if (runwayPair == null) { return; } // unselected
 
       List<string> runwaysDone = new List<string>( ); // track the ones we have processed
       // create the needed Runway Text lines
-      for (int i = 0; i < runways.Count( ); i++) {
-        var rwy = runways.ElementAt( i );
-        // get the the Runway Pairs if not done
-        if (!runwaysDone.Contains( rwy.Ident )) {
-          var otherEnd = runways.First( x => x.Ident == rwy.OtherIdent );
-          var rwBox = new RwyVFRMarksItem( ) {
-            Key = GProc.DispID_Anon( ),
-            Active = true, // always, manged by the Hook for XFAR, else it's not even in the DisplayList
-            ShowFullDecoration = _state.ShowVfrMarks, // to draw the full painting when VFR is selected
-            StartID = rwy.Ident,
-            Start = rwy.StartCoordinate,
-            StartHeading_degm = rwy.Bearing_deg,
-            StartRunwayIdent = rwy.Ident,
-            EndID = (otherEnd == null) ? "" : otherEnd.Ident,
-            End = (otherEnd == null) ? LatLon.Empty : otherEnd.StartCoordinate,
-            EndHeading_degm = (otherEnd == null) ? float.NaN : otherEnd.Bearing_deg,
-            EndRunwayIdent = (otherEnd == null) ? "" : otherEnd.Ident,
-            Lenght = rwy.Length_m,
-            Width = rwy.Width_m,
-            // graphics
-            Pen = PenAptRange,
-            NoDecoPen = PenVfrNoDeco,
-            VfrPenMain = PenVfrMain,
-            VfrPenAlt = PenVfrAlt,
-            FillBrush = BrushAptRange,
-            // Heading Text
-            TextBrush = BrushVFRHeading,
-            Font = FtLarger, // Heading
-            RangeFont = FtSmall, // Ring range
-          };
-          vfrList.AddItem( rwBox );
-          runwaysDone.Add( rwy.Ident );
-          if (otherEnd != null)
-            runwaysDone.Add( otherEnd.Ident );
+      for (int i = 0; i < runwayPair.Count( ); i++) {
+        var rwy = runwayPair.ElementAt( i );
+        // second of the pair is null for helipads or if there is no Other end
+        if ((rwy != null) && rwy.IsRunway) {
+          // get the the Runway Pairs if not done
+          if (!runwaysDone.Contains( rwy.Ident )) {
+            var otherEnd = runwayPair.First( x => x.Ident == rwy.OtherIdent );
+            var rwBox = new RwyVFRMarksItem( ) {
+              Key = GProc.DispID_Anon( ),
+              Active = true, // always, manged by the Hook for XFAR, else it's not even in the DisplayList
+              ShowFullDecoration = _state.ShowVfrMarks, // to draw the full painting when VFR is selected
+              StartID = rwy.Ident,
+              Start = rwy.StartCoordinate,
+              StartHeading_degm = rwy.Bearing_deg,
+              StartRunwayIdent = rwy.Ident,
+              EndID = (otherEnd == null) ? "" : otherEnd.Ident,
+              End = (otherEnd == null) ? LatLon.Empty : otherEnd.StartCoordinate,
+              EndHeading_degm = (otherEnd == null) ? float.NaN : otherEnd.Bearing_deg,
+              EndRunwayIdent = (otherEnd == null) ? "" : otherEnd.Ident,
+              Lenght = rwy.Length_m,
+              Width = rwy.Width_m,
+              // graphics
+              Pen = PenAptRange,
+              NoDecoPen = PenVfrNoDeco,
+              VfrPenMain = PenVfrMain,
+              VfrPenAlt = PenVfrAlt,
+              FillBrush = BrushAptRange,
+              // Heading Text
+              TextBrush = BrushVFRHeading,
+              Font = FtLarger, // Heading
+              RangeFont = FtSmall, // Ring range
+            };
+            vfrList.AddItem( rwBox );
+            runwaysDone.Add( rwy.Ident );
+            if (otherEnd != null)
+              runwaysDone.Add( otherEnd.Ident );
+          }
+        }
+        else {
+          // Helipad
+          // TODO or not
         }
       }
     }

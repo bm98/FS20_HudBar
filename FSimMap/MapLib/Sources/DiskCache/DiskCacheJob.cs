@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MapLib.Sources.DiskCache
+﻿namespace MapLib.Sources.DiskCache
 {
   /// <summary>
   /// Disk Cache Job - save a tile

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using System.IO;
 
 namespace bm98_hbFolders
@@ -32,13 +27,20 @@ namespace bm98_hbFolders
     // Temp file folder in UserTemp
     private const string c_HudBarTemp = "HudBar";
 
+    private static bool _fs2024selected = false;
+    private static bool _genAptDB20available = false;
+    private static bool _genAptDB24available = false;
 
     // Path to MyDocuments\ ...
     private static string _hudBarDocs = "";
     // database
-    private const string c_GenAptDBNameDblite = @"fs2020genAptV2.dblite"; // new use V2
+    private const string c_GenAptDB20NameDblite = @"fs2020genAptV2.dblite"; // FS2020
+    private const string c_GenAptDB24NameDblite = @"fs2024genAptV2.dblite"; // FS2024
+
+    private static string _genAptDB20File = ""; // complete path and file FS2020
+    private static string _genAptDB24File = ""; // complete path and file FS2024
+
     private static string _genAptDBPath = ""; // will hold the final path
-    private static string _genAptDBFile = ""; // complete path and file
 
     // settings
     private static string _settingsPath = ""; // will hold the final path
@@ -107,7 +109,8 @@ namespace bm98_hbFolders
       catch (Exception ex) {
         _genAptDBPath = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
       }
-      _genAptDBFile = Path.Combine( _genAptDBPath, c_GenAptDBNameDblite );
+      _genAptDB20File = Path.Combine( _genAptDBPath, c_GenAptDB20NameDblite );
+      _genAptDB24File = Path.Combine( _genAptDBPath, c_GenAptDB24NameDblite );
 
       // settings
       _settingsPath = Path.Combine( _hudBarDocs, c_HudBarSettingsFolder );
@@ -197,15 +200,49 @@ namespace bm98_hbFolders
     public static string LandingsFile => InitChecked( _landingsFile );
 
     /// <summary>
-    /// GenAptDB File with path
+    /// From Selected Version the GenAptDB File with path
+    ///  Selected defaults to FS2020 if not changed
+    ///  if none is avail it returns an emtpy string
     /// </summary>
-    public static string GenAptDBFile => InitChecked( _genAptDBFile );
+    public static string GenAptDBFile {
+      get {
+        CheckGenAptFiles( );
+        if (FS2024Used) {
+          return InitChecked( _genAptDB24File );
+        }
+        if (_genAptDB20available) {
+          return InitChecked( _genAptDB20File );
+        }
+        return "";
+      }
+    }
+
     /// <summary>
     /// Settings file + path 
     /// NOTE: Set the app specific Settings File Name 
     /// </summary>
     public static string SettingsFile => InitChecked( _settingsFile );
 
+    /// <summary>
+    /// True if FS2024 source is used
+    /// </summary>
+    public static bool FS2024Used => _fs2024selected && _genAptDB24available;
+
+    /// <summary>
+    /// Select the FS Version to be used
+    ///  will choose GenAptDBFile
+    /// </summary>
+    /// <param name="fs2024">Set true for choosing 2024</param>
+    public static void SelectFSVersion( bool fs2024 ) => _fs2024selected = fs2024;
+
+    /// <summary>
+    /// Determine which GenAptDB versions are available
+    /// </summary>
+    public static void CheckGenAptFiles( )
+    {
+      _genAptDB20available = File.Exists( _genAptDB20File );
+      _genAptDB24available = File.Exists( _genAptDB24File );
+    }
 
     // SHELF items (Shelf path is in AppSettings)
 

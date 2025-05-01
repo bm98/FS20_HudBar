@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 
@@ -35,8 +30,8 @@ namespace bm98_hbControls
     /// <summary>
     /// Properties
     /// </summary>
-    private int _pHeadingTo = 0;
-    private int _pDirectionFrom =0;
+    private int _pHeadingTo_deg = 0;
+    private int _pDirectionFrom_deg =0;
     private bool _pAutoSizeHeight = false;
     private bool _pAutoSizeWidth = false;
 
@@ -52,9 +47,9 @@ namespace bm98_hbControls
     [DefaultValue( 0 )]
     [Description( "Wind Direction From [true deg]" ), Category( "Data" )]
     public int DirectionFrom {
-      get => _pDirectionFrom;
+      get => _pDirectionFrom_deg;
       set {
-        _pDirectionFrom = value;
+        _pDirectionFrom_deg = value;
         this.Invalidate( this.ClientRectangle );
       }
     }
@@ -65,9 +60,9 @@ namespace bm98_hbControls
     [DefaultValue( 0 )]
     [Description( "Object Heading To [true deg]" ), Category( "Data" )]
     public int Heading {
-      get => _pHeadingTo;
+      get => _pHeadingTo_deg;
       set {
-        _pHeadingTo = value;
+        _pHeadingTo_deg = value;
         this.Invalidate( this.ClientRectangle );
       }
     }

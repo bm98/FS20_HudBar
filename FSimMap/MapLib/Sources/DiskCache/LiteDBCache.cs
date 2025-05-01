@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using CoordLib.MercatorTiles;
+
 using DbgLib;
+
 using LiteDB;
 
 using MapLib.Sources.Providers;

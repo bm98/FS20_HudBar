@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using SC = SimConnectClient;
 using static FS20_HudBar.GUI.GUI_Colors;
 using static FS20_HudBar.GUI.GUI_Colors.ColorType;
 
 using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
-using FS20_HudBar.GUI.Templates;
-using FS20_HudBar.GUI.Templates.Base;
 using System.Drawing;
 
 namespace FS20_HudBar.Bar.Items

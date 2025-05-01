@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using FS20_HudBar.Bar;
+using static dNetBm98.XPoint;
+using static dNetBm98.Utilities;
+
 using FS20_HudBar.Bar.Items;
 using FS20_HudBar.GUI;
 
-using FSimClientIF.Modules;
-
 using static FS20_HudBar.AppSettingsV2;
+using dNetBm98;
 
 namespace FS20_HudBar.Config
 {
@@ -156,28 +152,28 @@ namespace FS20_HudBar.Config
 
     public const int c_numProfiles = 10; // Supported number of profiles
 
-    private int m_pNumber = 0; // Profile Number 1...
+    private int _pNumber = 0; // Profile Number 1...
 
     // stores all item data (checked, flowbreak, position)
-    private FlpItems m_items = new FlpItems( );
+    private FlpItems _items = new FlpItems( );
 
-    private GUI.FontSize m_fontSize = GUI.FontSize.Regular;
-    private GUI.Placement m_placement = GUI.Placement.Bottom;
-    private GUI.Kind m_kind = GUI.Kind.Bar;
-    private Point m_location = new Point( 0, 0 );
-    private bool m_condensed = false;
-    private GUI.Transparent m_transparent = GUI.Transparent.T0;
+    private GUI.FontSize _fontSize = GUI.FontSize.Regular;
+    private GUI.Placement _placement = GUI.Placement.Bottom;
+    private GUI.Kind _kind = GUI.Kind.Bar;
+    private Point _location = new Point( 0, 0 );
+    private bool _condensed = false;
+    private GUI.Transparent _transparent = GUI.Transparent.T0;
 
-    private string m_bgImageName = ""; // 20240224
-    private Padding m_bgImageBorder = Padding.Empty; // 20240224
+    private string _bgImageName = ""; // 20240224
+    private Padding _bgImageBorder = Padding.Empty; // 20240224
 
-    private string m_profileFont = ""; // 20240226
-    private string m_profileColorReg = ""; // 20240226
-    private string m_profileColorDim = ""; // 20240226
-    private string m_profileColorInv = ""; // 20240226
-    private bool m_frameItems = false; // 20241011
-    private bool m_boxDivider = false; // 20241011
-    private string m_hkProfile = "";
+    private string _profileFont = ""; // 20240226
+    private string _profileColorReg = ""; // 20240226
+    private string _profileColorDim = ""; // 20240226
+    private string _profileColorInv = ""; // 20240226
+    private bool _frameItems = false; // 20241011
+    private bool _boxDivider = false; // 20241011
+    private string _hkProfile = "";
 
     /// <summary>
     /// The string divider char
@@ -258,7 +254,7 @@ namespace FS20_HudBar.Config
     /// <summary>
     /// Number of the Profile 1..N
     /// </summary>
-    public int ProfileNumber => m_pNumber;
+    public int ProfileNumber => _pNumber;
     /// <summary>
     /// The Profile name
     /// </summary>
@@ -266,79 +262,79 @@ namespace FS20_HudBar.Config
     /// <summary>
     /// The Fontsize
     /// </summary>
-    public GUI.FontSize FontSize => m_fontSize;
+    public GUI.FontSize FontSize => _fontSize;
     /// <summary>
     /// The Placement of the Bar
     /// </summary>
-    public GUI.Placement Placement => m_placement;
+    public GUI.Placement Placement => _placement;
     /// <summary>
     /// The Display Kind of the Bar
     /// </summary>
-    public GUI.Kind Kind => m_kind;
+    public GUI.Kind Kind => _kind;
     /// <summary>
     /// The Location of the bar (last recorded)
     /// </summary>
-    public Point Location => m_location;
+    public Point Location => _location;
     /// <summary>
     /// Whether or not using a condensed font
     /// </summary>
-    public bool Condensed => m_condensed;
+    public bool Condensed => _condensed;
     /// <summary>
     /// The Transparency of the window
     /// </summary>
-    public GUI.Transparent Transparency => m_transparent;
+    public GUI.Transparent Transparency => _transparent;
     /// <summary>
     /// The Opacity of the window
     ///  just the inverse of the Transparency
     /// </summary>
-    public float Opacity => 1.0f - (int)m_transparent / 10f; // inverse of transparency
+    public float Opacity => 1.0f - (int)_transparent / 10f; // inverse of transparency
 
     /// <summary>
     /// Filename of the Background Image or empty if none to be shown
     /// </summary>
-    public string BgImageName => m_bgImageName;
+    public string BgImageName => _bgImageName;
     /// <summary>
     /// Border Area
     /// </summary>
-    public Padding BgImageBorder => m_bgImageBorder;
+    public Padding BgImageBorder => _bgImageBorder;
 
     /// <summary>
     /// True when using default fonts
     /// </summary>
-    public bool UsingDefaultFonts => string.IsNullOrEmpty( m_profileFont );
+    public bool UsingDefaultFonts => string.IsNullOrEmpty( _profileFont );
     /// <summary>
     /// Fonts for this Profile
     /// </summary>
-    public string Fonts => m_profileFont;
+    public string Fonts => _profileFont;
 
     /// <summary>
     /// True when using default colors
     /// </summary>
-    public bool UsingDefaultColors => string.IsNullOrEmpty( m_profileColorReg );
+    public bool UsingDefaultColors => string.IsNullOrEmpty( _profileColorReg );
     /// <summary>
     /// Color Set regular
     /// </summary>
-    public string ColorReg => m_profileColorReg;
+    public string ColorReg => _profileColorReg;
     /// <summary>
     /// Color Set dimmed
     /// </summary>
-    public string ColorDim => m_profileColorDim;
+    public string ColorDim => _profileColorDim;
     /// <summary>
     /// Color Set inversed
     /// </summary>
-    public string ColorInv => m_profileColorInv;
+    public string ColorInv => _profileColorInv;
     /// <summary>
     /// Frame Items flag
     /// </summary>
-    public bool FrameItems => m_frameItems;
+    public bool FrameItems => _frameItems;
     /// <summary>
     /// Box Divider Flag
     /// </summary>
-    public bool BoxDivider => m_boxDivider;
+    public bool BoxDivider => _boxDivider;
     /// <summary>
     /// The Profile switching hotkey as ConfigString
     /// </summary>
-    public string HKProfile => m_hkProfile;
+    public string HKProfile => _hkProfile;
 
     /// <summary>
     /// Update the Location of the profile
@@ -346,7 +342,7 @@ namespace FS20_HudBar.Config
     /// <param name="location">A point</param>
     public void UpdateLocation( Point location )
     {
-      m_location = location;
+      _location = location;
     }
 
 
@@ -355,7 +351,7 @@ namespace FS20_HudBar.Config
     /// </summary>
     public CProfile( )
     {
-      m_items.CreateEmptyProfile( true );
+      _items.CreateEmptyProfile( true );
     }
 
     /// <summary>
@@ -364,7 +360,7 @@ namespace FS20_HudBar.Config
     /// <param name="other"></param>
     public CProfile( CProfile other )
     {
-      m_pNumber = other.m_pNumber;
+      _pNumber = other._pNumber;
       LoadProfile( other.PName,
         other.ProfileString( ), other.FlowBreakString( ), other.ItemPosString( ),
         other.FontSize, other.Placement, other.Kind, other.Location, other.Condensed, other.Transparency,
@@ -402,7 +398,7 @@ namespace FS20_HudBar.Config
                      bool frameItems, bool boxDivider,
                      string hk )
     {
-      m_pNumber = pNum;
+      _pNumber = pNum;
       LoadProfile( profileName, profile, flowBreak, sequence,
                     (GUI.FontSize)fontSize, (GUI.Placement)placement, (GUI.Kind)kind,
                     location, condensed, (GUI.Transparent)transparent,
@@ -419,7 +415,7 @@ namespace FS20_HudBar.Config
     /// <param name="flpIndex">The index of the columns 0..</param>
     public void GetItemsFromFlp( FlowLayoutPanel flp, int flpIndex )
     {
-      FlpHandler.UpdateFromFlp( flp, flpIndex, m_items );
+      FlpHandler.UpdateFromFlp( flp, flpIndex, _items );
     }
 
     /// <summary>
@@ -428,7 +424,7 @@ namespace FS20_HudBar.Config
     /// <param name="box">The ComboBox</param>
     public void LoadFontSize( ComboBox box )
     {
-      box.SelectedIndex = (int)m_fontSize;
+      box.SelectedIndex = (int)_fontSize;
     }
 
     /// <summary>
@@ -437,7 +433,7 @@ namespace FS20_HudBar.Config
     /// <param name="box">The ComboBox</param>
     public void LoadPlacement( ComboBox box )
     {
-      box.SelectedIndex = (int)m_placement;
+      box.SelectedIndex = (int)_placement;
     }
 
     /// <summary>
@@ -446,7 +442,7 @@ namespace FS20_HudBar.Config
     /// <param name="box">The ComboBox</param>
     public void LoadKind( ComboBox box )
     {
-      box.SelectedIndex = (int)m_kind;
+      box.SelectedIndex = (int)_kind;
     }
 
     /// <summary>
@@ -455,7 +451,7 @@ namespace FS20_HudBar.Config
     /// <param name="box">The ComboBox</param>
     public void LoadCond( ComboBox box )
     {
-      box.SelectedIndex = m_condensed ? 1 : 0;
+      box.SelectedIndex = _condensed ? 1 : 0;
     }
 
     /// <summary>
@@ -464,7 +460,7 @@ namespace FS20_HudBar.Config
     /// <param name="box">The ComboBox</param>
     public void LoadTrans( ComboBox box )
     {
-      box.SelectedIndex = (int)m_transparent;
+      box.SelectedIndex = (int)_transparent;
     }
 
     /// <summary>
@@ -473,7 +469,7 @@ namespace FS20_HudBar.Config
     /// <param name="fontSize">A valid font size</param>
     public void SetFontSize( GUI.FontSize fontSize )
     {
-      m_fontSize = fontSize;
+      _fontSize = fontSize;
     }
 
     /// <summary>
@@ -482,7 +478,7 @@ namespace FS20_HudBar.Config
     /// <param name="box">The ComboBox</param>
     public void GetFontSizeFromCombo( ComboBox box )
     {
-      m_fontSize = (GUI.FontSize)box.SelectedIndex;
+      _fontSize = (GUI.FontSize)box.SelectedIndex;
     }
 
     /// <summary>
@@ -491,7 +487,7 @@ namespace FS20_HudBar.Config
     /// <param name="placement">A valid placement</param>
     public void SetPlacement( GUI.Placement placement )
     {
-      m_placement = placement;
+      _placement = placement;
     }
 
     /// <summary>
@@ -500,7 +496,7 @@ namespace FS20_HudBar.Config
     /// <param name="box">The ComboBox</param>
     public void GetPlacementFromCombo( ComboBox box )
     {
-      m_placement = (GUI.Placement)box.SelectedIndex;
+      _placement = (GUI.Placement)box.SelectedIndex;
     }
 
     /// <summary>
@@ -509,7 +505,7 @@ namespace FS20_HudBar.Config
     /// <param name="kind">A valid kind</param>
     public void SetKind( GUI.Kind kind )
     {
-      m_kind = kind;
+      _kind = kind;
     }
 
     /// <summary>
@@ -518,7 +514,7 @@ namespace FS20_HudBar.Config
     /// <param name="box">The ComboBox</param>
     public void GetKindFromCombo( ComboBox box )
     {
-      m_kind = (GUI.Kind)box.SelectedIndex;
+      _kind = (GUI.Kind)box.SelectedIndex;
     }
 
     /// <summary>
@@ -527,7 +523,7 @@ namespace FS20_HudBar.Config
     /// <param name="condensed">A condensed flag</param>
     public void SetCondensed( bool condensed )
     {
-      m_condensed = condensed;
+      _condensed = condensed;
     }
 
     /// <summary>
@@ -536,7 +532,7 @@ namespace FS20_HudBar.Config
     /// <param name="box">The ComboBox</param>
     public void GetCondensedFromCombo( ComboBox box )
     {
-      m_condensed = box.SelectedIndex == 1;
+      _condensed = box.SelectedIndex == 1;
     }
 
     /// <summary>
@@ -545,7 +541,7 @@ namespace FS20_HudBar.Config
     /// <param name="transparent">A valid transparency</param>
     public void SetTransparency( GUI.Transparent transparent )
     {
-      m_transparent = transparent;
+      _transparent = transparent;
     }
 
     /// <summary>
@@ -554,7 +550,7 @@ namespace FS20_HudBar.Config
     /// <param name="box">The ComboBox</param>
     public void GetTransparencyFromCombo( ComboBox box )
     {
-      m_transparent = (GUI.Transparent)box.SelectedIndex;
+      _transparent = (GUI.Transparent)box.SelectedIndex;
     }
 
     /// <summary>
@@ -564,8 +560,8 @@ namespace FS20_HudBar.Config
     /// <param name="bgImageBorder">The BG Image border area</param>
     public void SetBgImageFromValues( string bgImageName, Padding bgImageBorder )
     {
-      m_bgImageName = bgImageName;
-      m_bgImageBorder = bgImageBorder;
+      _bgImageName = bgImageName;
+      _bgImageBorder = bgImageBorder;
     }
 
     /// <summary>
@@ -573,7 +569,7 @@ namespace FS20_HudBar.Config
     /// </summary>
     public void SetDefaultFonts( )
     {
-      m_profileFont = "";
+      _profileFont = "";
     }
     /// <summary>
     /// Update this profile from Font string
@@ -581,7 +577,7 @@ namespace FS20_HudBar.Config
     /// <param name="fonts">The font string</param>
     public void SetFontsFromValues( string fonts )
     {
-      m_profileFont = fonts;
+      _profileFont = fonts;
     }
 
     /// <summary>
@@ -589,9 +585,9 @@ namespace FS20_HudBar.Config
     /// </summary>
     public void SetDefaultColors( )
     {
-      m_profileColorReg = "";
-      m_profileColorDim = "";
-      m_profileColorInv = "";
+      _profileColorReg = "";
+      _profileColorDim = "";
+      _profileColorInv = "";
     }
     /// <summary>
     /// Update this profile from Color strings
@@ -601,28 +597,28 @@ namespace FS20_HudBar.Config
     /// <param name="colInv">Inversed colors string</param>
     public void SetColorsFromValues( string colReg, string colDim, string colInv )
     {
-      m_profileColorReg = colReg;
-      m_profileColorDim = colDim;
-      m_profileColorInv = colInv;
+      _profileColorReg = colReg;
+      _profileColorDim = colDim;
+      _profileColorInv = colInv;
     }
 
     /// <summary>
     /// Set the FrameItems flag
     /// </summary>
     /// <param name="value">Flag</param>
-    public void SetFrameItemsFromValue(bool value )=>      m_frameItems = value;
+    public void SetFrameItemsFromValue( bool value ) => _frameItems = value;
 
     /// <summary>
     /// Set the BoxDivider flag
     /// </summary>
     /// <param name="value">Flag</param>
-    public void SetBoxDividerFromValue(bool value)=>m_boxDivider = value;
+    public void SetBoxDividerFromValue( bool value ) => _boxDivider = value;
 
     /// <summary>
     /// Update this profile from Hotkey string
     /// </summary>
     /// <param name="hk">Hotkey config string</param>
-    public void SetHKfromValue( string hk ) => m_hkProfile = hk;
+    public void SetHKfromValue( string hk ) => _hkProfile = hk;
 
 
     // Load the profile from stored strings (Settings)
@@ -636,21 +632,21 @@ namespace FS20_HudBar.Config
     {
       // save props in Profile
       PName = profileName;
-      m_fontSize = fontSize;
-      m_placement = placement;
-      m_kind = kind;
-      m_location = location;
-      m_condensed = condensed;
-      m_transparent = transparent;
-      m_bgImageName = bgImageName;
-      m_bgImageBorder = bgImageBorder;
-      m_profileFont = fonts;
-      m_profileColorReg = colReg;
-      m_profileColorDim = colDim;
-      m_profileColorInv = colInv;
-      m_frameItems = frameItems;
-      m_boxDivider = boxDivider;
-      m_hkProfile = hk;
+      _fontSize = fontSize;
+      _placement = placement;
+      _kind = kind;
+      _location = location;
+      _condensed = condensed;
+      _transparent = transparent;
+      _bgImageName = bgImageName;
+      _bgImageBorder = bgImageBorder;
+      _profileFont = fonts;
+      _profileColorReg = colReg;
+      _profileColorDim = colDim;
+      _profileColorInv = colInv;
+      _frameItems = frameItems;
+      _boxDivider = boxDivider;
+      _hkProfile = hk;
 
       // The Dictionaries and stored strings of it maintain the Enum Sequence
       //   even if items are relocated for display
@@ -668,112 +664,193 @@ namespace FS20_HudBar.Config
     /// <summary>
     /// Returns the regular ColorSet 
     /// </summary>
-    public GUI_ColorSet ColorSetReg => GUI_Colors.FromConfigString( m_profileColorReg );
+    public GUI_ColorSet ColorSetReg => GUI_Colors.FromConfigString( _profileColorReg );
     /// <summary>
     /// Returns the dimmed ColorSet 
     /// </summary>
-    public GUI_ColorSet ColorSetDim => GUI_Colors.FromConfigString( m_profileColorDim );
+    public GUI_ColorSet ColorSetDim => GUI_Colors.FromConfigString( _profileColorDim );
     /// <summary>
     /// Returns the inverse ColorSet 
     /// </summary>
-    public GUI_ColorSet ColorSetInv => GUI_Colors.FromConfigString( m_profileColorInv );
+    public GUI_ColorSet ColorSetInv => GUI_Colors.FromConfigString( _profileColorInv );
 
     /// <summary>
     /// Returns the Show state of an item
     /// </summary>
     /// <param name="item">An item</param>
     /// <returns>True if it is shown</returns>
-    public bool IsShowItem( LItem item ) => m_items.CheckedFor( item );
+    public bool IsShowItem( LItem item ) => _items.CheckedFor( item );
 
     /// <summary>
     /// Returns the True for a FlowBreak
     /// </summary>
     /// <param name="item">An item</param>
     /// <returns>True if it breaks</returns>
-    public bool IsBreakItem( LItem item ) => m_items.FlowBreakFor( item ) == GUI.BreakType.FlowBreak;
+    public bool IsBreakItem( LItem item ) => _items.FlowBreakFor( item ) == GUI.BreakType.FlowBreak;
 
     /// <summary>
     /// Returns True for a Divider/Separator Break Type 1 OR 2 OR GAP
     /// </summary>
     /// <param name="item">An item</param>
     /// <returns>True if it a separator is needed</returns>
-    public bool IsDivItem( LItem item ) => (m_items.FlowBreakFor( item ) == GUI.BreakType.DivBreak1)
-      || (m_items.FlowBreakFor( item ) == GUI.BreakType.DivBreak2);
+    public bool IsDivItem( LItem item ) => (_items.FlowBreakFor( item ) == GUI.BreakType.DivBreak1)
+      || (_items.FlowBreakFor( item ) == GUI.BreakType.DivBreak2);
 
     /// <summary>
     /// Returns True for a Divider/Separator Break Type 1
     /// </summary>
     /// <param name="item">An item</param>
     /// <returns>True if it a separator is needed</returns>
-    public bool IsDivItem1( LItem item ) => m_items.FlowBreakFor( item ) == GUI.BreakType.DivBreak1;
+    public bool IsDivItem1( LItem item ) => _items.FlowBreakFor( item ) == GUI.BreakType.DivBreak1;
 
     /// <summary>
     /// Returns True for a Divider/Separator Break Type 2
     /// </summary>
     /// <param name="item">An item</param>
     /// <returns>True if it a separator is needed</returns>
-    public bool IsDivItem2( LItem item ) => m_items.FlowBreakFor( item ) == GUI.BreakType.DivBreak2;
+    public bool IsDivItem2( LItem item ) => _items.FlowBreakFor( item ) == GUI.BreakType.DivBreak2;
 
     /// <summary>
     /// Returns the Items Display position
     /// </summary>
     /// <param name="item">An item</param>
     /// <returns>The display position 0..</returns>
-    public int ItemPos( LItem item ) => m_items.PositionFor( item );
+    public int ItemPos( LItem item ) => _items.PositionFor( item );
 
     /// <summary>
     /// Returns the Items Key for a Display position
     /// </summary>
     /// <param name="item">A position 0..</param>
     /// <returns>The display item key</returns>
-    public LItem ItemKeyFromPos( int pos ) => m_items.ItemKeyFromPos( pos );
+    public LItem ItemKeyFromPos( int pos ) => _items.ItemKeyFromPos( pos );
 
     /// <summary>
     /// Set the profile Settings
     /// </summary>
     /// <param name="profileString">A valid profile string</param>
-    public void SetProfileString( string profileString ) => m_items.ProfileFromString( profileString );
+    public void SetProfileString( string profileString ) => _items.ProfileFromString( profileString );
 
     /// <summary>
     /// Returns the profile Settings string 
     /// </summary>
     /// <returns>A profile string </returns>
-    public string ProfileString( ) => m_items.ProfileString( );
+    public string ProfileString( ) => _items.ProfileString( );
 
     /// <summary>
     /// Set the flowBreak Settings
     /// </summary>
     /// <param name="flowBreakString">A valid flow break string</param>
-    public void SetFlowBreakString( string flowBreakString ) => m_items.FlowBreaksFromString( flowBreakString );
+    public void SetFlowBreakString( string flowBreakString ) => _items.FlowBreaksFromString( flowBreakString );
 
     /// <summary>
     /// Returns the flowBreak Settings string 
     /// </summary>
     /// <returns>A flowBreak string </returns>
-    public string FlowBreakString( ) => m_items.FlowBreakString( );
+    public string FlowBreakString( ) => _items.FlowBreakString( );
 
     /// <summary>
     /// Set the item position Setting
     /// </summary>
     /// <param name="itemPosString">a valid item position string</param>
-    public void SetItemPosString( string itemPosString ) => m_items.PositionsFromString( itemPosString );
+    public void SetItemPosString( string itemPosString ) => _items.PositionsFromString( itemPosString );
 
 
     /// <summary>
     /// Returns the item position Settings string 
     /// </summary>
     /// <returns>A item position string </returns>
-    public string ItemPosString( ) => m_items.ItemPosString( );
+    public string ItemPosString( ) => _items.ItemPosString( );
 
     /// <summary>
     /// Returns a list orderd along the item Pos, the list contains the LItem Key to be shown at this pos (0 based)
     /// Kind of Transposing the sequence list
     /// </summary>
     /// <returns></returns>
-    public List<LItem> ItemPosList( ) => m_items.ItemPosList( );
+    public List<LItem> ItemPosList( ) => _items.ItemPosList( );
 
 
+    #region Import / Export
 
+    // check string, first line of a profile
+    private const string c_FileMagic = "65564813-38BC-4043-A3EC-AC8DA5613032";
+
+    /// <summary>
+    /// Get this Profile as Serialized String
+    /// </summary>
+    /// <returns>A Profile as string</returns>
+    public string GetAsSerString( )
+    {
+      StringBuilder sb = new StringBuilder( );
+
+      sb.AppendLine( c_FileMagic );
+      sb.AppendLine( this.PName );
+      sb.AppendLine( this.ProfileString( ) );
+      sb.AppendLine( this.FlowBreakString( ) );
+      sb.AppendLine( this.ItemPosString( ) );
+      sb.AppendLine( this.FontSize.ToString( ) );
+      sb.AppendLine( this.Placement.ToString( ) );
+      sb.AppendLine( this.Kind.ToString( ) );
+      sb.AppendLine( this.Location.AsSerString( ) );
+      sb.AppendLine( this.Condensed.ToString( ) );
+      sb.AppendLine( this.Transparency.ToString( ) );
+      sb.AppendLine( this.BgImageName.ToString( ) );
+      sb.AppendLine( this.BgImageBorder.AsSerString( ) );
+      sb.AppendLine( this.Fonts );
+      sb.AppendLine( this.ColorReg );
+      sb.AppendLine( this.ColorDim );
+      sb.AppendLine( this.ColorInv.ToString( ) );
+      sb.AppendLine( this.FrameItems.ToString( ) );
+      sb.AppendLine( this.BoxDivider.ToString( ) );
+      sb.AppendLine( this.HKProfile );
+
+      return sb.ToString( );
+    }
+
+    /// <summary>
+    /// Convert from a Serialized Profile String to a Profile
+    /// </summary>
+    /// <returns>A Profile or null</returns>
+    public static CProfile GetFromSerString( string profileSerString )
+    {
+      try {
+        string[] p = profileSerString.Replace( "\r", "" ).Split( new char[] { '\n' }, StringSplitOptions.None );
+
+        if (p.Length < 20) return null;
+        int idx = 0;
+        if (p[idx++] != c_FileMagic) return null;
+
+        string pName = p[idx++];
+        string pString = p[idx++];
+        string fBrkString = p[idx++];
+        string iPosString = p[idx++];
+        if (!Enum.TryParse<FontSize>( p[idx++], out var fSize )) { fSize = FontSize.Regular; }
+        if (!Enum.TryParse<Placement>( p[idx++], out var placement )) { placement = Placement.Top; }
+        if (!Enum.TryParse<Kind>( p[idx++], out var kind )) { kind = Kind.Bar; }
+        Point pLoc = PointFromSerString( p[idx++] );
+        Boolean.TryParse( p[idx++], out bool condensed );
+        if (!Enum.TryParse<Transparent>( p[idx++], out var transparency )) { transparency = Transparent.T0; }
+        string bgImageName = p[idx++];
+        Padding bgImageBorder = PaddingFromSerString( p[idx++] );
+
+        string fonts = p[idx++];
+        string colReg = p[idx++];
+        string colDim = p[idx++];
+        string colInv = p[idx++];
+        Boolean.TryParse( p[idx++], out bool frameItems );
+        Boolean.TryParse( p[idx++], out bool boxDivider );
+        string hkProfile = p[idx++];
+
+        var cp = new CProfile( 0, pName, pString, fBrkString, iPosString,
+          (int)fSize, (int)placement, (int)kind, pLoc, condensed, (int)transparency, bgImageName,
+          bgImageBorder, fonts, colReg, colDim, colInv, frameItems, boxDivider, hkProfile );
+
+        return cp;
+      }
+      catch { }
+      return null;
+    }
+
+    #endregion
 
   }
 }
