@@ -148,6 +148,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(SolutionDir)..\..\Redist\MS2020\SimConnect.dll" "." /Y</PostBuildEvent>
+    <PostBuildEvent>REM Copy from FS2020
+xcopy "$(SolutionDir)..\..\Redist\MS2020\SimConnect.dll" "." /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

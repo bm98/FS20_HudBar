@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 
+using DbgLib;
+
 using MapLib.Tiles;
 using MapLib.Sources.Providers;
 
@@ -99,6 +101,11 @@ namespace MapLib
   /// </summary>
   public sealed class MapManager
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // Singleton Pattern
     /// <summary>
     /// The MapManager Instance
@@ -151,9 +158,10 @@ namespace MapLib
     /// Initialize the MapLib by providing a user path for the Provide INI file
     /// Will take preference over the default one
     /// </summary>
-    /// <param name="iniPath"></param>
+    /// <param name="iniPath">MapLibProvider.ini filepath</param>
     public void InitMapLib( string iniPath )
     {
+      LOG.Info( "INIT", $"InitMapLib with: {iniPath}" );
       MapProviderBase.InitProviderBase( iniPath );
       _currentProvider = DefaultProvider;
     }

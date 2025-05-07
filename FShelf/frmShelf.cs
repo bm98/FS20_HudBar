@@ -508,20 +508,27 @@ namespace FShelf
     public frmShelf( string instance, bool standalone = false )
     {
       // the first thing to do
+      LOG.Info( "INIT:", $"Standalone mode: {standalone}" );
       Standalone = standalone;
 
       // Init the Folders Utility with our AppSettings File
+      LOG.Info( "INIT:", $"Init Settings Storage with: 'FShelfAppSettings.json'" );
       Folders.InitStorage( "FShelfAppSettings.json" );
 
       // Init the FlightPlan Module with our locations
+      LOG.Info( "INIT:", $"Init Flightplan with: {Folders.GenAptDBFile} Tmp:{Folders.UserTempPath}" );
       FSimFlightPlans.FlightPlan.Setup( Folders.GenAptDBFile, Folders.UserTempPath );
 
       // Init Settings
+      LOG.Info( "INIT:", $"Init AppSettings with: {Folders.SettingsFile}<{instance}>" );
       AppSettings.InitInstance( Folders.SettingsFile, instance );
       _dbMissing = !File.Exists( Folders.GenAptDBFile ); // facilities DB missing
+      LOG.Info( "INIT:", $"Init MapLib with: {Folders.UserFilePath}" );
       MapLib.MapManager.Instance.InitMapLib( Folders.UserFilePath ); // Init before anything else
+      LOG.Info( "INIT:", $"Init DiskCache with: {Folders.CachePath}" );
       MapLib.MapManager.Instance.SetDiskCacheLocation( Folders.CachePath ); // Map cache location
-                                                                            // ---------------
+
+      // ---------------
 
       InitializeComponent( );
 
@@ -574,6 +581,7 @@ namespace FShelf
       if (!Standalone) {
         timer1.Enabled = true;
       }
+      LOG.Info( "INIT:", "Completed" );
     }
 
     // form is loaded to get visible

@@ -105,7 +105,9 @@ V 0.72-B72
 - Add Pull Sim EFB Planned Route as Flight Plan for FS2024
 - Add Export/Import of individual Profiles in Config (context menu)
 - Update To select only Airports with Helipads in FlightBag-Config Runways
+- Update Stamen 3D Terrain default URL extended with parameter {r}
 - Fix CameraControl cannot read saved slots when the locale decimal sign is not a decimal point
+- Fix MapProvider for Stamen sometimes not having the key read properly
 
 - Update QuickGuides
 

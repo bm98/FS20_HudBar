@@ -108,7 +108,7 @@ namespace MapLib.Sources.Providers
     // ************ STATIC CLASS IMPLEMENTATION
 
     // Key from Ini File
-    private static readonly string BingMapsKey = MapProviderBase.ProviderIni.BingKey;
+    private static string BingMapsKey => MapProviderBase.ProviderIni.BingKey;
     // dict of Tile URLs etc.
     private static ConcurrentDictionary<ImageryType, ImMetadata> _metaCache = new ConcurrentDictionary<ImageryType, ImMetadata>( );
     // a default one until we get the MetaData
@@ -183,7 +183,7 @@ namespace MapLib.Sources.Providers
       // trigger loading async
       if (!_metaCache.ContainsKey( imageryType ) && !string.IsNullOrWhiteSpace( BingMapsKey )) {
         var aw = LoadImMetaData( imageryType );
-        aw.Wait();
+        aw.Wait( );
       }
       // see if we got one - fails if there is no Key provided  or no info arrived from Bing
       if (_metaCache.TryGetValue( imageryType, out ImMetadata imMetadata )) {

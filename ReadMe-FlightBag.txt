@@ -87,6 +87,8 @@ V 0.72-B72
 
 - Add FS2024 native WASM module (V4.x for FS2024)
 - Update To select only Airports with Helipads in FlightBag-Config Runways
+- Update Stamen 3D Terrain default URL extended with parameter {r}
+- Fix MapProvider for Stamen sometimes not having the key read properly
 
 V 0.70-B70
 - Please UPDATE the WASM Module (from BM98CH_DataConnector_Wasm-V0.5.zip) !!!

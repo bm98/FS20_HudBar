@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using CoordLib.MercatorTiles;
+using DbgLib;
 
 namespace MapLib.Sources.Providers
 {
@@ -20,6 +15,11 @@ namespace MapLib.Sources.Providers
   /// </summary>
   internal sealed class ESRI_StreetMap : MapProviderBase
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // Singleton Pattern
     public static ESRI_StreetMap Instance => lazy.Value;
     private static readonly Lazy<ESRI_StreetMap> lazy = new Lazy<ESRI_StreetMap>( ( ) => new ESRI_StreetMap( ) );
@@ -34,6 +34,7 @@ namespace MapLib.Sources.Providers
         RefererUrl = ProviderIni.ProviderHttp( MapProvider );
       }
       Name = ProviderIni.ProviderName( MapProvider );
+      LOG.Info( "MAP-CONFIG", RefererUrl );
     }
 
     // default URL

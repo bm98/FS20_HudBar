@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using CoordLib.MercatorTiles;
+using DbgLib;
 
 namespace MapLib.Sources.Providers
 {
@@ -20,6 +15,11 @@ namespace MapLib.Sources.Providers
   /// </summary>
   internal sealed class StamenTerrainProvider : MapProviderBase
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // Singleton Pattern
     public static StamenTerrainProvider Instance => lazy.Value;
     private static readonly Lazy<StamenTerrainProvider> lazy = new Lazy<StamenTerrainProvider>( ( ) => new StamenTerrainProvider( ) );
@@ -34,16 +34,17 @@ namespace MapLib.Sources.Providers
         RefererUrl = ProviderIni.ProviderHttp( MapProvider );
       }
       Name = ProviderIni.ProviderName( MapProvider );
+      LOG.Info( "MAP-CONFIG", RefererUrl );
     }
     // the key
-    private static readonly string StadiaStamenKey = MapProviderBase.ProviderIni.StadiaStamenKey;
+    private static string StadiaStamenKey => MapProviderBase.ProviderIni.StadiaStamenKey;
 
     /*
      Stadia Maps:
        terrain 	https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png?api_key=YOUR-API-KEY 	
      */
-    // default URL
-    private const string DefaultUrl = "https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}.png";
+    // default URL (May 2025 Update parameter {r} required = @1x)
+    private const string DefaultUrl = "https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}@1x.png";
 
     #region ProviderBase Members
 

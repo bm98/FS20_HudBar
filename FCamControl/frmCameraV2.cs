@@ -4,6 +4,7 @@ using System.Windows.Forms;
 
 using bm98_hbFolders;
 
+using SC = SimConnectClient;
 using FSimClientIF;
 
 using SimConnectClientAdapter;

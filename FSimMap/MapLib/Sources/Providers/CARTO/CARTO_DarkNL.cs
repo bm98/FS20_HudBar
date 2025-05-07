@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using DbgLib;
 
 namespace MapLib.Sources.Providers
 {
@@ -15,6 +12,11 @@ namespace MapLib.Sources.Providers
   /// </summary>
   internal sealed class CARTO_DarkNL : MapProviderBase
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // Singleton Pattern
     public static CARTO_DarkNL Instance => lazy.Value;
     private static readonly Lazy<CARTO_DarkNL> lazy = new Lazy<CARTO_DarkNL>( ( ) => new CARTO_DarkNL( ) );
@@ -24,6 +26,7 @@ namespace MapLib.Sources.Providers
       RefererUrl = DefaultUrl;
       Copyright = string.Format( "(c) CARTO (dark no labels)" );
       MaxZoom = 13;
+      LOG.Info( "MAP-CONFIG", RefererUrl );
     }
 
     // default URL

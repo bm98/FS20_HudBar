@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using CoordLib.MercatorTiles;
+using DbgLib;
 
 namespace MapLib.Sources.Providers
 {
   internal class Bing_ImageryLabels : MapProviderBase
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // Singleton Pattern
     public static Bing_ImageryLabels Instance => lazy.Value;
     private static readonly Lazy<Bing_ImageryLabels> lazy = new Lazy<Bing_ImageryLabels>( ( ) => new Bing_ImageryLabels( ) );
@@ -20,6 +20,7 @@ namespace MapLib.Sources.Providers
       //var im = BingManager.GetImMetaData( _imagery ); // trigger loading of MetaData
       Copyright = BingManager.DefaultCopyright;
       Name = ProviderIni.ProviderName( MapProvider );
+      LOG.Info( "MAP-CONFIG", RefererUrl );
     }
 
     /// <summary>

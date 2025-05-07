@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using DbgLib;
 
 namespace MapLib.Sources.Providers
 {
@@ -13,7 +10,13 @@ namespace MapLib.Sources.Providers
   ///  	https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
   /// </summary>
   internal sealed class OSM_OpenStreetMap : MapProviderBase
-  {    // Singleton Pattern
+  {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
+    // Singleton Pattern
     public static OSM_OpenStreetMap Instance => lazy.Value;
     private static readonly Lazy<OSM_OpenStreetMap> lazy = new Lazy<OSM_OpenStreetMap>( ( ) => new OSM_OpenStreetMap( ) );
     private OSM_OpenStreetMap( )
@@ -26,6 +29,7 @@ namespace MapLib.Sources.Providers
         RefererUrl = ProviderIni.ProviderHttp( MapProvider );
       }
       Name = ProviderIni.ProviderName( MapProvider );
+      LOG.Info( "MAP-CONFIG", RefererUrl );
     }
 
     // default URL

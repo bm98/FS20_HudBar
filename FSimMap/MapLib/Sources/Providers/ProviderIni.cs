@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using DbgLib;
 
 using MSiniLib;
 
@@ -28,6 +28,11 @@ namespace MapLib.Sources.Providers
   /// </summary>
   internal sealed class ProviderIni
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // the IniFile
     private static string c_ProviderIniFile = "MapLibProvider.ini";
 
@@ -102,16 +107,28 @@ namespace MapLib.Sources.Providers
     /// </summary>
     public ProviderIni( string usedFolder )
     {
+      LOG.Info( "INIT", $"cTor: usedFolder:{usedFolder}" );
+
       MSiniFile iniFile = null;
       if (Directory.Exists( usedFolder )) {
         // see if the user folder has it 
         iniFile = new MSiniFile( Path.Combine( usedFolder, c_ProviderIniFile ) );
       }
+
       if (iniFile == null || iniFile?.SectionCatalog.Count <= 0) {
         // Try App Dirs default one
         iniFile = new MSiniFile( c_ProviderIniFile );
+        LOG.Info( "INIT", $"cTor: fallback MapLib INI file:{c_ProviderIniFile}" );
       }
-      if (iniFile.SectionCatalog.Count <= 0) return;
+      else {
+        LOG.Info( "INIT", $"cTor: MapLib INI file:{Path.Combine( usedFolder, c_ProviderIniFile )}" );
+      }
+
+      if (iniFile.SectionCatalog.Count <= 0) {
+        LOG.Error( "INIT", $"cTor: MapLib INI file is not valid" );
+        return;
+      }
+
 
       // scan provider sections
       foreach (var sect in iniFile.SectionCatalog.Sections) {

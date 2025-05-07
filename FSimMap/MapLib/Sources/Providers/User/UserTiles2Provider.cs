@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using DbgLib;
 
 namespace MapLib.Sources.Providers
 {
@@ -11,6 +9,11 @@ namespace MapLib.Sources.Providers
   /// </summary>
   internal sealed class UserTiles2Provider : UserTileBase
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // Singleton Pattern
     public static UserTiles2Provider Instance => lazy.Value;
     private static readonly Lazy<UserTiles2Provider> lazy = new Lazy<UserTiles2Provider>( ( ) => new UserTiles2Provider( ) );
@@ -20,6 +23,7 @@ namespace MapLib.Sources.Providers
     {
       // set only distict items here - the rest is done in the base class
       Copyright = string.Format( "User defined Tile Server 2" );
+      LOG.Info( "MAP-CONFIG", RefererUrl );
     }
 
     #region ProviderBase Members

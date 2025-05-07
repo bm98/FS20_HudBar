@@ -134,6 +134,7 @@ namespace MapLib.Sources.Providers
     /// <param name="userPath">A path to a user folder where an INI file should be located</param>
     public static void InitProviderBase( string userPath )
     {
+      LOG.Info( "INIT", $"ProviderBase with: {userPath}" );
       ProviderIni = new ProviderIni( userPath );
 
       // trigger all providers to create themselves

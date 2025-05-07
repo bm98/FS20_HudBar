@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using CoordLib.MercatorTiles;
+using DbgLib;
 
 namespace MapLib.Sources.Providers
 {
@@ -19,6 +14,11 @@ namespace MapLib.Sources.Providers
   /// </summary>
   internal sealed class FAA_VFR_Terminal : MapProviderBase
   {
+    // A logger
+    private static readonly IDbg LOG = Dbg.Instance.GetLogger(
+      System.Reflection.Assembly.GetCallingAssembly( ),
+      System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
+
     // Singleton Pattern
     public static FAA_VFR_Terminal Instance => lazy.Value;
     private static readonly Lazy<FAA_VFR_Terminal> lazy = new Lazy<FAA_VFR_Terminal>( ( ) => new FAA_VFR_Terminal( ) );
@@ -34,6 +34,7 @@ namespace MapLib.Sources.Providers
       Name = ProviderIni.ProviderName( MapProvider );
       MinZoom = 10;
       MaxZoom = 12;
+      LOG.Info( "MAP-CONFIG", RefererUrl );
     }
 
     // default URL
