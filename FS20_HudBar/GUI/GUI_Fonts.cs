@@ -7,6 +7,8 @@ using System.Linq;
 
 using DbgLib;
 
+using dNetBm98;
+
 namespace FS20_HudBar.GUI
 {
   // Mapped into the Namespace 
@@ -440,7 +442,8 @@ namespace FS20_HudBar.GUI
       foreach (var fd in other.m_fontStorageUser) {
         m_fontStorageUser.Add( fd.Key, new FontDescriptor( fd.Value ) ); // create a copy (not a ref)
         _usingDefaults = false;
-      };
+      }
+      ;
 
       // loading actual fonts for the first time
       SetFontsize( m_fontSize );
@@ -512,7 +515,8 @@ namespace FS20_HudBar.GUI
       // copy all from the default
       foreach (var fd in m_fontStorageDefault) {
         m_fontStorageUser.Add( fd.Key, new FontDescriptor( fd.Value ) ); // create a copy (not a ref)
-      };
+      }
+      ;
       SetFontsize( m_fontSize );
       _usingDefaults = true;
     }
@@ -534,37 +538,49 @@ namespace FS20_HudBar.GUI
       }
       m_fontStorageUser.Clear( );
       // start loading
+      bool failedLoading = false;
+
       string[] items = cString.Split( new char[] { '¦' }, StringSplitOptions.RemoveEmptyEntries );
       for (int i = 0; i < items.Length; i++) {
         string[] e = items[i].Split( new char[] { '¬' } );
         // decode - we need all 5 elements
         if (e.Length >= 7) {
-          var newFd = new FontDescriptor( );
-          if (Enum.TryParse( e[0], out FKinds kind )) {
-            // regular
-            if (float.TryParse( e[2], out float rsize )) {
-              if (Enum.TryParse( e[3], out FontStyle rstyle )) {
-                var rfFam = e[1];
-                newFd.RegFamily = GetFontFamily( rfFam );
-                newFd.RegSize = rsize;
-                newFd.RegStyle = rstyle;
+          try {
+            var newFd = new FontDescriptor( );
+            if (Enum.TryParse( e[0], out FKinds kind )) {
+              // regular
+              // fix comma issue - just in case from old ToString() usage
+              string num = e[2].Replace( ",", "." );
+              // use XIO to read neutral lang numbers
+              if (XIO.TryParseX( num, out float rsize )) {
+                if (Enum.TryParse( e[3], out FontStyle rstyle )) {
+                  var rfFam = e[1];
+                  newFd.RegFamily = GetFontFamily( rfFam );
+                  newFd.RegSize = rsize;
+                  newFd.RegStyle = rstyle;
+                }
+              }
+              // condensed
+              // fix comma issue - just in case from old ToString() usage
+              num = e[5].Replace( ",", "." );
+              if (XIO.TryParseX( num, out float csize )) {
+                if (Enum.TryParse( e[6], out FontStyle cstyle )) {
+                  var cfFam = e[4];
+                  newFd.CondFamily = GetFontFamily( cfFam );
+                  newFd.CondSize = csize;
+                  newFd.CondStyle = cstyle;
+                }
               }
             }
-            // condensed
-            if (float.TryParse( e[5], out float csize )) {
-              if (Enum.TryParse( e[6], out FontStyle cstyle )) {
-                var cfFam = e[4];
-                newFd.CondFamily = GetFontFamily( cfFam );
-                newFd.CondSize = csize;
-                newFd.CondStyle = cstyle;
-              }
-            }
+            m_fontStorageUser.Add( kind, newFd );
           }
-          m_fontStorageUser.Add( kind, newFd );
+          catch {
+            failedLoading = true;
+          }
         }
       }
       // check..
-      if (m_fontStorageUser.Count == 3) {
+      if (!failedLoading && (m_fontStorageUser.Count == 3)) {
         // add the sign from the defaults
         m_fontStorageUser.Add( FKinds.Sign, new FontDescriptor( m_fontStorageDefault[FKinds.Sign] ) ); // create a copy (not a ref)
         SetFontsize( m_fontSize );
@@ -591,8 +607,9 @@ namespace FS20_HudBar.GUI
       foreach (var fd in m_fontStorageUser) {
         if (fd.Key == FKinds.Sign) continue; // not sign fonts
         s += $"{fd.Key}¬";
-        s += $"{fd.Value.RegFamily.Name}¬{fd.Value.RegSize:#0.00}¬{fd.Value.RegStyle}¬";
-        s += $"{fd.Value.CondFamily.Name}¬{fd.Value.CondSize:#0.00}¬{fd.Value.CondStyle}¦";
+        // use XIO to write neutral lang numbers
+        s += $"{fd.Value.RegFamily.Name}¬{XIO.FormatX( fd.Value.RegSize, "{0:#0.00}" )}¬{fd.Value.RegStyle}¬";
+        s += $"{fd.Value.CondFamily.Name}¬{XIO.FormatX( fd.Value.CondSize, "{0:#0.00}" )}¬{fd.Value.CondStyle}¦";
       }
       return s;
     }

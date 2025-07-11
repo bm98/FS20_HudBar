@@ -92,6 +92,7 @@ namespace FShelf
     // Plan Handler
     private readonly FpWrapper _flightPlanHandler = new FpWrapper( ); // only one instance, don't null it !!
     private JobRunner _jobRunner;
+    private dNetBm98.Win.WinFormInvoker _fpGuiHandler;
 
     // track the last known live location in order to save the proper one
     private Point _lastLiveLocation;
@@ -220,7 +221,7 @@ namespace FShelf
       }
       else {
         // set a default path if the last one does not longer exists
-        OFD.FileName = "CustomFlight.pln";
+        OFD.FileName = FSimFolders.MsFolders.CustomFlightPlan;
         OFD.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
         OFD.FilterIndex = 1;
       }
@@ -246,6 +247,8 @@ namespace FShelf
       // FS2020 call for a XML PLN, FS2024 call for EFB Planned Route
       var fsVersion = SV.Get<FSimVersion>( SItem.fv_Sim_FSVersion );
       if (fsVersion == FSimVersion.MSFS2020) {
+        // switch folder discovery first
+        FSimFolders.MsFolders.Use2024( false );
         if (_flightPlanHandler.RequestPlanFile( MSFSPlnHandler.CustomFlightPlan_filename )) {
           return true;
           // will report in the Event
@@ -253,6 +256,8 @@ namespace FShelf
         ;
       }
       else if (fsVersion == FSimVersion.MSFS2024) {
+        // switch folder discovery first
+        FSimFolders.MsFolders.Use2024( true );
         // trigger download
         SV.Set( SItem.sGS_Gps_EFB_route, "" );
         // delayed job... to get the EFB file and issue a load request
@@ -542,6 +547,7 @@ namespace FShelf
       _metar.MetarDataEvent += _metar_MetarDataEvent;
 
       // Flightplan Handler
+      _fpGuiHandler = new dNetBm98.Win.WinFormInvoker( this );
       _flightPlanHandler.FlightPlanArrived += _flightPlanHandler_FlightPlanArrived;
       _jobRunner = new JobRunner( );
 
@@ -1224,8 +1230,8 @@ namespace FShelf
 
     #region FlighPlan Data Events
 
-    // FP Handler signals arrival of a Flightplan
-    private void _flightPlanHandler_FlightPlanArrived( object sender, FlightPlanArrivedEventArgs e )
+    // handles the GUI parts
+    private void HandleFPArrived_gui( FlightPlanArrivedEventArgs e )
     {
       lblCfgPlanMessage.Text = _flightPlanHandler.LoadMessage;
 
@@ -1262,8 +1268,18 @@ namespace FShelf
       // Set Map Route
       aMap.SetFlightplan( _flightPlanHandler.FlightPlan );
       // Announce plan loading
-      OnFlightPlanLoadedByUser( );
+    }
 
+    // FP Handler signals arrival of a Flightplan - arrives from a separate thread!!!
+    private void _flightPlanHandler_FlightPlanArrived( object sender, FlightPlanArrivedEventArgs e )
+    {
+      if (this.InvokeRequired) {
+        this.Invoke( (MethodInvoker)delegate { HandleFPArrived_gui( e ); } );
+      }
+      else {
+        HandleFPArrived_gui( e );
+      }
+      OnFlightPlanLoadedByUser( );
     }
 
     #endregion
@@ -1560,7 +1576,7 @@ namespace FShelf
       }
       else {
         // set a default path if the last one does not longer exists
-        OFD.FileName = "CustomFlight.pln";
+        OFD.FileName = FSimFolders.MsFolders.CustomFlightPlan;
         OFD.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
         OFD.FilterIndex = 1;
       }
@@ -1579,9 +1595,9 @@ namespace FShelf
     private void btCfgMsLoadPlan_Click( object sender, EventArgs e )
     {
       lblCfgPlanMessage.Text = "loading...";
-      // call for a XML OFP
-      if (!_flightPlanHandler.RequestPlanFile( MSFSPlnHandler.CustomFlightPlan_filename )) {
-        lblCfgPlanMessage.Text = "unknown file, aborted";
+      // call for the default OFP
+      if (!LoadDefaultPLN( )) {
+        lblCfgPlanMessage.Text = "load failed, aborted";
       }
       ;
       // will report in the Event

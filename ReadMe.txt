@@ -1,5 +1,5 @@
 FS20_HudBar V 0.72 - Build 72 BETA
-(c) M. Burri - 02-May-2025
+(c) M. Burri - 12-Jul-2025
 
 Contains files:
 
@@ -107,6 +107,8 @@ V 0.72-B72
 - Update To select only Airports with Helipads in FlightBag-Config Runways
 - Update Stamen 3D Terrain default URL extended with parameter {r}
 - Fix CameraControl cannot read saved slots when the locale decimal sign is not a decimal point
+- Fix HudBar cannot read user fonts when the locale decimal sign is not a decimal point
+- Fix HudBar Exception if Active Background color is set to transparent
 - Fix MapProvider for Stamen sometimes not having the key read properly
 
 - Update QuickGuides

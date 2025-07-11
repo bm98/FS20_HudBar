@@ -1,5 +1,5 @@
 FS20_CamControl V 0.72 - Build 72 BETA
-(c) M. Burri - 02-May-2025
+(c) M. Burri - 25-Jun-2025
 
 Contains files:
 

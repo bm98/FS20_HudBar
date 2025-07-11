@@ -1,5 +1,5 @@
 FS20_FlightBag V 0.72 - Build 72 BETA
-(c) M. Burri - 02-May-2025
+(c) M. Burri - 12-Jul-2025
 
 Contains files:
 
@@ -89,6 +89,8 @@ V 0.72-B72
 - Update To select only Airports with Helipads in FlightBag-Config Runways
 - Update Stamen 3D Terrain default URL extended with parameter {r}
 - Fix MapProvider for Stamen sometimes not having the key read properly
+- Note: Bing Map Service is no longer available for private customers 
+        The funtionality remains in place but is no longer supportable
 
 V 0.70-B70
 - Please UPDATE the WASM Module (from BM98CH_DataConnector_Wasm-V0.5.zip) !!!

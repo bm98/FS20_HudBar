@@ -74,6 +74,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\FSimFlightPlans.dll</HintPath>
     </Reference>
+    <Reference Include="FSimFolders, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Redist\FSimFolders.dll</HintPath>
+    </Reference>
     <Reference Include="SimConnectClient">
       <HintPath>..\..\..\Redist\SimConnectClient.dll</HintPath>
     </Reference>

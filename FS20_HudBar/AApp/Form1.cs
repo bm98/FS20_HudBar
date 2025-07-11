@@ -118,7 +118,14 @@ namespace FS20_HudBar
 
       if (m_config.UsedProfile.Opacity >= 0.999) {
         // full opaque is configurable
-        this.BackColor = GUI_Colors.ItemColor( ColorType.cOpaqueBG );
+        // for the Form background this will fail if set to transparent
+        try {
+          this.BackColor = GUI_Colors.ItemColor( ColorType.cOpaqueBG );
+        }
+        catch {
+          // so set it to default 
+          this.BackColor = GUI_Colors.ItemColor( ColorType.cInverse );
+        }
       }
     }
 
