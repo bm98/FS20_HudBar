@@ -245,17 +245,8 @@ namespace FShelf
     {
       lblCfgPlanMessage.Text = "loading...";
       // FS2020 call for a XML PLN, FS2024 call for EFB Planned Route
-      var fsVersion = SV.Get<FSimVersion>( SItem.fv_Sim_FSVersion );
-      if (fsVersion == FSimVersion.MSFS2020) {
-        // switch folder discovery first
-        FSimFolders.MsFolders.Use2024( false );
-        if (_flightPlanHandler.RequestPlanFile( MSFSPlnHandler.CustomFlightPlan_filename )) {
-          return true;
-          // will report in the Event
-        }
-        ;
-      }
-      else if (fsVersion == FSimVersion.MSFS2024) {
+      var fsVersion = SV.Get<FSimVersion>( SItem.fv_Sim_FSVersion, FSimVersion.None );
+      if (fsVersion == FSimVersion.MSFS2024) {
         // switch folder discovery first
         FSimFolders.MsFolders.Use2024( true );
         // trigger download
@@ -277,7 +268,15 @@ namespace FShelf
         Thread.Yield( );
         return true;
       }
-
+      else {// use default 2020 always  even if the sim is not running //if (fsVersion == FSimVersion.MSFS2020) {
+        // switch folder discovery first
+        FSimFolders.MsFolders.Use2024( false );
+        if (_flightPlanHandler.RequestPlanFile( MSFSPlnHandler.CustomFlightPlan_filename )) {
+          return true;
+          // will report in the Event
+        }
+              ;
+      }
       return false;
     }
 
