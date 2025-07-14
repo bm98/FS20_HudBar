@@ -74,7 +74,7 @@ namespace FShelf
     private const string _observerName = "SHELF_FORM";
 
     // flags a missing Facility database
-    private readonly bool _dbMissing = false;
+    private bool _dbMissing = false;
 
     // data update tracker to allow to pace down the updates towards the user control
     private int _updates;
@@ -494,12 +494,21 @@ namespace FShelf
 
     // facility check & message
     private readonly string c_facDBmsg = "The Facility Database could not be found!\n\nPlease visit the QuickGuide, head for 'DataLoader' and proceed accordingly";
-    private void CheckFacilityDB( )
+    private bool _facDbChecked = false;
+    private void CheckFacilityDB( bool dontComplain )
     {
+      // any facilities DB missing
+      _dbMissing = !(Folders.HasGenApt2020 || Folders.HasGenApt2024);
+
+      if (dontComplain) return;
+      if (_facDbChecked) return; // already checked
+      _facDbChecked = true;
+
       if (_dbMissing) {
         _ = MessageBox.Show( c_facDBmsg, "Facility Database Missing", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
       }
     }
+
 
     #region Form
 
@@ -526,7 +535,7 @@ namespace FShelf
       // Init Settings
       LOG.Info( "INIT:", $"Init AppSettings with: {Folders.SettingsFile}<{instance}>" );
       AppSettings.InitInstance( Folders.SettingsFile, instance );
-      _dbMissing = !File.Exists( Folders.GenAptDBFile ); // facilities DB missing
+
       LOG.Info( "INIT:", $"Init MapLib with: {Folders.UserFilePath}" );
       MapLib.MapManager.Instance.InitMapLib( Folders.UserFilePath ); // Init before anything else
       LOG.Info( "INIT:", $"Init DiskCache with: {Folders.CachePath}" );
@@ -539,8 +548,6 @@ namespace FShelf
       tab.Dock = DockStyle.Fill;
       aShelf.Dock = DockStyle.Fill;
       aMap.Dock = DockStyle.Fill;
-
-      lblFacDBMissing.Visible = _dbMissing;
 
       _metar = new MetarLib.Metar( );
       _metar.MetarDataEvent += _metar_MetarDataEvent;
@@ -594,6 +601,9 @@ namespace FShelf
     private void frmShelf_Load( object sender, EventArgs e )
     {
       // Init GUI
+      CheckFacilityDB( dontComplain: true );
+      lblFacDBMissing.Visible = _dbMissing;
+
 #if DEBUG
 #else
       tab.TabPages.Remove( tabEnergy ); // not yet productive
@@ -699,8 +709,9 @@ namespace FShelf
           string msg = $"MyDocuments Folder Access Check Failed:\n{Dbg.Instance.AccessCheckResult}\n\n{Dbg.Instance.AccessCheckMessage}";
           MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
         }
-        CheckFacilityDB( );
         SCAdapter.Connect( );
+
+        CheckFacilityDB( dontComplain: false ); // may complain
       }
 
       // cleanup from prev versions
@@ -856,6 +867,7 @@ namespace FShelf
         aMap.SetOtherAircraftFilter( filterListAI );
 
         // sanity
+        CheckFacilityDB( dontComplain: true );
         if (_dbMissing) {
           ; // cannot get facilities
         }
@@ -950,7 +962,9 @@ namespace FShelf
       //Console.WriteLine( $"{e.CenterCoordinate}" );
 
       // sanity
+      CheckFacilityDB( dontComplain: true );
       if (_dbMissing) return; // cannot get facilities
+
       _fixList = FixList( );
       _navaidList = NavaidList( e.CenterCoordinate );
       aMap.SetNavaidList( _navaidList, _fixList );
@@ -999,6 +1013,7 @@ namespace FShelf
     private IAirport GetAirport( string aptICAO )
     {
       // sanity
+      CheckFacilityDB( dontComplain: true );
       if (_dbMissing) return null;
 
       IAirport airport = null;

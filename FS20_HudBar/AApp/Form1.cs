@@ -100,10 +100,16 @@ namespace FS20_HudBar
   = "The Facility Database could not be found!\n\nPlease visit the QuickGuide, head for 'DataLoader' and proceed accordingly"
   + "\n\nDo you want to check next startup again - click YES\n"
   + "\nClicking NO will no longer check for the Database to exist.";
+    private bool _facDbChecked = false;
+
+    // check once , call only when a Sim is detected !!
     private void CheckFacilityDB( )
     {
+      if (_facDbChecked) return; // already checked
+      _facDbChecked = true;
+      if (AppSettingsV2.Instance.OmitDBCheck) return; // don't check said User
+
       if (!File.Exists( Folders.GenAptDBFile )) {
-        if (AppSettingsV2.Instance.OmitDBCheck) { return; }
         if (MessageBox.Show( c_facDBmsg, "Facility Database Missing", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.No) {
           AppSettingsV2.Instance.OmitDBCheck = true;
           AppSettingsV2.Instance.Save( );
@@ -641,11 +647,13 @@ namespace FS20_HudBar
         string msg = $"MyDocuments Folder Access Check Failed:\n{Dbg.Instance.AccessCheckResult}\n\n{Dbg.Instance.AccessCheckMessage}";
         MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
       }
+      /* not here - sim is not detected
       // Facility DB
       if (SCAdapter.FSimVersion != FSimVersion.None) {
         Folders.SelectFSVersion( SCAdapter.FSimVersion == FSimVersion.MSFS2024 );
       }
       CheckFacilityDB( );
+      */
 
       // Pacer to connect and other repetitive chores
       timer1.Interval = 5000; // try to connect in 5 sec intervals
@@ -756,8 +764,14 @@ namespace FS20_HudBar
       SimConnectPacer( );
       // First time align the size
       SynchGUISize( );
+
       // Select Facility DB based on the version detected
       Folders.SelectFSVersion( SCAdapter.FSimVersion == FSimVersion.MSFS2024 );
+      // if Connected and any Sim was detected
+      if (SCAdapter.FSimVersion != FSimVersion.None) {
+        // Check for DB - will ignore it when done or not asked for
+        CheckFacilityDB( );
+      }
     }
 
     // Fired when the user has loaded a flightplan

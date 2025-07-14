@@ -207,12 +207,21 @@ namespace bm98_hbFolders
     public static string GenAptDBFile {
       get {
         CheckGenAptFiles( );
-        if (FS2024Used) {
+
+        // For 2024
+        if (_fs2024selected && _genAptDB24available) {
           return InitChecked( _genAptDB24File );
         }
+
+        // 2020 and fallback from above
         if (_genAptDB20available) {
           return InitChecked( _genAptDB20File );
         }
+        // Fallback for 2020 where only 2024 was found
+        else if (_genAptDB24available) {
+          return InitChecked( _genAptDB24File );
+        }
+        // nothing worked...
         return "";
       }
     }
@@ -243,6 +252,16 @@ namespace bm98_hbFolders
       _genAptDB20available = File.Exists( _genAptDB20File );
       _genAptDB24available = File.Exists( _genAptDB24File );
     }
+
+    /// <summary>
+    /// True if MSFS2020 GenApt db file is found
+    /// </summary>
+    public static bool HasGenApt2020 { get { CheckGenAptFiles( ); return _genAptDB20available; } }
+    /// <summary>
+    /// True if MSFS2024 GenApt db file is found
+    /// </summary>
+    public static bool HasGenApt2024 { get { CheckGenAptFiles( ); return _genAptDB24available; } }
+
 
     // SHELF items (Shelf path is in AppSettings)
 
