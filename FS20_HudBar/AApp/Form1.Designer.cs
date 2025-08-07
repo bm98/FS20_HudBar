@@ -63,6 +63,7 @@ namespace FS20_HudBar
       this.mConfig = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
       this.mManBackup = new System.Windows.Forms.ToolStripMenuItem();
+      this.mManSaveLanding = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
       this.mExit = new System.Windows.Forms.ToolStripMenuItem();
       this.signProto = new System.Windows.Forms.Label();
@@ -70,7 +71,6 @@ namespace FS20_HudBar
       this.value2Proto = new System.Windows.Forms.Label();
       this.B = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
-      this.mManSaveLanding = new System.Windows.Forms.ToolStripMenuItem();
       this.cMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -141,7 +141,7 @@ namespace FS20_HudBar
             this.toolStripSeparator6,
             this.mExit});
       this.cMenu.Name = "cMenu";
-      this.cMenu.Size = new System.Drawing.Size(183, 301);
+      this.cMenu.Size = new System.Drawing.Size(183, 279);
       // 
       // mSelProfile
       // 
@@ -153,7 +153,7 @@ namespace FS20_HudBar
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(179, 6);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(183, 6);
       // 
       // mProfile
       // 
@@ -169,7 +169,7 @@ namespace FS20_HudBar
             this.mP9,
             this.mP10});
       this.mProfile.Name = "mProfile";
-      this.mProfile.Size = new System.Drawing.Size(182, 22);
+      this.mProfile.Size = new System.Drawing.Size(186, 22);
       this.mProfile.Text = "Select Profile";
       // 
       // mP1
@@ -249,7 +249,7 @@ namespace FS20_HudBar
             this.maDimm,
             this.maDark});
       this.mAppearance.Name = "mAppearance";
-      this.mAppearance.Size = new System.Drawing.Size(182, 22);
+      this.mAppearance.Size = new System.Drawing.Size(186, 22);
       this.mAppearance.Text = "Appearance";
       this.mAppearance.DropDownOpening += new System.EventHandler(this.mAppearance_DropDownOpening);
       // 
@@ -277,33 +277,33 @@ namespace FS20_HudBar
       // toolStripSeparator2
       // 
       this.toolStripSeparator2.Name = "toolStripSeparator2";
-      this.toolStripSeparator2.Size = new System.Drawing.Size(179, 6);
+      this.toolStripSeparator2.Size = new System.Drawing.Size(183, 6);
       // 
       // mShelf
       // 
       this.mShelf.Name = "mShelf";
-      this.mShelf.Size = new System.Drawing.Size(182, 22);
+      this.mShelf.Size = new System.Drawing.Size(186, 22);
       this.mShelf.Text = "Flight Bag...";
       this.mShelf.Click += new System.EventHandler(this.mShelf_Click);
       // 
       // mCamera
       // 
       this.mCamera.Name = "mCamera";
-      this.mCamera.Size = new System.Drawing.Size(182, 22);
+      this.mCamera.Size = new System.Drawing.Size(186, 22);
       this.mCamera.Text = "Camera...";
       this.mCamera.Click += new System.EventHandler(this.mCamera_Click);
       // 
       // mChecklistBox
       // 
       this.mChecklistBox.Name = "mChecklistBox";
-      this.mChecklistBox.Size = new System.Drawing.Size(182, 22);
+      this.mChecklistBox.Size = new System.Drawing.Size(186, 22);
       this.mChecklistBox.Text = "Checklist Box...";
       this.mChecklistBox.Click += new System.EventHandler(this.mChecklistBox_Click);
       // 
       // toolStripSeparator4
       // 
       this.toolStripSeparator4.Name = "toolStripSeparator4";
-      this.toolStripSeparator4.Size = new System.Drawing.Size(179, 6);
+      this.toolStripSeparator4.Size = new System.Drawing.Size(183, 6);
       // 
       // mUnits
       // 
@@ -313,7 +313,7 @@ namespace FS20_HudBar
             this.toolStripSeparator5,
             this.mShowUnits});
       this.mUnits.Name = "mUnits";
-      this.mUnits.Size = new System.Drawing.Size(182, 22);
+      this.mUnits.Size = new System.Drawing.Size(186, 22);
       this.mUnits.Text = "Units";
       // 
       // mAltMetric
@@ -348,31 +348,38 @@ namespace FS20_HudBar
       // mConfig
       // 
       this.mConfig.Name = "mConfig";
-      this.mConfig.Size = new System.Drawing.Size(182, 22);
+      this.mConfig.Size = new System.Drawing.Size(186, 22);
       this.mConfig.Text = "Configure...";
       this.mConfig.Click += new System.EventHandler(this.mConfig_Click);
       // 
       // toolStripSeparator3
       // 
       this.toolStripSeparator3.Name = "toolStripSeparator3";
-      this.toolStripSeparator3.Size = new System.Drawing.Size(179, 6);
+      this.toolStripSeparator3.Size = new System.Drawing.Size(183, 6);
       // 
       // mManBackup
       // 
       this.mManBackup.Name = "mManBackup";
-      this.mManBackup.Size = new System.Drawing.Size(182, 22);
+      this.mManBackup.Size = new System.Drawing.Size(186, 22);
       this.mManBackup.Text = "Save FLT";
       this.mManBackup.Click += new System.EventHandler(this.mManBackup_Click);
+      // 
+      // mManSaveLanding
+      // 
+      this.mManSaveLanding.Name = "mManSaveLanding";
+      this.mManSaveLanding.Size = new System.Drawing.Size(186, 22);
+      this.mManSaveLanding.Text = "Save Landing Sketch";
+      this.mManSaveLanding.Click += new System.EventHandler(this.mManSaveLanding_Click);
       // 
       // toolStripSeparator6
       // 
       this.toolStripSeparator6.Name = "toolStripSeparator6";
-      this.toolStripSeparator6.Size = new System.Drawing.Size(179, 6);
+      this.toolStripSeparator6.Size = new System.Drawing.Size(183, 6);
       // 
       // mExit
       // 
       this.mExit.Name = "mExit";
-      this.mExit.Size = new System.Drawing.Size(182, 22);
+      this.mExit.Size = new System.Drawing.Size(186, 22);
       this.mExit.Text = "Exit";
       this.mExit.Click += new System.EventHandler(this.mExit_Click);
       // 
@@ -446,13 +453,6 @@ namespace FS20_HudBar
       this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       this.label1.UseCompatibleTextRendering = true;
       this.label1.Visible = false;
-      // 
-      // mManSaveLanding
-      // 
-      this.mManSaveLanding.Name = "mManSaveLanding";
-      this.mManSaveLanding.Size = new System.Drawing.Size(182, 22);
-      this.mManSaveLanding.Text = "Save Landing Sketch";
-      this.mManSaveLanding.Click += new System.EventHandler(this.mManSaveLanding_Click);
       // 
       // frmMain
       // 

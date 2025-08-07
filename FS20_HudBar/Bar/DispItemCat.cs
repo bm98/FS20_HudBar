@@ -19,7 +19,7 @@ namespace FS20_HudBar.Bar
     /// <returns>The newly created dispItem</returns>
     public DispItem CreateDisp( LItem item )
     {
-      var di = new DispItem();
+      var di = new DispItem( );
       this.Add( item, di );
       return di;
     }
@@ -36,6 +36,6 @@ namespace FS20_HudBar.Bar
       this.Add( disp.LabelID, disp );
     }
 
-  }
 
+  }
 }

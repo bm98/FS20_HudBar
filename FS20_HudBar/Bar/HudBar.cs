@@ -249,6 +249,15 @@ namespace FS20_HudBar.Bar
     private Configuration _configRef = null;
 
     /// <summary>
+    /// Called when the Bar is changed in a way that GUI synch is required
+    /// </summary>
+    public event EventHandler<GuiSynchEventArgs> NeedGuiSynch;
+    private void OnNeedGuiSynch( bool visible )
+    {
+      NeedGuiSynch?.Invoke( this, new GuiSynchEventArgs( visible ) );
+    }
+
+    /// <summary>
     /// The Configured Hotkeys
     /// </summary>
     public WinHotkeyCat Hotkeys { get; private set; }
@@ -295,6 +304,11 @@ namespace FS20_HudBar.Bar
     /// Ref for the Proto Value2 (used by config)
     /// </summary>
     public Label ProtoValue2Ref { get; private set; }
+
+    /// <summary>
+    /// Flag is the Bar is visible (from Quick Show/Hide mode)
+    /// </summary>
+    public bool QuickVisible { get; private set; } = true;
 
     // maintain collections of the created Controls to do the processing
     // One collection contains the actionable interface
@@ -378,6 +392,11 @@ namespace FS20_HudBar.Bar
 
       // Sim Status
       m_dispItems.AddDisp( new DI_MsFS( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems[LItem.MSFS].MouseEnter += MSFS_MouseEnter;
+      m_dispItems[LItem.MSFS].MouseHover += MSFS_MouseHover;
+      m_dispItems[LItem.MSFS].MouseLeave += MSFS_MouseLeave;
+
+      // Sim Items
       m_dispItems.AddDisp( new DI_SimRate( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Fps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_FlightLog( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
@@ -694,6 +713,31 @@ namespace FS20_HudBar.Bar
       LOG.Info( "HudBar.cTor", $"End of cTor" );
     }
 
+
+    #region MSFS Label specific handling
+
+    private void MSFS_MouseEnter( object sender, EventArgs e )
+    {
+      // Console.WriteLine( "DETECT MSFS mouse ENTER" );
+    }
+    private void MSFS_MouseHover( object sender, EventArgs e )
+    {
+      // Console.WriteLine( "DETECT MSFS mouse HOVER" );
+      // sanity
+      if (_configRef == null) return;
+
+      if (_configRef.MSFSHoverMode == false) return;
+      // toggle visibility of the Bar when hovering the MSFS Label
+      QuickVisible = HideModeToggle( );
+      OnNeedGuiSynch( QuickVisible );
+    }
+    private void MSFS_MouseLeave( object sender, EventArgs e )
+    {
+      // Console.WriteLine( "DETECT MSFS mouse LEAVE" );
+    }
+
+    #endregion
+
     #region Update Content and Settings
 
     // track Aircraft changes
@@ -920,6 +964,36 @@ namespace FS20_HudBar.Bar
       flp.Dock = DockStyle.Fill;
 
       LOG.Info( "LoadFLPanel", $"End loading, {flp.Controls.Count} items loaded" );
+    }
+
+    /// <summary>
+    /// Hide (Show) all but the MSFS item
+    /// </summary>
+    /// <returns>Current visibility</returns>
+    private bool HideModeToggle( )
+    {
+      // sanity
+      if (!m_dispItems.ContainsKey( LItem.MSFS )) return true;
+
+      DispItem msfs = m_dispItems[LItem.MSFS];
+      if (msfs.Parent is FlowLayoutPanel flp) {
+        bool shown = true;
+        if (msfs.Tag is bool visible) {
+          shown = visible;
+        }
+        msfs.Tag = !shown;
+        flp.SuspendLayout( );
+        // process all controls in the LayoutPanel
+        foreach (Control ctrlItem in flp.Controls) {
+          if (ctrlItem.Equals( msfs )) continue;
+          ctrlItem.Visible = !shown;
+        }
+        flp.ResumeLayout( );
+        // current state
+        return (bool)msfs.Tag;
+      }
+      // something failed in layout...
+      return true;
     }
 
     #endregion

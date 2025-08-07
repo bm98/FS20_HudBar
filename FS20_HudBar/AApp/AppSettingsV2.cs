@@ -269,6 +269,13 @@ namespace FS20_HudBar
       set { this["FRecorder"] = value; }
     }
 
+    // MSFSHoverMode Flag
+    [DefaultSettingValue( "False" )]
+    public bool MSFSHoverMode {
+      get { return (bool)this["MSFSHoverMode"]; }
+      set { this["MSFSHoverMode"] = value; }
+    }    
+    
     // Backup Flag
     [DefaultSettingValue( "0" )] // ref enum FSimClientIF.FlightPlanMode  (0=Disabled, 1=AutoB, 2=AutoB+ATC)
     public int FltAutoSaveATC {

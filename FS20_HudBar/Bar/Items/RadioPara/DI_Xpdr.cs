@@ -67,22 +67,20 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        var stat = SV.Get<TransponderStatus>( SItem.tsGS_Com_Transponder_status );
+        var xmode = SV.Get<TransponderMode>( SItem.tmGS_Com_Transponder_mode );
+        var tcmode = SV.Get<TCAS_Mode>( SItem.tcmGS_Com_TCAS_mode );
+        _value2.ItemForeColor = cTxInfo;
         if (SV.Get<bool>( SItem.bG_Com_Transponder_available )) {
           _value1.Text = $"{SV.Get<int>( SItem.iGS_Com_Transponder_code ):0000}";
           _value1.ItemForeColor = SV.Get<bool>( SItem.bGS_Com_Transponder_IDENT ) ? cTxNav : cTxInfo;
 
-          _value2.Text = $"{stat}";
-          if (stat == TransponderStatus.ALT
-            || stat == TransponderStatus.TA
-            || stat == TransponderStatus.TA_RA
-            ) {
+          _value2.Text = $"{xmode}";
+          if (xmode == TransponderMode.ALT) { _value2.ItemForeColor = cTxNav; }
+
+          if (SV.Get<bool>( SItem.bG_Com_TCAS_available ) && tcmode > TCAS_Mode.STDBY) {
+            _value2.Text = $"{tcmode}";
             _value2.ItemForeColor = cTxNav;
           }
-          else {
-            _value2.ItemForeColor = cTxInfo;
-          }
-
         }
         else {
           _value1.Text = null;

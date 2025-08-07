@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using static FS20_HudBar.GUI.GUI_Colors;
@@ -11,10 +10,7 @@ using FS20_HudBar.Bar.Items.Base;
 using FS20_HudBar.GUI;
 using FS20_HudBar.GUI.Templates;
 using FS20_HudBar.GUI.Templates.Base;
-using System.Drawing;
 using FShelf.LandPerf;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
 
 namespace FS20_HudBar.Bar.Items
@@ -39,6 +35,9 @@ namespace FS20_HudBar.Bar.Items
 
     private readonly B_Base _label;
 
+    // dt to next review and act on mouse
+    private DateTime _nextReview = DateTime.MinValue;
+
     public DI_MsFS( ValueItemCat vCat, Label lblProto, Label valueProto, Label value2Proto, Label signProto )
     {
       //TText = "Click to change the text appearance\nSteps through Bright, Dim, Dark ";
@@ -48,6 +47,10 @@ namespace FS20_HudBar.Bar.Items
       _label = new B_Text( item, lblProto ) { Text = Short }; this.AddItem( _label );
 
       _label.ButtonClicked += _label_ButtonClicked;
+      // map mouse events to the outer container (this)
+      _label.MouseEnter += ( object sender, EventArgs e ) => { this.OnMouseEnter( e ); };
+      _label.MouseLeave += ( object sender, EventArgs e ) => { this.OnMouseLeave( e ); };
+      _label.MouseHover += ( object sender, EventArgs e ) => { this.OnMouseHover( e ); };
 
       // popup image handling
       _tTip.SetToolTip( _label, " " ); // must provide some content, else it will not popup

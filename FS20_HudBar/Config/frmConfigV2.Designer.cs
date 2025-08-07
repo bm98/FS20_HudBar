@@ -94,6 +94,7 @@
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.OFD = new System.Windows.Forms.OpenFileDialog();
       this.SFD = new System.Windows.Forms.SaveFileDialog();
+      this.cbxMSFSHoverMode = new System.Windows.Forms.CheckBox();
       this.tlpMain.SuspendLayout();
       this.tlpProfile.SuspendLayout();
       this.flpP1.SuspendLayout();
@@ -716,6 +717,7 @@
       // 
       this.panel2.BackColor = System.Drawing.Color.Gainsboro;
       this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+      this.panel2.Controls.Add(this.cbxMSFSHoverMode);
       this.panel2.Controls.Add(this.btTestVoice);
       this.panel2.Controls.Add(this.label6);
       this.panel2.Controls.Add(this.btColors);
@@ -888,6 +890,17 @@
       this.SFD.SupportMultiDottedExtensions = true;
       this.SFD.Title = "Save Profile Setting";
       // 
+      // cbxMSFSHoverMode
+      // 
+      this.cbxMSFSHoverMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.cbxMSFSHoverMode.AutoSize = true;
+      this.cbxMSFSHoverMode.Location = new System.Drawing.Point(246, 81);
+      this.cbxMSFSHoverMode.Name = "cbxMSFSHoverMode";
+      this.cbxMSFSHoverMode.Size = new System.Drawing.Size(153, 19);
+      this.cbxMSFSHoverMode.TabIndex = 61;
+      this.cbxMSFSHoverMode.Text = "Quick Show/Hide Mode";
+      this.cbxMSFSHoverMode.UseVisualStyleBackColor = true;
+      // 
       // frmConfigV2
       // 
       this.AcceptButton = this.btAccept;
@@ -995,5 +1008,6 @@
     private System.Windows.Forms.CheckBox cbxFrameItems;
     private System.Windows.Forms.OpenFileDialog OFD;
     private System.Windows.Forms.SaveFileDialog SFD;
+    private System.Windows.Forms.CheckBox cbxMSFSHoverMode;
   }
 }

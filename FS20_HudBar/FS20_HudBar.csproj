@@ -125,6 +125,7 @@
     <Compile Include="AApp\AppSettingsUpgrade.cs" />
     <Compile Include="Bar\Calculator.cs" />
     <Compile Include="Bar\DispItemCat.cs" />
+    <Compile Include="Bar\GuiSynchEventArgs.cs" />
     <Compile Include="Bar\Items\AircraftPara\DI_A_ETrim.cs">
       <SubType>Component</SubType>
     </Compile>

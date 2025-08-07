@@ -387,6 +387,7 @@ namespace FS20_HudBar.Config
       _pButtons[_selProfileIndex].BackColor = c_profileColSel; // mark the currently selected one
 
       cbxFlightRecorder.Checked = ConfigCopy.FRecorder;
+      cbxMSFSHoverMode.Checked = ConfigCopy.MSFSHoverMode;
       cbxASave.SelectedIndex = (int)ConfigCopy.FltAutoSaveATC;
 
       PopulateOutputDevice( cbxOutputDevice );
@@ -477,6 +478,7 @@ namespace FS20_HudBar.Config
 
       // update from edits
       ConfigCopy.SetFlightRecorder( cbxFlightRecorder.Checked );
+      ConfigCopy.SetMSFSHoverMode( cbxMSFSHoverMode.Checked );
       ConfigCopy.SetKeyboardHook( chkKeyboard.Checked );
       ConfigCopy.SetInGameHook( chkInGame.Checked );
       ConfigCopy.SetFltAutoSave( (FSimClientIF.FltFileModuleMode)cbxASave.SelectedIndex ); // can no longer carry ATC (was removed)

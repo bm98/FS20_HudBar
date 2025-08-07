@@ -222,8 +222,9 @@ namespace FS20_HudBar
     /// <summary>
     /// Calc and return the Size of the Bar
     /// </summary>
+    /// <param name="visible">True when the Bar is visible and not quick hidden</param>
     /// <returns>A Size</returns>
-    private Size BarSize( )
+    private Size BarSize( bool visible )
     {
       Size newS = m_frmGui.PreferredSize;
 
@@ -239,7 +240,7 @@ namespace FS20_HudBar
       newS.Width += leftBorderWidth + rightBorderWidth;
       newS.Height += topBorderHeight + bottomBorderHeight;
       // Adjust for Bar which is stretching the screen in vert or hor direction and is only on the Main Screen 
-      if (m_config.UsedProfile.Kind == GUI.Kind.Bar) {
+      if (visible && m_config.UsedProfile.Kind == GUI.Kind.Bar) {
         switch (m_config.UsedProfile.Placement) {
           case GUI.Placement.TopStack:
           case GUI.Placement.Top: newS.Width = m_barScreen.Bounds.Width; break;
@@ -307,23 +308,25 @@ namespace FS20_HudBar
     /// Returns a Rectangle containing the Bar Form
     /// Takes care of the Kind and Position taken from the HUD
     /// </summary>
+    /// <param name="visible">True when the Bar is visible and not quick hidden</param>
     /// <returns>A Rectangle</returns>
-    private Rectangle BarRectangle( )
+    private Rectangle BarRectangle( bool visible )
     {
-      Size newS = BarSize( );
+      Size newS = BarSize( visible );
       Point newL = BarLocation( this.Location, newS );
 
       return new Rectangle( newL, newS );
     }
 
     // synch the two forms for Size
-    private void SynchGUISize( )
+    // <param name="visible">True when the Bar is visible and not quick hidden</param>
+    private void SynchGUISize( bool visible )
     {
       // Adding controls to the FlowPanel is enclosed in a   _inLayout = true ...  = false bracket
       // While adding controls to the FlowPanel there is some Resizing we don't want to catch
       // else it looks weird and takes more time than needed
       if (!_inLayout) {
-        Rectangle newR = BarRectangle( );
+        Rectangle newR = BarRectangle( visible );
         // set This Size and Loc if a change is needed
         if ((this.Width != newR.Width) || (this.Height != newR.Height)) {
           this.Size = newR.Size;
@@ -342,9 +345,10 @@ namespace FS20_HudBar
     }
 
     // synch the two forms for Size and Location
-    private void SynchGUI( )
+    // <param name="visible">True when the Bar is visible and not quick hidden</param>
+    private void SynchGUI( bool visible )
     {
-      SynchGUISize( );
+      SynchGUISize( visible );
       SynchGUILocation( );
     }
 
@@ -575,7 +579,7 @@ namespace FS20_HudBar
       m_frmGui.Controls.Add( flp );
       m_frmGui.Show( );
       // And Overlay the two Forms
-      SynchGUI( );
+      SynchGUI( true );
 
 #if DEBUG
       // DEBUG TESTS
@@ -665,7 +669,7 @@ namespace FS20_HudBar
     // Layout may need to update when the Aircraft changes (due to Engine Count)
     private void Instance_AircraftChange( object sender, EventArgs e )
     {
-      SynchGUISize( );
+      SynchGUISize( (HUD == null) || HUD.QuickVisible );
     }
 
 
@@ -700,7 +704,7 @@ namespace FS20_HudBar
     // Capture Resizing of the GUI Form (where the controls are loaded)
     private void M_frmGui_SizeChanged( object sender, EventArgs e )
     {
-      SynchGUISize( );
+      SynchGUISize( (HUD == null) || HUD.QuickVisible );
     }
 
     // Capture Resizing of the GUI Form (where the controls are loaded)
@@ -763,7 +767,7 @@ namespace FS20_HudBar
       // SimConnect stuff
       SimConnectPacer( );
       // First time align the size
-      SynchGUISize( );
+      SynchGUISize( (HUD == null) || HUD.QuickVisible );
 
       // Select Facility DB based on the version detected
       Folders.SelectFSVersion( SCAdapter.FSimVersion == FSimVersion.MSFS2024 );
@@ -1194,6 +1198,7 @@ namespace FS20_HudBar
       LOG.Info( "InitGUI", "Create HudBar" );
       HUD?.Dispose( ); // MUST ..
       HUD = new HudBar( lblProto, valueProto, value2Proto, signProto, _hotkeycat, m_config, _Shelf );
+      HUD.NeedGuiSynch += ( object sender, Bar.GuiSynchEventArgs e ) => { SynchGUI( e.Visible ); }; // add callback to synch the GUI if needed
 
       // reread from config (change)
       LOG.Info( "InitGUI", "Reread Config changes" );
@@ -1236,7 +1241,7 @@ namespace FS20_HudBar
       }
 
       // realign all
-      SynchGUI( );
+      SynchGUI( true );
       // Unhide when finished
       SynchGUIVisible( true );
 
@@ -1399,11 +1404,12 @@ namespace FS20_HudBar
         HudBar.VoiceEnabled = true;
         // Check and Resize at this pace to fit the contents in case some layout changes made it not fitting anymore
         // this is due to long texts or changes in the visibility of items coming in by the SimConnect Data processing in the DI items
-        SynchGUISize( );
+        SynchGUISize( (HUD == null) || HUD.QuickVisible );
       }
     }
 
     #endregion
+
 
   }
 }

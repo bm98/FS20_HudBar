@@ -29,6 +29,7 @@ namespace FS20_HudBar.Config
         VoiceName = AS.VoiceName,
         VoiceCalloutProfile = AS.VoiceCalloutProfile,
         FRecorder = AS.FRecorder,
+        MSFSHoverMode = AS.MSFSHoverMode,
         FltAutoSaveATC = (FltFileModuleMode)AS.FltAutoSaveATC, // restricted to 0, 1 in AppSettingsV2
 
         InGameHook = AS.InGameHook,
@@ -67,6 +68,7 @@ namespace FS20_HudBar.Config
       AS.VoiceName = config.VoiceName;
       AS.VoiceCalloutProfile = config.VoiceCalloutProfile;
       AS.FRecorder = config.FRecorder;
+      AS.MSFSHoverMode = config.MSFSHoverMode;
       AS.FltAutoSaveATC = (int)config.FltAutoSaveATC; // restricted to 0, 1 in AppSettingsV2
 
       AS.InGameHook = config.InGameHook;
@@ -143,6 +145,12 @@ namespace FS20_HudBar.Config
     /// Use Flight Recorder Flag
     /// </summary>
     public bool FRecorder { get; protected set; } = false;
+
+    /// <summary>
+    /// Detect MSFS Hovering Flag
+    /// </summary>
+    public bool MSFSHoverMode { get; protected set; } = false;
+
     /// <summary>
     /// Backup Mode
     /// </summary>
@@ -328,6 +336,11 @@ namespace FS20_HudBar.Config
     /// </summary>
     /// <param name="fRec">Enabled Flag</param>
     public void SetFlightRecorder( bool fRec ) => FRecorder = fRec;
+    /// <summary>
+    /// Set the MSFSHoverMode enabled flag
+    /// </summary>
+    /// <param name="hover">Enabled Flag</param>
+    public void SetMSFSHoverMode( bool hover ) => MSFSHoverMode = hover;
     /// <summary>
     /// Set the current FltAutoSave
     /// </summary>

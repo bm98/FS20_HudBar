@@ -253,7 +253,7 @@ namespace bm98_Html
 
       // Setup
       var document = BasicDocument( htmlCode, docTitle, header );
-      document.GlobalSettings.OutputFile = targetFile;
+      document.GlobalSettings.OutputFile = Path.GetFullPath( targetFile ); //20250722 fix, need full path here else the converter cannot write
       document.GlobalSettings.PaperSize = PaperKind.A4;
       document.GlobalSettings.Orientation = GlobalSettings.PaperOrientation.Portrait;
 
