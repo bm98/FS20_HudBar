@@ -1,11 +1,11 @@
-FS20_HudBar V 0.72 - Build 72 BETA
-(c) M. Burri - 12-Jul-2025
+FS20_HudBar V 0.73 - Build 73 BETA
+(c) M. Burri - 30-Nov-2025
 
 Contains files:
 
 FS20_HudBar.exe             The program
 
-.\DemoBag                   Contains some images to showcase the Flight Bag (new since V0.43)
+.\DemoBag                   Contains some images to showcase the Flight Bag
 
 - All libraries below MUST be in the same folder as the Exe file
 bm98_AColorPicker.dll       A custom Color Picker Dialog
@@ -94,6 +94,19 @@ Scanned for viruses before packing...
 github@mail.burri-web.org
 
 Changelog:
+
+V 0.73-B73
+- RERUN FacilityDataLoader !!! will use the new location in %appdata%\bm98ch\GenApt\db
+
+- Add Config Setting to hide the Bar when hovering MSFS label
+- Add Config Setting for HotKey to move the bar to another screen
+- Update FacilityDB, settings and map cache relocated to %appdata%\bm98ch\.. (as suggested my MS)
+- Update FacilityDataLoader to be more robust for MS2024
+- Update Map drawing algos
+- Fix HudBar startup exception for some user fonts settings which turned negative
+- Fix METAR support new API 
+
+- Update QuickGuides
 
 V 0.72-B72
 - Please UPDATE the WASM Module (see quick guide) !!!

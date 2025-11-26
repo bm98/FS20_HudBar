@@ -124,8 +124,7 @@ namespace FS20_HudBar.Config
       // 
       // FrmHotkey
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
       this.BackColor = System.Drawing.SystemColors.Control;
       this.ClientSize = new System.Drawing.Size(306, 214);
       this.ControlBox = false;
@@ -139,6 +138,7 @@ namespace FS20_HudBar.Config
       this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+      this.KeyPreview = true;
       this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
       this.MaximizeBox = false;
       this.MinimizeBox = false;

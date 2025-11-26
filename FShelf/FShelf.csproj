@@ -61,6 +61,9 @@
     <Reference Include="FSFDataLib">
       <HintPath>..\..\..\Redist\FSFDataLib.dll</HintPath>
     </Reference>
+    <Reference Include="FSimAirportDoc">
+      <HintPath>..\..\..\Redist\FSimAirportDoc.dll</HintPath>
+    </Reference>
     <Reference Include="FSimClientIF">
       <HintPath>..\..\..\Redist\FSimClientIF.dll</HintPath>
     </Reference>
@@ -70,13 +73,16 @@
     <Reference Include="FSimFlightPlanDoc">
       <HintPath>..\..\..\Redist\FSimFlightPlanDoc.dll</HintPath>
     </Reference>
-    <Reference Include="FSimFlightPlans, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Redist\FSimFlightPlans.dll</HintPath>
+    <Reference Include="FSimFlightPlanLib">
+      <HintPath>..\..\..\Redist\FSimFlightPlanLib.dll</HintPath>
     </Reference>
     <Reference Include="FSimFolders, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\FSimFolders.dll</HintPath>
+    </Reference>
+    <Reference Include="SettingsLib, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Redist\SettingsLib.dll</HintPath>
     </Reference>
     <Reference Include="SimConnectClient">
       <HintPath>..\..\..\Redist\SimConnectClient.dll</HintPath>
@@ -110,7 +116,7 @@
       <DependentUpon>UC_ETable.cs</DependentUpon>
     </Compile>
     <Compile Include="FPlans\FpWrapper.cs" />
-    <Compile Include="FPlans\FlightPlanArrivedEventArgs.cs" />
+    <Compile Include="FPlans\WaypointNextChangedEventArgs.cs" />
     <Compile Include="frmShelf.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -185,10 +191,6 @@
     <ProjectReference Include="..\MSALib\MSALib.csproj">
       <Project>{ce622111-c19b-49d3-9ae8-9553e255348a}</Project>
       <Name>MSALib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SettingsLib\SettingsLib\SettingsLib.csproj">
-      <Project>{f17750f6-0652-42e8-a966-72936f558331}</Project>
-      <Name>SettingsLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

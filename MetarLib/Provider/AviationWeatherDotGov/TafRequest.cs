@@ -5,10 +5,18 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using CoordLib;
+
 namespace MetarLib.Provider.AviationWeatherDotGov
 {
   /// <summary>
   /// Form and issue a TAF Request from aviationweather.gov
+  /// 
+  ///  NOTE THIS DOES NOT WORK ANYMORE
+  ///  
+  ///   dataserver only supports XML 
+  ///   and taf API is not implemented so far
+  ///   Needs a lot of rework.....
   /// 
   /// https://aviationweather.gov/dataserver/example?datatype=taf
   /// </summary>
@@ -17,15 +25,16 @@ namespace MetarLib.Provider.AviationWeatherDotGov
     // https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&stationString=KDEN%20KSEA,%20PHNL&hoursBeforeNow=4
 
 
-    private static readonly HttpClient httpClient = new HttpClient();
+    private static readonly HttpClient httpClient = new HttpClient( );
 
     private static readonly string HoursBefore = "2";   // reach of past data
-    private static readonly string DataFormat = "csv"; // can be xml too
+    private static readonly string DataFormat = "xml"; // can ONLY be xml
     // private static readonly string DataFields = "raw_text,latitude,longitude,elevation_m"; // CANNOT USE limited fields - the reply header and datalined don't match
     public static string ResponseRaw { get; set; } = "";
     public static DateTime ResponseTime { get; set; } = DateTime.Now;
 
-    private const string c_serverURL = "https://aviationweather.gov/adds/dataserver_current/httpparam";
+    private const string c_serverURLdataserverAPI = "https://aviationweather.gov/api/data/dataserver?requestType=retrieve";
+    private const string c_serverURLtafAPI = "https://aviationweather.gov/api/data/taf";
 
     /// <summary>
     /// cTor: Init request
@@ -35,6 +44,15 @@ namespace MetarLib.Provider.AviationWeatherDotGov
       httpClient.Timeout = new TimeSpan( 0, 0, 10 );
     }
 
+    // returns a bounding box for data
+    private static string BBoxString( LatLon latLon, double rad_statM )
+    {
+      var llTopLeft = latLon.DestinationPoint( rad_statM, 270 + 45, ConvConsts.EarthRadiusSM );
+      var llBottomRight = latLon.DestinationPoint( rad_statM, 90 + 45, ConvConsts.EarthRadiusSM );
+      // format is:  (lat0, lon0, lat1, lon1)
+      string fmt = $"{llTopLeft.Lat:0.0}%2C{llTopLeft.Lon:0.0}%2C{llBottomRight.Lat:0.0}%2C{llBottomRight.Lon:0.0}";
+      return fmt;
+    }
 
     /// <summary>
     /// Async Retrieve the most recent but not older than 3 hours METAR station record
@@ -44,142 +62,97 @@ namespace MetarLib.Provider.AviationWeatherDotGov
     new public static async Task<MetarTafDataList> GetTaf( string station )
     {
       // this should retrieve one most recent record dating back max 3 hours
-      Uri uri = new Uri( $"{c_serverURL}?"+
-                          $"dataSource=tafs&"+
-                          $"requestType=retrieve&"+
-                          $"format={DataFormat}&"+
-                          //$"fields={DataFields}&"+
-                          $"hoursBeforeNow={HoursBefore}&"+
-                          $"timeType=valid&"+
-                          $"mostRecentForEachStation=constraint&"+
-                          $"stationString={station}");
+      Uri uri = new Uri( $"{c_serverURLdataserverAPI}" +
+                          $"&dataSource=tafs" +
+                          $"&format={DataFormat}" +
+                          $"&hoursBeforeNow={HoursBefore}" +
+                          $"&timeType=valid" +
+                          $"&mostRecentForEachStation=constraint" +
+                          $"&stationString={station}" );
       //GET
       try {
         ResponseRaw = await httpClient.GetStringAsync( uri );
         ResponseTime = DateTime.Now;
       }
 #pragma warning disable CS0168 // Variable is declared but never used
-      catch ( Exception e ) {
+      catch (Exception e) {
 #pragma warning restore CS0168 // Variable is declared but never used
         ResponseRaw = "";
       }
 
-      return DecodeCSV( ResponseRaw );
+      return new MetarTafDataList( );
+
+      //return DecodeCSV( ResponseRaw ); ** provides only XML data 
     }
 
     /// <summary>
     /// Async Retrieve a METAR range record
     /// </summary>
-    /// <param name="lat">Latitude</param>
-    /// <param name="lon">Longitude</param>
+    /// <param name="latLon">Location LatLon</param>
     /// <param name="range_StM">Range (Statute Miles)</param>
     /// <returns>A MetarDataList</returns>
-    new public static async Task<MetarTafDataList> GetTaf( double lat, double lon, int range_StM )
+    new public static async Task<MetarTafDataList> GetTaf( LatLon latLon, int range_StM )
     {
       // https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&radialDistance=20;-104.65,39.83&hoursBeforeNow=3
 
       // this should retrieve one most recent record dating back max 3 hours
-      Uri uri = new Uri( $"{c_serverURL}?"+
-                          $"dataSource=tafs&"+
-                          $"requestType=retrieve&"+
-                          $"format={DataFormat}&"+
-                          //$"fields={DataFields}&"+
-                          $"hoursBeforeNow={HoursBefore}&"+
-                          $"timeType=valid&"+
-                          $"mostRecentForEachStation=constraint&"+
-                          $"radialDistance={range_StM};{lon:##0.0000},{lat:##0.0000}");
+      Uri uri = new Uri( $"{c_serverURLdataserverAPI}" +
+                          $"&dataSource=tafs" +
+                          $"&requestType=retrieve" +
+                          $"&format={DataFormat}" +
+                          $"&hoursBeforeNow={HoursBefore}" +
+                          $"&timeType=valid" +
+                          $"&mostRecentForEachStation=constraint" +
+                          $"&boundingBox={BBoxString( latLon, range_StM )}" );
       //GET
       try {
         ResponseRaw = await httpClient.GetStringAsync( uri );
         ResponseTime = DateTime.Now;
       }
 #pragma warning disable CS0168 // Variable is declared but never used
-      catch ( Exception e ) {
+      catch (Exception e) {
 #pragma warning restore CS0168 // Variable is declared but never used
         ResponseRaw = "";
       }
 
-      return DecodeCSV( ResponseRaw );
+      return new MetarTafDataList( );
+
+      //return DecodeCSV( ResponseRaw ); ** provides only XML data 
     }
 
     /// <summary>
     /// Async Retrieve a METAR flightpath record
     /// </summary>
-    /// <param name="lat">Latitude</param>
-    /// <param name="lon">Longitude</param>
-    /// <param name="toICAO">The destination Apt</param>
+    /// <param name="latLon">Location LatLon</param>
+    /// <param name="dstLatLon">Location LatLon</param>
     /// <param name="range_StM">Range (Statute Miles)</param>
     /// <returns>A MetarDataList</returns>
-    new public static async Task<MetarTafDataList> GetTaf( double lat, double lon, string toICAO, int range_StM )
+    new public static async Task<MetarTafDataList> GetTaf( LatLon latLon, LatLon dstLatLon, int range_StM )
     {
-      // https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&flightPath=100;-97.5,27.77;RJAA&hoursBeforeNow=3
+      var brg = latLon.BearingTo( dstLatLon );
+      var pathLatLon = latLon.DestinationPoint( range_StM, brg, ConvConsts.EarthRadiusSM );
 
-      int degDist = range_StM / 10; // retrieve at 1/10 range scale
-      degDist = ( degDist < 1 ) ? 1 : ( degDist > 89 ) ? 89 : degDist; // 0<d<90
       // this should retrieve one most recent record dating back max 3 hours
-      Uri uri = new Uri( $"{c_serverURL}?"+
-                          $"dataSource=tafs&"+
-                          $"requestType=retrieve&"+
-                          $"format={DataFormat}&"+
-                          //$"fields={DataFields}&"+
-                          $"hoursBeforeNow={HoursBefore}&"+
-                          $"timeType=valid&"+
-                          $"mostRecentForEachStation=constraint&"+
-                          $"minDegreeDistance={degDist}&"+
-                          $"flightPath={range_StM};{lon:##0.0000},{lat:##0.0000};{toICAO}");
+      Uri uri = new Uri( $"{c_serverURLdataserverAPI}" +
+                          $"&dataSource=tafs" +
+                          $"&format={DataFormat}" +
+                          $"&hoursBeforeNow={HoursBefore}" +
+                          $"&timeType=valid" +
+                          $"&mostRecentForEachStation=constraint" +
+                          $"&boundingBox={BBoxString( pathLatLon, range_StM )}" );
       //GET
       try {
         ResponseRaw = await httpClient.GetStringAsync( uri );
         ResponseTime = DateTime.Now;
       }
 #pragma warning disable CS0168 // Variable is declared but never used
-      catch ( Exception e ) {
+      catch (Exception e) {
 #pragma warning restore CS0168 // Variable is declared but never used
         ResponseRaw = "";
       }
+      return new MetarTafDataList( );
 
-      return DecodeCSV( ResponseRaw );
-    }
-
-
-    /// <summary>
-    /// Async Retrieve a METAR flightpath record
-    /// </summary>
-    /// <param name="lat">Latitude</param>
-    /// <param name="lon">Longitude</param>
-    /// <param name="dLat">Destination Lat</param>
-    /// <param name="dLon">Destination Lon</param>
-    /// <param name="range_StM">Range (Statute Miles)</param>
-    /// <returns>A MetarDataList</returns>
-    new public static async Task<MetarTafDataList> GetTaf( double lat, double lon, double dLat, double dLon, int range_StM )
-    {
-      // https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&flightPath=100;-97.5,27.77;RJAA&hoursBeforeNow=3
-
-      int degDist = range_StM / 10; // retrieve at 1/10 range scale
-      degDist = ( degDist < 1 ) ? 1 : ( degDist > 89 ) ? 89 : degDist; // 0<d<90
-      // this should retrieve one most recent record dating back max 3 hours
-      Uri uri = new Uri( $"{c_serverURL}?"+
-                          $"dataSource=tafs&"+
-                          $"requestType=retrieve&"+
-                          $"format={DataFormat}&"+
-                          //$"fields={DataFields}&"+
-                          $"hoursBeforeNow={HoursBefore}&"+
-                          $"timeType=valid&"+
-                          $"mostRecentForEachStation=constraint&"+
-                          $"minDegreeDistance={degDist}&"+
-                          $"flightPath={range_StM};{lon:##0.0000},{lat:##0.0000};{dLon:##0.0000},{dLat:##0.0000}");
-      //GET
-      try {
-        ResponseRaw = await httpClient.GetStringAsync( uri );
-        ResponseTime = DateTime.Now;
-      }
-#pragma warning disable CS0168 // Variable is declared but never used
-      catch ( Exception e ) {
-#pragma warning restore CS0168 // Variable is declared but never used
-        ResponseRaw = "";
-      }
-
-      return DecodeCSV( ResponseRaw );
+      //return DecodeCSV( ResponseRaw ); ** provides only XML data 
     }
 
 
@@ -188,9 +161,9 @@ namespace MetarLib.Provider.AviationWeatherDotGov
 
     private enum Fields // as of 20210724
     {
-      raw_text=0, 
-      latitude, 
-      longitude, 
+      raw_text = 0,
+      latitude,
+      longitude,
       elevation_m
     }
 
@@ -213,19 +186,19 @@ namespace MetarLib.Provider.AviationWeatherDotGov
         header line
         value line
      */
-      var ret = new MetarTafDataList();
+      var ret = new MetarTafDataList( );
 
-      if ( string.IsNullOrEmpty( csvData ) ) {
-        var rec = new MetarTafData(); ret.Add( rec );
+      if (string.IsNullOrEmpty( csvData )) {
+        var rec = new MetarTafData( ); ret.Add( rec );
         rec.Error = $"Empty TAF record received";
         rec.Valid = false;
         return ret;
       }
-      using ( var sr = new StringReader( csvData ) ) {
+      using (var sr = new StringReader( csvData )) {
         try {
-          var line = sr.ReadLine(); // errors
-          if ( !line.StartsWith( "No errors" ) ) {
-            var rec = new MetarTafData(); ret.Add( rec );
+          var line = sr.ReadLine( ); // errors
+          if (!line.StartsWith( "No errors" )) {
+            var rec = new MetarTafData( ); ret.Add( rec );
             rec.Error = line;
             rec.Valid = false;
             return ret;
@@ -234,48 +207,48 @@ namespace MetarLib.Provider.AviationWeatherDotGov
           line = sr.ReadLine( ); // response time
           line = sr.ReadLine( ); // data sources
           line = sr.ReadLine( ); // N results
-          string[] e = line.Split(new char[]{ ' ' } ); // get the N 
-          if ( !int.TryParse( e[0], out int nRec ) ) {
-            var rec = new MetarTafData(); ret.Add( rec );
+          string[] e = line.Split( new char[] { ' ' } ); // get the N 
+          if (!int.TryParse( e[0], out int nRec )) {
+            var rec = new MetarTafData( ); ret.Add( rec );
             rec.Error = $"TAF cannot derive number of records\n{line}";
             rec.Valid = false;
             return ret;
           }
-          if ( nRec <= 0 ) {
-            var rec = new MetarTafData(); ret.Add( rec );
+          if (nRec <= 0) {
+            var rec = new MetarTafData( ); ret.Add( rec );
             rec.Error = $"TAF contains 0 records (not a known station?)\n{line}";
             rec.Valid = false;
             return ret;
           }
 
           line = sr.ReadLine( ); // headers
-          if ( !line.StartsWith( $"{Fields.raw_text}," ) ) {
-            var rec = new MetarTafData(); ret.Add( rec );
+          if (!line.StartsWith( $"{Fields.raw_text}," )) {
+            var rec = new MetarTafData( ); ret.Add( rec );
             rec.Error = $"Unrecognizable TAF record header format\n{line}";
             rec.Valid = false;
             return ret;
           }
           // Create an item Lookup table
-          var hList = line.Split(new char[]{ ','} ).ToList(); // the list of items from the header
-          var lookup = CreateLookup(line); // a lookup where the value is the item index in the list (and CSV line)
-          if ( lookup.Count == 0 ) {
-            var rec = new MetarTafData(); ret.Add( rec );
+          var hList = line.Split( new char[] { ',' } ).ToList( ); // the list of items from the header
+          var lookup = CreateLookup( line ); // a lookup where the value is the item index in the list (and CSV line)
+          if (lookup.Count == 0) {
+            var rec = new MetarTafData( ); ret.Add( rec );
             rec.Error = $"Field(s) not found in TAF record header format\n{line}";
             rec.Valid = false;
             return ret;
           }
 
           // get all station reports
-          for ( int i = 0; i < nRec; i++ ) {
+          for (int i = 0; i < nRec; i++) {
             line = sr.ReadLine( ); // result line
             ret.Add( DecodeCSVLine( line, lookup ) );
           }
 
         }
 #pragma warning disable CS0168 // Variable is declared but never used
-        catch ( Exception e ) {
+        catch (Exception e) {
 #pragma warning restore CS0168 // Variable is declared but never used
-          var rec = new MetarTafData(); ret.Add( rec );
+          var rec = new MetarTafData( ); ret.Add( rec );
           rec.Error = $"Unrecognizable TAF record\n{csvData}";
           rec.Valid = false;
         }
@@ -292,15 +265,15 @@ namespace MetarLib.Provider.AviationWeatherDotGov
     /// <returns>A MetarData record</returns>
     private static MetarTafData DecodeCSVLine( string csvLine, IDictionary<Fields, int> lookup )
     {
-      var rec = new MetarTafData();
+      var rec = new MetarTafData( );
       try {
-        string[] e = csvLine.Split(new char[]{ ','} );
+        string[] e = csvLine.Split( new char[] { ',' } );
 
         rec.RAW = e[lookup[Fields.raw_text]].Trim( );
         rec.Data = MDEC.MTData.Decode( rec.RAW );
-        if ( double.TryParse( e[lookup[Fields.latitude]], out double dData ) ) rec.Lat = dData;
-        if ( double.TryParse( e[lookup[Fields.longitude]], out dData ) ) rec.Lon = dData;
-        if ( float.TryParse( e[lookup[Fields.elevation_m]], out float fData ) ) rec.Elevation_m = fData;
+        if (double.TryParse( e[lookup[Fields.latitude]], out double dData )) rec.Lat = dData;
+        if (double.TryParse( e[lookup[Fields.longitude]], out dData )) rec.Lon = dData;
+        if (float.TryParse( e[lookup[Fields.elevation_m]], out float fData )) rec.Elevation_m = fData;
         rec.Valid = true;
 
       }
@@ -316,14 +289,14 @@ namespace MetarLib.Provider.AviationWeatherDotGov
     /// </summary>
     /// <param name="header">The header Line</param>
     /// <returns>A Lookup Table</returns>
-    private static Dictionary<Fields,int> CreateLookup( string header )
+    private static Dictionary<Fields, int> CreateLookup( string header )
     {
-      var ret = new Dictionary<Fields,int>();
+      var ret = new Dictionary<Fields, int>( );
 
       try {
-        var hList = header.Split(new char[]{ ','} ).ToList(); // the list of items from the header
+        var hList = header.Split( new char[] { ',' } ).ToList( ); // the list of items from the header
         // add fields we need
-        var f = Fields.raw_text; var l = hList.IndexOf(f.ToString()); ret.Add( f, l );
+        var f = Fields.raw_text; var l = hList.IndexOf( f.ToString( ) ); ret.Add( f, l );
         f = Fields.longitude; l = hList.IndexOf( f.ToString( ) ); ret.Add( f, l );
         f = Fields.latitude; l = hList.IndexOf( f.ToString( ) ); ret.Add( f, l );
         f = Fields.elevation_m; l = hList.IndexOf( f.ToString( ) ); ret.Add( f, l );
@@ -331,8 +304,8 @@ namespace MetarLib.Provider.AviationWeatherDotGov
 #pragma warning disable CS0168 // Variable is declared but never used
       catch (Exception e) {
 #pragma warning restore CS0168 // Variable is declared but never used
-                              // most likely the IndexOf Failed if the field was not found..
-                              // return an empty Lookup
+        // most likely the IndexOf Failed if the field was not found..
+        // return an empty Lookup
         ret = new Dictionary<Fields, int>( );
       }
 

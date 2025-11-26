@@ -45,6 +45,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs">
@@ -97,7 +98,9 @@
     <Compile Include="Sources\Providers\OpenSrc\OSM_OpenStreetMap.cs" />
     <Compile Include="Tiles\MapTile.cs" />
     <Compile Include="Tiles\MapTileServer.cs" />
+    <Compile Include="Tiles\TileLoaderJobFactory.cs" />
     <Compile Include="Tiles\TileMatrix.cs" />
+    <Compile Include="Tiles\TileWorkflow.cs" />
     <Compile Include="Tiles\TrackingCat.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Sources\Providers\EmptyProvider.cs" />

@@ -38,6 +38,7 @@ namespace FS20_HudBar.Config
         HKCamera = AS.HKCamera,
         HKShelf = AS.HKShelf,
         HKChecklistBox = AS.HKChecklistBox,
+        HKJumpScreen = AS.HKJumpScreen,
 
         UserFonts = AS.UserFonts,
         UserColorsReg = AS.UserColorsReg,
@@ -77,6 +78,7 @@ namespace FS20_HudBar.Config
       AS.HKCamera = config.HKCamera;
       AS.HKShelf = config.HKShelf;
       AS.HKChecklistBox = config.HKChecklistBox;
+      AS.HKJumpScreen = config.HKJumpScreen;
 
       AS.UserFonts = config.UserFonts;
       AS.UserColorsReg = config.UserColorsReg;
@@ -181,6 +183,10 @@ namespace FS20_HudBar.Config
     /// CheckistBox App show/hide hotkey string
     /// </summary>
     public string HKChecklistBox { get; protected set; } = "";
+    /// <summary>
+    /// Move to other screen hotkey string
+    /// </summary>
+    public string HKJumpScreen { get; protected set; } = "";
 
     /// <summary>
     /// True when using Default (App) Fonts
@@ -295,8 +301,7 @@ namespace FS20_HudBar.Config
         case Hotkeys.FlightBag: return HKShelf;
         case Hotkeys.Camera: return HKCamera;
         case Hotkeys.ChecklistBox: return HKChecklistBox;
-
-        case Hotkeys.MoveBarToOtherWindow: return ""; // hardcoded; not in config
+        case Hotkeys.MoveBarToOtherWindow: return HKJumpScreen;
         default: return "";
       }
     }
@@ -323,8 +328,7 @@ namespace FS20_HudBar.Config
         case Hotkeys.FlightBag: HKShelf = hk; break;
         case Hotkeys.Camera: HKCamera = hk; break;
         case Hotkeys.ChecklistBox: HKChecklistBox = hk; break;
-
-        case Hotkeys.MoveBarToOtherWindow: break; // hardcoded; not in config
+        case Hotkeys.MoveBarToOtherWindow: HKJumpScreen = hk; break;
         default: break;
       }
     }

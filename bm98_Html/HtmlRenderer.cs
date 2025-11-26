@@ -219,8 +219,8 @@ namespace bm98_Html
         doc.Objects[0].HeaderSettings.FontSize = 12.0;
         doc.Objects[0].HeaderSettings.ContentSpacing = 6.0;
       }
+      doc.Objects[0].FooterSettings.FontName = "Arial";
       doc.Objects[0].FooterSettings.CenterText = "- Not for real world navigation -";
-      doc.Objects[0].HeaderSettings.FontName = "Arial";
       doc.Objects[0].FooterSettings.FontSize = 8.0;
       doc.Objects[0].FooterSettings.ContentSpacing = 6.0;
       //

@@ -9,7 +9,7 @@ namespace FS20_HudBar.Config
   internal partial class FrmHotkey : Form
   {
     // the handled item
-    private WinHotkey _hotkey = new WinHotkey();
+    private WinHotkey _hotkey = new WinHotkey( );
 
     /// <summary>
     /// Get; Set; The Hotkey description
@@ -31,9 +31,6 @@ namespace FS20_HudBar.Config
       }
     }
 
-
-
-
     public FrmHotkey( )
     {
       InitializeComponent( );
@@ -42,7 +39,7 @@ namespace FS20_HudBar.Config
     // have it in one place only
     private void EvalCheckedState( )
     {
-      if ( chkDisabled.Checked ) {
+      if (chkDisabled.Checked) {
         txEntry.Text = "DISABLED";
         _hotkey.Clear( );
         txEntry.ReadOnly = true;
@@ -67,13 +64,13 @@ namespace FS20_HudBar.Config
     private void chkDisabled_CheckedChanged( object sender, EventArgs e )
     {
       EvalCheckedState( );
-      if ( chkDisabled.Checked )
+      if (chkDisabled.Checked)
         btAccept.Select( );
       else
-        txEntry.Select();
+        txEntry.Select( );
     }
 
-    // Evaluate the keys presed
+    // Evaluate the keys pressed
     private void txEntry_PreviewKeyDown( object sender, PreviewKeyDownEventArgs e )
     {
       EvalKey( e );
@@ -101,23 +98,23 @@ namespace FS20_HudBar.Config
       Keys _alt = Keys.None;
 
       // get Left / Right Modifier Keys sorted out
-      if ( e.Shift ) {
-        if ( GetAsyncKeyState( Keys.LShiftKey ) < 0 ) _shift = Keys.LShiftKey;
-        if ( GetAsyncKeyState( Keys.RShiftKey ) < 0 ) _shift = Keys.RShiftKey;
+      if (e.Shift) {
+        if (GetAsyncKeyState( Keys.LShiftKey ) < 0) _shift = Keys.LShiftKey;
+        if (GetAsyncKeyState( Keys.RShiftKey ) < 0) _shift = Keys.RShiftKey;
       }
       else {
         _shift = Keys.None;
       }
-      if ( e.Control ) {
-        if ( GetAsyncKeyState( Keys.LControlKey ) < 0 ) _ctrl = Keys.LControlKey;
-        if ( GetAsyncKeyState( Keys.RControlKey ) < 0 ) _ctrl = Keys.RControlKey;
+      if (e.Control) {
+        if (GetAsyncKeyState( Keys.LControlKey ) < 0) _ctrl = Keys.LControlKey;
+        if (GetAsyncKeyState( Keys.RControlKey ) < 0) _ctrl = Keys.RControlKey;
       }
       else {
         _ctrl = Keys.None;
       }
-      if ( e.Alt ) {
-        if ( GetAsyncKeyState( Keys.LMenu ) < 0 ) _alt = Keys.LMenu;
-        if ( GetAsyncKeyState( Keys.RMenu ) < 0 ) _alt = Keys.RMenu;
+      if (e.Alt) {
+        if (GetAsyncKeyState( Keys.LMenu ) < 0) _alt = Keys.LMenu;
+        if (GetAsyncKeyState( Keys.RMenu ) < 0) _alt = Keys.RMenu;
       }
       else {
         _alt = Keys.None;
@@ -125,16 +122,16 @@ namespace FS20_HudBar.Config
       // Eval the current entry, assuming the entry sequence is FIRST Modifiers THEN action key..
       _hotkey.Clear( );
 
-      if ( e.KeyCode == Keys.Return ) return;        // Return and NumPad Enter are the same in e.KeyCode, cannot use them
+      if (e.KeyCode == Keys.Return) return;        // Return and NumPad Enter are the same in e.KeyCode, cannot use them
 
-      if ( !( ( e.KeyCode == Keys.ControlKey )
-        || ( e.KeyCode == Keys.ShiftKey )
-        || ( e.KeyCode == Keys.Menu ) ) ) {
+      if (!((e.KeyCode == Keys.ControlKey)
+        || (e.KeyCode == Keys.ShiftKey)
+        || (e.KeyCode == Keys.Menu))) {
 
         // it is not only a modifier - so eval what is pressed alltogether
-        if ( e.Shift ) _hotkey.Add( _shift );
-        if ( e.Control ) _hotkey.Add( _ctrl );
-        if ( e.Alt ) _hotkey.Add( _alt );
+        if (e.Shift) _hotkey.Add( _shift );
+        if (e.Control) _hotkey.Add( _ctrl );
+        if (e.Alt) _hotkey.Add( _alt );
         // finally the keysd
         _hotkey.Add( e.KeyCode );
       }

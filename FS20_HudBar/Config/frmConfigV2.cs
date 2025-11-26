@@ -325,6 +325,7 @@ namespace FS20_HudBar.Config
       _tooltip.SetToolTip( txHkShelf, "Hotkey to toggle the Flight Bag\nDouble click to edit the Hotkey" );
       _tooltip.SetToolTip( txHkCamera, "Hotkey to toggle the Camera Selector\nDouble click to edit the Hotkey" );
       _tooltip.SetToolTip( txHkChecklistBox, "Hotkey to toggle the Checklist Box Selector\nDouble click to edit the Hotkey" );
+      _tooltip.SetToolTip( txHkJumpScreen, "Hotkey to move the Bar to another screen\nDouble click to edit the Hotkey" );
 
       // access for profile controls in the Form
       _pFlp = flpP1;
@@ -407,6 +408,7 @@ namespace FS20_HudBar.Config
       txHkShelf.Text = ConfigCopy.HKShelf;
       txHkCamera.Text = ConfigCopy.HKCamera;
       txHkChecklistBox.Text = ConfigCopy.HKChecklistBox;
+      txHkJumpScreen.Text = ConfigCopy.HKJumpScreen; // 20251014
 
       // use a Config Copy to allow Cancel changes
       FONTSdialog = new FrmFonts( );
@@ -501,6 +503,12 @@ namespace FS20_HudBar.Config
 
       this.DialogResult = DialogResult.OK;
       this.Hide( );
+    }
+
+    // open AppSettings folder
+    private void btOpenSettingsFolder_Click( object sender, EventArgs e )
+    {
+      dNetBm98.Utilities.OpenInExplorer( bm98_hbFolders.Folders.SettingsPath );
     }
 
     #region Input Control Eventhandling
@@ -670,6 +678,7 @@ namespace FS20_HudBar.Config
       txHkShelf.Visible = chkKeyboard.Checked;
       txHkCamera.Visible = chkKeyboard.Checked;
       txHkChecklistBox.Visible = chkKeyboard.Checked;
+      txHkJumpScreen.Visible = chkKeyboard.Checked;
     }
 
 
@@ -720,6 +729,13 @@ namespace FS20_HudBar.Config
       txHkChecklistBox.Text = HandleHotkey( Hotkeys.ChecklistBox );
       txHkChecklistBox.Select( 0, 0 );
     }
+
+    private void txHkJumpScreen_DoubleClick( object sender, EventArgs e )
+    {
+      txHkJumpScreen.Text = HandleHotkey( Hotkeys.MoveBarToOtherWindow );
+      txHkJumpScreen.Select( 0, 0 );
+    }
+
 
     #endregion
 

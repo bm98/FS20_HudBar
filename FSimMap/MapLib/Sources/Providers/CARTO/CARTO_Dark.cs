@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Threading.Tasks;
 using DbgLib;
 
 namespace MapLib.Sources.Providers
@@ -38,14 +38,13 @@ namespace MapLib.Sources.Providers
 
     public override string Name { get; } = "CARTO Dark Matter";
 
-    protected override MapImage GetTileImage( MapImageID mapImageID )
+    protected override string PrepareURL( MapImageID mapImageID )
     {
       char letter = "abc"[Tools.GetServerNum( mapImageID.TileXY, 3 )];
       ushort z = ZoomCheck( mapImageID.ZoomLevel );
       if (z != mapImageID.ZoomLevel) { return null; } // not allowed 
 
-      string url = MakeTileImageUrl( mapImageID.TileXY, z, Convert.ToString( letter ), "" );
-      return base.GetTileImageUsingHttp( url, mapImageID );
+      return MakeTileImageUrl( mapImageID.TileXY, z, Convert.ToString( letter ), "" );
     }
 
     #endregion

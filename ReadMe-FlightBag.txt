@@ -82,6 +82,16 @@ github@mail.burri-web.org
 
 Changelog:
 
+V 0.73-B73
+- RERUN FacilityDataLoader !!! will use the new location in %appdata%\bm98ch\GenApt\db
+
+- Update FacilityDB, settings and map cache relocated to %appdata%\bm98ch\.. (as suggested my MS)
+- Update FacilityDataLoader to be more robust for MS2024
+- Update Map drawing algos
+- Fix METAR support new API 
+
+- Update QuickGuide
+
 V 0.72-B72
 - Please UPDATE the WASM Module (sww quick guide) !!!
 

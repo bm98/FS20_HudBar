@@ -3,8 +3,8 @@ using System.Windows.Forms;
 
 using FS20_HudBar.Bar;
 
-using FSimFlightPlans.Routes;
-using FSimFlightPlans.RTE.RTEDEC;
+using FSimFlightPlanLib.Routes;
+using FSimFlightPlanLib.RTE;
 
 namespace FS20_HudBar.Config
 {
@@ -80,7 +80,8 @@ namespace FS20_HudBar.Config
       _tmpRouteString = routeString;
       _tmpRouteHelp = "";
 
-      Route route = RteDecoder.FromString( routeString );
+      var rtHandler = new RTEplnHandler( );
+      Route route = rtHandler.FromDocument( routeString );
       if (route == null) {
         // should not happen...
         _tmpRouteHelp = "Route cannot be decoded - please verify for correctness";
@@ -90,7 +91,7 @@ namespace FS20_HudBar.Config
 
       // missing DEP ??
       if (!route.HasDeparture) {
-        var tmpRte = RteDecoder.FromString( txDep.Text + " " + txArr.Text );
+        var tmpRte = rtHandler.FromDocument( txDep.Text + " " + txArr.Text );
         if (!tmpRte.IsValid) {
           _tmpRouteHelp += "Missing a known DEP and/or ARR airport, ";
         }

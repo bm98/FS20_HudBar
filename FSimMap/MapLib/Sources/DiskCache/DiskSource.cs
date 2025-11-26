@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Threading.Tasks;
 using DbgLib;
 
 using MapLib.Service;
@@ -60,11 +60,58 @@ namespace MapLib.Sources.DiskCache
         // let the next do the job and follow up if an image is delivered
         var service = jobWrapper.GetNextSource( );
         mapImage = service?.GetTileImage( jobWrapper );
-        if (mapImage != null && !mapImage.IsFailedImage) {
+        if (mapImage != null && mapImage.IsValid && !mapImage.IsFailedImage) {
           // handle a returned image from the previous sources
           DiskCacheJob cacheJob = new DiskCacheJob( mapImage.MapImageID, _cache, mapImage.DataStream.GetBuffer( ) );
           RequestScheduler.Instance.Add_DiskCacheJob( cacheJob );
         }
+        return mapImage;
+      }
+    }
+
+    /// <summary>
+    /// Try get the image from the local source or propagate
+    ///  -- Note: This is a synchronous call to a DiskCache and will eventually return or timeout
+    /// </summary>
+    /// <param name="jobWrapper">A JobWrapper</param>
+    /// <returns>A MapImage or null</returns>
+    public async Task<MapImage> GetTileImage_Asynch( LoaderJobWrapper jobWrapper )
+    {
+      var imageSought = jobWrapper.MapImageID;
+      MapImage mapImage = null;
+      if (ProviderEnabled) {
+        try {
+          mapImage = await _cache.GetImageFromCache_Asynch( imageSought.MapProvider, imageSought.TileXY, imageSought.ZoomLevel );
+        }
+        catch {
+          mapImage = null;
+        }
+      }
+
+      if (mapImage != null) {
+        //        Debug.WriteLine( $"DiskSource.GetTileImage: Served from DISK CACHE - {imageSought.FullKey}" );
+        mapImage.ImageSource = ImgSource.DiskCache;
+      }
+
+      else {
+        // let the next do the job and follow up if an image is delivered
+        var service = jobWrapper.GetNextSource( );
+        if (service != null) {
+          mapImage = await service.GetTileImage_Asynch( jobWrapper );
+          if (mapImage != null && mapImage.IsValid && !mapImage.IsFailedImage) {
+            // handle a returned image from the previous sources
+            DiskCacheJob cacheJob = new DiskCacheJob( mapImage.MapImageID, _cache, mapImage.DataStream.GetBuffer( ) );
+            RequestScheduler.Instance.Add_DiskCacheJob( cacheJob );
+          }
+        }
+
+      }
+      // returns
+      if (mapImage == null) {
+        // add a failed Image instead of nothing
+        return await MapImage.FailedImage_Asynch( jobWrapper.MapImageID, false );
+      }
+      else {
         return mapImage;
       }
     }

@@ -4,14 +4,16 @@ using System.Runtime.Serialization;
 namespace MetarLib.JMDEC
 {
   /// <summary>
-  /// Metar info as of OCT 2023
+  /// Metar info as of NOV 2025
   /// </summary>
   [DataContract]
   internal class J_Metar
   {
-
-    [DataMember]
-    public List<J_MetarEntry> MetarList { get; set; }=new List<J_MetarEntry>();
+    /// <summary>
+    /// List of METAR observations delivered
+    /// </summary>
+    [DataMember (Name ="list")]
+    public J_MetarEntry[] MetarList { get; set; } = null;
 
 
   }

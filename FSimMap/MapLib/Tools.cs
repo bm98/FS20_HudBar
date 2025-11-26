@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 using CoordLib.MercatorTiles;
 
@@ -28,17 +29,35 @@ namespace MapLib
     /// <returns>A MemoryStream at Pos 0</returns>
     public static MemoryStream CopyStream( Stream inputStream, bool rewindStream )
     {
-      const int readSize = 32 * 1024;
-      var buffer = new byte[readSize];
       var mstream = new MemoryStream( );
 
       // bulk copy
       if (inputStream.CanSeek) inputStream.Seek( 0, SeekOrigin.Begin );
 
-      int count;
-      while ((count = inputStream.Read( buffer, 0, readSize )) > 0) {
-        mstream.Write( buffer, 0, count );
+      inputStream.CopyTo( mstream );
+
+      if (rewindStream) {
+        if (inputStream.CanSeek) inputStream.Seek( 0, SeekOrigin.Begin );
       }
+
+      mstream.Seek( 0, SeekOrigin.Begin );
+      return mstream;
+    }
+
+    /// <summary>
+    /// Returns a MemoryStream from an InputStream
+    /// </summary>
+    /// <param name="inputStream">An Input Stream</param>
+    /// <param name="rewindStream">Rewind the InputString before retuning</param>
+    /// <returns>A MemoryStream at Pos 0</returns>
+    public static async Task<MemoryStream> CopyStream_Asynch( Stream inputStream, bool rewindStream )
+    {
+      var mstream = new MemoryStream( );
+
+      // bulk copy
+      if (inputStream.CanSeek) inputStream.Seek( 0, SeekOrigin.Begin );
+
+      await inputStream.CopyToAsync( mstream );
 
       if (rewindStream) {
         if (inputStream.CanSeek) inputStream.Seek( 0, SeekOrigin.Begin );

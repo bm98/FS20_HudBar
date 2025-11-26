@@ -97,8 +97,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Redist\FSimFacilityIF.dll</HintPath>
     </Reference>
-    <Reference Include="FSimFlightPlans">
-      <HintPath>..\..\..\Redist\FSimFlightPlans.dll</HintPath>
+    <Reference Include="FSimFlightPlanLib">
+      <HintPath>..\..\..\Redist\FSimFlightPlanLib.dll</HintPath>
+    </Reference>
+    <Reference Include="SettingsLib, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Redist\SettingsLib.dll</HintPath>
     </Reference>
     <Reference Include="SimConnectClient, Version=0.35.0.41, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -1069,10 +1073,6 @@
       <Project>{6ad5de08-d31b-4567-bca8-b6da8a73a22c}</Project>
       <Name>PingLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SettingsLib\SettingsLib\SettingsLib.csproj">
-      <Project>{f17750f6-0652-42e8-a966-72936f558331}</Project>
-      <Name>SettingsLib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SpeechLib\SpeechLib.csproj">
       <Project>{3a9d8798-2c07-44be-bbd8-083fc4ecb25c}</Project>
       <Name>SpeechLib</Name>
@@ -1083,7 +1083,7 @@
       <Version>5.0.17</Version>
     </PackageReference>
     <PackageReference Include="NLog">
-      <Version>6.0.0</Version>
+      <Version>6.0.5</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

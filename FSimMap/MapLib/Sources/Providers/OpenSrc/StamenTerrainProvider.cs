@@ -52,7 +52,7 @@ namespace MapLib.Sources.Providers
 
     public override string Name { get; } = "Stamen Terrain Map";
 
-    protected override MapImage GetTileImage( MapImageID mapImageID )
+    protected override string PrepareURL( MapImageID mapImageID )
     {
       if (!this.ProviderEnabled) return null;
 
@@ -60,8 +60,7 @@ namespace MapLib.Sources.Providers
       ushort z = ZoomCheck( mapImageID.ZoomLevel );
       if (z != mapImageID.ZoomLevel) { return null; } // not allowed 
 
-      string url = MakeTileImageUrl( mapImageID.TileXY, z, "", "" );
-      return base.GetTileImageUsingHttp( url, mapImageID );
+      return MakeTileImageUrl( mapImageID.TileXY, z, "", "" );
     }
 
     #endregion

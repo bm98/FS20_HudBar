@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-
+using CoordLib;
 
 namespace MetarLib.Provider
 {
@@ -11,7 +11,7 @@ namespace MetarLib.Provider
     /// <summary>
     /// METAR @ aviationweather.gov
     /// </summary>
-    AviationWeatherDotGov=0,
+    AviationWeatherDotGov = 0,
   }
 
   // *******************************
@@ -33,33 +33,20 @@ namespace MetarLib.Provider
     /// <summary>
     /// Async Retrieve a METAR range record
     /// </summary>
-    /// <param name="lat">Latitude</param>
-    /// <param name="lon">Longitude</param>
+    /// <param name="latLon">Location LatLon</param>
     /// <param name="range_StM">Range (Statute Miles)</param>
     /// <returns>A MetarDataList</returns>
-    public static async Task<MetarTafDataList> GetMetar( double lat, double lon, int range_StM ) { return new MetarTafDataList( ); }
+    public static async Task<MetarTafDataList> GetMetar( LatLon latLon, int range_StM ) { return new MetarTafDataList( ); }
 
     /// <summary>
-    /// Async Retrieve a METAR flightpath record
+    /// Async Retrieve a METAR flightpath record 
+    /// - forward facing detection window
     /// </summary>
-    /// <param name="lat">Latitude</param>
-    /// <param name="lon">Longitude</param>
-    /// <param name="toICAO">The destination Apt</param>
+    /// <param name="latLon">Location LatLon</param>
+    /// <param name="dstLatLon">The destination LatLon</param>
     /// <param name="range_StM">Range (Statute Miles)</param>
     /// <returns>A MetarDataList</returns>
-    public static async Task<MetarTafDataList> GetMetar( double lat, double lon, string toICAO, int range_StM ) { return new MetarTafDataList( ); }
-
-    /// <summary>
-    /// Async Retrieve a METAR flightpath record
-    /// </summary>
-    /// <param name="lat">Latitude</param>
-    /// <param name="lon">Longitude</param>
-    /// <param name="dLat">Destination Lat</param>
-    /// <param name="dLon">Destination Lon</param>
-    /// <param name="range_StM">Range (Statute Miles)</param>
-    /// <returns>A MetarDataList</returns>
-    public static async Task<MetarTafDataList> GetMetar( double lat, double lon, double dLat, double dLon, int range_StM ) { return new MetarTafDataList( ); }
-
+    public static async Task<MetarTafDataList> GetMetar( LatLon latLon, LatLon dstLatLon, int range_StM ) { return new MetarTafDataList( ); }
 
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
   }
@@ -83,33 +70,19 @@ namespace MetarLib.Provider
     /// <summary>
     /// Async Retrieve a TAF range record
     /// </summary>
-    /// <param name="lat">Latitude</param>
-    /// <param name="lon">Longitude</param>
+    /// <param name="latLon">Location LatLon</param>
     /// <param name="range_StM">Range (Statute Miles)</param>
     /// <returns>A MetarDataList</returns>
-    public static async Task<MetarTafDataList> GetTaf( double lat, double lon, int range_StM ) { return new MetarTafDataList( ); }
+    public static async Task<MetarTafDataList> GetTaf( LatLon latLon, int range_StM ) { return new MetarTafDataList( ); }
 
     /// <summary>
     /// Async Retrieve a TAF flightpath record
     /// </summary>
-    /// <param name="lat">Latitude</param>
-    /// <param name="lon">Longitude</param>
-    /// <param name="toICAO">The destination Apt</param>
+    /// <param name="latLon">Location LatLon</param>
+    /// <param name="dstLatLon">The destination LatLon</param>
     /// <param name="range_StM">Range (Statute Miles)</param>
     /// <returns>A MetarDataList</returns>
-    public static async Task<MetarTafDataList> GetTaf( double lat, double lon, string toICAO, int range_StM ) { return new MetarTafDataList( ); }
-
-    /// <summary>
-    /// Async Retrieve a TAF flightpath record
-    /// </summary>
-    /// <param name="lat">Latitude</param>
-    /// <param name="lon">Longitude</param>
-    /// <param name="dLat">Destination Lat</param>
-    /// <param name="dLon">Destination Lon</param>
-    /// <param name="range_StM">Range (Statute Miles)</param>
-    /// <returns>A MetarDataList</returns>
-    public static async Task<MetarTafDataList> GetTaf( double lat, double lon, double dLat, double dLon, int range_StM ) { return new MetarTafDataList( ); }
-
+    public static async Task<MetarTafDataList> GetTaf( LatLon latLon, LatLon dstLatLon, int range_StM ) { return new MetarTafDataList( ); }
 
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
   }

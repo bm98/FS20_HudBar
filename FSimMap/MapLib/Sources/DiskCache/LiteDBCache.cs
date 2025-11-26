@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-
+using System.Threading.Tasks;
 using CoordLib.MercatorTiles;
 
 using DbgLib;
@@ -181,7 +181,7 @@ namespace MapLib.Sources.DiskCache
         return true;
       }
       catch (Exception ex) {
-        LOG.Error( "DBLite-PutImageToCache", ex, $"Exception while caching ({Tools.ToFullKey( mapProvider, tileXY, zoom )})" );
+        LOG.Error( "PutImageToCache", ex, $"DBLite-Exception while caching ({Tools.ToFullKey( mapProvider, tileXY, zoom )})" );
       }
       return false;
     }
@@ -227,10 +227,50 @@ namespace MapLib.Sources.DiskCache
         }
       }
       catch (Exception ex) {
-        LOG.Error( "DBLite-PutImageToCache", ex, $"Exception while retrieving ({Tools.ToFullKey( mapProvider, tileXY, zoom )})" );
+        LOG.Error( "GetImageFromCache", ex, $"DBLite-Exception while retrieving ({Tools.ToFullKey( mapProvider, tileXY, zoom )})" );
         mapImage = null;
       }
       return mapImage;
+    }
+
+
+    /// <summary>
+    /// Fetch a MapImage from the Cache DB
+    /// </summary>
+    /// <param name="mapProvider">The ID of the provider source</param>
+    /// <param name="tileXY">Tile Position (X,Y)</param>
+    /// <param name="zoom">The zoomLevel (Z)</param>
+    /// <returns>An Image or null</returns>
+    public Task<MapImage> GetImageFromCache_Asynch( MapProvider mapProvider, TileXY tileXY, ushort zoom )
+    {
+      // sanity
+      if (mapProvider == MapProvider.DummyProvider) return null;
+
+      // using the string representation within the LiteDB 
+      string sourceID = mapProvider.ToString( );
+
+      Task<MapImage> tsk = Task.Run( ( ) => {
+        MapImage mapImage = null;
+        // this shall never fail for whatever reason
+        try {
+          using (var db = new LiteDatabase( ConnectionString( sourceID ) )) {
+            var col = db.GetCollection<CacheTileDbRecord>( CacheTileDbRecord.CollectionName );
+            // get the first (or none), there should not be >1 with the same GID anyway
+            var result = col.FindOne( x => x.GridID == GID( tileXY, zoom ) );
+            if (result != null) {
+              MapImageID mapImageID = new MapImageID( new TileXY( result.X, result.Y ), (ushort)result.Z, mapProvider );
+              mapImage = MapImage.FromArray( result.TileData, mapImageID ); // retrieve the Tile as MapImage
+            }
+          }
+        }
+        catch (Exception ex) {
+          LOG.Error( "GetImageFromCache_Asynch", ex, $"DBLite-Exception while retrieving ({Tools.ToFullKey( mapProvider, tileXY, zoom )})" );
+          mapImage = null;
+        }
+        return mapImage;
+      } );
+
+      return tsk;
     }
 
 

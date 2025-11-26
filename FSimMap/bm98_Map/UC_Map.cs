@@ -13,7 +13,7 @@ using CoordLib.Extensions;
 
 using FSimFacilityIF;
 using static FSimFacilityIF.Extensions;
-using FSimFlightPlans;
+using FSimFlightPlanLib;
 using MapLib;
 
 using bm98_Map.Drawing;
@@ -285,7 +285,7 @@ namespace bm98_Map
         var wypList = new List<UC_VProfile.UC_VProfilePropsRoutepoint>( );
         double dist = 0;
         // evaluate where we are within the current DispRoute
-        Waypoint nextRp = _flightPlanRef.Tracker.NextRoutePoint;
+        FpWaypoint nextRp = _flightPlanRef.Tracker.NextRoutePoint;
         if (nextRp.IsValid) {
           // having a valid NextPoint...
           // subtract distance traveled from Prev to Next Point for the VProfile
@@ -925,6 +925,8 @@ namespace bm98_Map
         if (mapProvider != MapProvider.DummyProvider) {
           // change provider
           MapManager.Instance.SetNewProvider( mapProvider );
+          _mapMapProvider = MapManager.Instance.CurrentProvider; // save the current one
+
           // verify if current zoom is possible - change if needed
           _mapRangeHandler.SetMapRange( _mapRangeHandler.MapRange ); // try set current, will adjust if needed
           StartMapLoading( _mapCenterDyn );
@@ -1002,6 +1004,7 @@ namespace bm98_Map
     }
 
     // start loading of a Map, this will trigger Canvas_LoadComplete events
+    // when the map is reloaded from scratch
     private void StartMapLoading( LatLon centerLatLon )
     {
       Debug.WriteLine( $"UC_Map.StartMapLoading- Center: {centerLatLon}" );
@@ -1177,7 +1180,7 @@ namespace bm98_Map
       _viewport.MapMoved += _viewport_MapMoved;
 
       // create dummies to have them defined
-      _airportRef = Data.Airport.DummyAirport( new LatLon( 0, 0, 0 ) );
+      _airportRef = Data.Airport.DummyAirport( new LatLon( 0.0, 0, 0 ) );
       _airportDisplayMgr = new DisplayListMgr( _viewport );
       // map manager IF
       _mapCreator = new MapCreator( );
@@ -1235,8 +1238,8 @@ namespace bm98_Map
       pbDrawing.Dock = DockStyle.Fill;
 
       // init empty to have them properly located
-      PopulateRunways( Data.Airport.DummyAirport( new LatLon( 0, 0 ) ) );
-      PopulateFrequencies( Data.Airport.DummyAirport( new LatLon( 0, 0 ) ) );
+      PopulateRunways( Data.Airport.DummyAirport( new LatLon( 0.0, 0 ) ) );
+      PopulateFrequencies( Data.Airport.DummyAirport( new LatLon( 0.0, 0 ) ) );
       PopulateNavaids( new List<INavaid>( ) );
 
       UpdateCtxMenuText( );

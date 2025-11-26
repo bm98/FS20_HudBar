@@ -8,7 +8,7 @@ namespace MapLib.Tiles
   /// 
   /// Thread aware
   /// </summary>
-  internal class TileWorkflowCat : ConcurrentDictionary<string, MapImage>
+  internal class TileWorkflowCat : ConcurrentDictionary<string, TileWorkflow>
   {
   }
 }

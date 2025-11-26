@@ -31,7 +31,7 @@ namespace MetarLib.MDEC
     /// <summary>
     /// No modifier
     /// </summary>
-    NONE=0,
+    NONE = 0,
     /// <summary>
     /// TAF Amendment
     /// </summary>
@@ -141,34 +141,34 @@ namespace MetarLib.MDEC
     {
       string ret = "";
 
-      string t = Station.Pretty; if ( string.IsNullOrEmpty( t ) ) t = "NO STATION";
+      string t = Station.Pretty; if (string.IsNullOrEmpty( t )) t = "NO STATION";
       ret += $"{t}";
-      t = ObsTime.Pretty; if ( string.IsNullOrEmpty( t ) ) t = "NO OBS TIME";
+      t = ObsTime.Pretty; if (string.IsNullOrEmpty( t )) t = "NO OBS TIME";
       ret += $" @ {t}";
-      t = ( MsgModifier == MsgModifier.COR ) ? "Correction " + t : "";
+      t = (MsgModifier == MsgModifier.COR) ? "Correction " + t : "";
       ret += $" - {t}\n";
-      ret += ( MsgType == MsgType.SPECI ) ? "Special Meteo Report\n" : "";
+      ret += (MsgType == MsgType.SPECI) ? "Special Meteo Report\n" : "";
 
-      t = Altimeter.Pretty; if ( string.IsNullOrEmpty( t ) ) t = "no P-Data";
+      t = Altimeter.Pretty; if (string.IsNullOrEmpty( t )) t = "no P-Data";
       ret += $"{t}\n";
 
-      t = Temperature.Pretty; if ( string.IsNullOrEmpty( t ) ) t = "no Temp Data";
+      t = Temperature.Pretty; if (string.IsNullOrEmpty( t )) t = "no Temp Data";
       ret += $"{t}\n";
 
-      t = Wind.Pretty; if ( string.IsNullOrEmpty( t ) ) t = "no Wind Data";
+      t = Wind.Pretty; if (string.IsNullOrEmpty( t )) t = "no Wind Data";
       ret += $"{t}\n";
-      t = Visibility.Pretty; if ( string.IsNullOrEmpty( t ) ) t = "no Vis Data";
+      t = Visibility.Pretty; if (string.IsNullOrEmpty( t )) t = "no Vis Data";
       ret += $"{t}\n";
 
-      foreach ( var sk in RunwayVRs ) {
+      foreach (var sk in RunwayVRs) {
         ret += $"{sk.Pretty}\n";
       }
 
-      foreach ( var sk in SkyConditions ) {
+      foreach (var sk in SkyConditions) {
         ret += $"{sk.Pretty}\n";
       }
 
-      foreach ( var sk in Weather ) {
+      foreach (var sk in Weather) {
         ret += $"{sk.Pretty}\n";
       }
 
@@ -184,23 +184,23 @@ namespace MetarLib.MDEC
     private string TafString( )
     {
       string ret = $"";
-      string t = $"Forecast: {Station.Pretty}"; if ( string.IsNullOrEmpty( t ) ) t = "NO STATION";
-      t = ( MsgModifier == MsgModifier.AMD ) ? "Amendement " + t : t;
-      t = ( MsgModifier == MsgModifier.COR ) ? "Correction " + t : t;
+      string t = $"Forecast: {Station.Pretty}"; if (string.IsNullOrEmpty( t )) t = "NO STATION";
+      t = (MsgModifier == MsgModifier.AMD) ? "Amendement " + t : t;
+      t = (MsgModifier == MsgModifier.COR) ? "Correction " + t : t;
       ret += $"{t}";
       ret += $" @ {ObsTime.Pretty}\n";
       //ret += $"{TafPeriod.Pretty}";
 
-      foreach ( var fc in Forecasts ) {
+      foreach (var fc in Forecasts) {
         ret += $"{fc.Pretty}\n";
         ret += !string.IsNullOrEmpty( fc.Wind.Pretty ) ? $"{fc.Wind.Pretty}\n" : "";
         ret += !string.IsNullOrEmpty( fc.Visibility.Pretty ) ? $"{fc.Visibility.Pretty}\n" : "";
 
-        foreach ( var sk in fc.SkyConditions ) {
+        foreach (var sk in fc.SkyConditions) {
           ret += $"{sk.Pretty}\n";
         }
 
-        foreach ( var sk in fc.Weather ) {
+        foreach (var sk in fc.Weather) {
           ret += $"{sk.Pretty}\n";
         }
         ret += $"{fc.FlightCategory.Pretty}\n";
@@ -216,16 +216,16 @@ namespace MetarLib.MDEC
     /// </summary>
     /// <param name="raw">The raw message starting with the StationID</param>
     /// <param name="mdata">The MData record to fill</param>
-    private static void DecodeMetar( string raw, MTData mdata )
+    protected static void DecodeMetar( string raw, MTData mdata )
     {
       raw = M_StationDecoder.Decode( raw, mdata.Station );
-      if ( !mdata.Station.Valid ) return; // ERROR must have
+      if (!mdata.Station.Valid) return; // ERROR must have
 
       raw = M_ObsTimeDecoder.Decode( raw, mdata.ObsTime );
-      if ( !mdata.ObsTime.Valid ) return; // ERROR must have
+      if (!mdata.ObsTime.Valid) return; // ERROR must have
 
       raw = M_ModifierDecoder.Decode( raw, mdata.Modifier );
-      if ( mdata.Modifier.IsNil ) {
+      if (mdata.Modifier.IsNil) {
         // cancelled - forget the rest and return
         return;
       }
@@ -235,20 +235,22 @@ namespace MetarLib.MDEC
 
       raw = M_VisibilityDecoder.Decode( raw, mdata.Visibility );
 
-      while ( M_RunwayVRDecoder.IsMatch( raw ) )// optional multiple
+      while (M_RunwayVRDecoder.IsMatch( raw ))// optional multiple
       {
         raw = M_RunwayVRDecoder.Decode( raw, mdata.RunwayVRs );
-      };
+      }
+      ;
 
-      while ( M_WeatherDecoder.IsMatch( raw ) )// optional multiple
+      while (M_WeatherDecoder.IsMatch( raw ))// optional multiple
       {
         raw = M_WeatherDecoder.Decode( raw, mdata.Weather );
       }
 
-      while ( M_SkyConditionDecoder.IsMatch( raw ) )// optional multiple
+      while (M_SkyConditionDecoder.IsMatch( raw ))// optional multiple
       {
         raw = M_SkyConditionDecoder.Decode( raw, mdata.SkyConditions );
-      };
+      }
+      ;
 
       raw = M_TempDecoder.Decode( raw, mdata.Temperature );
       raw = M_PressureDecoder.Decode( raw, mdata.Altimeter );
@@ -265,18 +267,18 @@ namespace MetarLib.MDEC
     /// </summary>
     /// <param name="raw">The raw message starting with the StationID</param>
     /// <param name="mdata">The MData record to fill</param>
-    private static void DecodeTaf( string raw, MTData mdata )
+    protected static void DecodeTaf( string raw, MTData mdata )
     {
       raw = M_StationDecoder.Decode( raw, mdata.Station );
-      if ( !mdata.Station.Valid ) return; // ERROR must have
+      if (!mdata.Station.Valid) return; // ERROR must have
 
       raw = M_ObsTimeDecoder.Decode( raw, mdata.ObsTime );
-      if ( !mdata.ObsTime.Valid ) return; // ERROR must have
+      if (!mdata.ObsTime.Valid) return; // ERROR must have
 
       raw = T_PeriodDecoder.Decode( raw, mdata.TafPeriod );
-      if ( !mdata.TafPeriod.Valid ) return; // ERROR must have
+      if (!mdata.TafPeriod.Valid) return; // ERROR must have
 
-      if ( T_CancelDecoder.IsMatch( raw ) ) {
+      if (T_CancelDecoder.IsMatch( raw )) {
         // cancelled - collect the flag, forget the rest and return
         raw = T_CancelDecoder.Decode( raw, mdata );
         return;
@@ -290,25 +292,27 @@ namespace MetarLib.MDEC
 
       raw = M_VisibilityDecoder.Decode( raw, mdata.Forecasts.First( ).Visibility );
 
-      while ( M_WeatherDecoder.IsMatch( raw ) )// optional multiple
+      while (M_WeatherDecoder.IsMatch( raw ))// optional multiple
       {
         raw = M_WeatherDecoder.Decode( raw, mdata.Forecasts.First( ).Weather );
       }
 
-      while ( M_SkyConditionDecoder.IsMatch( raw ) )// optional multiple
+      while (M_SkyConditionDecoder.IsMatch( raw ))// optional multiple
       {
         raw = M_SkyConditionDecoder.Decode( raw, mdata.Forecasts.First( ).SkyConditions );
-      };
+      }
+      ;
 
-      while ( T_TempMinMaxDecoder.IsMatch( raw ) )// optional multiple
+      while (T_TempMinMaxDecoder.IsMatch( raw ))// optional multiple
       {
         raw = T_TempMinMaxDecoder.Decode( raw, mdata.Forecasts.First( ).TempMinMax );
-      };
+      }
+      ;
       // Eval Category 
       mdata.Forecasts.First( ).FlightCategory = M_CategoryDecoder.Decode( mdata.Forecasts.First( ) );
 
       // We should get into the additional forecast records now..
-      while ( T_ForecastDecoder.IsMatch( raw ) ) {
+      while (T_ForecastDecoder.IsMatch( raw )) {
         raw = T_ForecastDecoder.Decode( raw, mdata.Forecasts );
         // collect the allowed forecast records
         raw = M_WindDecoder.Decode( raw, mdata.Forecasts.Last( ).Wind );
@@ -316,15 +320,16 @@ namespace MetarLib.MDEC
 
         raw = M_VisibilityDecoder.Decode( raw, mdata.Forecasts.Last( ).Visibility );
 
-        while ( M_WeatherDecoder.IsMatch( raw ) )// optional multiple
+        while (M_WeatherDecoder.IsMatch( raw ))// optional multiple
         {
           raw = M_WeatherDecoder.Decode( raw, mdata.Forecasts.Last( ).Weather );
         }
 
-        while ( M_SkyConditionDecoder.IsMatch( raw ) )// optional multiple
+        while (M_SkyConditionDecoder.IsMatch( raw ))// optional multiple
         {
           raw = M_SkyConditionDecoder.Decode( raw, mdata.Forecasts.Last( ).SkyConditions );
-        };
+        }
+        ;
         // Eval Category 
         mdata.Forecasts.Last( ).FlightCategory = M_CategoryDecoder.Decode( mdata.Forecasts.Last( ) );
       }
@@ -339,19 +344,19 @@ namespace MetarLib.MDEC
     public static MTData Decode( string msg )
     {
       var mdata = new MTData { RAW = msg }; // save reference
-      if ( string.IsNullOrWhiteSpace( msg ) ) return mdata;
+      if (string.IsNullOrWhiteSpace( msg )) return mdata;
 
-      string raw = msg.Replace("\n","") + " "; // remove CRLF and we need a space at the end...
+      string raw = msg.Replace( "\n", "" ) + " "; // remove CRLF and we need a space at the end...
 
       raw = M_MsgTypeDecoder.Decode( raw, mdata ); // defaults to METAR if not tagged with a Msg Type
 
-      if ( mdata.MsgType == MsgType.METAR ) {
+      if (mdata.MsgType == MsgType.METAR) {
         DecodeMetar( raw, mdata );
       }
-      else if ( mdata.MsgType == MsgType.SPECI ) {
+      else if (mdata.MsgType == MsgType.SPECI) {
         DecodeMetar( raw, mdata );
       }
-      else if ( mdata.MsgType == MsgType.TAF ) {
+      else if (mdata.MsgType == MsgType.TAF) {
         DecodeTaf( raw, mdata );
       }
 

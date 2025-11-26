@@ -325,6 +325,11 @@ namespace FS20_HudBar
       get { return (string)this["HKChecklistBox"]; }
       set { this["HKChecklistBox"] = value; }
     }
+    [DefaultSettingValue( "RShiftKey RControlKey Cancel" )]
+    public string HKJumpScreen {
+      get { return (string)this["HKJumpScreen"]; }
+      set { this["HKJumpScreen"] = value; }
+    }
 
     // User Fonts
     [DefaultSettingValue( "" )]

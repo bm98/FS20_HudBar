@@ -1,4 +1,5 @@
 ﻿using MapLib.Service;
+using System.Threading.Tasks;
 
 namespace MapLib.Sources.MemCache
 {
@@ -55,6 +56,50 @@ namespace MapLib.Sources.MemCache
           // MemCacheItemCat Version below
           // _memCache.Add( mapImage );
         }
+        return mapImage;
+      }
+    }
+
+    public async Task<MapImage> GetTileImage_Asynch( LoaderJobWrapper jobWrapper )
+    {
+      var imageSought = jobWrapper.MapImageID;
+      MapImage mapImage = null;
+
+      if (ProviderEnabled) {
+        if (_memCache.TryGetValue( jobWrapper.MapImageID.FullKey, out ICacheItem item )) {
+          var mci = item as MemCacheItem;
+          // need a copy here
+          mapImage = await MapImage.FromArray_Asynch( mci.MapImage.DataStream.GetBuffer( ), mci.MapImage.MapImageID );
+        }
+        // MemCacheItemCat Version below
+        //  mapImage = _memCache.Retrieve( jobWrapper.MapImageID.FullKey );
+      }
+
+      if (mapImage != null) {
+        //        Debug.WriteLine( $"MemorySource.GetTileImage: Served from MEMORY CACHE - {imageSought.FullKey}" );
+        mapImage.ImageSource = ImgSource.MemCache;
+      }
+      else {
+        // let the next do the job and follow up if an image is delivered
+        var service = jobWrapper.GetNextSource( );
+        if (service != null) {
+          mapImage = await service.GetTileImage_Asynch( jobWrapper );
+          if (mapImage != null && mapImage.IsValid && !mapImage.IsFailedImage) {
+            // put into this cache or leave it alone
+            var mItem = new MemCacheItem( mapImage );
+            _memCache.TryAdd( mItem.Key, mItem ); // don't care about the return value here
+            MaintainCacheSize( );
+            // MemCacheItemCat Version below
+            // _memCache.Add( mapImage );
+          }
+        }
+      }
+      // returns
+      if (mapImage == null) {
+        // add a failed Image instead of nothing
+        return await MapImage.FailedImage_Asynch( jobWrapper.MapImageID, false );
+      }
+      else {
         return mapImage;
       }
     }

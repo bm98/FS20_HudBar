@@ -50,16 +50,16 @@ namespace FS20_HudBar.Bar
     /// <summary>
     /// The current Shelf Flightplan
     /// </summary>
-    public static FSimFlightPlans.FlightPlan FlightPlanRef => _flightPlanRef;
+    public static FSimFlightPlanLib.FlightPlan FlightPlanRef => _flightPlanRef;
     /// <summary>
     /// Update the Shelf Flightplan (loaded by the user)
     /// </summary>
     /// <param name="flightPlanRef">A user loaded Flightplan</param>
-    public static void UpdateFlightplanReference( FSimFlightPlans.FlightPlan flightPlanRef )
+    public static void UpdateFlightplanReference( FSimFlightPlanLib.FlightPlan flightPlanRef )
     {
       _flightPlanRef = flightPlanRef;
     }
-    private static FSimFlightPlans.FlightPlan _flightPlanRef = FSimFlightPlans.FlightPlan.Empty; // init empty
+    private static FSimFlightPlanLib.FlightPlan _flightPlanRef = FSimFlightPlanLib.FlightPlan.Empty; // init empty
 
 
     // voice and sounds  - static, will never be disposed

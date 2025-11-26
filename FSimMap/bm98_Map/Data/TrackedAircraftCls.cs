@@ -21,7 +21,7 @@ namespace bm98_Map.Data
     /// <summary>
     /// The LatLonAltMsl position
     /// </summary>
-    public LatLon Position { get; set; } = new LatLon( 0, 0, 0 );
+    public LatLon Position { get; set; } = new LatLon( 0.0, 0, 0 );
 
     /// <summary>
     /// True Heading in degree

@@ -49,7 +49,7 @@ namespace bm98_Map
     /// </summary>
     public void Reset( )
     {
-      _airport = (Data.Airport)DummyAirport( new LatLon( 0, 0, 0 ) ).Clone( );
+      _airport = (Data.Airport)DummyAirport( new LatLon( 0.0, 0, 0 ) ).Clone( );
       _commited = false;
     }
 
@@ -76,7 +76,7 @@ namespace bm98_Map
       // transfer to commited 
       _airportCommited = _airport;
       // and start a new one - cannot hold the ref of the commited apt
-      _airport = (Data.Airport)DummyAirport( new LatLon( 0, 0, 0 ) ).Clone( );
+      _airport = (Data.Airport)DummyAirport( new LatLon( 0.0, 0, 0 ) ).Clone( );
       _commited = true;
       OnCommitted( ); // signal the user control
     }

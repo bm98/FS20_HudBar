@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MapLib.Sources.Providers
 {
@@ -26,10 +21,11 @@ namespace MapLib.Sources.Providers
 
     public override string Name { get; } = "Empty - not to be used";
 
-    protected override MapImage GetTileImage( MapImageID mapImageID )
+    protected override string PrepareURL( MapImageID mapImageID )
     {
       return null;
     }
+
 
     #endregion
   }

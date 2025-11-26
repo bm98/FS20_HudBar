@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Threading.Tasks;
 using DbgLib;
 
 namespace MapLib.Sources.Providers
@@ -17,7 +17,7 @@ namespace MapLib.Sources.Providers
     private Bing_Imagery( )
       : base( MapProvider.BING_Imagery )
     {
-     // var im = BingManager.GetImMetaData( _imagery ); // trigger loading of MetaData
+      // var im = BingManager.GetImMetaData( _imagery ); // trigger loading of MetaData
       Copyright = BingManager.DefaultCopyright;
       Name = ProviderIni.ProviderName( MapProvider );
       LOG.Info( "MAP-CONFIG", RefererUrl );
@@ -48,7 +48,7 @@ namespace MapLib.Sources.Providers
 
     public override string Name { get; } = "Bing Imagery";
 
-    protected override MapImage GetTileImage( MapImageID mapImageID )
+    protected override string PrepareURL( MapImageID mapImageID )
     {
       if (!this.ProviderEnabled) return null;
 
@@ -57,12 +57,10 @@ namespace MapLib.Sources.Providers
         return null;
       }
 
-
       ushort z = ZoomCheck( mapImageID.ZoomLevel );
       if (z != mapImageID.ZoomLevel) { return null; } // not allowed 
 
-      string url = BingManager.MakeBingTileImageUrl( _imagery, mapImageID.TileXY, z );
-      return base.GetTileImageUsingHttp( url, mapImageID );
+      return BingManager.MakeBingTileImageUrl( _imagery, mapImageID.TileXY, z );
     }
 
     #endregion

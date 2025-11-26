@@ -80,7 +80,7 @@ namespace FS20_HudBar
     Win.HotkeyController _keyHook;
 
     // MSFS Input handlers
-    private readonly Dictionary<Hotkeys, SC.SimEvents.SimEventAdapter> _fsInputCat = new Dictionary<Hotkeys, SC.SimEvents.SimEventAdapter>( );
+    private readonly Dictionary<Hotkeys, IClientEventAdapter> _fsInputCat = new Dictionary<Hotkeys, IClientEventAdapter>( );
     // SimVar access
     private readonly ISimVar SV = SC.SimConnectClient.Instance.SimVarModule;
     // The Flightbag
@@ -372,25 +372,25 @@ namespace FS20_HudBar
       if (enabled) {
         if (_fsInputCat.Count <= 0) {
           // reinitiate the hooks
-          _fsInputCat.Add( Hotkeys.Show_Hide, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_01 ) );
+          _fsInputCat.Add( Hotkeys.Show_Hide, SC.SimConnectClient.Instance.AppInputAdapter( AppInputE.FST_01 ) );
           _fsInputCat[Hotkeys.Show_Hide].AppInputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.FlightBag, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_07 ) );
+          _fsInputCat.Add( Hotkeys.FlightBag, SC.SimConnectClient.Instance.AppInputAdapter( AppInputE.FST_07 ) );
           _fsInputCat[Hotkeys.FlightBag].AppInputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.Camera, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_08 ) );
+          _fsInputCat.Add( Hotkeys.Camera, SC.SimConnectClient.Instance.AppInputAdapter( AppInputE.FST_08 ) );
           _fsInputCat[Hotkeys.Camera].AppInputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.ChecklistBox, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_09 ) );
+          _fsInputCat.Add( Hotkeys.ChecklistBox, SC.SimConnectClient.Instance.AppInputAdapter( AppInputE.FST_09 ) );
           _fsInputCat[Hotkeys.ChecklistBox].AppInputArrived += FSInput_InputArrived;
 
           // ONLY the first 5 have SimKey Hooks (6..10 do not have this hotkey)
-          _fsInputCat.Add( Hotkeys.Profile_1, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_02 ) );
+          _fsInputCat.Add( Hotkeys.Profile_1, SC.SimConnectClient.Instance.AppInputAdapter( AppInputE.FST_02 ) );
           _fsInputCat[Hotkeys.Profile_1].AppInputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.Profile_2, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_03 ) );
+          _fsInputCat.Add( Hotkeys.Profile_2, SC.SimConnectClient.Instance.AppInputAdapter( AppInputE.FST_03 ) );
           _fsInputCat[Hotkeys.Profile_2].AppInputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.Profile_3, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_04 ) );
+          _fsInputCat.Add( Hotkeys.Profile_3, SC.SimConnectClient.Instance.AppInputAdapter( AppInputE.FST_04 ) );
           _fsInputCat[Hotkeys.Profile_3].AppInputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.Profile_4, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_05 ) );
+          _fsInputCat.Add( Hotkeys.Profile_4, SC.SimConnectClient.Instance.AppInputAdapter( AppInputE.FST_05 ) );
           _fsInputCat[Hotkeys.Profile_4].AppInputArrived += FSInput_InputArrived;
-          _fsInputCat.Add( Hotkeys.Profile_5, SC.SimConnectClient.Instance.AppInputAdapter( SC.SimEvents.AppInputE.FST_06 ) );
+          _fsInputCat.Add( Hotkeys.Profile_5, SC.SimConnectClient.Instance.AppInputAdapter( AppInputE.FST_06 ) );
           _fsInputCat[Hotkeys.Profile_5].AppInputArrived += FSInput_InputArrived;
         }
       }
@@ -409,7 +409,7 @@ namespace FS20_HudBar
     }
 
     // Receive commands from FSim
-    private void FSInput_InputArrived( object sender, SC.SimEvents.AppInputEventArgs e )
+    private void FSInput_InputArrived( object sender, AppInputEventArgs e )
     {
       // sanity checks
       if (!SC.SimConnectClient.Instance.IsConnected) return; // catch odd cases of disruption
@@ -1160,7 +1160,7 @@ namespace FS20_HudBar
       _hotkeycat.MaintainHotkeyString( Hotkeys.FlightBag, m_config.HKShelf );
       _hotkeycat.MaintainHotkeyString( Hotkeys.Camera, m_config.HKCamera );
       _hotkeycat.MaintainHotkeyString( Hotkeys.ChecklistBox, m_config.HKChecklistBox );
-      _hotkeycat.MaintainHotkeyString( Hotkeys.MoveBarToOtherWindow, "RShiftKey RControlKey Cancel" ); // not to configure (RCtrl-Shift-Break)
+      _hotkeycat.MaintainHotkeyString( Hotkeys.MoveBarToOtherWindow, m_config.HKJumpScreen );
       foreach (var hk in _hotkeycat) {
         LOG.Info( "InitGUI", $"{hk.Key} - {hk.Value.AsString}" );
       }

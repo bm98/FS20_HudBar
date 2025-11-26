@@ -6,6 +6,7 @@ using CoordLib;
 using CoordLib.MercatorTiles;
 using CoordLib.LLShapes;
 using DbgLib;
+using System.Threading;
 
 namespace MapLib.Tiles
 {
@@ -22,17 +23,24 @@ namespace MapLib.Tiles
       System.Reflection.Assembly.GetCallingAssembly( ),
       System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
 
+    private static readonly Font c_debugFont = new Font( "Arial", 14 );
+
+    private static dNetBm98.Job.JobRunner _eventJobRunner = new dNetBm98.Job.JobRunner( 8 );
+    internal static dNetBm98.Job.JobRunner Asynch_JobRunner => _eventJobRunner;
+
+
     // 2d Array of MapTiles [X]|[Y] Root = Left/Top orientation
-    private MapTile[,] _mapTiles;
+    private readonly MapTile[,] _mapTiles;
+    // lock while updating or query _mapTiles[]
+    private object _tileLock = new object( );
+
     // track scheduled Tiles
     private TrackingCat _tileTrackingList = new TrackingCat( );
-    // lock while updating many
-    private object _tileLock = new object( );
+
     // tracks the extension to apply a unique tile ID
     private int _extendVersion = 0;
-    // A tile server
+    // The tile server
     private MapTileServer _tileServer = null;
-
 
     /// <summary>
     /// Event triggered on LoadComplete or LoadFailed
@@ -44,16 +52,16 @@ namespace MapLib.Tiles
     public event EventHandler<LoadCompleteEventArgs> LoadComplete;
 
     // Signal the user that data has arrived
-    // a non empty Key triggers  MatComplete=false => a single tile was loaded (or failed)
     // Failed is required to be set
-    private void OnLoadComplete( string key, bool failed )
+    private void OnLoadComplete( string key, bool failed, bool matrixComplete )
     {
       //     Debug.WriteLine( $"{DateTime.Now.Ticks} TileMatrix.OnLoadComplete- Key: <{key}> LoadFailed: {failed} MatComplete: {string.IsNullOrEmpty( key )}" );
 
       if (LoadComplete == null) {
         LOG.Error( "TileMatrix.OnLoadComplete", $"NO EVENT RECEIVERS HAVE REGISTERED" );
       }
-      LoadComplete?.Invoke( this, new LoadCompleteEventArgs( key, "dummy", failed, string.IsNullOrEmpty( key ) ) );
+      // set Matrix complete when the key is not provided
+      LoadComplete?.Invoke( this, new LoadCompleteEventArgs( key, "dummy", loadCancelled: false, loadFailed: failed, matComplete: matrixComplete ) );
     }
 
     private Rectangle _mapPixelBounds = new Rectangle( );
@@ -81,20 +89,22 @@ namespace MapLib.Tiles
     /// <summary>
     /// Get: Status of Image Loading
     /// </summary>
-    public ImageLoadingStatus LoadingStatus { get; private set; } = ImageLoadingStatus.Unknown;
+    public ImageLoadingStatus MatrixLoadingStatus { get; private set; } = ImageLoadingStatus.Unknown;
 
     /// <summary>
-    /// True if there are failed Tiles in the Matrix
+    /// True if there are pending Tiles in the Matrix
     /// </summary>
-    public bool HasFailedTiles {
+    public bool HasPendingTiles {
       get {
-        bool failed = false;
-        for (int x = 0; x < Width; x++) {
-          for (int y = 0; y < Height; y++) {
-            failed |= _mapTiles[x, y].LoadingStatus != ImageLoadingStatus.LoadComplete;
+        bool pending = false;
+        lock (_tileLock) {
+          for (int x = 0; x < Width; x++) {
+            for (int y = 0; y < Height; y++) {
+              pending |= _mapTiles[x, y].IsNotFinished;
+            }
           }
-        }
-        return failed;
+        } // lock
+        return pending;
       }
     }
 
@@ -122,11 +132,25 @@ namespace MapLib.Tiles
     /// <summary>
     /// Returns the Screen Pixel Width of the Matrix
     /// </summary>
-    public int MatrixWidth_pixel => _mapTiles[0, 0].TileSize_pixel.Width * (int)Width;
+    public int MatrixWidth_pixel {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].TileSize_pixel.Width * (int)Width;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Returns the Screen Pixel Height of the Matrix
     /// </summary>
-    public int MatrixHeight_pixel => _mapTiles[0, 0].TileSize_pixel.Width * (int)Height;
+    public int MatrixHeight_pixel {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].TileSize_pixel.Width * (int)Height;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Returns the Screen Pixel Dimension of the Matrix
     /// </summary>
@@ -135,43 +159,102 @@ namespace MapLib.Tiles
     /// <summary>
     /// Returns the Screen Pixel Width of a Tile
     /// </summary>
-    public int TileWidth_pixel => _mapTiles[0, 0].TileSize_pixel.Width;
+    public int TileWidth_pixel {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].TileSize_pixel.Width;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Returns the Screen Pixel Height of a Tile
     /// </summary>
-    public int TileHeight_pixel => _mapTiles[0, 0].TileSize_pixel.Height;
+    public int TileHeight_pixel {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].TileSize_pixel.Height;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Returns the Screen Pixel Dimension of a Tile
     /// </summary>
-    public Size TileSize_pixel => _mapTiles[0, 0].TileSize_pixel;
+    public Size TileSize_pixel {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].TileSize_pixel;
+        } // lock
+      }
+    }
 
 
     /// <summary>
     /// Get: Horizontal length of one Tile Pixel in meters
     /// </summary>
-    public float HorPixelMeasure_m => _mapTiles[0, 0].HorPixelMeasure_m;
+    public float HorPixelMeasure_m {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].HorPixelMeasure_m;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Get: Vertical length of one Tile Pixel in meters
     /// </summary>
-    public float VertPixelMeasure_m => _mapTiles[0, 0].VertPixelMeasure_m;
+    public float VertPixelMeasure_m {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].VertPixelMeasure_m;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Get: Dimenstion of one Tile Pixel in meters
     /// </summary>
-    public SizeF TilePixelMeasure_m => _mapTiles[0, 0].TilePixelMeasure_m;
-
+    public SizeF TilePixelMeasure_m {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].TilePixelMeasure_m;
+        } // lock
+      }
+    }
 
     /// <summary>
     /// Get: Horizontal length of one Tile in meters
     /// </summary>
-    public float HorTileMeasure_m => _mapTiles[0, 0].HorTileMeasure_m;
+    public float HorTileMeasure_m {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].HorTileMeasure_m;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Get: Vertical length of one Tile in meters
     /// </summary>
-    public float VertTileMeasure_m => _mapTiles[0, 0].VertTileMeasure_m;
+    public float VertTileMeasure_m {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].VertTileMeasure_m;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Get: Dimenstion of the Tile in meters
     /// </summary>
-    public SizeF TileMeasure_m => _mapTiles[0, 0].TileMeasure_m;
+    public SizeF TileMeasure_m {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].TileMeasure_m;
+        } // lock
+      }
+    }
 
 
     /// <summary>
@@ -207,39 +290,95 @@ namespace MapLib.Tiles
     /// Get: Returns the MapPixel of the left top Matrix pixel 
     /// (or -1/-1 if the Projection is not yet available)
     /// </summary>
-    public MapPixel LeftTop_mapPixel => _mapTiles[0, 0].TileXY.LeftTopMapPixel;
+    public MapPixel LeftTop_mapPixel {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].TileXY.LeftTopMapPixel;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Get: Returns the MapPixel of the right top Matrix pixel
     /// (or -1/-1 if the Projection is not yet available)
     /// </summary>
-    public MapPixel RightTop_mapPixel => _mapTiles[Width - 1, 0].TileXY.RightTopMapPixel;
+    public MapPixel RightTop_mapPixel {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[Width - 1, 0].TileXY.RightTopMapPixel;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Get: Returns the MapPixel of the left bottom Matrix pixel
     /// (or -1/-1 if the Projection is not yet available)
     /// </summary>
-    public MapPixel LeftBottom_mapPixel => _mapTiles[0, Height - 1].TileXY.LeftBottomMapPixel;
+    public MapPixel LeftBottom_mapPixel {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, Height - 1].TileXY.LeftBottomMapPixel;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Get: Returns the MapPixel of the right bottom Matrix pixel
     /// (or -1/-1 if the Projection is not yet available)
     /// </summary>
-    public MapPixel RightBottom_mapPixel => _mapTiles[Width - 1, Height - 1].TileXY.RightBottomMapPixel;
+    public MapPixel RightBottom_mapPixel {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[Width - 1, Height - 1].TileXY.RightBottomMapPixel;
+        } // lock
+      }
+    }
+
 
     /// <summary>
     /// Get: Returns the coordinate of the top left Matrix pixel
     /// </summary>
-    public LatLon LeftTop_coord => _mapTiles[0, 0].LeftTop_coord;
+    public LatLon LeftTop_coord {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, 0].LeftTop_coord;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Get: Returns the coordinate of the top right Matrix pixel
     /// </summary>
-    public LatLon RightTop_coord => _mapTiles[Width - 1, 0].RightTop_coord;
+    public LatLon RightTop_coord {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[Width - 1, 0].RightTop_coord;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Get: Returns the coordinate of the bottom left Matrix pixel
     /// </summary>
-    public LatLon LeftBottom_coord => _mapTiles[0, Height - 1].LeftBottom_coord;
+    public LatLon LeftBottom_coord {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[0, Height - 1].LeftBottom_coord;
+        } // lock
+      }
+    }
+
     /// <summary>
     /// Get: Returns the coordinate of the bottom right Matrix pixel
     /// </summary>
-    public LatLon RightBottom_coord => _mapTiles[Width - 1, Height - 1].RightBottom_coord;
+    public LatLon RightBottom_coord {
+      get {
+        lock (_tileLock) {
+          return _mapTiles[Width - 1, Height - 1].RightBottom_coord;
+        } // lock
+      }
+    }
+
 
     /// <summary>
     /// Get: An LLRectangle of the covered area
@@ -321,15 +460,17 @@ namespace MapLib.Tiles
 
       _tileServer = new MapTileServer( Width * Height * 2 );
 
+      // no lock needed here..
       _mapTiles = new MapTile[width, height];
       for (int x = 0; x < Width; x++) {
         for (int y = 0; y < Height; y++) {
           _mapTiles[x, y] = _tileServer.GetTile( ); // these are internal x/y s not TileXY !!
         }
       }
-      LoadingStatus = ImageLoadingStatus.Idle; // ready to load something
-    }
+      MatrixLoadingStatus = ImageLoadingStatus.Idle; // ready to load something
 
+      Service.RequestScheduler.Instance.PingEvent += RequestScheduler_PingEvent;
+    }
 
     /// <summary>
     /// Returns a Tile from an XY point 
@@ -342,8 +483,14 @@ namespace MapLib.Tiles
       if ((matrixXY.X < 0) || (matrixXY.X >= Width)) return null; // Nope
       if ((matrixXY.Y < 0) || (matrixXY.Y >= Height)) return null; // Nope
 
-      return _mapTiles[matrixXY.X, matrixXY.Y];
+      MapTile tile = null;
+      lock (_tileLock) {
+        tile = _mapTiles[matrixXY.X, matrixXY.Y];
+      } // lock
+      return tile;
     }
+
+    #region Drawing Support
 
     /// <summary>
     /// Combines the Matrix Tiles into one Image and draws it using the Graphics
@@ -365,16 +512,24 @@ namespace MapLib.Tiles
         for (int x = 0, tx = 0; x < this.Width; x++, tx += tileWidth) {
           for (int y = 0, ty = 0; y < this.Height; y++, ty += tileHeight) {
             var drawXy = new Point( tx, ty );
-            var drawTile = this.GetTile( new Point( x, y ) );
+            var drawTile = _mapTiles[x, y];
             if (drawTile != null) {
               drawTile.Draw( g, drawXy, drawTileBorder );
+#if DEBUG
+              /* DRAW TILE INFO FOR DEBUG
+              g.DrawString( $"Tile: {x}/{y}", c_debugFont, Brushes.Red, drawXy );
+              if (_mapTiles[x, y].MapImage != null) {
+                g.DrawString( _mapTiles[x, y].MapImage.MapImageID.ZxyKey, c_debugFont, Brushes.Red, drawXy.X, drawXy.Y + 20 );
+              }
+              */
+#endif
             }
             else {
               // leave empty
             }
           }
         }
-      }
+      } // lock
     }
 
     /// <summary>
@@ -401,7 +556,7 @@ namespace MapLib.Tiles
         for (int x = 0, tx = 0; x < this.Width; x++, tx += tileWidth) {
           for (int y = 0, ty = 0; y < this.Height; y++, ty += tileHeight) {
             var drawXy = new Point( tx, ty );
-            var drawTile = this.GetTile( new Point( x, y ) );
+            var drawTile = _mapTiles[x, y];
             if (drawTile != null) {
               drawTile.DrawToSurface( bitmap, drawXy, drawTileBorder );
             }
@@ -410,13 +565,15 @@ namespace MapLib.Tiles
             }
           }
         }
-      }
+      } // lock
       return bitmap;
     }
 
+    #endregion
+
     /// <summary>
     /// Start Loading the Matrix with Tiles around the Center Coordinate
-    /// 
+    /// - the map is reloaded from scratch
     /// </summary>
     /// <param name="coordOnCenterTile"></param>
     /// <param name="zoomLevel">The desired Map Zoom level</param>
@@ -424,13 +581,14 @@ namespace MapLib.Tiles
     public void LoadMatrix( LatLon coordOnCenterTile, ushort zoomLevel, MapProvider provider )
     {
       if (provider == MapProvider.DummyProvider) return; // nope..
-      if (LoadingStatus == ImageLoadingStatus.Loading) return; // TODO Cancel Loading if already loading
 
-      ClearMatrix( );
-      LoadingStatus = ImageLoadingStatus.Idle;
-      ZoomLevel = zoomLevel;
-      MapProvider = provider;
-      MapPixelBounds = new Rectangle( new Point( 0, 0 ), Projection.MapPixelSize( zoomLevel ) );
+      if (MatrixLoadingStatus == ImageLoadingStatus.Loading) {
+        // @@@@@@@@ This will invalidate all jobs scheduled so far
+        //        Service.RequestScheduler.Instance.JobNumberLimit = TileLoaderJobFactory.LastJobNumber;
+        //        _tileTrackingList.RemoveObsoleteJobs( TileLoaderJobFactory.LastJobNumber );
+        //        MatrixLoadingStatus = ImageLoadingStatus.LoadCancelled;
+        return; // TODO Cancel Loading if already loading
+      }
 
       // as we have one tile overflow to move the matrix the center will be offset to the left top
       // i.e. assume the matrix is one element less in size
@@ -439,8 +597,8 @@ namespace MapLib.Tiles
 
       // start with the 'center' tile - it will be offset to get the TopLeft tile to start loading
       // the quadrant dictates to which side to extend the tiles more than the other for Even Dimensions
-      TileXY tlTileXY = TileXY.LatLonToTileXY( coordOnCenterTile, ZoomLevel );
-      var quadrant = TileXY.QuadrantFromLatLon( coordOnCenterTile, ZoomLevel );
+      TileXY tlTileXY = TileXY.LatLonToTileXY( coordOnCenterTile, zoomLevel );
+      var quadrant = TileXY.QuadrantFromLatLon( coordOnCenterTile, zoomLevel );
 
       if (dWidth.Even( )) {
         if (dHeight.Even( )) {
@@ -487,20 +645,59 @@ namespace MapLib.Tiles
         LOG.Error( "LoadMatrix", $"Invalid start TileXY ({tlTileXY})" );
         throw new ArgumentOutOfRangeException( $"Input creates invalid start TileXY ({tlTileXY})" );
       }
+
+      // Get new Tiles
+      lock (_tileLock) {
+        MatrixLoadingStatus = ImageLoadingStatus.Idle;
+        MapProvider = provider;
+        ZoomLevel = zoomLevel;
+        MapPixelBounds = new Rectangle( new Point( 0, 0 ), Projection.MapPixelSize( zoomLevel ) );
+
+        // remove all from current
+        for (int x = 0; x < Width; x++) {
+          for (int y = 0; y < Height; y++) {
+            _tileServer.ReturnObsoleteTile( _mapTiles[x, y] );
+            // alloc the new one
+            _mapTiles[x, y] = _tileServer.GetTile( );
+            _mapTiles[x, y].Configure( zoomLevel, MapProvider, 0, new Point( x, y ), TileMatrix_MapTile_LoadComplete );
+          }
+        }
+        _tileTrackingList.Clear( );
+        MatrixLoadingStatus = ImageLoadingStatus.Loading;
+
+        // Start Loading
+        //ReloadAllTiles( tlTileXY, zoomLevel );
+        ReloadAllTiles_EX1( tlTileXY, zoomLevel );
+      } // lock
+
+    }
+
+    // issue LoadTile Jobs for the Matrix
+    private void ReloadAllTiles( TileXY tlTileXY, ushort zoomLevel )
+    {
       // Start Loading
       for (int x = 0, tx = tlTileXY.X; x < Width; x++, tx++) { // left to right
         for (int y = 0, ty = tlTileXY.Y; y < Height; y++, ty++) { // top to bottom
           var tileXY = new TileXY( tx, ty );
           tileXY.Wrap( zoomLevel ); // in case we are at the edge of the map
-          // start loading
-          //         Debug.WriteLine( $"LoadMatrix: Load triggered for: {Tools.ToFullKey( new MapImageID( tileXY, ZoomLevel, MapProvider ) )}" );
-          _mapTiles[x, y].Configure( zoomLevel, MapProvider, 0, TileMatrix_LoadTileComplete );
-          _mapTiles[x, y].LoadTile( tileXY, _tileTrackingList );
-
+          _mapTiles[x, y].LoadTile( tileXY, x, y, _tileTrackingList );
         }
       }
-      LoadingStatus = ImageLoadingStatus.Loading;
     }
+
+    // issue LoadTile Jobs for the Matrix
+    private void ReloadAllTiles_EX1( TileXY tlTileXY, ushort zoomLevel )
+    {
+      // Start Loading
+      for (int x = 0, tx = tlTileXY.X; x < Width; x++, tx++) { // left to right
+        for (int y = 0, ty = tlTileXY.Y; y < Height; y++, ty++) { // top to bottom
+          var tileXY = new TileXY( tx, ty );
+          tileXY.Wrap( zoomLevel ); // in case we are at the edge of the ma
+          _mapTiles[x, y].LoadTile_EX1( tileXY, x, y );
+        }
+      }
+    }
+
 
     /// <summary>
     /// Add new content TOWARDS the given side(s)
@@ -518,7 +715,7 @@ namespace MapLib.Tiles
       // TODO check for 1,1 Matrix
 
       lock (_tileLock) {
-        _extendVersion++; // new Extension Version
+        Interlocked.Increment( ref _extendVersion ); // new Extension Version
 
         if ((matrixSide & TileMatrixSide.Left) > 0) {
           // shift each row to the right and add new content on the left x=0 side
@@ -526,11 +723,12 @@ namespace MapLib.Tiles
             var tmp = _mapTiles[Width - 1, y]; // save right element
             for (int x = (int)Width - 1; x > 0; x--) {
               _mapTiles[x, y] = _mapTiles[x - 1, y]; // shift right
+              _mapTiles[x, y].UpdateMatrixPixel( x, y );
             }
-            HandleObsoleteTiles( tmp );
+            ReturnObsoleteTile( tmp );
             // add a new Tile for this extension
             _mapTiles[0, y] = _tileServer.GetTile( );
-            _mapTiles[0, y].Configure( ZoomLevel, MapProvider, _extendVersion, TileMatrix_LoadTileComplete );
+            _mapTiles[0, y].Configure( ZoomLevel, MapProvider, _extendVersion, new Point( 0, y ), TileMatrix_MapTile_LoadComplete );
             _mapTiles[0, y].TileXYUpdate = Tools.TileXY_DecX( _mapTiles[1, y].TileXY, ZoomLevel );
           }
         }
@@ -541,11 +739,12 @@ namespace MapLib.Tiles
             var tmp = _mapTiles[0, y];  // save left element
             for (int x = 0; x < Width - 1; x++) {
               _mapTiles[x, y] = _mapTiles[x + 1, y]; // shift left
+              _mapTiles[x, y].UpdateMatrixPixel( x, y );
             }
-            HandleObsoleteTiles( tmp );
+            ReturnObsoleteTile( tmp );
             // add a new Tile for this extension
             _mapTiles[Width - 1, y] = _tileServer.GetTile( );
-            _mapTiles[Width - 1, y].Configure( ZoomLevel, MapProvider, _extendVersion, TileMatrix_LoadTileComplete );
+            _mapTiles[Width - 1, y].Configure( ZoomLevel, MapProvider, _extendVersion, new Point( (int)Width - 1, y ), TileMatrix_MapTile_LoadComplete );
             _mapTiles[Width - 1, y].TileXYUpdate = Tools.TileXY_IncX( _mapTiles[Width - 2, y].TileXY, ZoomLevel );
           }
         }
@@ -557,11 +756,12 @@ namespace MapLib.Tiles
             var tmp = _mapTiles[x, Height - 1]; // save bottom element
             for (int y = (int)Height - 1; y > 0; y--) {
               _mapTiles[x, y] = _mapTiles[x, y - 1]; // shift down
+              _mapTiles[x, y].UpdateMatrixPixel( x, y );
             }
-            HandleObsoleteTiles( tmp );
+            ReturnObsoleteTile( tmp );
             // add a new Tile for this extension
             _mapTiles[x, 0] = _tileServer.GetTile( );
-            _mapTiles[x, 0].Configure( ZoomLevel, MapProvider, _extendVersion, TileMatrix_LoadTileComplete );
+            _mapTiles[x, 0].Configure( ZoomLevel, MapProvider, _extendVersion, new Point( x, 0 ), TileMatrix_MapTile_LoadComplete );
             _mapTiles[x, 0].TileXYUpdate = _mapTiles[x, 1].NeedsUpdate ? Tools.TileXY_DecY( _mapTiles[x, 1].TileXYUpdate, ZoomLevel )
                                                                        : Tools.TileXY_DecY( _mapTiles[x, 1].TileXY, ZoomLevel );
           }
@@ -574,69 +774,112 @@ namespace MapLib.Tiles
             var tmp = _mapTiles[x, 0]; // save top element
             for (int y = 0; y < Height - 1; y++) {
               _mapTiles[x, y] = _mapTiles[x, y + 1]; // shift up
+              _mapTiles[x, y].UpdateMatrixPixel( x, y );
             }
-            HandleObsoleteTiles( tmp );
+            ReturnObsoleteTile( tmp );
             // add a new Tile for this extension
             _mapTiles[x, Height - 1] = _tileServer.GetTile( );
-            _mapTiles[x, Height - 1].Configure( ZoomLevel, MapProvider, _extendVersion, TileMatrix_LoadTileComplete );
+            _mapTiles[x, Height - 1].Configure( ZoomLevel, MapProvider, _extendVersion, new Point( x, (int)Height - 1 ), TileMatrix_MapTile_LoadComplete );
             _mapTiles[x, Height - 1].TileXYUpdate = _mapTiles[x, Height - 2].NeedsUpdate ? Tools.TileXY_IncY( _mapTiles[x, Height - 2].TileXYUpdate, ZoomLevel )
                                                                                          : Tools.TileXY_IncY( _mapTiles[x, Height - 2].TileXY, ZoomLevel );
           }
         }
 
         // create updates
-        for (int x = 0; x < Width; x++) {
-          for (int y = 0; y < Height; y++) {
-            if (_mapTiles[x, y].UpdateTile( _tileTrackingList )) {
+        //UpdateAllTiles( );
+        UpdateAllTiles_EX1( );
+      } // lock
+
+    }
+
+    // issue UpdateTile Jobs for the Matrix
+    private void UpdateAllTiles( )
+    {
+      for (int x = 0; x < Width; x++) {
+        for (int y = 0; y < Height; y++) {
+          if (_mapTiles[x, y].UpdateTile( x, y, _tileTrackingList )) {
+            // Debug.WriteLine( $"UPDATING TILE:[{x}|{y}] with {_mapTiles[x, y].TileXY}" );
+            MatrixLoadingStatus = ImageLoadingStatus.Loading;
+          }
+        }
+      }
+    }
+
+    private void UpdateAllTiles_EX1( )
+    {
+      for (int x = 0; x < Width; x++) {
+        for (int y = 0; y < Height; y++) {
+          if (_mapTiles[x, y].NeedsUpdate) {
+            if (_mapTiles[x, y].NeedsUpdate) {
+              _mapTiles[x, y].UpdateTile_EX1( x, y );
               // Debug.WriteLine( $"UPDATING TILE:[{x}|{y}] with {_mapTiles[x, y].TileXY}" );
-              LoadingStatus = ImageLoadingStatus.Loading;
+              MatrixLoadingStatus = ImageLoadingStatus.Loading;
             }
           }
         }
-      }//lock
+      }
     }
 
 
-    // clean non loading obsoletes, loading ones will be removed after Loaded
-    private void HandleObsoleteTiles( MapTile mapTile )
+    // return to stock as obsolete and remove from tracking (in case..)
+    private void ReturnObsoleteTile( MapTile mapTile )
     {
       // sanity
       if (mapTile == null) return;
 
-      if ((mapTile.Version < _extendVersion) && (mapTile.LoadingStatus == ImageLoadingStatus.Loading)) {
-        // is from a previous extension and in the process of updating but still obsolete by now..
-        // needs to stay alive until loading has finished and the callback arrived
-        // it is no longer part of the tracked image tiles
-        _tileTrackingList.TryRemove( mapTile.TrackKey, out var _ ); // obsolete - remove from tracker
-        _tileServer.ReturnObsoleteTile( mapTile );
-      }
-      else {
-        // from this extension or not longer loading - it will be just disposed
-        _tileServer.ReturnTile( mapTile );
-      }
+      _tileTrackingList.TryRemove( mapTile.TrackKey, out var _ ); // obsolete - remove from tracker
+      _tileServer.ReturnObsoleteTile( mapTile ); // markes as obsolete
     }
 
     /// <summary>
     /// Try again to load failed tiles
     /// </summary>
-    public void LoadFailedTiles( )
+    public void ReloadFailedTiles( )
     {
-      LOG.Info( $"TileMatrix.LoadFailedTiles", $"LoadingStatus= {LoadingStatus}" );
+      LOG.Info( $"TileMatrix.LoadFailedTiles", $"LoadingStatus= {MatrixLoadingStatus}" );
       // sanity
-      if (LoadingStatus == ImageLoadingStatus.Loading) return;
+      if (MatrixLoadingStatus == ImageLoadingStatus.Loading) return; // should not while still loading
 
       lock (_tileLock) {
         // create updates
         for (int x = 0; x < Width; x++) {
           for (int y = 0; y < Height; y++) {
-            if (_mapTiles[x, y].LoadingStatus != ImageLoadingStatus.LoadComplete) {
-              if (_mapTiles[x, y].MapImage.ShouldRetry) {
+            if (_mapTiles[x, y].IsNotFinished) {
+              if (_mapTiles[x, y].CanRetry) {
                 LOG.Info( "TileMatrix.LoadFailedTiles", $"Reloading {_mapTiles[x, y].FullKey}" );
                 _mapTiles[x, y].TileXYUpdate = _mapTiles[x, y].TileXY; // re-schedule the key
-                if (_mapTiles[x, y].UpdateTile( _tileTrackingList )) {
-                  LoadingStatus = ImageLoadingStatus.Loading;
+                if (_mapTiles[x, y].NeedsUpdate) {
+                  _mapTiles[x, y].UpdateTile( x, y, _tileTrackingList );
+                  MatrixLoadingStatus = ImageLoadingStatus.Loading;
                 }
               }
+            }
+          }
+        }
+      } // lock
+    }
+
+
+    /// <summary>
+    /// Try again to load failed tiles
+    /// </summary>
+    public void ReloadFailedTiles_EX1( )
+    {
+
+      // sanity
+      if (MatrixLoadingStatus == ImageLoadingStatus.Loading) return; // should not while still loading
+
+      LOG.Info( $"TileMatrix.ReloadFailedTiles_EX1", $"LoadingStatus= {MatrixLoadingStatus}" );
+      // create updates
+      for (int x = 0; x < Width; x++) {
+        for (int y = 0; y < Height; y++) {
+          if (_mapTiles[x, y].IsNotFinished && _mapTiles[x, y].CanRetry) {
+            LOG.Info( "TileMatrix.LoadFailedTiles", $"Reloading {_mapTiles[x, y].FullKey}" );
+
+            _mapTiles[x, y].TileXYUpdate = _mapTiles[x, y].TileXY; // re-schedule the key
+            if (_mapTiles[x, y].NeedsUpdate) {
+              _mapTiles[x, y].UpdateTile_EX1( x, y );
+              MatrixLoadingStatus = ImageLoadingStatus.Loading;
             }
           }
         }
@@ -644,18 +887,24 @@ namespace MapLib.Tiles
     }
 
     // called when loading of ONE Tile is fired
-    private void TileMatrix_LoadTileComplete( object sender, LoadCompleteEventArgs e )
+    // Failed is true with or without retry recommendation
+    // cancelled ones should remove the tracker indpendent of its loading state
+    private void TileMatrix_MapTile_LoadComplete( object sender, LoadCompleteEventArgs e )
     {
-      if (_tileTrackingList.ContainsKey( e.TrackKey )) {
+      if (e.LoadCancelled) {
+        // just remove the tracker
+        _tileTrackingList.TryRemove( e.TrackKey, out int _ );
+      }
 
-        // signal only for tracked tiles
+      else if (_tileTrackingList.ContainsKey( e.TrackKey )) {
+        // handle tracked tiles
         if (e.LoadFailed) {
           LOG.Error( "TileMatrix_LoadComplete", $"LoadFailed for Tile {e.TrackKey}" );
-          LoadingStatus = ImageLoadingStatus.LoadFailed;
-          OnLoadComplete( e.TileKey, true ); // report about a failed Tile
+          MatrixLoadingStatus = ImageLoadingStatus.LoadFailed; // temp for this MapTile
+          OnLoadComplete( e.TileKey, failed: true, matrixComplete: false ); // report about a failed Tile
         }
         else {
-          OnLoadComplete( e.TileKey, false ); // report about a loaded tile
+          OnLoadComplete( e.TileKey, failed: false, matrixComplete: false ); // report about a loaded tile
         }
 
         // manage the tile tracking
@@ -668,34 +917,46 @@ namespace MapLib.Tiles
           ; // Debug Stop
         }
 
-        // check if all tiles are done
-        if (_tileTrackingList.IsEmpty) {
-          // Debug.WriteLine( $"TileMatrix_LoadComplete (last tile: {e.TileKey})" );
-          LoadingStatus = ImageLoadingStatus.LoadComplete;
-          OnLoadComplete( "", false ); // finished and success
-        }
+      }
+      else {
+        // not cancelled and not tracked - should not ..
+        ;
       }
 
-      // handle obsoletes after the the loading cycle
-      _tileServer.RemoveObsoleteTile( e.TrackKey );
+      // check if all tiles are done for the first time
+      if ((MatrixLoadingStatus != ImageLoadingStatus.LoadComplete)
+        && HasPendingTiles == false) {
+        // Debug.WriteLine( $"TileMatrix_LoadComplete (last tile: {e.TileKey})" );
+        MatrixLoadingStatus = ImageLoadingStatus.LoadComplete;
+        OnLoadComplete( "", failed: false, matrixComplete: true ); // finished and success
+#if DEBUG
+        // check the image list - should be empty by now
+        int count = Service.RequestScheduler.Instance.TileWorkflowCatalog.Count;
+        if (count > 0) {
+          LOG.Error( "TileMatrix_LoadComplete", $"TileWorkflowCatalog is not empty <{count}>" );
+        }
+#endif
+      }
     }
 
-
-    // Clears and resets the Tile Contents - don't call while Loading...
-    private void ClearMatrix( )
+    // called at an intervall
+    private void RequestScheduler_PingEvent( object sender, EventArgs e )
     {
-      // remove all from tracking and clear the obsoletes
-      lock (_tileLock) {
-        for (int x = 0; x < Width; x++) {
-          for (int y = 0; y < Height; y++) {
-            _mapTiles[x, y].ClearTileContent( );
-          }
+      // check if all tiles are done for the first time
+      //if (!HasPendingTiles) {
+      if (true) {
+        MatrixLoadingStatus = ImageLoadingStatus.LoadComplete;
+        OnLoadComplete( "", failed: false, matrixComplete: !HasPendingTiles ); // finished and success
+#if DEBUG
+        // check the image list - should be empty by now
+        int count = Service.RequestScheduler.Instance.TileWorkflowCatalog.Count;
+        if (count > 0) {
+          LOG.Error( "TileMatrix_LoadComplete", $"TileWorkflowCatalog is not empty <{count}>" );
         }
-        LoadingStatus = ImageLoadingStatus.Idle;
-        _tileTrackingList.Clear( );
+#endif
       }
-      _tileServer.ClearObsoleteTiles( );
     }
+
 
     #region DISPOSE
 
@@ -709,6 +970,8 @@ namespace MapLib.Tiles
       if (!disposedValue) {
         if (disposing) {
           // TODO: dispose managed state (managed objects)
+          Service.RequestScheduler.Instance.PingEvent -= RequestScheduler_PingEvent;
+
           _tileTrackingList.Clear( );
           for (int x = 0; x < Width; x++) {
             for (int y = 0; y < Height; y++) {

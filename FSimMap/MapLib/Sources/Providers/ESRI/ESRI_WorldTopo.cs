@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Threading.Tasks;
 using DbgLib;
 
 namespace MapLib.Sources.Providers
@@ -46,15 +46,14 @@ namespace MapLib.Sources.Providers
     public override string Name { get; } = "Sources: Esri, HERE, Garmin, Intermap, INCREMENT P, GEBCO, USGS, FAO, NPS, NRCAN, GeoBase,"
                                           + "IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), © OpenStreetMap contributors, GIS User Community";
 
-    protected override MapImage GetTileImage( MapImageID mapImageID )
+    protected override string PrepareURL( MapImageID mapImageID )
     {
       if (!this.ProviderEnabled) return null;
 
       ushort z = ZoomCheck( mapImageID.ZoomLevel );
       if (z != mapImageID.ZoomLevel) { return null; } // not allowed 
 
-      string url = MakeTileImageUrl( mapImageID.TileXY, z, "", "" );
-      return base.GetTileImageUsingHttp( url, mapImageID );
+      return MakeTileImageUrl( mapImageID.TileXY, z, "", "" );
     }
 
     #endregion

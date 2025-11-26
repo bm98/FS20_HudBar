@@ -10,7 +10,7 @@ using CoordLib;
 using dNetBm98;
 
 using FSimFacilityIF;
-using FSimFlightPlans;
+using FSimFlightPlanLib;
 
 using static bm98_Map.Drawing.FontsAndColors;
 

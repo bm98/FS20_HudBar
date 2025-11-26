@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 
 namespace bm98_hbFolders
@@ -18,6 +20,8 @@ namespace bm98_hbFolders
     private static readonly string c_UserTemp = Path.GetTempPath( );
 
     // HudBar file folders in MyDocuments
+    private const string c_AppName_HudBar = "HudBar";
+
     private const string c_HudBarFolder = "MSFS_HudBarSave";
     private const string c_HudBarDbFolder = "db";
     private const string c_HudBarCacheFolder = "cache";
@@ -33,7 +37,13 @@ namespace bm98_hbFolders
 
     // Path to MyDocuments\ ...
     private static string _hudBarDocs = "";
+
     // database
+    // NEW LOCATION 
+    // the AppName used, as GenApt db is used by multiple apps we use a generic name
+    private const string c_AppName_GenApt = "GenApt";
+    // the folder to put GenApt DB in from now on
+    private static string GenAptTargetFolder => bm98chAppData.Folders.DatabaseFolderFor( c_AppName_GenApt );
     private const string c_GenAptDB20NameDblite = @"fs2020genAptV2.dblite"; // FS2020
     private const string c_GenAptDB24NameDblite = @"fs2024genAptV2.dblite"; // FS2024
 
@@ -43,6 +53,8 @@ namespace bm98_hbFolders
     private static string _genAptDBPath = ""; // will hold the final path
 
     // settings
+    // NEW LOCATION 
+    private static string SettingsTargetFolder => bm98chAppData.Folders.SettingsFolderFor( c_AppName_HudBar );
     private static string _settingsPath = ""; // will hold the final path
     private static string _settingsFile = ""; // complete path and file
 
@@ -52,6 +64,8 @@ namespace bm98_hbFolders
     private static string _landingsFile = ""; // complete path and file
 
     // cache
+    // NEW LOCATION 
+    private static string CacheTargetFolder => bm98chAppData.Folders.CacheFolderFor( c_AppName_HudBar );
     private static string _cachePath = ""; // will hold the final path
 
     // Shelf
@@ -69,16 +83,151 @@ namespace bm98_hbFolders
     // flag
     private static bool _initialized = false;
 
+    #region Migrate to NEW LOCATION
+
+    // copy the files listed to a target folder
+    private static bool CopyFolder( IEnumerable<string> srcFiles, string destFolder )
+    {
+      // sanity
+      if (!Directory.Exists( destFolder )) return false;
+
+      bool copyOK = true;
+
+      try {
+        foreach (var oldfile in srcFiles) {
+          string newFile = Path.Combine( destFolder, Path.GetFileName( oldfile ) );
+          if (!File.Exists( newFile )) {
+            // cannot copy if the file exists..
+            File.Copy( oldfile, newFile );
+          }
+        }
+      }
+      catch {
+        copyOK = false;
+      }
+      return copyOK;
+    }
+
+    // migrate and move settings if required, return false when failed to copy
+    private static bool MigrateSettingsTo_NEW_LOCATION( )
+    {
+      // Old Settings
+      string oldSettingsPath = Path.Combine( _hudBarDocs, c_HudBarSettingsFolder );
+
+      // sanity 
+      if (!Directory.Exists( SettingsTargetFolder )) return false; // dst does not exist, migration failed
+      if (!Directory.Exists( oldSettingsPath )) return true; // src folder does not even exist, assume migration is OK- nothing to migrate...
+
+      bool copyAllOK = true;
+      // check if the new location has some key files
+      try {
+        var files = Directory.EnumerateFiles( SettingsTargetFolder, "*.json", SearchOption.TopDirectoryOnly ); // json and json.N
+        bool newSettingsFiles = files.Count( ) > 0;
+
+        // migrate only if new is not available
+        if (newSettingsFiles == false) {
+          // copy old to new
+          files = Directory.EnumerateFiles( oldSettingsPath, "*.json*", SearchOption.TopDirectoryOnly );
+          copyAllOK &= CopyFolder( files, SettingsTargetFolder );
+        }
+      }
+      catch {
+        // Enumerate failure e.g. dir does not exist
+        return false;
+      }
+
+      return copyAllOK;
+    }
+
+    // migrate and move cache if required
+    private static bool MigrateCacheTo_NEW_LOCATION( )
+    {
+      string oldCachePath = Path.Combine( _hudBarDocs, c_HudBarCacheFolder );
+      // sanity 
+      if (!Directory.Exists( CacheTargetFolder )) return false; // dst does not exist, migration failed
+      if (!Directory.Exists( oldCachePath )) return true; // src folder does not even exist, assume migration is OK- nothing to migrate...
+
+      bool copyAllOK = true;
+      // check if the new location has some key files
+      try {
+        var files = Directory.EnumerateFiles( SettingsTargetFolder, "*.dblite", SearchOption.TopDirectoryOnly );
+        bool newCacheFiles = files.Count( ) > 0;
+
+        if (newCacheFiles == false) {
+          // Old Cache
+          files = Directory.EnumerateFiles( oldCachePath, "*.dblite", SearchOption.TopDirectoryOnly );
+          copyAllOK &= CopyFolder( files, CacheTargetFolder );
+          // map ini
+          files = Directory.EnumerateFiles( oldCachePath, "*.ini", SearchOption.TopDirectoryOnly );
+          copyAllOK &= CopyFolder( files, CacheTargetFolder );
+        }
+      }
+      catch {
+        // Enumerate failure e.g. dir does not exist
+        return false;
+      }
+      return copyAllOK;
+    }
+
+    // true if we need to migrate Settings from Old to New
+    private static bool Settings_MigrationNeeded( )
+    {
+      // check if the new location has some key files
+      try {
+        var files = Directory.EnumerateFiles( SettingsTargetFolder, "*.json", SearchOption.TopDirectoryOnly );
+        if (files.Count( ) > 0) return false; // seems we have already files at the new location, DONT migrate
+      }
+      catch { }// any error
+
+      string oldPath = Path.Combine( _hudBarDocs, c_HudBarSettingsFolder );
+      try {
+        var files = Directory.EnumerateFiles( oldPath, "*.json", SearchOption.TopDirectoryOnly );
+        if (files.Count( ) > 0) return true; // seems we have files at the old location, migrate
+      }
+      catch { }// any error, i.e. directory does not even exist
+
+
+      return false; // neither files exist, DONT migrate
+    }
+
+    // true if we need to migrate Cache from Old to New
+    private static bool Cache_MigrationNeeded( )
+    {
+      // check if the new location has some key files
+      try {
+        var files = Directory.EnumerateFiles( CacheTargetFolder, "*.dblite", SearchOption.TopDirectoryOnly );
+        if (files.Count( ) > 0) return false; // seems we have already files at the new location, DONT migrate
+      }
+      catch { }// any error
+
+      string oldPath = Path.Combine( _hudBarDocs, c_HudBarCacheFolder );
+      try {
+        var files = Directory.EnumerateFiles( oldPath, "*.dblite", SearchOption.TopDirectoryOnly );
+        if (files.Count( ) > 0) return true; // seems we have files at the old location, migrate
+      }
+      catch { }// any error, i.e. directory does not even exist
+
+
+      return false; // neither files exist, DONT migrate
+    }
+
+    #endregion
+
+
     /// <summary>
     /// Initialize all HudBar files and locations 
     /// </summary>
     public static void InitStorage( string appSettingsFilename )
     {
-      // main 
+      // main MyDocuments\...
       _hudBarDocs = Path.Combine( c_MyDocuments, c_HudBarFolder );
+
+      // do we start from scratch? need this later
+      bool hudBarDocsExists = Directory.Exists( _hudBarDocs );
+
       try {
-        // make sure the database path exists - but never fail..
-        if (!Directory.Exists( _hudBarDocs )) {
+        // make sure the path exists - but never fail..
+        if (!hudBarDocsExists) {
           Directory.CreateDirectory( _hudBarDocs );
         }
       }
@@ -86,7 +235,7 @@ namespace bm98_hbFolders
         _hudBarDocs = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
       }
 
-      // temp
+      // temp in <UserTEMP>
       _tempFiles = Path.Combine( c_UserTemp, c_HudBarTemp );
       try {
         // make sure the database path exists - but never fail..
@@ -98,34 +247,58 @@ namespace bm98_hbFolders
         _tempFiles = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
       }
 
-      // database
-      _genAptDBPath = Path.Combine( _hudBarDocs, c_HudBarDbFolder );
-      try {
-        // make sure the database path exists - but never fail..
-        if (!Directory.Exists( _genAptDBPath )) {
-          Directory.CreateDirectory( _genAptDBPath );
-        }
-      }
-      catch (Exception ex) {
-        _genAptDBPath = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
-      }
-      _genAptDB20File = Path.Combine( _genAptDBPath, c_GenAptDB20NameDblite );
-      _genAptDB24File = Path.Combine( _genAptDBPath, c_GenAptDB24NameDblite );
 
       // settings
-      _settingsPath = Path.Combine( _hudBarDocs, c_HudBarSettingsFolder );
-      try {
-        // make sure the settings path exists - but never fail..
-        if (!Directory.Exists( _settingsPath )) {
-          Directory.CreateDirectory( _settingsPath );
-        }
+      bool migrationSuccessfull = true;
+      if (hudBarDocsExists && Settings_MigrationNeeded( )) {
+        migrationSuccessfull = MigrateSettingsTo_NEW_LOCATION( );
       }
-      catch (Exception ex) {
-        _settingsPath = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
+
+      // prefer NEW LOCATION if Migration was successfull or not needed 
+      if (migrationSuccessfull) {
+        _settingsPath = SettingsTargetFolder;
+      }
+      else {
+        // use old if migration failed
+        _settingsPath = Path.Combine( _hudBarDocs, c_HudBarSettingsFolder );
+        try {
+          // make sure the settings path exists - but never fail..
+          if (!Directory.Exists( _settingsPath )) {
+            Directory.CreateDirectory( _settingsPath );
+          }
+        }
+        catch (Exception ex) {
+          _settingsPath = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
+        }
       }
       _settingsFile = Path.Combine( _settingsPath, appSettingsFilename );
 
-      // landings
+
+      // caches 
+      migrationSuccessfull = true;
+      if (hudBarDocsExists && Cache_MigrationNeeded( )) {
+        migrationSuccessfull = MigrateCacheTo_NEW_LOCATION( );
+      }
+      // prefer NEW LOCATION if Migration was successfull or not needed 
+      if (migrationSuccessfull) {
+        _cachePath = CacheTargetFolder;
+      }
+      else {
+        // use old if migration failed
+        _cachePath = Path.Combine( _hudBarDocs, c_HudBarCacheFolder );
+        try {
+          // make sure the settings path exists - but never fail..
+          if (!Directory.Exists( _cachePath )) {
+            Directory.CreateDirectory( _cachePath );
+          }
+        }
+        catch (Exception ex) {
+          _cachePath = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
+        }
+      }
+
+
+      // landings remain in HudBar Document folder
       _landingsPath = Path.Combine( _hudBarDocs, c_HudBarLandingsFolder );
       try {
         // make sure the settings path exists - but never fail..
@@ -138,18 +311,31 @@ namespace bm98_hbFolders
       }
       _landingsFile = Path.Combine( _landingsPath, c_HudBarLandingsFile );
 
-      // caches 
-      _cachePath = Path.Combine( _hudBarDocs, c_HudBarCacheFolder );
-      try {
-        // make sure the settings path exists - but never fail..
-        if (!Directory.Exists( _cachePath )) {
-          Directory.CreateDirectory( _cachePath );
+
+      // GenApt database - may exist independent of HudBar, will not be migrated but used when there
+      // prefer NEW LOCATION
+      _genAptDBPath = GenAptTargetFolder;
+      _genAptDB20File = Path.Combine( _genAptDBPath, c_GenAptDB20NameDblite );
+      _genAptDB24File = Path.Combine( _genAptDBPath, c_GenAptDB24NameDblite );
+
+      if (!(File.Exists( _genAptDB20File ) || File.Exists( _genAptDB24File ))) {
+        // use old location if NEW LOCATION does not have any GenApt db file
+        _genAptDBPath = Path.Combine( _hudBarDocs, c_HudBarDbFolder );
+        try {
+          // make sure the database path exists - but never fail..
+          if (!Directory.Exists( _genAptDBPath )) {
+            Directory.CreateDirectory( _genAptDBPath );
+          }
         }
-      }
-      catch (Exception ex) {
-        _cachePath = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
+        catch (Exception ex) {
+          _genAptDBPath = Path.GetFullPath( @".\" ); // app Dir - at least a valid location..
+        }
+        _genAptDB20File = Path.Combine( _genAptDBPath, c_GenAptDB20NameDblite );
+        _genAptDB24File = Path.Combine( _genAptDBPath, c_GenAptDB24NameDblite );
       }
 
+
+      CheckGenAptFiles( );
       _initialized = true;
     }
 

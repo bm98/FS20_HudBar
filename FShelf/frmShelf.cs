@@ -29,8 +29,8 @@ using bm98_hbFolders;
 using bm98_Map;
 using bm98_Map.Data;
 
-using FSimFlightPlans.SimBrief;
-using FSimFlightPlans.MSFSPln;
+using FSimFlightPlanLib.SimBrief;
+using FSimFlightPlanLib.MSFSPln;
 
 using FShelf.Profiles;
 using FShelf.FPlans;
@@ -148,7 +148,7 @@ namespace FShelf
     /// NOTE: don't mess with it and update when the load event is fired... 
     /// TODO: provide a tamper safe interface...
     /// </summary>
-    public FSimFlightPlans.FlightPlan FlightPlanRef => _flightPlanHandler.FlightPlan;
+    public FSimFlightPlanLib.FlightPlan FlightPlanRef => _flightPlanHandler.FlightPlan;
 
     /// <summary>
     /// Departure Airport ICAO ID
@@ -229,7 +229,7 @@ namespace FShelf
       if (OFD.ShowDialog( this ) == DialogResult.OK) {
         //selected
         lblCfgPlanMessage.Text = "loading...";
-        if (_flightPlanHandler.RequestPlanFile( OFD.FileName )) {
+        if (_flightPlanHandler.RequestPlanFromFile( OFD.FileName )) {
           return true;
           // will report in the Event
         }
@@ -261,7 +261,7 @@ namespace FShelf
             if (!string.IsNullOrWhiteSpace( efbS )) { break; }
           }
           if (!string.IsNullOrWhiteSpace( efbS )) {
-            _flightPlanHandler.RequestPlanData( efbS, FSimFlightPlans.SourceOfFlightPlan.MS_Efb24 );
+            _flightPlanHandler.RequestPlanFromDocument( efbS, FSimFlightPlanLib.SourceOfFlightPlan.MS_EFB24 );
             // will report in event later
           }
         }, "Get EFB24 Route" ) );
@@ -271,7 +271,7 @@ namespace FShelf
       else {// use default 2020 always  even if the sim is not running //if (fsVersion == FSimVersion.MSFS2020) {
         // switch folder discovery first
         FSimFolders.MsFolders.Use2024( false );
-        if (_flightPlanHandler.RequestPlanFile( MSFSPlnHandler.CustomFlightPlan_filename )) {
+        if (_flightPlanHandler.RequestPlanFromFile( FSimFolders.MsFolders.GetCustomFlight_Plan( ) )) {
           return true;
           // will report in the Event
         }
@@ -289,7 +289,7 @@ namespace FShelf
       // never fail
       try {
         lblCfgPlanMessage.Text = "loading...";
-        return _flightPlanHandler?.RequestPlanData( routeString, FSimFlightPlans.SourceOfFlightPlan.GEN_Rte ) ?? false;
+        return _flightPlanHandler?.RequestPlanFromDocument( routeString, FSimFlightPlanLib.SourceOfFlightPlan.Gen_RTE ) ?? false;
         // will report in the Event
       }
       catch (Exception ex) {
@@ -528,10 +528,6 @@ namespace FShelf
       LOG.Info( "INIT:", $"Init Settings Storage with: 'FShelfAppSettings.json'" );
       Folders.InitStorage( "FShelfAppSettings.json" );
 
-      // Init the FlightPlan Module with our locations
-      LOG.Info( "INIT:", $"Init Flightplan with: {Folders.GenAptDBFile} Tmp:{Folders.UserTempPath}" );
-      FSimFlightPlans.FlightPlan.Setup( Folders.GenAptDBFile, Folders.UserTempPath );
-
       // Init Settings
       LOG.Info( "INIT:", $"Init AppSettings with: {Folders.SettingsFile}<{instance}>" );
       AppSettings.InitInstance( Folders.SettingsFile, instance );
@@ -540,6 +536,11 @@ namespace FShelf
       MapLib.MapManager.Instance.InitMapLib( Folders.UserFilePath ); // Init before anything else
       LOG.Info( "INIT:", $"Init DiskCache with: {Folders.CachePath}" );
       MapLib.MapManager.Instance.SetDiskCacheLocation( Folders.CachePath ); // Map cache location
+
+      // Init FSim Libraries for Doc Gen
+      LOG.Info( "INIT:", $"Init FSim..Doc Libraries with: {Folders.UserTempPath}" );
+      FSimFlightPlanDoc.FlightPlanDoc.Setup( Folders.UserTempPath );
+      FSimAirportDoc.AirportDoc.Setup( Folders.UserTempPath );
 
       // ---------------
 
@@ -555,7 +556,7 @@ namespace FShelf
       // Flightplan Handler
       _fpGuiHandler = new dNetBm98.Win.WinFormInvoker( this );
       _flightPlanHandler.FlightPlanArrived += _flightPlanHandler_FlightPlanArrived;
-      _jobRunner = new JobRunner( );
+      _jobRunner = new JobRunner( 1 ); // sequential runner
 
       // handle some Map Events
       aMap.MapCenterChanged += AMap_MapCenterChanged;
@@ -683,7 +684,7 @@ namespace FShelf
 
       // init Map Aircraft if connected
       _updates = 0;
-      LatLon loc = new LatLon( 0, 0, 0 );
+      LatLon loc = new LatLon( 0.0, 0.0, 0.0 );
       if (SC.SimConnectClient.Instance.IsConnected) {
         loc.Lat = SV.Get<double>( SItem.dGS_Acft_Lat );
         loc.Lon = SV.Get<double>( SItem.dGS_Acft_Lon );
@@ -1070,9 +1071,17 @@ namespace FShelf
         LoadAirport( );
 
         string dbSource = Folders.FS2024Used ? "MSFS2024" : "MSFS2020";
-        var aptReport = new AptReport.AptReportTable( );
-        aptReport.SaveDocument( _airport, _navaidList, _fixList, dbSource,
+        // new Using FSimAirportDoc
+        var aptTable = new FSimAirportDoc.AptReport.AptReportTable( );
+        var result = aptTable.SaveDocumentAsPDF( _airport, _navaidList, _fixList, dbSource,
                             Path.Combine( AppSettings.Instance.ShelfFolder, Folders.AptReportSubfolder ) );
+        if (!result) LOG.Error( "btGetAirport_Click", $"Creating Airport Report failed for {_airport.Ident}" );
+        // old using FShelf AptReport
+        /*
+          var aptReport = new AptReport.AptReportTable( );
+          aptReport.SaveDocument( _airport, _navaidList, _fixList, dbSource,
+                              Path.Combine( AppSettings.Instance.ShelfFolder, Folders.AptReportSubfolder ) );
+        */
       }
     }
 
@@ -1245,7 +1254,7 @@ namespace FShelf
     #region FlighPlan Data Events
 
     // handles the GUI parts
-    private void HandleFPArrived_gui( FlightPlanArrivedEventArgs e )
+    private void HandleFPArrived_gui( FSimFlightPlanLib.Wrapper.FlightPlanArrivedEventArgs e )
     {
       lblCfgPlanMessage.Text = _flightPlanHandler.LoadMessage;
 
@@ -1285,7 +1294,7 @@ namespace FShelf
     }
 
     // FP Handler signals arrival of a Flightplan - arrives from a separate thread!!!
-    private void _flightPlanHandler_FlightPlanArrived( object sender, FlightPlanArrivedEventArgs e )
+    private void _flightPlanHandler_FlightPlanArrived( object sender, FSimFlightPlanLib.Wrapper.FlightPlanArrivedEventArgs e )
     {
       if (this.InvokeRequired) {
         this.Invoke( (MethodInvoker)delegate { HandleFPArrived_gui( e ); } );
@@ -1598,7 +1607,7 @@ namespace FShelf
       if (OFD.ShowDialog( this ) == DialogResult.OK) {
         //selected
         lblCfgPlanMessage.Text = "loading...";
-        if (!_flightPlanHandler.RequestPlanFile( OFD.FileName )) {
+        if (!_flightPlanHandler.RequestPlanFromFile( OFD.FileName )) {
           lblCfgPlanMessage.Text = "unknown file, aborted";
         }
         // will report in the Event

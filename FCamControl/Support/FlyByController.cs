@@ -81,7 +81,7 @@ namespace FS20_CamControl
       _msfsKeyCatalog = new MSFS_KeyCat( msfsKeyCatalog ); // maintain a copy of the catalog
       _camera = camera;
 
-      _jobRunner = new JobRunner( );
+      _jobRunner = new JobRunner( 1 ); // sequential runner
 
       _kbdTimer = new CountdownTimer( );
       _kbdTimer.Progress += _kbdTimer_Progress;
@@ -209,7 +209,7 @@ namespace FS20_CamControl
       // try to preserve values after Jobs
       int dMoveSpeed = _camera.CameraAPI.CamValueAPI.DroneMoveSpeed;
       int dRotSpeed = _camera.CameraAPI.CamValueAPI.DroneRotSpeed;
-      int dZoom =  _camera.CameraAPI.CamValueAPI.ZoomLevel;
+      int dZoom = _camera.CameraAPI.CamValueAPI.ZoomLevel;
 
       // jobs need to add dynamic arguments with the job,
       // static ones can be sourced from the module as the job execution is very local in time

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading;
 
 using MapLib.Tiles;
@@ -37,6 +38,9 @@ namespace MapLib.Service
     private const int NUM_OF_THREAD_TILE = 8;  // 20231124 Redesign to throttle only HTTP calls
     private const int NUM_OF_THREAD_CACHE = 4;  // Disk Caching may use more..
 
+    // interval of the PingEvent
+    private readonly TimeSpan c_pingInterval = new TimeSpan( 0, 0, 0, 5 ); // 5sec
+
     // the dispatcher
     private Thread _dispatcherTask = null;
     private bool _abortDispatcher = false;
@@ -51,6 +55,17 @@ namespace MapLib.Service
     // cache providers
     private DiskSource _diskSource;
     private MemorySource _memorySource;
+
+    /// <summary>
+    /// A scheduler Ping even triggered every .. sec 
+    ///  - not this is a separate thread that pings
+    /// </summary>
+    public event EventHandler PingEvent;
+    private void OnPingEvent( )
+    {
+      _tileLoaderService.WorkflowCleanup( );
+      PingEvent?.Invoke( this, EventArgs.Empty );
+    }
 
     /// <summary>
     /// True if the Scheduler is running
@@ -87,7 +102,7 @@ namespace MapLib.Service
     private RequestScheduler( )
     {
       // the dispatcher
-      _dispatcherTask = new Thread( this.StartDispatcher ) {
+      _dispatcherTask = new Thread( this.RunDispatcher ) {
         IsBackground = true // set to background so it will not prevent the App from shutting down
       };
 
@@ -157,28 +172,63 @@ namespace MapLib.Service
 
     #region TileLoader Access
 
+    private TileLoaderService _tileLoaderService;
+
+    /// <summary>
+    /// Only JobNumbers > than this number are processed
+    /// </summary>
+    public int JobNumberLimit {
+      get => _jobNumberLimit;
+      set {
+        _jobNumberLimit = value;
+        _tileLoaderService.UpdateJobNumberLimit( value );
+      }
+    }
+    private int _jobNumberLimit = 0;
+
     /// <summary>
     /// Grants access to the Catalog of received Tiles
     /// -> USE FullKey to retrieve images
     /// </summary>
     public TileWorkflowCat TileWorkflowCatalog => _tileworkflowCatalog;
+
+    /// <summary>
+    /// Returns a Job Wrapper with the currently available Services loaded
+    /// </summary>
+    /// <returns>A LoaderJobWrapper or null</returns>
+    public LoaderJobWrapper GetJobWrapper( TileLoaderJob tileLoaderJob )
+    {
+      if (tileLoaderJob.JobNumber > JobNumberLimit) {
+        // only if not already discarded by JobNumber
+
+        var jobWrapper = new LoaderJobWrapper( tileLoaderJob );
+        // add our Sources in FIFO Manner (provider is added already..)
+        if (_diskSource.ProviderEnabled) jobWrapper.AddSource( _diskSource );
+        if (_memorySource.ProviderEnabled) jobWrapper.AddSource( _memorySource );
+        return jobWrapper;
+      }
+
+      return null;
+    }
+
     /// <summary>
     /// Add one TileLoader job
     /// </summary>
     /// <param name="tileLoaderJob">A TileLoader job</param>
     public void Add_TileLoaderJob( TileLoaderJob tileLoaderJob )
     {
-      var jobWrapper = new LoaderJobWrapper( tileLoaderJob );
-      // add our Sources in FIFO Manner (provider is added already..)
-      if (_diskSource.ProviderEnabled) jobWrapper.AddSource( _diskSource );
-      if (_memorySource.ProviderEnabled) jobWrapper.AddSource( _memorySource );
-      // send for processing
-      _tileLoaderJobQueue.Enqueue( jobWrapper );
+      var jobWrapper = GetJobWrapper( tileLoaderJob );
+      if (jobWrapper != null) {
+        // send for processing
+        _tileLoaderJobQueue.Enqueue( jobWrapper );
+      }
     }
 
     #endregion
 
     #region DiskCache Access
+
+    private DiskCacheService _diskCacheService;
 
     /// <summary>
     /// Add one DiskCache job
@@ -192,28 +242,29 @@ namespace MapLib.Service
 
     #endregion
 
-
     /// <summary>
     /// Master Dispatcher Task Routine 
     /// </summary>
-    private void StartDispatcher( )
+    private void RunDispatcher( )
     {
       // trigger for run once at startup jobs
       bool runOnce = true;
+      DateTime lastPing = DateTime.MinValue;
 
       // Client Task to handle client requests
-      var loaderService = new TileLoaderService( _tileLoaderJobQueue, _tileworkflowCatalog );
-      loaderService.StartThreads( ); // start the threads
-      var cacheService = new DiskCacheService( _diskCacheJobQueue );
-      cacheService.StartThreads( ); // start the threads
+      _tileLoaderService = new TileLoaderService( _tileLoaderJobQueue, _tileworkflowCatalog );
+      _tileLoaderService.StartThreads( ); // start the threads
 
+      _diskCacheService = new DiskCacheService( _diskCacheJobQueue );
+      _diskCacheService.StartThreads( ); // start the threads
+
+      // Task to maintain the Cache Size of the Memory Cache
       try {
         // checks if we have to abort
         while (!_abortDispatcher) {
           if (runOnce) {
             // run once asynch chores could be added here
             _diskSource.MaintainCacheSize( );
-
             // not any longer
             runOnce = false;
           }
@@ -224,6 +275,13 @@ namespace MapLib.Service
           // .. 
           // wait a while 
           Thread.Sleep( 500 ); // runs at a rel. slow pace
+
+          // issue pings at an interval
+          if (DateTime.Now > (lastPing + c_pingInterval)) {
+            OnPingEvent( );
+            lastPing = DateTime.Now;
+          }
+
         }// loop
 
       }
@@ -232,9 +290,10 @@ namespace MapLib.Service
       }
 
       LOG.Info( "RequestScheduler.StartDispatcher", $"Aborted on command" );
+
       // Stop client requests handling
-      loaderService.Stop( );
-      cacheService.Stop( );
+      _tileLoaderService.Stop( ); _tileLoaderService = null;
+      _diskCacheService.Stop( ); _diskCacheService = null;
     }
 
 
@@ -257,6 +316,14 @@ namespace MapLib.Service
       // Worker threads
       private Thread[] _threadTasks = new Thread[NUM_OF_THREAD_TILE];
 
+      private int _jobNumberLimit = 0;
+
+      /// <summary>
+      /// Update the JobNumber Limit to a new value
+      /// </summary>
+      /// <param name="limit"></param>
+      public void UpdateJobNumberLimit( int limit ) => _jobNumberLimit = limit;
+
       /// <summary>
       /// cTor: Start the Service with some args
       /// </summary>
@@ -269,11 +336,37 @@ namespace MapLib.Service
       }
 
       /// <summary>
+      /// Cleanup the WorkflowCat from obsolete items
+      /// </summary>
+      public void WorkflowCleanup( )
+      {
+        // nothing to be done anymore for now
+        if (_jobQueue.IsEmpty) {
+          var wfKey = _tileWorkflowCatalog.Keys.FirstOrDefault( );
+          while (!string.IsNullOrEmpty( wfKey )) {
+            try {
+              // in case someone removed it just...
+              if (_tileWorkflowCatalog[wfKey].Job.IsCancelled) {
+                if (_tileWorkflowCatalog.TryRemove( wfKey, out TileWorkflow workflow )) {
+                  workflow.MapImage?.Dispose( );
+                }
+              }
+            }
+            catch { }
+            // next
+            wfKey = _tileWorkflowCatalog.Keys.FirstOrDefault( );
+          }
+        }
+      }
+
+      /// <summary>
       /// Start the Worker threads
       /// </summary>
       public void StartThreads( )
       {
         _continueProcess = true;
+        _jobNumberLimit = 0;
+
         // Start threads to handle Loader Task
         for (int i = 0; i < _threadTasks.Length; i++) {
           _threadTasks[i] = new Thread( this.TileLoader_Process ) {
@@ -303,33 +396,43 @@ namespace MapLib.Service
           if (_jobQueue.TryDequeue( out job )) {
             // Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: Job started ({job.MapImageID.FullKey}) - {job.TileLoaderJob.MapImageID}" );
 
-            _threadTasks[taskID].IsBackground = false;
-            job.TileLoaderJob.StartExec( ); // signal job started execution
-            // get the first source to start the retrieval process
-            var service = job.GetNextSource( );
-            if (service != null) {
-              // synchronous ..
-              MapImage img = service.GetTileImage( job );
-              if (img != null) {
-                // Push the Image into the Workflow
-                success = _tileWorkflowCatalog.TryAdd( job.MapImageID.FullKey, img );
-                //   Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: Add image ({job.MapImageID.FullKey}) Success? {success}" );
-                if (success) {
-                  // MUST be visible in order to further process the image
-                  while (!_tileWorkflowCatalog.ContainsKey( job.MapImageID.FullKey )) {
-                    Thread.SpinWait( 10 );
-                    //         Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: SpinWaited ..." );
+            if (job.TileLoaderJob.JobNumber > _jobNumberLimit) {
+              // only if not discarded by JobNumber
+
+              _threadTasks[taskID].IsBackground = false;
+              job.TileLoaderJob.StartExec( ); // signal job started execution
+
+              // get the first source to start the retrieval process
+              //    GetTileImage()  dives down in the source list until served or end of list
+              var service = job.GetNextSource( );
+              if (service != null) {
+                // synchronous ..
+                MapImage img = service.GetTileImage( job );
+                if (img != null) {
+                  // Push the Image into the Workflow
+                  success = _tileWorkflowCatalog.TryAdd( job.MapImageID.FullKey, new TileWorkflow( job.TileLoaderJob, img ) );
+                  //   Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: Add image ({job.MapImageID.FullKey}) Success? {success}" );
+                  if (success) {
+                    // MUST be visible in the Catalog in order to further process the image
+                    while (!_tileWorkflowCatalog.ContainsKey( job.MapImageID.FullKey )) {
+                      Thread.SpinWait( 10 );
+                      //         Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: SpinWaited ..." );
+                    }
                   }
                 }
+                else {
+                  //       Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: Error - image could not be retrieved ({job.MapImageID.ZxyKey})" );
+                }
               }
-              else {
-                //       Debug.WriteLine( $"{DateTime.Now.Ticks} TileLoaderService.TileLoader_Process[{taskID}]: Error - image could not be retrieved ({job.MapImageID.ZxyKey})" );
-              }
-            }
-            // process the job in the next loop
-            // let the job handle the outcome
-            job.TileLoaderJob.ProcessTile( success, taskID );
+              // process the job in the next loop
+              // let the job handle the outcome
+              job.TileLoaderJob.ProcessTile( success, taskID );
 
+            }
+            else {
+              // DEBUG outdated job
+              ;
+            }
             // pace as Busy
             timeout_ms = c_TimeoutBusy;
           }

@@ -131,8 +131,11 @@ namespace bm98_Map.Drawing
     // Signal the user that data has arrived
     private void OnLoadComplete( LoadCompleteEventArgs eventArgs )
     {
+      if (disposedValue) return; // no longer..
+
       if (LoadComplete == null)
         LOG.Error( "VPort2.OnLoadComplete", "NO EVENT RECEIVERS HAVE REGISTERED" );
+
       LoadComplete?.Invoke( this, eventArgs );
     }
 
@@ -142,6 +145,8 @@ namespace bm98_Map.Drawing
     internal event EventHandler MapLoading;
     private void OnMapLoading( )
     {
+      if (disposedValue) return; // no longer..
+
       _matLoadStart = DateTime.Now.Ticks;
       MapLoading?.Invoke( this, new EventArgs( ) );
     }
@@ -183,13 +188,15 @@ namespace bm98_Map.Drawing
 
 
     /// <summary>
-    /// Start loading of the map
+    /// Start loading of the map - the map is reloaded from scratch
     /// </summary>
     /// <param name="coordOnCenterTile"></param>
     /// <param name="zoomLevel"></param>
     /// <param name="provider"></param>
     public void LoadMap( LatLon coordOnCenterTile, ushort zoomLevel, MapProvider provider )
     {
+      if (disposedValue) return; // no longer..
+
       // reset viewport zoom and place the map left top
       SetScaleFactor( c_scaleMin ); // reset
       _tileMatrix.LoadMatrix( coordOnCenterTile, zoomLevel, provider );
@@ -275,47 +282,68 @@ namespace bm98_Map.Drawing
     // Renders the static drawings on the base Canvas
     private void RenderStatic_low( )
     {
+      if (disposedValue) return; // no longer..
 
       lock (_canvas) {
-        // Set world transform of graphics object to translate.
-        _canvasMatrix.Reset( );
-        if (MapHeading != 0) {
-          var mp = MapToCanvasPixel( ViewCenterLatLon );
-          if (MapHeading != 0) {
-            _canvasMatrix.Translate( mp.X, mp.Y );
-            _canvasMatrix.Rotate( -MapHeading );
-            _canvasMatrix.Translate( -mp.X, -mp.Y );
-          }
-        }
+        // when closing the prog - it often has some painting still going on but the GDI is no longer avail...
+        // ending in Exceptions hence the try..
+        try {
 
-        // render static parts
-        using (var g = Graphics.FromImage( _canvasStatic )) {
-          g.Clear( Color.Black ); // does this well??
-          g.Transform = _canvasMatrix;
-          GProc.Paint( g, this );
+          // Set world transform of graphics object to translate.
+          _canvasMatrix.Reset( );
+          if (MapHeading != 0) {
+            var mp = MapToCanvasPixel( ViewCenterLatLon );
+            if (MapHeading != 0) {
+              _canvasMatrix.Translate( mp.X, mp.Y );
+              _canvasMatrix.Rotate( -MapHeading );
+              _canvasMatrix.Translate( -mp.X, -mp.Y );
+            }
+          }
+
+          // render static parts
+          using (var g = Graphics.FromImage( _canvasStatic )) {
+            if (disposedValue) return; // no longer..
+
+            g.Clear( Color.Black ); // does this well??
+            g.Transform = _canvasMatrix;
+            GProc.Paint( g, this );
+          }
+          // update the sprites and complete the canvas
+          using (var g = Graphics.FromImage( _canvas )) {
+            if (disposedValue) return; // no longer..
+
+            // base is the static canvas
+            g.DrawImageUnscaled( _canvasStatic, 0, 0 );
+            g.Transform = _canvasMatrix;
+            // paint dynamic items to _canvas
+            GProcSprite.Paint( g, this );
+          }
+
         }
-        // update the sprites and complete the canvas
-        using (var g = Graphics.FromImage( _canvas )) {
-          // base is the static canvas
-          g.DrawImageUnscaled( _canvasStatic, 0, 0 );
-          g.Transform = _canvasMatrix;
-          // paint dynamic items to _canvas
-          GProcSprite.Paint( g, this );
-        }
+        catch { }
       }
     }
 
     // Renders the dynamic drawings on the Canvas
     public void RenderSprite_low( )
     {
+      if (disposedValue) return; // no longer..
+
       lock (_canvas) {
-        using (var g = Graphics.FromImage( _canvas )) {
-          // base is the static canvas
-          g.DrawImageUnscaled( _canvasStatic, 0, 0 );
-          g.Transform = _canvasMatrix;
-          // paint dynamic items to _canvas
-          GProcSprite.Paint( g, this );
+        // when closing the prog - it often has some painting still going on but the GDI is no longer avail...
+        // ending in Exceptions hence the try..
+        try {
+
+          using (var g = Graphics.FromImage( _canvas )) {
+            // base is the static canvas
+            g.DrawImageUnscaled( _canvasStatic, 0, 0 );
+            g.Transform = _canvasMatrix;
+            // paint dynamic items to _canvas
+            GProcSprite.Paint( g, this );
+          }
+
         }
+        catch { }
       }
     }
 
@@ -325,6 +353,8 @@ namespace bm98_Map.Drawing
     /// </summary>
     public void RenderStatic( bool threaded = true )
     {
+      if (disposedValue) return; // no longer..
+
       //      Debug.WriteLine( $"VPort2.RenderStatic" );
       if (threaded) {
         Task.Factory.StartNew( RenderStatic_low );
@@ -340,6 +370,8 @@ namespace bm98_Map.Drawing
     /// </summary>
     public void RenderSprite( bool threaded = true )
     {
+      if (disposedValue) return; // no longer..
+
       //      Debug.WriteLine( $"VPort2.RenderSprite" );
       if (threaded) {
         Task.Factory.StartNew( RenderSprite_low );
@@ -384,7 +416,7 @@ namespace bm98_Map.Drawing
 
       // prep the TileMatrix
       _tileMatrix.LoadComplete += _tileMatrix_LoadComplete;
-      _tileMatrix.LoadMatrix( new LatLon( 0, 0 ), (int)MapRange.Far, MapProvider.DummyProvider ); // INIT EMPTY
+      _tileMatrix.LoadMatrix( new LatLon( 0.0, 0 ), (int)MapRange.Far, MapProvider.DummyProvider ); // INIT EMPTY
 
       // reset Transform Matrices
       _toScaleMat.Reset( );
@@ -405,6 +437,8 @@ namespace bm98_Map.Drawing
     // fired by the matrix when a tile was loaded
     private void _tileMatrix_LoadComplete( object sender, LoadCompleteEventArgs e )
     {
+      if (disposedValue) return; // no longer..
+
       //   Debug.WriteLine( $"{DateTime.Now.Ticks} VPort2._tileMatrix_LoadComplete- MatComplete: {e.MatrixComplete}  LoadFailed: {e.LoadFailed}" );
 
       // can be
@@ -413,31 +447,30 @@ namespace bm98_Map.Drawing
 
       if (e.MatrixComplete) {
         // complete but may have failed tiles
-        if (_tileMatrix.HasFailedTiles) {
-          LOG.Info( "VPort2._tileMatrix_LoadComplete", "HasFaileTiles - about to reload failed ones" );
-          _tileMatrix.LoadFailedTiles( );
+        if (_tileMatrix.HasPendingTiles) {
+          LOG.Info( "VPort2._tileMatrix_LoadComplete", "HasPendingTiles - about to reload those" );
+          //_tileMatrix.ReloadFailedTiles( );
+          _tileMatrix.ReloadFailedTiles_EX1( );
         }
         // need to render the map with new content
         RenderStatic( );
         OnLoadComplete( e ); // reported, needs screen refresh
       }
+
       else {
         // not yet complete
         if (e.LoadFailed) {
           // Single tile load failed
-          LOG.Info( "VPort2._tileMatrix_LoadComplete", "LoadFailed" );
-          OnLoadComplete( e ); // is reported
+          LOG.Debug( "VPort2._tileMatrix_LoadComplete", "LoadFailed" );
         }
-        else {
-          // single tile load success
-          // need to render the map with new content after every second to have some feedback to the user
-          //  a reply for each tile loaded leads to a very slugish map movement
-          var secSinceStart = new TimeSpan( DateTime.Now.Ticks - _matLoadStart ).TotalSeconds;
-          if (secSinceStart > 1) {
-            _matLoadStart = DateTime.Now.Ticks; // restart
-            RenderStatic( );
-            OnLoadComplete( e ); // reported, needs screen refresh
-          }
+        // single tile load success
+        // need to render the map with new content after every half second to have some feedback to the user
+        //  a reply for each tile loaded leads to a very slugish map movement
+        var secSinceStart = new TimeSpan( DateTime.Now.Ticks - _matLoadStart ).TotalMilliseconds;
+        if (secSinceStart > 1000) {
+          _matLoadStart = DateTime.Now.Ticks; // restart
+          RenderStatic( );
+          OnLoadComplete( e ); // reported, needs screen refresh
         }
       }
     }

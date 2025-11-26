@@ -38,6 +38,7 @@
       this.asdasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.checkBox1 = new System.Windows.Forms.CheckBox();
       this.panel1 = new System.Windows.Forms.Panel();
+      this.label7 = new System.Windows.Forms.Label();
       this.cbxBoxDivider = new System.Windows.Forms.CheckBox();
       this.cbxFrameItems = new System.Windows.Forms.CheckBox();
       this.btProfileColors = new System.Windows.Forms.Button();
@@ -68,10 +69,11 @@
       this.groupBox2 = new System.Windows.Forms.GroupBox();
       this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
       this.chkInGame = new System.Windows.Forms.CheckBox();
-      this.label5 = new System.Windows.Forms.Label();
       this.chkKeyboard = new System.Windows.Forms.CheckBox();
       this.label1 = new System.Windows.Forms.Label();
       this.txHkShowHide = new System.Windows.Forms.TextBox();
+      this.label5 = new System.Windows.Forms.Label();
+      this.txHkJumpScreen = new System.Windows.Forms.TextBox();
       this.label2 = new System.Windows.Forms.Label();
       this.txHkShelf = new System.Windows.Forms.TextBox();
       this.label3 = new System.Windows.Forms.Label();
@@ -79,6 +81,7 @@
       this.label4 = new System.Windows.Forms.Label();
       this.txHkChecklistBox = new System.Windows.Forms.TextBox();
       this.panel2 = new System.Windows.Forms.Panel();
+      this.cbxMSFSHoverMode = new System.Windows.Forms.CheckBox();
       this.btTestVoice = new System.Windows.Forms.Button();
       this.label6 = new System.Windows.Forms.Label();
       this.btColors = new System.Windows.Forms.Button();
@@ -94,7 +97,7 @@
       this.timer1 = new System.Windows.Forms.Timer(this.components);
       this.OFD = new System.Windows.Forms.OpenFileDialog();
       this.SFD = new System.Windows.Forms.SaveFileDialog();
-      this.cbxMSFSHoverMode = new System.Windows.Forms.CheckBox();
+      this.btOpenSettingsFolder = new System.Windows.Forms.Button();
       this.tlpMain.SuspendLayout();
       this.tlpProfile.SuspendLayout();
       this.flpP1.SuspendLayout();
@@ -214,6 +217,7 @@
       // panel1
       // 
       this.panel1.ContextMenuStrip = this.ctxMenu;
+      this.panel1.Controls.Add(this.label7);
       this.panel1.Controls.Add(this.cbxBoxDivider);
       this.panel1.Controls.Add(this.cbxFrameItems);
       this.panel1.Controls.Add(this.btProfileColors);
@@ -235,6 +239,15 @@
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(738, 128);
       this.panel1.TabIndex = 0;
+      // 
+      // label7
+      // 
+      this.label7.AutoSize = true;
+      this.label7.Location = new System.Drawing.Point(373, 9);
+      this.label7.Name = "label7";
+      this.label7.Size = new System.Drawing.Size(82, 15);
+      this.label7.TabIndex = 63;
+      this.label7.Text = "Profile Hotkey";
       // 
       // cbxBoxDivider
       // 
@@ -284,7 +297,7 @@
       this.txBgFileBorderP1.Location = new System.Drawing.Point(476, 92);
       this.txBgFileBorderP1.Name = "txBgFileBorderP1";
       this.txBgFileBorderP1.ReadOnly = true;
-      this.txBgFileBorderP1.Size = new System.Drawing.Size(230, 23);
+      this.txBgFileBorderP1.Size = new System.Drawing.Size(256, 23);
       this.txBgFileBorderP1.TabIndex = 38;
       this.txBgFileBorderP1.TabStop = false;
       this.txBgFileBorderP1.Text = "Border: 50;60;20;10";
@@ -553,13 +566,13 @@
       // 
       // groupBox2
       // 
-      this.groupBox2.BackColor = System.Drawing.Color.MintCream;
+      this.groupBox2.BackColor = System.Drawing.Color.Honeydew;
       this.groupBox2.Controls.Add(this.flowLayoutPanel1);
       this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
       this.groupBox2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.groupBox2.Location = new System.Drawing.Point(749, 308);
       this.groupBox2.Name = "groupBox2";
-      this.groupBox2.Padding = new System.Windows.Forms.Padding(10);
+      this.groupBox2.Padding = new System.Windows.Forms.Padding(10, 5, 10, 5);
       this.groupBox2.Size = new System.Drawing.Size(222, 305);
       this.groupBox2.TabIndex = 2;
       this.groupBox2.TabStop = false;
@@ -570,10 +583,11 @@
       this.flowLayoutPanel1.AutoSize = true;
       this.flowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.flowLayoutPanel1.Controls.Add(this.chkInGame);
-      this.flowLayoutPanel1.Controls.Add(this.label5);
       this.flowLayoutPanel1.Controls.Add(this.chkKeyboard);
       this.flowLayoutPanel1.Controls.Add(this.label1);
       this.flowLayoutPanel1.Controls.Add(this.txHkShowHide);
+      this.flowLayoutPanel1.Controls.Add(this.label5);
+      this.flowLayoutPanel1.Controls.Add(this.txHkJumpScreen);
       this.flowLayoutPanel1.Controls.Add(this.label2);
       this.flowLayoutPanel1.Controls.Add(this.txHkShelf);
       this.flowLayoutPanel1.Controls.Add(this.label3);
@@ -582,15 +596,16 @@
       this.flowLayoutPanel1.Controls.Add(this.txHkChecklistBox);
       this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
       this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-      this.flowLayoutPanel1.Location = new System.Drawing.Point(10, 26);
+      this.flowLayoutPanel1.Location = new System.Drawing.Point(10, 21);
       this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-      this.flowLayoutPanel1.Size = new System.Drawing.Size(202, 269);
+      this.flowLayoutPanel1.Size = new System.Drawing.Size(202, 279);
       this.flowLayoutPanel1.TabIndex = 0;
+      this.flowLayoutPanel1.WrapContents = false;
       // 
       // chkInGame
       // 
       this.chkInGame.AutoSize = true;
-      this.chkInGame.BackColor = System.Drawing.Color.LightCyan;
+      this.chkInGame.BackColor = System.Drawing.Color.Aquamarine;
       this.chkInGame.Dock = System.Windows.Forms.DockStyle.Top;
       this.chkInGame.Location = new System.Drawing.Point(3, 3);
       this.chkInGame.Name = "chkInGame";
@@ -599,24 +614,15 @@
       this.chkInGame.Text = "MSFS Hotkeys";
       this.chkInGame.UseVisualStyleBackColor = false;
       // 
-      // label5
-      // 
-      this.label5.AutoSize = true;
-      this.label5.Dock = System.Windows.Forms.DockStyle.Top;
-      this.label5.Location = new System.Drawing.Point(3, 25);
-      this.label5.Name = "label5";
-      this.label5.Size = new System.Drawing.Size(196, 15);
-      this.label5.TabIndex = 51;
-      this.label5.Text = "                     ";
-      // 
       // chkKeyboard
       // 
       this.chkKeyboard.AutoSize = true;
       this.chkKeyboard.BackColor = System.Drawing.Color.Honeydew;
       this.chkKeyboard.Dock = System.Windows.Forms.DockStyle.Top;
-      this.chkKeyboard.Location = new System.Drawing.Point(3, 43);
+      this.chkKeyboard.Location = new System.Drawing.Point(3, 28);
       this.chkKeyboard.Name = "chkKeyboard";
-      this.chkKeyboard.Size = new System.Drawing.Size(196, 19);
+      this.chkKeyboard.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
+      this.chkKeyboard.Size = new System.Drawing.Size(196, 22);
       this.chkKeyboard.TabIndex = 14;
       this.chkKeyboard.Text = "Keyboard Hotkeys";
       this.chkKeyboard.UseVisualStyleBackColor = false;
@@ -625,8 +631,9 @@
       // label1
       // 
       this.label1.AutoSize = true;
+      this.label1.BackColor = System.Drawing.Color.Honeydew;
       this.label1.Dock = System.Windows.Forms.DockStyle.Top;
-      this.label1.Location = new System.Drawing.Point(3, 65);
+      this.label1.Location = new System.Drawing.Point(3, 53);
       this.label1.Name = "label1";
       this.label1.Size = new System.Drawing.Size(196, 15);
       this.label1.TabIndex = 33;
@@ -636,7 +643,7 @@
       // 
       this.txHkShowHide.BackColor = System.Drawing.Color.Honeydew;
       this.txHkShowHide.Dock = System.Windows.Forms.DockStyle.Left;
-      this.txHkShowHide.Location = new System.Drawing.Point(3, 83);
+      this.txHkShowHide.Location = new System.Drawing.Point(3, 71);
       this.txHkShowHide.Name = "txHkShowHide";
       this.txHkShowHide.ReadOnly = true;
       this.txHkShowHide.Size = new System.Drawing.Size(196, 23);
@@ -644,11 +651,34 @@
       this.txHkShowHide.WordWrap = false;
       this.txHkShowHide.DoubleClick += new System.EventHandler(this.txHkShowHide_DoubleClick);
       // 
+      // label5
+      // 
+      this.label5.AutoSize = true;
+      this.label5.BackColor = System.Drawing.Color.Honeydew;
+      this.label5.Dock = System.Windows.Forms.DockStyle.Top;
+      this.label5.Location = new System.Drawing.Point(3, 97);
+      this.label5.Name = "label5";
+      this.label5.Size = new System.Drawing.Size(196, 15);
+      this.label5.TabIndex = 50;
+      this.label5.Text = "Move Bar to other Screen";
+      // 
+      // txHkJumpScreen
+      // 
+      this.txHkJumpScreen.BackColor = System.Drawing.Color.Honeydew;
+      this.txHkJumpScreen.Dock = System.Windows.Forms.DockStyle.Left;
+      this.txHkJumpScreen.Location = new System.Drawing.Point(3, 115);
+      this.txHkJumpScreen.Name = "txHkJumpScreen";
+      this.txHkJumpScreen.ReadOnly = true;
+      this.txHkJumpScreen.Size = new System.Drawing.Size(196, 23);
+      this.txHkJumpScreen.TabIndex = 51;
+      this.txHkJumpScreen.WordWrap = false;
+      this.txHkJumpScreen.DoubleClick += new System.EventHandler(this.txHkJumpScreen_DoubleClick);
+      // 
       // label2
       // 
       this.label2.AutoSize = true;
       this.label2.Dock = System.Windows.Forms.DockStyle.Top;
-      this.label2.Location = new System.Drawing.Point(3, 109);
+      this.label2.Location = new System.Drawing.Point(3, 141);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(196, 15);
       this.label2.TabIndex = 37;
@@ -658,8 +688,7 @@
       // 
       this.txHkShelf.BackColor = System.Drawing.Color.Honeydew;
       this.txHkShelf.Dock = System.Windows.Forms.DockStyle.Left;
-      this.txHkShelf.Location = new System.Drawing.Point(3, 132);
-      this.txHkShelf.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
+      this.txHkShelf.Location = new System.Drawing.Point(3, 159);
       this.txHkShelf.Name = "txHkShelf";
       this.txHkShelf.ReadOnly = true;
       this.txHkShelf.Size = new System.Drawing.Size(196, 23);
@@ -671,7 +700,7 @@
       // 
       this.label3.AutoSize = true;
       this.label3.Dock = System.Windows.Forms.DockStyle.Top;
-      this.label3.Location = new System.Drawing.Point(3, 158);
+      this.label3.Location = new System.Drawing.Point(3, 185);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(196, 15);
       this.label3.TabIndex = 47;
@@ -681,8 +710,7 @@
       // 
       this.txHkCamera.BackColor = System.Drawing.Color.Honeydew;
       this.txHkCamera.Dock = System.Windows.Forms.DockStyle.Left;
-      this.txHkCamera.Location = new System.Drawing.Point(3, 181);
-      this.txHkCamera.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
+      this.txHkCamera.Location = new System.Drawing.Point(3, 203);
       this.txHkCamera.Name = "txHkCamera";
       this.txHkCamera.ReadOnly = true;
       this.txHkCamera.Size = new System.Drawing.Size(196, 23);
@@ -694,7 +722,7 @@
       // 
       this.label4.AutoSize = true;
       this.label4.Dock = System.Windows.Forms.DockStyle.Top;
-      this.label4.Location = new System.Drawing.Point(3, 207);
+      this.label4.Location = new System.Drawing.Point(3, 229);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(196, 15);
       this.label4.TabIndex = 49;
@@ -704,8 +732,7 @@
       // 
       this.txHkChecklistBox.BackColor = System.Drawing.Color.Honeydew;
       this.txHkChecklistBox.Dock = System.Windows.Forms.DockStyle.Left;
-      this.txHkChecklistBox.Location = new System.Drawing.Point(3, 230);
-      this.txHkChecklistBox.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
+      this.txHkChecklistBox.Location = new System.Drawing.Point(3, 247);
       this.txHkChecklistBox.Name = "txHkChecklistBox";
       this.txHkChecklistBox.ReadOnly = true;
       this.txHkChecklistBox.Size = new System.Drawing.Size(196, 23);
@@ -732,6 +759,17 @@
       this.panel2.Name = "panel2";
       this.panel2.Size = new System.Drawing.Size(746, 109);
       this.panel2.TabIndex = 3;
+      // 
+      // cbxMSFSHoverMode
+      // 
+      this.cbxMSFSHoverMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.cbxMSFSHoverMode.AutoSize = true;
+      this.cbxMSFSHoverMode.Location = new System.Drawing.Point(246, 81);
+      this.cbxMSFSHoverMode.Name = "cbxMSFSHoverMode";
+      this.cbxMSFSHoverMode.Size = new System.Drawing.Size(153, 19);
+      this.cbxMSFSHoverMode.TabIndex = 61;
+      this.cbxMSFSHoverMode.Text = "Quick Show/Hide Mode";
+      this.cbxMSFSHoverMode.UseVisualStyleBackColor = true;
       // 
       // btTestVoice
       // 
@@ -822,6 +860,7 @@
       // 
       // panel3
       // 
+      this.panel3.Controls.Add(this.btOpenSettingsFolder);
       this.panel3.Controls.Add(this.btDumpConfigs);
       this.panel3.Controls.Add(this.btAccept);
       this.panel3.Controls.Add(this.btCancel);
@@ -835,7 +874,7 @@
       // btDumpConfigs
       // 
       this.btDumpConfigs.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.btDumpConfigs.Location = new System.Drawing.Point(3, 9);
+      this.btDumpConfigs.Location = new System.Drawing.Point(7, 44);
       this.btDumpConfigs.Name = "btDumpConfigs";
       this.btDumpConfigs.Size = new System.Drawing.Size(133, 24);
       this.btDumpConfigs.TabIndex = 29;
@@ -890,16 +929,16 @@
       this.SFD.SupportMultiDottedExtensions = true;
       this.SFD.Title = "Save Profile Setting";
       // 
-      // cbxMSFSHoverMode
+      // btOpenSettingsFolder
       // 
-      this.cbxMSFSHoverMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.cbxMSFSHoverMode.AutoSize = true;
-      this.cbxMSFSHoverMode.Location = new System.Drawing.Point(246, 81);
-      this.cbxMSFSHoverMode.Name = "cbxMSFSHoverMode";
-      this.cbxMSFSHoverMode.Size = new System.Drawing.Size(153, 19);
-      this.cbxMSFSHoverMode.TabIndex = 61;
-      this.cbxMSFSHoverMode.Text = "Quick Show/Hide Mode";
-      this.cbxMSFSHoverMode.UseVisualStyleBackColor = true;
+      this.btOpenSettingsFolder.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.btOpenSettingsFolder.Location = new System.Drawing.Point(7, 6);
+      this.btOpenSettingsFolder.Name = "btOpenSettingsFolder";
+      this.btOpenSettingsFolder.Size = new System.Drawing.Size(218, 24);
+      this.btOpenSettingsFolder.TabIndex = 30;
+      this.btOpenSettingsFolder.Text = "Open Settings Folder...";
+      this.btOpenSettingsFolder.UseVisualStyleBackColor = true;
+      this.btOpenSettingsFolder.Click += new System.EventHandler(this.btOpenSettingsFolder_Click);
       // 
       // frmConfigV2
       // 
@@ -957,7 +996,6 @@
     private System.Windows.Forms.TextBox txHkCamera;
     private System.Windows.Forms.Label label4;
     private System.Windows.Forms.TextBox txHkChecklistBox;
-    private System.Windows.Forms.Label label5;
     private System.Windows.Forms.Panel panel2;
     private System.Windows.Forms.Panel panel3;
     private System.Windows.Forms.Button btCancel;
@@ -1009,5 +1047,9 @@
     private System.Windows.Forms.OpenFileDialog OFD;
     private System.Windows.Forms.SaveFileDialog SFD;
     private System.Windows.Forms.CheckBox cbxMSFSHoverMode;
+    private System.Windows.Forms.Label label5;
+    private System.Windows.Forms.TextBox txHkJumpScreen;
+    private System.Windows.Forms.Label label7;
+    private System.Windows.Forms.Button btOpenSettingsFolder;
   }
 }

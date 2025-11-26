@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Threading.Tasks;
 using DbgLib;
 
 namespace MapLib.Sources.Providers
@@ -48,7 +48,7 @@ namespace MapLib.Sources.Providers
 
     public override string Name { get; } = "Bing Imagery with Labels";
 
-    protected override MapImage GetTileImage( MapImageID mapImageID )
+    protected override string PrepareURL( MapImageID mapImageID )
     {
       if (!this.ProviderEnabled) return null;
 
@@ -60,8 +60,7 @@ namespace MapLib.Sources.Providers
       ushort z = ZoomCheck( mapImageID.ZoomLevel );
       if (z != mapImageID.ZoomLevel) { return null; } // not allowed 
 
-      string url = BingManager.MakeBingTileImageUrl( _imagery, mapImageID.TileXY, z );// TODO RE ADD LANGUAGE
-      return base.GetTileImageUsingHttp( url, mapImageID );
+      return BingManager.MakeBingTileImageUrl( _imagery, mapImageID.TileXY, z );
     }
 
     #endregion

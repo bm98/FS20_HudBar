@@ -5,6 +5,7 @@ using CoordLib;
 using dNetBm98;
 
 using FSimFacilityIF;
+using FSimFacilityIF.Templates;
 using static FSimFacilityIF.Extensions;
 
 namespace bm98_Map.Data

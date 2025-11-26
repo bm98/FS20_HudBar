@@ -7,7 +7,7 @@ namespace MapLib
   /// <summary>
   /// The MapImage discrimination
   /// </summary>
-  public struct MapImageID : IEquatable<MapImageID>
+  public struct MapImageID : IEquatable<MapImageID>, IComparable<MapImageID>
   {
     /// <summary>
     /// A Tile coordinate
@@ -45,6 +45,30 @@ namespace MapLib
     /// Returns the Full Image Key (Provider¦Znn¦Xnnn¦Ynnnn)
     /// </summary>
     public string FullKey => Tools.ToFullKey( this );
+
+    /// <summary>
+    /// True for a valid ID
+    /// </summary>
+    public bool IsValid => !string.IsNullOrEmpty( FullKey );
+
+
+    /// <inheritdoc/>
+    public int CompareTo( MapImageID other )
+    {
+      if (other == default) return 1;
+      if (this == default) return -1;
+      if (this.Equals( other )) return 0;
+
+      if (this.ZoomLevel > other.ZoomLevel) return -1;
+      if (this.ZoomLevel < other.ZoomLevel) return 1;
+
+      if (this.TileXY.X > other.TileXY.X) return 1;
+      if (this.TileXY.X < other.TileXY.X) return -1;
+      if (this.TileXY.Y > other.TileXY.Y) return 1;
+      if (this.TileXY.Y < other.TileXY.Y) return -1;
+
+      return 0;
+    }
 
     /// <inheritdoc/>
     public bool Equals( MapImageID other )

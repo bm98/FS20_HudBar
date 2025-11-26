@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using FSimFlightPlans;
+using FSimFlightPlanLib;
 
 namespace FS20_HudBar
 {
@@ -37,7 +37,7 @@ namespace FS20_HudBar
     /// Returns a CRLF separated string containing the full stored FlighPlan
     /// or an empty string if there is no FP
     /// </summary>
-    public static string Pretty( this FSimFlightPlans.FlightPlan _fp )
+    public static string Pretty( this FSimFlightPlanLib.FlightPlan _fp )
     {
       if (!_fp.IsValid) return "No active Flightplan";
 
@@ -50,7 +50,7 @@ namespace FS20_HudBar
     }
 
     // The Leader part or empty if no FP is available
-    private static string PrettyLeader( this FSimFlightPlans.FlightPlan _fp )
+    private static string PrettyLeader( this FSimFlightPlanLib.FlightPlan _fp )
     {
       if (!_fp.IsValid) return "";
 
@@ -86,7 +86,7 @@ namespace FS20_HudBar
     /// <summary>
     /// Returns a line of Wyp Information
     /// </summary>
-    public static string Pretty( this Waypoint _w )
+    public static string Pretty( this FpWaypoint _w )
     {
       if (!_w.IsValid) return $"Waypoint not found";
 
@@ -106,7 +106,7 @@ namespace FS20_HudBar
     /// <summary>
     /// Returns a block of detailed Wyp Information
     /// </summary>
-    public static string PrettyDetailed( this Waypoint _w )
+    public static string PrettyDetailed( this FpWaypoint _w )
     {
       if (!_w.IsValid) return $"Waypoint not found";
 

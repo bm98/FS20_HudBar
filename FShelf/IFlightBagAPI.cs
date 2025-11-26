@@ -26,7 +26,7 @@ namespace FShelf
     /// NOTE: don't mess with it and update when the load event is fired... 
     /// TODO: provide a tamper safe interface...
     /// </summary>
-    FSimFlightPlans.FlightPlan FlightPlanRef { get; }
+    FSimFlightPlanLib.FlightPlan FlightPlanRef { get; }
 
     /// <summary>
     /// Departure Airport ICAO ID

@@ -1,4 +1,5 @@
 ﻿using MapLib.Service;
+using System.Threading.Tasks;
 
 namespace MapLib.Sources
 {
@@ -18,6 +19,13 @@ namespace MapLib.Sources
     /// <param name="jobWrapper">The JobWrapper</param>
     /// <returns>A MapImage or null</returns>
     MapImage GetTileImage( LoaderJobWrapper jobWrapper );
+
+    /// <summary>
+    /// Sources a MapImage
+    /// </summary>
+    /// <param name="jobWrapper">The JobWrapper</param>
+    /// <returns>A MapImage or null</returns>
+    Task<MapImage> GetTileImage_Asynch( LoaderJobWrapper jobWrapper );
 
     /// <summary>
     /// Method to prevent the cache from overrun

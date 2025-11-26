@@ -40,56 +40,15 @@ namespace MetarLib
 
     /// <summary>
     /// Post a METAR request for a station (ICAO code)
-    /// If there is no record received it will try the lat, lon provided
-    /// The caller received an METAR Event when finished
     /// </summary>
     /// <param name="station">The ICAO Station Name</param>
-    /// <param name="lat">Latitude -90 .. +90 </param>
-    /// <param name="lon">Longitude -180 .. +180</param>
-    public void PostMETAR_Request( string station, double lat = double.NaN, double lon = double.NaN )
+    public void PostMETAR_Request( string station )
     {
-      // Sanity checks
-      if (string.IsNullOrWhiteSpace( station )) return;
-      if (!double.IsNaN( lat ) && ((lat < -90.0) || (lat > 90.0))) return;
-      if (!double.IsNaN( lat ) && ((lon < -180.0) || (lon > 180.0))) return;
-
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-      GetData( station, lat, lon );
+      GetData( station );
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
     }
 
-    /// <summary>
-    /// Post a METAR request for a station (ICAO code)
-    /// If there is no record received it will try the lat, lon provided
-    /// The caller received an METAR Event when finished
-    /// </summary>
-    /// <param name="station">The ICAO Station Name</param>
-    /// <param name="latLon">A LatLon location</param>
-    public void PostMETAR_Request( string station, LatLon latLon )
-    {
-      if (latLon.IsEmpty)
-        PostMETAR_Request( station );
-      else
-        PostMETAR_Request( station, latLon.Lat, latLon.Lon );
-    }
-
-
-    /// <summary>
-    /// Post a METAR request for a Position (lat/lon) with range (Statute Miles)
-    /// The caller received an METAR Event when finished
-    /// </summary>
-    /// <param name="lat">Latitude -90 .. +90 </param>
-    /// <param name="lon">Longitude -180 .. +180</param>
-    public void PostMETAR_Request( double lat, double lon )
-    {
-      // Sanity checks
-      if (!double.IsNaN( lat ) && ((lat < -90.0) || (lat > 90.0))) return;
-      if (!double.IsNaN( lat ) && ((lon < -180.0) || (lon > 180.0))) return;
-
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-      GetData( lat, lon );
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-    }
 
     /// <summary>
     /// Post a METAR request for a Position (lat/lon) with range (Statute Miles)
@@ -101,28 +60,11 @@ namespace MetarLib
       // Sanity checks
       if (latLon.IsEmpty) return;
 
-      PostMETAR_Request( latLon.Lat, latLon.Lon );
-    }
-
-
-    /// <summary>
-    /// Post a METAR request for a position and bearing with range (Statute Miles)
-    /// The caller received an METAR Event when finished
-    /// </summary>
-    /// <param name="lat">Latitude -90 .. +90 </param>
-    /// <param name="lon">Longitude -180 .. +180</param>
-    /// <param name="bearing">The bearing to fly to</param>
-    public void PostMETAR_Request( double lat, double lon, float bearing )
-    {
-      // Sanity checks
-      if (!double.IsNaN( lat ) && ((lat < -90.0) || (lat > 90.0))) return;
-      if (!double.IsNaN( lat ) && ((lon < -180.0) || (lon > 180.0))) return;
-      if (!float.IsNaN( bearing ) && ((bearing < 0.0) || (bearing > 360.0))) return;
-
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-      GetData( lat, lon, bearing );
+      GetData( latLon );
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
     }
+
 
     /// <summary>
     /// Post a METAR request for a position and bearing with range (Statute Miles)
@@ -135,27 +77,8 @@ namespace MetarLib
       // Sanity checks
       if (latLon.IsEmpty) return;
 
-      PostMETAR_Request( latLon.Lat, latLon.Lon, bearing );
-    }
-
-
-    /// <summary>
-    /// Post a METAR request for a position and destination
-    /// The caller received an METAR Event when finished
-    /// NOTE: This gets all stations found along the full path - can be many !!
-    /// </summary>
-    /// <param name="lat">Latitude -90 .. +90 </param>
-    /// <param name="lon">Longitude -180 .. +180</param>
-    /// <param name="destICAO">Destination ICAO station ID</param>
-    public void PostMETAR_Request( double lat, double lon, string destICAO )
-    {
-      // Sanity checks
-      if (!double.IsNaN( lat ) && ((lat < -90.0) || (lat > 90.0))) return;
-      if (!double.IsNaN( lat ) && ((lon < -180.0) || (lon > 180.0))) return;
-      if (string.IsNullOrWhiteSpace( destICAO )) return;
-
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-      GetData( lat, lon, destICAO );
+      GetData( latLon, bearing );
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
     }
 
@@ -165,13 +88,15 @@ namespace MetarLib
     /// NOTE: This gets all stations found along the full path - can be many !!
     /// </summary>
     /// <param name="latLon">A LatLon location</param>
-    /// <param name="destICAO">Destination ICAO station ID</param>
-    public void PostMETAR_Request( LatLon latLon, string destICAO )
+    /// <param name="destLatLon">Destination Coordinate</param>
+    public void PostMETAR_Request( LatLon latLon, LatLon destLatLon )
     {
       // Sanity checks
       if (latLon.IsEmpty) return;
 
-      PostMETAR_Request( latLon.Lat, latLon.Lon, destICAO );
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+      GetData( latLon, destLatLon );
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
     }
 
     #region Asynch Request methods
@@ -192,49 +117,20 @@ namespace MetarLib
       OnMetarDataEvent( response );
     }
 
-
-    /// <summary>
-    /// Retrieve most current data for a Station
-    /// If provided use the lat lon location if the station cannot return an answer
-    /// Not provided means either of lat, lon is a NaN
-    /// </summary>
-    private async Task GetData( string station, double lat, double lon )
-    {
-      var response = new MetarTafDataList( );
-      switch (MetarProvider) {
-        case Providers.AviationWeatherDotGov:
-          response = await Provider.AviationWeatherDotGov.MetarRequest.GetMetar( station );
-          break;
-        default: break;
-      }
-      if (response.Count > 0 && response.Valid) {
-        // signal response and end
-        OnMetarDataEvent( response );
-        return;
-      }
-      else {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        GetData( lat, lon ); // try the location
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-      }
-    }
-
-
     /// <summary>
     /// Retrieve most current data for a Location
     /// Try a number of ranges to retrieve data to not overlaod the server
     /// </summary>
-    private async Task GetData( double lat, double lon )
+    private async Task GetData( LatLon latLon )
     {
       // Sanity checks
-      if (double.IsNaN( lat )) return;
-      if (double.IsNaN( lon )) return;
+      if (latLon.IsEmpty) return;
 
       var response = new MetarTafDataList( );
       foreach (var range in c_MaxRangeSM) {
         switch (MetarProvider) {
           case Providers.AviationWeatherDotGov:
-            response = await Provider.AviationWeatherDotGov.MetarRequest.GetMetar( lat, lon, range );
+            response = await Provider.AviationWeatherDotGov.MetarRequest.GetMetar( latLon, range );
             break;
           default: break;
         }
@@ -250,18 +146,17 @@ namespace MetarLib
     /// Retrieve most current data for a Location and Destination
     /// Try a number of ranges to retrieve data to not overlaod the server
     /// </summary>
-    private async Task GetData( double lat, double lon, string dest )
+    private async Task GetData( LatLon latLon, LatLon destLatLon )
     {
       // Sanity checks
-      if (double.IsNaN( lat )) return;
-      if (double.IsNaN( lon )) return;
-      if (string.IsNullOrWhiteSpace( dest )) return;
+      if (latLon.IsEmpty) return;
+      if (destLatLon.IsEmpty) return;
 
       var response = new MetarTafDataList( );
       foreach (var range in c_MaxRangeSM) {
         switch (MetarProvider) {
           case Providers.AviationWeatherDotGov:
-            response = await Provider.AviationWeatherDotGov.MetarRequest.GetMetar( lat, lon, dest, range );
+            response = await Provider.AviationWeatherDotGov.MetarRequest.GetMetar( latLon, destLatLon, range );
             break;
           default: break;
         }
@@ -277,22 +172,20 @@ namespace MetarLib
     /// Retrieve most current data for a Location and Destination
     /// Try a number of ranges to retrieve data to not overlaod the server
     /// </summary>
-    private async Task GetData( double lat, double lon, float bearing )
+    private async Task GetData( LatLon latLon, float bearing )
     {
       // Sanity checks
-      if (double.IsNaN( lat )) return;
-      if (double.IsNaN( lon )) return;
+      if (latLon.IsEmpty) return;
       if (float.IsNaN( bearing )) return;
 
       var response = new MetarTafDataList( );
       foreach (var range in c_MaxRangeSM) {
 
-        var pos = new LatLon( lat, lon );
-        var dest = pos.DestinationPoint( range * 2, bearing, ConvConsts.EarthRadiusSM ); // pt at end of range*2
+        var dest = latLon.DestinationPoint( range * 2, bearing, ConvConsts.EarthRadiusSM ); // pt at end of range*2
 
         switch (MetarProvider) {
           case Providers.AviationWeatherDotGov:
-            response = await Provider.AviationWeatherDotGov.MetarRequest.GetMetar( lat, lon, dest.Lat, dest.Lon, range );
+            response = await Provider.AviationWeatherDotGov.MetarRequest.GetMetar( latLon, dest, range );
             break;
           default: break;
         }

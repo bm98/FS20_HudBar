@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -96,7 +95,7 @@ namespace MapLib.Sources.Providers
     /// <summary>
     /// Timeout for connections
     /// </summary>
-    public static int TimeoutMs = 60 * 1000; // 60 sec
+    public static int TimeoutMs = 20 * 1000; // was 60 sec
 
     /// <summary>
     /// Time To Live of cache, in hours. Default: 240 (10 days).
@@ -109,11 +108,11 @@ namespace MapLib.Sources.Providers
     public static ProviderIni ProviderIni { get; private set; } = new ProviderIni( "" );
 
 
-    static readonly string requestAccept = "*/*";
-    static readonly string responseContentType = "image";
-    static readonly string responseContentTypeGeneric = "application/octet-stream"; // BM Added - Tessera does not respond with image
+    private static readonly string requestAccept = "*/*";
+    private static readonly string responseContentType = "image";
+    private static readonly string responseContentTypeGeneric = "application/octet-stream"; // BM Added - Tessera does not respond with image
 
-    static readonly HttpClient _client = new HttpClient( );
+    private static readonly HttpClient _client = new HttpClient( );
 
     static MapProviderBase( )
     {
@@ -205,7 +204,11 @@ namespace MapLib.Sources.Providers
       var imageIdSought = jobWrapper.MapImageID;
       MapImage mapImage = GetTileImage( imageIdSought );
       if (mapImage != null) {
-        //        Debug.WriteLine( $"MapProviderBase.GetTileImage: Served from PROVIDER SOURCE - {imageSought.FullKey}" );
+        //Debug.WriteLine( $"MapProviderBase.GetTileImage: Served from PROVIDER SOURCE - {imageIdSought.FullKey}" );
+
+        // @@@@ ARTIFICIAL DELAY for TESTING
+        //Thread.Sleep(2000 );
+
         return mapImage;
       }
       else {
@@ -217,8 +220,57 @@ namespace MapLib.Sources.Providers
         }
         else {
           ; // DEBUG STOP if final image is null - should be prevented before..
+          Debug.WriteLine( $"MapProviderBase.GetTileImage: FAILED from PROVIDER SOURCE - {imageIdSought.FullKey}" );
           mapImage = MapImage.FailedImage( jobWrapper.MapImageID, false ); // failed one
         }
+        return mapImage;
+      }
+    }
+
+    /// <summary>
+    /// Try get the image from the local source or propagate
+    ///  -- Note: This is a synchronous call to a webserver and will eventually return or timeout
+    /// </summary>
+    /// <param name="jobWrapper">A JobWrapper</param>
+    /// <returns>A MapImage or null</returns>
+    public async Task<MapImage> GetTileImage_Asynch( LoaderJobWrapper jobWrapper )
+    {
+      MapImage mapImage = null;
+      //      Debug.WriteLine( $"MapProviderBase.GetTileImage: Got Request for: {jobWrapper.MapImageID.FullKey}" );
+      if (_initStatus) {
+        // else throw new InvalidOperationException( "Called before initialized! Aborted" );
+
+        var imageIdSought = jobWrapper.MapImageID;
+        mapImage = await GetTileImage_Asynch( imageIdSought );
+        if (mapImage != null) {
+          //Debug.WriteLine( $"MapProviderBase.GetTileImage: Served from PROVIDER SOURCE - {imageIdSought.FullKey}" );
+
+          // @@@@ ARTIFICIAL DELAY for TESTING
+          //Thread.Sleep(2000 );
+        }
+
+        else {
+          // usually a provider is the last source .. but then we may have ideas...
+          var nextSource = jobWrapper.GetNextSource( );
+          if (nextSource != null) {
+            mapImage = await nextSource.GetTileImage_Asynch( jobWrapper );
+            if (mapImage != null) {
+              ;// put into this cache or leave it alone
+            }
+            else {
+              ; // DEBUG STOP if final image is null - should be prevented before..
+              Debug.WriteLine( $"MapProviderBase.GetTileImage: FAILED from PROVIDER SOURCE - {imageIdSought.FullKey}" );
+              mapImage = await MapImage.FailedImage_Asynch( jobWrapper.MapImageID, false ); // failed one
+            }
+          }
+        }
+      }
+      // returns
+      if (mapImage == null) {
+        // add a failed Image instead of nothing
+        return await MapImage.FailedImage_Asynch( jobWrapper.MapImageID, false );
+      }
+      else {
         return mapImage;
       }
     }
@@ -297,16 +349,54 @@ namespace MapLib.Sources.Providers
 
     /// <summary>
     /// MAIN Method
-    /// Get a tile image using implemented provider
+    /// Get a tile image URL using implemented provider
     /// 
     /// TODO get it private and let the Interface do the job only
     /// 
-    ///  -- Note: This is a synchronous call to a webserver and will eventually return or timeout
+    /// </summary>
+    /// <param name="mapImageID">The Map Image to retrive</param>
+    /// <returns>A valid URL or an empty string or null if not valid</returns>
+    protected abstract string PrepareURL( MapImageID mapImageID );
+
+    /// <summary>
+    /// MAIN Method
+    /// Get a tile image using implemented provider
+    /// 
+    /// </summary>
+    /// <param name="mapImageID">The Map Image to retrive</param>
+    /// <returns>A MapImage or null</returns>
+    protected virtual MapImage GetTileImage( MapImageID mapImageID )
+    {
+      if (!mapImageID.IsValid) return null;
+
+      string url = PrepareURL( mapImageID );
+      if (string.IsNullOrEmpty( url )) {
+        return null;
+      }
+      else {
+        return GetTileImageUsingHttp( url, mapImageID );
+      }
+    }
+
+    /// <summary>
+    /// MAIN Method
+    /// Get a tile image using implemented provider
     ///  
     /// </summary>
     /// <param name="mapImageID">The Map Image to retrive</param>
     /// <returns>A MapImage or null</returns>
-    protected abstract MapImage GetTileImage( MapImageID mapImageID );
+    protected virtual async Task<MapImage> GetTileImage_Asynch( MapImageID mapImageID )
+    {
+      if (mapImageID.IsValid) {
+
+        string url = PrepareURL( mapImageID );
+        if (!string.IsNullOrEmpty( url )) {
+          return await GetTileImageUsingHttp_Asynch( url, mapImageID );
+        }
+      }
+      // add a failed Image instead of nothing
+      return await MapImage.FailedImage_Asynch( mapImageID, false );
+    }
 
     #endregion
 
@@ -471,6 +561,101 @@ namespace MapLib.Sources.Providers
       }
 
 
+    }
+
+    /// <summary>
+    /// Issues a Http Client request with the given URL
+    /// 
+    ///  -- Note: this is synchronous and waits for the Server to reply or timeout
+    ///  
+    /// </summary>
+    /// <param name="url">An URL</param>
+    /// <param name="mapImageID">The image ID to add to the image for later identification</param>
+    /// <returns>A MapImage or null</returns>
+    protected async Task<MapImage> GetTileImageUsingHttp_Asynch( string url, MapImageID mapImageID )
+    {
+      if (!_initStatus) throw new InvalidOperationException( "Called before initialized! Aborted" );
+
+      // sanity
+      if (string.IsNullOrWhiteSpace( url )) {
+        // add a failed Image instead of nothing
+        return await MapImage.FailedImage_Asynch( mapImageID, false );
+      }
+
+      MapImage mapImage = null;
+      bool retry = false;
+
+      // Query the Server and convert the replied data (if possible)
+      try {
+        // ask for permission to use HTTP
+        //Console.WriteLine($"WaitOne for {mapImageID}" );
+        _httpToken.WaitOne( );
+        //Console.WriteLine( $"GotOne for {mapImageID}" );
+
+        using (var response = await _client.GetAsync( url )) {
+          // check the response for common status failures
+          response.EnsureSuccessStatusCode( );
+          if (CheckTileImageHttpResponse( response.Content.Headers )) {
+            // so far OK - collect the data
+            using (var responseStream = await response.Content.ReadAsStreamAsync( )) {
+              // copy the data into a memory stream
+              var imageStream = await Tools.CopyStream_Asynch( responseStream, false );
+#if DEBUG
+              //              Debug.WriteLine( $"MapProviderBase.GetTileImageUsingHttpV2.Response[{imageStream.Length}  bytes]: \n    URL='{url}'" );
+#endif
+              // so far OK...
+              if (imageStream.Length > 0) {
+                mapImage = await MapImage.FromStream_Asynch( imageStream, mapImageID );
+                imageStream.Dispose( );
+              }
+            }
+          }
+        }
+
+      }
+      catch (Exception ex) {
+        if ((ex is WebException) && (ex as WebException).Status == WebExceptionStatus.Timeout) {
+          LOG.Info( "MapProviderBase.GetTileImageUsingHttp_Asynch", "WebExceptionStatus Timeout" );
+          retry = true; // can retry on timeout
+        }
+        else if ((ex is WebException) && (ex as WebException).Status == WebExceptionStatus.ProtocolError) {
+          var status = ((HttpWebResponse)(ex as WebException).Response).StatusCode;
+          LOG.Info( "MapProviderBase.GetTileImageUsingHttp_Asynch", $"HttpWebResponse Status: {status} ({(int)status})" );
+          if ((status == HttpStatusCode.GatewayTimeout) || (status == HttpStatusCode.RequestTimeout)) {
+            retry = true;
+          }
+        }
+        else if ((ex is WebException) && ((int)((HttpWebResponse)(ex as WebException).Response).StatusCode == 418)) {
+          // seems OSM responds with the teapot code when blocking...
+          var status = ((HttpWebResponse)(ex as WebException).Response).StatusCode;
+          LOG.Error( "MapProviderBase.GetTileImageUsingHttp_Asynch", $"HttpWebResponse Status: {status} ({(int)status})" );
+          retry = false; // never retry
+        }
+        else if (ex is HttpRequestException) {
+          // EnsureSuccessStatusCode throws - response code is not in 200-299
+          // likely 404 or similar - provider does not have this tile or can/will not reply
+          LOG.Error( "MapProviderBase.GetTileImageUsingHttp_Asynch", $"HttpRequestException: {ex.Message}" );
+          retry = false; // never retry
+        }
+        else {
+          LOG.Error( "MapProviderBase.GetTileImageUsingHttp_Asynch", $"Response Exception:\n{ex}\nURL:${url}" );
+          retry = false; // never retry
+        }
+      }
+      finally {
+        // free Sema
+        //Console.WriteLine( $"ReleaseOne for {mapImageID}" );
+        _httpToken.Release( );
+      }
+
+      if (mapImage != null) {
+        mapImage.ImageSource = ImgSource.Provider;
+        return mapImage;
+      }
+      else {
+        // add a failed Image instead of nothing
+        return await MapImage.FailedImage_Asynch( mapImageID, retry );
+      }
     }
 
     /// <summary>

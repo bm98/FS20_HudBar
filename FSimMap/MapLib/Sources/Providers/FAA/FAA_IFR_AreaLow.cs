@@ -46,15 +46,14 @@ namespace MapLib.Sources.Providers
 
     public override string Name { get; } = "FAA IFR Area Low";
 
-    protected override MapImage GetTileImage( MapImageID mapImageID )
+    protected override string PrepareURL( MapImageID mapImageID )
     {
       if (!this.ProviderEnabled) return null;
 
       ushort z = ZoomCheck( mapImageID.ZoomLevel );
       if (z != mapImageID.ZoomLevel) { return null; } // not allowed 
 
-      string url = MakeTileImageUrl( mapImageID.TileXY, z, "", "" );
-      return base.GetTileImageUsingHttp( url, mapImageID );
+      return MakeTileImageUrl( mapImageID.TileXY, z, "", "" );
     }
 
     #endregion

@@ -23,7 +23,7 @@ namespace bm98_Map.Drawing.DispItems
     /// <summary>
     /// Coord of the Outbound path
     /// </summary>
-    public LatLon OutboundLatLon { get; set; } = new LatLon( 0, 0 );
+    public LatLon OutboundLatLon { get; set; } = new LatLon( 0.0, 0 );
     /// <summary>
     /// Waypoint Label Rectangle
     /// </summary>

@@ -84,7 +84,7 @@ namespace FS20_HudBar.Bar.Items
           if (AirportMgr.ArrLocation.IsEmpty)
             _metar.PostMETAR_Request( AirportMgr.ArrAirportICAO ); // station rec
           else
-            _metar.PostMETAR_Request( AirportMgr.ArrAirportICAO, AirportMgr.ArrLocation ); // station rec with Location
+            _metar.PostMETAR_Request( AirportMgr.ArrLocation ); // station rec with Location
         }
       }
     }

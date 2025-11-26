@@ -1,6 +1,6 @@
 ﻿using FSimFacilityIF;
 
-using FSimFlightPlans;
+using FSimFlightPlanLib;
 
 namespace bm98_Map
 {
@@ -14,7 +14,7 @@ namespace bm98_Map
     /// True when this item should be shown in the Map
     ///  inverse of HideInMap
     /// </summary>
-    public static bool ShowInMap( this Waypoint _w ) => !_w.HideInMap(  );
+    public static bool ShowInMap( this FpWaypoint _w ) => !_w.HideInMap(  );
 
     /// <summary>
     /// True when this item should be _hidden_ in the Map
@@ -23,7 +23,7 @@ namespace bm98_Map
     ///    MAPR waypoints except when a RWY
     ///    APR 2nd to last
     /// </summary>
-    public static bool HideInMap( this Waypoint _w )
+    public static bool HideInMap( this FpWaypoint _w )
     {
       // selector is here rather than in the Display Section
       if (_w.WaypointType == WaypointTyp.RWY) return false; // allow Runways
@@ -41,7 +41,7 @@ namespace bm98_Map
     ///  allowed are:
     ///    all except APT, HOLD and MAPR except when a RWY
     /// </summary>
-    public static bool UseForRoute( this Waypoint _w )
+    public static bool UseForRoute( this FpWaypoint _w )
     {
       // selector is here rather than in the Display Section
       if (_w.WaypointType == WaypointTyp.RWY) return true; // allow Runways

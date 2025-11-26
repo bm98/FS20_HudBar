@@ -4,6 +4,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
+using System.Timers;
 
 namespace MapLib.Tiles
 {
@@ -21,12 +23,16 @@ namespace MapLib.Tiles
     private uint _numTiles = 0;
 
     // tracking list of all tiles created
-    private List<MapTile> _tiles;
+    //private readonly List<MapTile> _tiles;
+    private readonly SynchronizedCollection<MapTile> _tiles;
+
     // manage no longer used tiles
-    private List<MapTile> _obsoleteTiles;
+    private readonly SynchronizedCollection<MapTile> _obsoleteTiles;
 
     // server queue
     private ConcurrentQueue<MapTile> _tileQueue;
+
+    private readonly Timer _timer;
 
     /// <summary>
     /// cTor: 
@@ -36,9 +42,25 @@ namespace MapLib.Tiles
     {
       _numTiles = numTiles;
       _tileQueue = new ConcurrentQueue<MapTile>( );
-      _tiles = new List<MapTile>( (int)numTiles );
-      _obsoleteTiles = new List<MapTile>( (int)numTiles / 2 );
+      _tiles = new SynchronizedCollection<MapTile>( );
+      _obsoleteTiles = new SynchronizedCollection<MapTile>( );
+
+      _timer = new Timer {
+        Interval = 5000,
+        AutoReset = true
+      };
+      _timer.Stop( );
+
+      _timer.Elapsed += _timer_Elapsed;
+      _timer.Start( );
     }
+
+    // cleanup when needed
+    private void _timer_Elapsed( object sender, ElapsedEventArgs e )
+    {
+      ClearObsoleteTileChore( );
+    }
+
 
     /// <summary>
     /// Get a new MapTile
@@ -53,9 +75,9 @@ namespace MapLib.Tiles
       else {
         // must create a new one
         var tile = new MapTile( );
-        lock (_tiles) {
-          _tiles.Add( tile );
-        }
+        tile.ClearTileContent( );
+        _tiles.Add( tile );
+
         if (_tiles.Count > _numTiles) {
 #if DEBUG
           // many consumed - track the behavior on Slow Providers (Stamen...)
@@ -67,37 +89,67 @@ namespace MapLib.Tiles
     }
 
     /// <summary>
-    /// Return a MapTile back to Stock
+    /// Return a no longer used MapTile back to Stock
     /// </summary>
     /// <param name="mapTile">The returned MapTile</param>
-    public void ReturnTile( MapTile mapTile )
+    private void ReturnTile( MapTile mapTile )
     {
       // sanity
       if (mapTile == null) return;
 
       if (_tiles.Contains( mapTile )) {
-        mapTile.ClearTileContent( );
-        if (_tiles.Count > _numTiles) {
-          // maintain a max number of tiles in the stock
-          lock (_tiles) {
-            _tiles.Remove( mapTile );
-          }
-          mapTile.Dispose( );
+        if (mapTile.JobPending) {
+          // there is a job pending - must wait in the Obsolete stock until done
+          ReturnObsoleteTile( mapTile );
         }
         else {
-          // back into stock if the limit is not reached
-          _tileQueue.Enqueue( mapTile );
+          // either back to stock or dispose if it is an overflow tile
+          mapTile.ClearTileContent( );
+          if (_tiles.Count > _numTiles) {
+            // maintain a max number of tiles in the stock
+            if (_tiles.Remove( mapTile )) {
+              mapTile.Dispose( );
+            }
+          }
+          else {
+            // back into stock if the limit is not reached
+            _tileQueue.Enqueue( mapTile );
+          }
         }
       }
       else {
         // we did not serve this returned tile... (Programm Error)
-        LOG.Error( "ReturnTile( MapTile mapTile )\r\n    {", $"Returned unsolicited MapTile {mapTile.TrackKey}" );
+        LOG.Error( "ReturnTile( MapTile mapTile )\r\n  {", $"Returned unsolicited MapTile {mapTile.TrackKey}" );
+#if DEBUG
         throw new ApplicationException( $"Returned unsolicited MapTile {mapTile.TrackKey}" );
+#endif
+      }
+    }
+
+    #region Obsolete Handling
+
+    // Remove all Obsoletes, must be called at intervals
+    private void ClearObsoleteTileChore( )
+    {
+      // should not change the collection in foreach, so find and then remove
+      List<MapTile> obsTiles = new List<MapTile>( );
+      lock (_obsoleteTiles.SyncRoot) {
+        foreach (var ot in _obsoleteTiles.Where( t => t.JobPending == false )) {
+          obsTiles.Add( ot );
+        }
+      }
+
+      // now remove the found ones
+      foreach (var obsTile in obsTiles) {
+        // handle obsoletes after the the loading cycle
+        if (_obsoleteTiles.Remove( obsTile )) {
+          this.ReturnTile( obsTile );
+        }
       }
     }
 
     /// <summary>
-    /// Returns an obsolete tile - to be hold until removed
+    /// Returns a MapTile and marks it as Obsolete
     /// </summary>
     /// <param name="mapTile">An obsolete Tile</param>
     public void ReturnObsoleteTile( MapTile mapTile )
@@ -105,43 +157,11 @@ namespace MapLib.Tiles
       // sanity
       if (mapTile == null) return;
 
-      lock (_obsoleteTiles) {
-        _obsoleteTiles.Add( mapTile ); // add - to be removed after completion
-        mapTile.MarkObsolete( );
-      }
+      mapTile.MarkObsolete( );
+      _obsoleteTiles.Add( mapTile ); // add - to be removed after completion
     }
 
-    /// <summary>
-    /// Remove this tile from the obsolete list
-    /// </summary>
-    /// <param name="tileKey">A tile Key</param>
-    public void RemoveObsoleteTile( string tileKey )
-    {
-      if (string.IsNullOrEmpty( tileKey )) { return; } // fast exit
-
-      // handle obsoletes after the the loading cycle
-      lock (_obsoleteTiles) {
-        var obsolete = _obsoleteTiles.FirstOrDefault( x => x.TrackKey == tileKey );
-        if (obsolete != null) {
-          _obsoleteTiles.Remove( obsolete );
-          this.ReturnTile( obsolete );
-        }
-      }
-    }
-
-    /// <summary>
-    /// Remove all Obsoletes
-    /// </summary>
-    public void ClearObsoleteTiles( )
-    {
-      lock (_obsoleteTiles) {
-        var oTiles = _obsoleteTiles.ToList( );
-        foreach (var ot in oTiles) {
-          this.ReturnTile( ot );
-        }
-        _obsoleteTiles.Clear( );
-      }
-    }
+    #endregion
 
     #region DISPOSE
 
@@ -152,7 +172,7 @@ namespace MapLib.Tiles
       if (!disposedValue) {
         if (disposing) {
           // TODO: dispose managed state (managed objects)
-          ClearObsoleteTiles( );
+          ClearObsoleteTileChore( );
           foreach (var tile in _tiles) { tile.Dispose( ); }
           _tiles.Clear( );
           _tileQueue = null;

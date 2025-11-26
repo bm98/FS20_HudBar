@@ -23,10 +23,10 @@ namespace FS20_HudBar.Win
     public static WinHotkey FromConfigString( string hkString )
     {
       // MUST match the ToString below
-      var ret=new WinHotkey();
-      string[] e = hkString.Split(new char[]{ ' ' } );
-      foreach ( var s in e ) {
-        if ( Enum.TryParse( s, out Keys key ) ) {
+      var ret = new WinHotkey( );
+      string[] e = hkString.Split( new char[] { ' ' } );
+      foreach (var s in e) {
+        if (Enum.TryParse( s, out Keys key )) {
           ret.Add( key );
         }
       }
@@ -42,7 +42,7 @@ namespace FS20_HudBar.Win
     {
       // MUST match the FromString above
       string ret = "";
-      foreach ( var k in key ) {
+      foreach (var k in key) {
         ret += $"{k} ";
       }
       return ret.TrimEnd( );
@@ -82,7 +82,7 @@ namespace FS20_HudBar.Win
     /// </summary>
     public Keys Key {
       get {
-        if ( this.isValid )
+        if (this.isValid)
           return this.ElementAt( this.Count - 1 );
         else
           return Keys.None;
@@ -95,8 +95,8 @@ namespace FS20_HudBar.Win
     /// </summary>
     public List<Keys> Modifier {
       get {
-        var ret = new List<Keys>();
-        if ( this.Count > 1 ) {
+        var ret = new List<Keys>( );
+        if (this.Count > 1) {
           ret.AddRange( this.GetRange( 0, this.Count - 1 ) );
         }
 
@@ -121,7 +121,7 @@ namespace FS20_HudBar.Win
     /// <returns>A copy of this Hotkey</returns>
     public WinHotkey Copy( )
     {
-      WinHotkey ret = new WinHotkey();
+      WinHotkey ret = new WinHotkey( );
       ret.AddRange( this );
       return ret;
     }

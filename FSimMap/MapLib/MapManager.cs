@@ -62,13 +62,35 @@ namespace MapLib
   /// </summary>
   public enum ImageLoadingStatus
   {
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+    /// <summary>
+    /// Unknown state / not valid
+    /// </summary>
     Unknown = 0,
+
+    /// <summary>
+    /// Initial State of the loading
+    /// </summary>
     Idle,
+    /// <summary>
+    /// Image is loading
+    /// </summary>
     Loading,
+    /// <summary>
+    /// Loading was completed Successfully
+    /// </summary>
     LoadComplete,
+    /// <summary>
+    /// Loading was cancelled (Obsolete)
+    /// </summary>
+    LoadCancelled,
+    /// <summary>
+    /// Loading failed and can be retried
+    /// </summary>
     LoadFailed,
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+    /// <summary>
+    /// Loading failed and should not be retried
+    /// </summary>
+    LoadError,
   }
 
   /// <summary>
@@ -174,7 +196,8 @@ namespace MapLib
     /// Change the Provider
     /// </summary>
     /// <param name="mapProvider">A MapProvider</param>
-    public void SetNewProvider( MapProvider mapProvider ) => _currentProvider = mapProvider;
+    public void SetNewProvider( MapProvider mapProvider ) 
+      => _currentProvider = mapProvider;
 
     /// <summary>
     /// The Default Provider from the INI File - may hint which one to use
