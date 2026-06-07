@@ -95,7 +95,7 @@ namespace bm98_Map.Drawing.DispItems
             g.DrawImage( _imageRef, spriteRect );
             g.TranslateTransform( spriteRect.Width / 2, spriteRect.Height / 2 );
 
-            var textRect = new Rectangle( mp, new Size( 108, 64 ) );
+            var textRect = new Rectangle( mp, new Size( 108, 96 ) ); // was 64 for 2 lines
 
             // Navaid Location = 0/0
             if (IsHoldType) {

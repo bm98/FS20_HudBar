@@ -8,7 +8,7 @@ using System.IO;
 
 using Point = System.Drawing.Point;
 using static FSimClientIF.Sim;
-using static dNetBm98.Units;
+using static FSimUtilities.Units;
 
 using CoordLib;
 using CoordLib.MercatorTiles;
@@ -25,12 +25,11 @@ using FSimFacilityIF;
 using SC = SimConnectClient;
 using SimConnectClientAdapter;
 
-using bm98_hbFolders;
+using FSimFS20Folders;
 using bm98_Map;
 using bm98_Map.Data;
 
 using FSimFlightPlanLib.SimBrief;
-using FSimFlightPlanLib.MSFSPln;
 
 using FShelf.Profiles;
 using FShelf.FPlans;
@@ -56,6 +55,9 @@ namespace FShelf
     private const float c_raAirliner_ft = 2500;
     // ICAO display for airport not available
     private const string c_airportNA = "n.a.";
+
+    // FS20 HudBar Folders provider
+    private readonly FS20_Folders _fs20Folders;
 
     // SimConnect Client Adapter
     // (!! used only to establish the connection and handle the Online color label !!)
@@ -90,7 +92,7 @@ namespace FShelf
     private readonly MetarLib.Metar _metar;
 
     // Plan Handler
-    private readonly FpWrapper _flightPlanHandler = new FpWrapper( ); // only one instance, don't null it !!
+    private readonly FpWrapper _flightPlanHandler; // only one instance, don't null it !!
     private JobRunner _jobRunner;
     private dNetBm98.Win.WinFormInvoker _fpGuiHandler;
 
@@ -108,17 +110,19 @@ namespace FShelf
     private static readonly DataGridViewCellStyle _vCellStyleMarked
       = new DataGridViewCellStyle( _vCellStyle ) { BackColor = Color.MediumSpringGreen, SelectionBackColor = Color.CadetBlue };
 
+
+
     // remove the obsolete @.FlightTable.png / @.FlightPlan.png file 
     private void CleanupV07( string shelfFolder )
     {
-      string delFile = Path.Combine( shelfFolder, Folders.FTablePNG_FileName ); // "@.FlightTable.png"
+      string delFile = Path.Combine( shelfFolder, FS20_Folders.FTablePNG_FileName ); // "@.FlightTable.png"
       if (File.Exists( delFile )) {
         try {
           File.Delete( delFile );
         }
         catch { }
       }
-      delFile = Path.Combine( shelfFolder, Folders.FPlanPNG_FileName ); // "@.FlightPlan.png"
+      delFile = Path.Combine( shelfFolder, FS20_Folders.FPlanPNG_FileName ); // "@.FlightPlan.png"
       if (File.Exists( delFile )) {
         try {
           File.Delete( delFile );
@@ -221,7 +225,7 @@ namespace FShelf
       }
       else {
         // set a default path if the last one does not longer exists
-        OFD.FileName = FSimFolders.MsFolders.CustomFlightPlan;
+        OFD.FileName = FSimMsFolders.MsFolders.Get2020CustomFlightPlan( );
         OFD.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
         OFD.FilterIndex = 1;
       }
@@ -247,8 +251,6 @@ namespace FShelf
       // FS2020 call for a XML PLN, FS2024 call for EFB Planned Route
       var fsVersion = SV.Get<FSimVersion>( SItem.fv_Sim_FSVersion, FSimVersion.None );
       if (fsVersion == FSimVersion.MSFS2024) {
-        // switch folder discovery first
-        FSimFolders.MsFolders.Use2024( true );
         // trigger download
         SV.Set( SItem.sGS_Gps_EFB_route, "" );
         // delayed job... to get the EFB file and issue a load request
@@ -270,8 +272,7 @@ namespace FShelf
       }
       else {// use default 2020 always  even if the sim is not running //if (fsVersion == FSimVersion.MSFS2020) {
         // switch folder discovery first
-        FSimFolders.MsFolders.Use2024( false );
-        if (_flightPlanHandler.RequestPlanFromFile( FSimFolders.MsFolders.GetCustomFlight_Plan( ) )) {
+        if (_flightPlanHandler.RequestPlanFromFile( FSimMsFolders.MsFolders.Get2020CustomFlightPlan( ) )) {
           return true;
           // will report in the Event
         }
@@ -289,7 +290,7 @@ namespace FShelf
       // never fail
       try {
         lblCfgPlanMessage.Text = "loading...";
-        return _flightPlanHandler?.RequestPlanFromDocument( routeString, FSimFlightPlanLib.SourceOfFlightPlan.Gen_RTE ) ?? false;
+        return _flightPlanHandler?.RequestPlanFromDocument( routeString.ToUpperInvariant( ), FSimFlightPlanLib.SourceOfFlightPlan.Gen_RTE ) ?? false;
         // will report in the Event
       }
       catch (Exception ex) {
@@ -324,7 +325,7 @@ namespace FShelf
       try {
         aShelf.SetShelfFolder( folderName );
         // add our Airport Report folder if it does not exist
-        string aptFolder = Path.Combine( AppSettings.Instance.ShelfFolder, Folders.AptReportSubfolder );
+        string aptFolder = Path.Combine( AppSettings.Instance.ShelfFolder, FS20_Folders.AptReportSubfolder );
         if (!Directory.Exists( aptFolder )) {
           try {
             Directory.CreateDirectory( aptFolder );
@@ -343,7 +344,8 @@ namespace FShelf
       }
     }
 
-    // Helper for Runways
+    #region Helper for Runways
+
     private class RwyLenItem
     {
       public string Item { get; private set; }
@@ -358,6 +360,9 @@ namespace FShelf
         return Item;
       }
     }
+
+    #endregion
+
 
     private void InitRunwayCombo( ComboBox cx )
     {
@@ -498,7 +503,7 @@ namespace FShelf
     private void CheckFacilityDB( bool dontComplain )
     {
       // any facilities DB missing
-      _dbMissing = !(Folders.HasGenApt2020 || Folders.HasGenApt2024);
+      _dbMissing = !(_fs20Folders.HasGenApt2020 || _fs20Folders.HasGenApt2024);
 
       if (dontComplain) return;
       if (_facDbChecked) return; // already checked
@@ -526,21 +531,24 @@ namespace FShelf
 
       // Init the Folders Utility with our AppSettings File
       LOG.Info( "INIT:", $"Init Settings Storage with: 'FShelfAppSettings.json'" );
-      Folders.InitStorage( "FShelfAppSettings.json" );
+      _fs20Folders = new FS20_Folders( );
+      _fs20Folders.InitHudBarStorage( "FShelfAppSettings.json" );
 
       // Init Settings
-      LOG.Info( "INIT:", $"Init AppSettings with: {Folders.SettingsFile}<{instance}>" );
-      AppSettings.InitInstance( Folders.SettingsFile, instance );
+      LOG.Info( "INIT:", $"Init AppSettings with: {_fs20Folders.SettingsFile}<{instance}>" );
+      AppSettings.InitInstance( _fs20Folders.SettingsFile, instance );
 
-      LOG.Info( "INIT:", $"Init MapLib with: {Folders.UserFilePath}" );
-      MapLib.MapManager.Instance.InitMapLib( Folders.UserFilePath ); // Init before anything else
-      LOG.Info( "INIT:", $"Init DiskCache with: {Folders.CachePath}" );
-      MapLib.MapManager.Instance.SetDiskCacheLocation( Folders.CachePath ); // Map cache location
+      _flightPlanHandler = new FpWrapper( _fs20Folders ); // only one instance, don't null it !!
+
+      LOG.Info( "INIT:", $"Init MapLib with: {_fs20Folders.HudBarUserFilePath}" );
+      MapLib.MapManager.Instance.InitMapLib( _fs20Folders.HudBarUserFilePath ); // Init before anything else
+      LOG.Info( "INIT:", $"Init DiskCache with: {_fs20Folders.CachePath}" );
+      MapLib.MapManager.Instance.SetDiskCacheLocation( _fs20Folders.CachePath ); // Map cache location
 
       // Init FSim Libraries for Doc Gen
-      LOG.Info( "INIT:", $"Init FSim..Doc Libraries with: {Folders.UserTempPath}" );
-      FSimFlightPlanDoc.FlightPlanDoc.Setup( Folders.UserTempPath );
-      FSimAirportDoc.AirportDoc.Setup( Folders.UserTempPath );
+      LOG.Info( "INIT:", $"Init FSim..Doc Libraries with: {FS20_Folders.UserTempPath}" );
+      FSimFlightPlanDoc.FlightPlanDoc.Setup( FS20_Folders.UserTempPath );
+      FSimAirportDoc.AirportDoc.Setup( FS20_Folders.UserTempPath );
 
       // ---------------
 
@@ -706,7 +714,7 @@ namespace FShelf
       // standalone handling
       if (Standalone) {
         // File Access Check
-        if (Dbg.Instance.AccessCheck( Folders.UserFilePath ) != DbgLib.AccessCheckResult.Success) {
+        if (Dbg.Instance.AccessCheck( _fs20Folders.HudBarUserFilePath ) != DbgLib.AccessCheckResult.Success) {
           string msg = $"MyDocuments Folder Access Check Failed:\n{Dbg.Instance.AccessCheckResult}\n\n{Dbg.Instance.AccessCheckMessage}";
           MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
         }
@@ -900,7 +908,7 @@ namespace FShelf
       var nList = new List<INavaid>( );
       // VOR / NDB
       using (var _db = new FSFData.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
-        if (!_db.Open( Folders.GenAptDBFile ))
+        if (!_db.Open( _fs20Folders.GenAptDBFile ))
           return nList;
 
         // get the the Quads around
@@ -925,7 +933,7 @@ namespace FShelf
       if (_airport != null) {
         var aprFixes = _airport.APRs( ).SelectMany( proc => proc.CommonFixes ).Distinct( ).ToList( );
         foreach (var apr in _airport.APRs( )) {
-          nList.AddRange( DbLookup.ExpandAPRFixes( apr, Folders.GenAptDBFile ) );
+          nList.AddRange( DbLookup.ExpandAPRFixes( apr, _fs20Folders.GenAptDBFile ) );
         }
         var unresolved = nList.FirstOrDefault( fix => fix.WYP == null );
       }
@@ -938,7 +946,7 @@ namespace FShelf
     {
       var aList = new List<IAirportDesc>( );
       using (var _db = new FSFData.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
-        if (!_db.Open( Folders.GenAptDBFile ))
+        if (!_db.Open( _fs20Folders.GenAptDBFile ))
           return aList; // no db available
 
         // get the the Quads around
@@ -969,9 +977,9 @@ namespace FShelf
       _fixList = FixList( );
       _navaidList = NavaidList( e.CenterCoordinate );
       aMap.SetNavaidList( _navaidList, _fixList );
-      var rwLen = comboCfgRunwayLength.SelectedItem as RwyLenItem;
-      aMap.SetAltAirportList( AltAirportList( e.CenterCoordinate, rwLen.Length_m ) );
-
+      if (comboCfgRunwayLength.SelectedItem is RwyLenItem rwLen) {
+        aMap.SetAltAirportList( AltAirportList( e.CenterCoordinate, rwLen.Length_m ) );
+      }
       // (re)set the route from the plan in use
       aMap.SetFlightplan( _flightPlanHandler.FlightPlan );
     }
@@ -1019,7 +1027,7 @@ namespace FShelf
 
       IAirport airport = null;
       using (var _db = new DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
-        if (_db.Open( Folders.GenAptDBFile )) {
+        if (_db.Open( _fs20Folders.GenAptDBFile )) {
           airport = _db.DbReader.GetAirport( aptICAO ); ;
         }
       }
@@ -1070,11 +1078,11 @@ namespace FShelf
         _airport = apt;
         LoadAirport( );
 
-        string dbSource = Folders.FS2024Used ? "MSFS2024" : "MSFS2020";
+        string dbSource = FS20_Folders.FS2024Used ? "MSFS2024" : "MSFS2020";
         // new Using FSimAirportDoc
         var aptTable = new FSimAirportDoc.AptReport.AptReportTable( );
         var result = aptTable.SaveDocumentAsPDF( _airport, _navaidList, _fixList, dbSource,
-                            Path.Combine( AppSettings.Instance.ShelfFolder, Folders.AptReportSubfolder ) );
+                            Path.Combine( AppSettings.Instance.ShelfFolder, FS20_Folders.AptReportSubfolder ) );
         if (!result) LOG.Error( "btGetAirport_Click", $"Creating Airport Report failed for {_airport.Ident}" );
         // old using FShelf AptReport
         /*
@@ -1599,7 +1607,7 @@ namespace FShelf
       }
       else {
         // set a default path if the last one does not longer exists
-        OFD.FileName = FSimFolders.MsFolders.CustomFlightPlan;
+        OFD.FileName = FSimMsFolders.MsFolders.Get2020CustomFlightPlan( );
         OFD.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
         OFD.FilterIndex = 1;
       }

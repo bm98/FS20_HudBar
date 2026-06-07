@@ -1,5 +1,5 @@
 FS20_HudBar V 0.73 - Build 73 BETA
-(c) M. Burri - 30-Nov-2025
+(c) M. Burri - 07-Jun-2026
 
 Contains files:
 
@@ -8,76 +8,105 @@ FS20_HudBar.exe             The program
 .\DemoBag                   Contains some images to showcase the Flight Bag
 
 - All libraries below MUST be in the same folder as the Exe file
-bm98_AColorPicker.dll       A custom Color Picker Dialog
-bm98_Album.dll              UserControl for displaying images
-bm98_Checklist.dll          UserControl for displaying the Checklist Box
-bm98_hb_Controls.dll        UserControls for displaying graphs
-bm98_hb_Folders.dll         Unified Folder manager
-bm98_Html.dll               Library and Wrapper for HTML to PDF/Image conversion
-bm98_Map.dll                Mapping display library
-bm98_VProfile.dll           UserControl for displaying VProfiles
-BM98CH_WasmClient.dll       WASM Module client to get LVars
-CoordLib.dll                Coord. handling library
-DbgLib.dll                  Debug helper
-dNetBm98.dll                Tools for .Net and WinForms
-dNetWkhtmlWrap.dll          Wrapping library for PDF formatter
-FCamControl.dll             Camera Control WinForms library
-FChecklistBox.dll           ChecklistBox WinForms library
-FlightplanLib.dll           Flightplan library
-FSFDataLib.dll              MS facility database access library
-FShelf.dll                  Shelf WinForms library
-FSimClientIF.dll            Generic FSim Client interface definition
-FSimFacilityIF.dll          MS facility database interface definition
-FSimIF.dll                  Generic FSim interface definition
-MapLib.dll                  Mapping library
-MetarLib.dll                METAR access library
-MSALib.dll                  MSA altitudes library
-PingLib.dll                 An audio lib using Win10 Audio facilities
-SettingsLib.dll             Application settings persistence library
-SimConnectClient.dll        FlightSim interface to MSFS2020 SimConnect
-SimConnectClientAdapter.dll Connection wrapper
-SpeechLib.dll               Voice synth lib using Win10 TTS facilities
-WkWrapper.WkhtmlToPdf.Mxe.dll deploys the PDF renderer application
+
+bm98.FCamControl                            Camera Control WinForms library
+bm98.FChecklistBox                          ChecklistBox WinForms library
+bm98.FShelf                                 Shelf WinForms library
+bm98.MapLib                                 Mapping library
+bm98.MetarLib                               METAR access library 
+bm98.MSALib                                 MSA altitudes library
+bm98.PingLib                                An audio lib using Win10 Audio facilities
+bm98.SpeechLib                              Voice synth lib using Win10 TTS facilities
+bm98_Album                                  UserControl for displaying images
+bm98_Checklist                              UserControl for displaying the Checklist Box
+bm98_hbControls                             UserControls for displaying graphs
+bm98_Map                                    Mapping display library
+bm98_VProfile                               UserControl for displaying VProfiles
+bm98.DbgLib                                 HudBar Debug helper
+
+bm98.bm98_AColorPicker, Version=1.0.0.6     A custom Color Picker Dialog
+bm98.SettingsLib, Version=1.0.1             Application settings persistence library
+
+bm98.FSimWasmAdapter                        WASM access helper
+bm98.BM98CH_WasmClient, Version=0.12.0.18   WASM Module client to get/set what SimConnect cannot
+
+bm98.bm98chAppData, Version=1.0.0           Utility for App Settings
+bm98.dNetBm98, Version=1.13.0.24            Utility for .Net and WinForms
+bm98.CoordLib, Version=1.10.0.32            Coord. handling library
+
+bm98.FSimUtilities, Version=1.0.0.5         Utilities for FSim 
+bm98.FSimFS20Folders, Version=1.2.0         Unified Folder manager
+bm98.FSimMsFolders, Version=1.2.0           Unified Folder manager
+
+bm98.FSimFacilityIF, Version=2.6.0.30       MS facility database interface definition
+bm98.FSimFacilityDataLib, Version=2.6.0.30  MS facility database access library
+
+bm98.FSimFlightPlanLib, Version=0.1.6       Flightplan library
+bm98.FSimAirportDoc, Version=0.1.6          Airport Doc generator
+bm98.FSimFlightPlanDoc, Version=0.1.6       Flightplan Doc generator
+bm98.FSimHtmlSupport                        Library and Wrapper for HTML to PDF/Image conversion
+
+bm98.FSimClientIF, Version=4.1.0.86         Generic FSim Client interface definition
+bm98.SimConnectClientAdapter, Version=2.1.0.8 Connection wrapper
+bm98.SimConnectClient, Version=4.1.0.86     FlightSim interface to MSFS2020/2024 SimConnect
+bm98.FSimSimConnectAdapter                  Part of SimConnect access
+bm98.FSimIF_MSFS                            Part of SimConnect access
+bm98.FSimKeyEvents                          Part of SimConnect access
+bm98.FSimModels                             Part of SimConnect access
+                                            
 NLog.config.OFF             Logging config file / remove .OFF to enable logging
 
 3rd Party:
-BingMapsRESTToolkit.dll     Microsoft provided library for accessing Bing Map data
-LiteDB.dll                  3rd party data management library
-NLog.dll                    3rd party logging library
-PdfiumViewer.dll            3rd party PDF viewer library
-wkhtmltopdf.exe             3rd party HTML formatting library wrapper /replaces HtmlRenderer
+                                            3rd party HTML formatting library wrapper /replaces HtmlRenderer
+bm98.dNetWkhtmlWrap, Version=1.0.0.2        Wrapping library for PDF formatter
+bm98.WkWrapper.WkhtmlToPdf.Mxe, Version=0.12.6 deploys the PDF renderer application
+
+LiteDB, Version=5.0.17                      3rd party data management library
+
+PdfiumViewer, Version=2.13.0                3rd party PDF viewer library
+PdfiumViewer.Native.x86_64.v8-xfa, Version=2018.4.8.256
+BingMapsRESTToolkit, Version=1.1.4          Microsoft provided library for accessing Bing Map data
+
+NLog, Version=6.1.1                         3rd party logging library
+
+From MSFS2020 Developer Kit for convenience included:
+  Microsoft.FlightSimulator.SimConnect, Version=12.1.0.0 MSFS2020 latest C# assembly 
+  SimConnect.dll	                        MSFS2020 latest C++ module
+  SimConnect.cfg.OFF                        Config file used only when connecting via network to MSFS (edit server IP)
 
 From Google Fonts Library embedded:
   Share_Tech_Mono			(Used as condensed font)
 
-From MSFS2020 Developer Kit for convenience included:
-  Microsoft.FlightSimulator.SimConnect.dll  MSFS2020 latest C# assembly 
-  SimConnect.dll	                        MSFS2020 latest C++ module
-  SimConnect.cfg.OFF        Config file used only when connecting via network to MSFS (edit server IP)
 
 Simulator Extension Module (extr. to Community folder)
-  BM98CH_DataConnector_Wasm-V0.8.zip  
-  BM98CH_DataConnector_Wasm2024-V4.8.zip  
+  BM98CH_DataConnector_Wasm-V0.9.zip  
+  BM98CH_DataConnector_Wasm2024-V4.9.zip  
 
 
+**FACILITY DATA LOADER
 dataLoader\ folder:
-FacilityDataLoader.exe      MSFS Facility conversion tool
-BGLlib.dll                  BGL and LLM decoder
-CoordLib.dll                A coord. handling library
-FSimFacilityIF.dll          MS facility database interface definition
-FSFDataLib.dll              MS facility database access library
-NLog.config                 Logging config file
-NLog.dll                    3rd party logging library
-LiteDB.dll                  3rd party data management library
-System.Data.SQLite.dll      3rd party data management library
-x64\SQLite.Interop.dll      3rd party data management library 64bit C-library
-x86\SQLite.Interop.dll      3rd party data management library 32bit C-library
-V2020\MSFSPlug.dll			MSFS2020 SimConnect Adapter
-V2020\Microsoft.FlightSimulator.SimConnect.dll  MSFS2020 latest C# assembly 
-V2020\SimConnect.dll        MSFS2020 latest C++ module
-V2024\MSFSPlug.dll			MSFS2024 SimConnect Adapter
-V2024\Microsoft.FlightSimulator.SimConnect.dll  MSFS2024 latest C# assembly 
-V2024\SimConnect.dll        MSFS2024 latest C++ module
+FacilityDataLoader.exe                      MSFS Facility conversion tool
+bm98.bm98chAppData, Version=1.0.0           Utility for App Settings
+bm98.dNetBm98, Version=1.13.0.24            Utility for .Net and WinForms
+bm98.CoordLib, Version=1.10.0.32            Coord. handling library
+bm98.FSim.BGLLib                            BGL and LLM decoder
+bm98.FSim.FacilityStreamLib
+bm98.FSimFacilityIF, Version=2.6.0.30       MS facility database interface definition
+bm98.FSimFacilityDataLib, Version=2.6.0.30  MS facility database access library
+bm98.FSimFS20Folders, Version=1.2.0         Unified Folder manager
+bm98.FSimMsFolders, Version=1.2.0           Unified Folder manager
+SimConTool2024.dll                          MS2024 Datastreaming helper library
+LiteDB, Version=5.0.17                      3rd party data management library
+                                            3rd party data management library
+Stub.System.Data.SQLite.Core.NetFramework, Version=1.0.119
+System.Data.SQLite, Version=1.0.119.0     
+x64\SQLite.Interop.dll                      data management library 64bit C-library
+x86\SQLite.Interop.dll                      data management library 32bit C-library
+NLog, Version=6.1.1                         3rd party logging library
+Microsoft.FlightSimulator.SimConnect, Version=12.1.0.0 MSFS2024 latest C# assembly 
+SimConnect.dll	                        MSFS2024 latest C++ module
+NLog.config                                 Logging config file
+
 
 ReadMe.txt                   This file
 
@@ -96,15 +125,19 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.73-B73
-- RERUN FacilityDataLoader !!! will use the new location in %appdata%\bm98ch\GenApt\db
+- RERUN FacilityDataLoader !!!
+- Please UPDATE V x.9 WASM Modules
 
 - Add Config Setting to hide the Bar when hovering MSFS label
 - Add Config Setting for HotKey to move the bar to another screen
-- Update FacilityDB, settings and map cache relocated to %appdata%\bm98ch\.. (as suggested my MS)
+- Add Flaps state audible Item (Flaps with callout for deg or handle index)
 - Update FacilityDataLoader to be more robust for MS2024
 - Update Map drawing algos
+- Update WASM Modules with current MSFS SDK
 - Fix HudBar startup exception for some user fonts settings which turned negative
 - Fix METAR support new API 
+- Fix Imported Config does not persist
+- Fix MSFS Hotkeys not working
 
 - Update QuickGuides
 

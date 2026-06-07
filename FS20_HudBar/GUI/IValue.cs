@@ -24,7 +24,7 @@
     /// <summary>
     /// Positional Levels (Flaps, Spoiler)
     /// </summary>
-    P1, P2, P3, P4, P5, P6, P7, PEnd,
+    P1, P2, P3, P4, P5, P6, P7, P8, P9, PEnd,
 
     /// <summary>
     /// On and OK - counter part is OffWarn

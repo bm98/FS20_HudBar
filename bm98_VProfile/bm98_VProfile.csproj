@@ -32,9 +32,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="dNetBm98">
-      <HintPath>..\..\..\..\Redist\dNetBm98.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -89,6 +86,11 @@
     <None Include="Doc\VProfile_base_1.png" />
     <EmbeddedResource Include="Fonts\florencesans-sc.comp-bold.ttf" />
     <EmbeddedResource Include="Fonts\florencesans-sc.cond.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="bm98.dNetBm98">
+      <Version>1.13.0.24</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

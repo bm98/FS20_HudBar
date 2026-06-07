@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using static dNetBm98.Units;
+using static FSimUtilities.Units;
 
 using FS20_HudBar.GUI.Templates.Base;
 

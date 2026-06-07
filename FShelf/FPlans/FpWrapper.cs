@@ -9,7 +9,7 @@ using SC = SimConnectClient;
 using FSimClientIF.Modules;
 using static FSimClientIF.Sim;
 
-using bm98_hbFolders;
+using FSimFS20Folders;
 
 namespace FShelf.FPlans
 {
@@ -41,12 +41,17 @@ namespace FShelf.FPlans
       => WaypointNextChanged?.Invoke( this, new WaypointNextChangedEventArgs( nextWypID ) );
 
 
+    private readonly FS20_Folders _fs20FoldersRef;
+
+
     /// <summary>
     /// cTor:
     /// </summary>
-    public FpWrapper( )
-      : base( Folders.GenAptDBFile )
+    public FpWrapper( FS20_Folders fs20Folders )
+      : base( fs20Folders.GenAptDBFile )
     {
+      _fs20FoldersRef = fs20Folders;
+
       // register DataUpdates if in HudBar mode and if not yet done 
       if (_observerID < 0) {
         LOG.Trace( "FpWrapper.cTor", "Start Observing" );
@@ -61,7 +66,7 @@ namespace FShelf.FPlans
     /// <returns></returns>
     public bool RequestSBDownload( string sbUserID )
     {
-      return base.RequestPlanFromSBDownload( sbUserID, Path.Combine( AppSettings.Instance.ShelfFolder, Folders.FPlanPDF_FileName ) );
+      return base.RequestPlanFromSBDownload( sbUserID, Path.Combine( AppSettings.Instance.ShelfFolder, FS20_Folders.FPlanPDF_FileName ) );
     }
 
     /// <summary>
@@ -107,7 +112,7 @@ namespace FShelf.FPlans
       // shall never fail...
       try {
         // save to current Dir while in debug
-        var fname = Path.Combine( Folders.UserFilePath, fName );
+        var fname = Path.Combine( _fs20FoldersRef.HudBarUserFilePath, fName );
         // Write UTF8 with BOM
         using (var sw = new StreamWriter( fname, false, new UTF8Encoding( true ) )) {
           sw.WriteLine( content );

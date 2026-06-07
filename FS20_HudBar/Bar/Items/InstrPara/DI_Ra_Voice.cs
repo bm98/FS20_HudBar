@@ -14,7 +14,7 @@ using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
-  class DI_Ra_Voice : DispItem
+  internal class DI_Ra_Voice : DispItem
   {
     /// <summary>
     /// The Label ID 

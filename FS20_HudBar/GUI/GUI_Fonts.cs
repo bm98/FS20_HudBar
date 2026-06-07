@@ -202,7 +202,7 @@ namespace FS20_HudBar.GUI
       // Check and make sure the fontSize is valid (between 4 and 120 for now)
       private static float ValidFontSize( float proposedSize )
       {
-        return XMath.Clip( proposedSize, 4f, 120f );
+        return (float)FSimUtilities.Generic.Clip( proposedSize, 4.0, 120.0 );
       }
 
       // ** Regular Descriptor

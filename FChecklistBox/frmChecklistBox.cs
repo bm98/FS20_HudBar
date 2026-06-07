@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-using bm98_hbFolders;
+using FSimFS20Folders;
 
 namespace FChecklistBox
 {
@@ -11,6 +11,9 @@ namespace FChecklistBox
   /// </summary>
   public partial class frmChecklistBox : Form
   {
+    // FS20 HudBar Folders provider
+    private readonly FS20_Folders _fs20Folders;
+
     // track the last known live location in order to save the proper one
     private Point _lastLiveLocation;
 
@@ -31,10 +34,11 @@ namespace FChecklistBox
       Standalone = standalone;
 
       // Init the Folders Utility with our AppSettings File
-      Folders.InitStorage( "FCBoxAppSettings.json" );
+      _fs20Folders = new FS20_Folders( );
+      _fs20Folders.InitHudBarStorage( "FCBoxAppSettings.json" );
 
 
-      AppSettings.InitInstance( Folders.SettingsFile, instance );
+      AppSettings.InitInstance( _fs20Folders.SettingsFile, instance );
       // ---------------
 
       InitializeComponent( );
@@ -49,7 +53,7 @@ namespace FChecklistBox
         this.ControlBox = true;
       }
 
-      chklistBox.UserDir = Folders.UserFilePath; // main HudBar location
+      chklistBox.UserDir = _fs20Folders.HudBarUserFilePath; // main HudBar location
     }
 
     // form is loaded to get visible
@@ -70,7 +74,7 @@ namespace FChecklistBox
       // standalone handling
       if (Standalone) {
         // File Access Check
-        if (DbgLib.Dbg.Instance.AccessCheck( Folders.UserFilePath ) != DbgLib.AccessCheckResult.Success) {
+        if (DbgLib.Dbg.Instance.AccessCheck( _fs20Folders.HudBarUserFilePath ) != DbgLib.AccessCheckResult.Success) {
           string msg = $"MyDocuments Folder Access Check Failed:\n{DbgLib.Dbg.Instance.AccessCheckResult}\n\n{DbgLib.Dbg.Instance.AccessCheckMessage}";
           MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
         }

@@ -7,7 +7,7 @@
     <ProjectGuid>{9F304B94-90DD-4F3A-8B19-54641277C1CD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>FShelf</RootNamespace>
-    <AssemblyName>FShelf</AssemblyName>
+    <AssemblyName>bm98.FShelf</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -38,7 +38,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\x64\Debug\FShelf.xml</DocumentationFile>
+    <DocumentationFile>bin\x64\Debug\bm98.FShelf.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -48,48 +48,9 @@
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\x64\Release\FShelf.xml</DocumentationFile>
+    <DocumentationFile>bin\x64\Release\bm98.FShelf.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CoordLib">
-      <HintPath>..\..\..\Redist\CoordLib.dll</HintPath>
-    </Reference>
-    <Reference Include="dNetBm98, Version=1.3.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Redist\dNetBm98.dll</HintPath>
-    </Reference>
-    <Reference Include="FSFDataLib">
-      <HintPath>..\..\..\Redist\FSFDataLib.dll</HintPath>
-    </Reference>
-    <Reference Include="FSimAirportDoc">
-      <HintPath>..\..\..\Redist\FSimAirportDoc.dll</HintPath>
-    </Reference>
-    <Reference Include="FSimClientIF">
-      <HintPath>..\..\..\Redist\FSimClientIF.dll</HintPath>
-    </Reference>
-    <Reference Include="FSimFacilityIF">
-      <HintPath>..\..\..\Redist\FSimFacilityIF.dll</HintPath>
-    </Reference>
-    <Reference Include="FSimFlightPlanDoc">
-      <HintPath>..\..\..\Redist\FSimFlightPlanDoc.dll</HintPath>
-    </Reference>
-    <Reference Include="FSimFlightPlanLib">
-      <HintPath>..\..\..\Redist\FSimFlightPlanLib.dll</HintPath>
-    </Reference>
-    <Reference Include="FSimFolders, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Redist\FSimFolders.dll</HintPath>
-    </Reference>
-    <Reference Include="SettingsLib, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Redist\SettingsLib.dll</HintPath>
-    </Reference>
-    <Reference Include="SimConnectClient">
-      <HintPath>..\..\..\Redist\SimConnectClient.dll</HintPath>
-    </Reference>
-    <Reference Include="SimConnectClientAdapter">
-      <HintPath>..\..\..\Redist\SimConnectClientAdapter.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -106,9 +67,6 @@
       <Link>SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="AppSettings.cs" />
-    <Compile Include="AptReport\AptReportTable.cs" />
-    <Compile Include="AptReport\AptTableGen.cs" />
-    <Compile Include="AptReport\RowData.cs" />
     <Compile Include="Energy\UC_ETable.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -164,14 +122,6 @@
       <Project>{b4c756a8-1d36-4565-9337-8678123a2d98}</Project>
       <Name>bm98_Album</Name>
     </ProjectReference>
-    <ProjectReference Include="..\bm98_hbFolders\bm98_hbFolders.csproj">
-      <Project>{6c729d4d-fe93-4794-8320-af00c90d016d}</Project>
-      <Name>bm98_hbFolders</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\bm98_Html\bm98_Html.csproj">
-      <Project>{afb45ef1-b6e9-49cb-a904-b9af2d710ac3}</Project>
-      <Name>bm98_Html</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DbgLib\DbgLib.csproj">
       <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
       <Name>DbgLib</Name>
@@ -206,8 +156,47 @@
     <None Include="Resources\e_table_02.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LiteDB">
-      <Version>5.0.17</Version>
+    <PackageReference Include="bm98.CoordLib">
+      <Version>1.9.0</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.dNetBm98">
+      <Version>1.13.0.24</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimAirportDoc">
+      <Version>0.1.7</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimClientIF">
+      <Version>4.3.91</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimFacilityDataLib">
+      <Version>2.6.0.30</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimFacilityIF">
+      <Version>2.6.0</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimFlightPlanDoc">
+      <Version>0.1.7</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimFlightPlanLib">
+      <Version>0.1.7</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimFS20Folders">
+      <Version>1.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimMsFolders">
+      <Version>1.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimUtilities">
+      <Version>1.0.0.5</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.SettingsLib">
+      <Version>1.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.SimConnectClient">
+      <Version>4.3.91</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.SimConnectClientAdapter">
+      <Version>2.1.9</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

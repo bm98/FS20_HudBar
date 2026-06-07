@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using SC = SimConnectClient;
@@ -15,7 +11,7 @@ using static FSimClientIF.Sim;
 
 namespace FS20_HudBar.Bar.Items
 {
-  class DI_Flaps : DispItem
+  internal class DI_Flaps : DispItem
   {
     /// <summary>
     /// The Label ID 
@@ -80,6 +76,12 @@ namespace FS20_HudBar.Bar.Items
         }
         else if (fi == 7) {
           return Steps.P7;
+        }
+        else if (fi == 8) {
+          return Steps.P8;
+        }
+        else if (fi == 9) {
+          return Steps.P9;
         }
         return Steps.UpOK;
       }

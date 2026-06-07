@@ -42,7 +42,7 @@ namespace bm98_Html
       try {
         s_Deployment =
         new WinEDeploymentPdfExe(
-          new StaticDeployment( bm98_hbFolders.Folders.UserTempPath ),
+          new StaticDeployment( FSimFS20Folders.FS20_Folders.UserTempPath ),
           true // Force SHA256 verification - may throw InvalidOperation if sha fails when accessing the wrapper
         ); // PDF only
 

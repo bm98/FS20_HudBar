@@ -56,8 +56,8 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = (float)UnitConv.Lbs_to_Kg( SV.Get<float>( SItem.fG_Fuel_Quantity_left_lb ) );
-        _value2.Value = (float)UnitConv.Lbs_to_Kg( SV.Get<float>( SItem.fG_Fuel_Quantity_right_lb ) );
+        _value1.Value = (float)FSimUtilities.Units.Kg_From_Lbs( SV.Get<float>( SItem.fG_Fuel_Quantity_left_lb ) );
+        _value2.Value = (float)FSimUtilities.Units.Kg_From_Lbs( SV.Get<float>( SItem.fG_Fuel_Quantity_right_lb ) );
         // Color when there is a substantial unbalance
         if (Calculator.HasFuelImbalance) {
           _value1.ItemForeColor = cTxWarn;

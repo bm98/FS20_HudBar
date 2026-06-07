@@ -50,7 +50,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = XMath.AsRoundInt( SV.Get<float>( SItem.fG_Acft_VS_ftPmin ), 20 ); // steps 20
+        _value1.Value = FSimUtilities.Generic.RoundInt( SV.Get<float>( SItem.fG_Acft_VS_ftPmin ), 20 ); // steps 20
       }
     }
 

@@ -31,6 +31,11 @@ namespace FS20_HudBar.Config
     private readonly Color c_entryAvailable = Color.Blue;
 
     /// <summary>
+    /// FS20_Folders References must be set by HudBar when creating the Config Window
+    /// </summary>
+    internal FSimFS20Folders.FS20_Folders FS20_FoldersRef { get; set; } = null;
+
+    /// <summary>
     /// HudBar References must be set by HudBar when creating the Config Window
     /// </summary>
     internal HudBar HudBarRef { get; set; } = null;
@@ -508,7 +513,9 @@ namespace FS20_HudBar.Config
     // open AppSettings folder
     private void btOpenSettingsFolder_Click( object sender, EventArgs e )
     {
-      dNetBm98.Utilities.OpenInExplorer( bm98_hbFolders.Folders.SettingsPath );
+      if (FS20_FoldersRef != null) {
+        dNetBm98.Utilities.OpenInExplorer( FS20_FoldersRef.SettingsPath ); // will never fail..
+      }
     }
 
     #region Input Control Eventhandling
@@ -611,7 +618,8 @@ namespace FS20_HudBar.Config
         using (var sr = new StreamReader( OFD.FileName )) {
           serString = sr.ReadToEnd( );
         }
-        var cp = CProfile.GetFromSerString( serString );
+        // need to set the Profile Number here 20260413 BUG..
+        var cp = CProfile.GetFromSerString( serString, _selProfileIndex );
         if (cp != null) {
           ConfigCopy.ReplaceProfile( _selProfileIndex, cp );
           SelectProfileIndex( _selProfileIndex, false );

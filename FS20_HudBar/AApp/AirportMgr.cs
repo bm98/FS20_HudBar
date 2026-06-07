@@ -2,7 +2,7 @@
 
 using CoordLib;
 
-using bm98_hbFolders;
+using FSimFS20Folders;
 using FSimFacilityIF;
 
 namespace FS20_HudBar
@@ -12,6 +12,8 @@ namespace FS20_HudBar
   /// </summary>
   internal static class AirportMgr
   {
+    private static FS20_Folders _fs20FoldersRef;
+
     /// <summary>
     /// The Airport "Not Available" name 
     /// </summary>
@@ -138,8 +140,10 @@ namespace FS20_HudBar
     /// <summary>
     /// Reset the Manager
     /// </summary>
-    public static void Reset( )
+    public static void Reset( FS20_Folders fs20FoldersRef )
     {
+      _fs20FoldersRef = fs20FoldersRef;
+
       //AirportICAO = AirportNA_Icao; // don't kill the current entry
       HasChanged = true;
     }
@@ -174,10 +178,10 @@ namespace FS20_HudBar
     private static IAirport GetAirport( string aptICAO )
     {
       // sanity
-      if (!File.Exists( Folders.GenAptDBFile )) return null; // cannot get facilities
+      if (!File.Exists( _fs20FoldersRef.GenAptDBFile )) return null; // cannot get facilities
 
       using (var _db = new FSFData.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
-        if (!_db.Open( Folders.GenAptDBFile )) {
+        if (!_db.Open( _fs20FoldersRef.GenAptDBFile )) {
           return null; // no db available
         }
         return _db.DbReader.GetAirport( aptICAO );

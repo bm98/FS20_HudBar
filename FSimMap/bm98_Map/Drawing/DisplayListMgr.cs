@@ -872,7 +872,7 @@ namespace bm98_Map.Drawing
         // prep the display string here
         // like "↑ 234 / 18" is going up at 23400 ft MSL 180 kt GS 
         string vs = acftSrc.Vs_fpm > 200 ? "↑" : (acftSrc.Vs_fpm < -200) ? "↓" : " ";
-        string values = $"\n{vs}{XMath.RoundInt( acftSrc.AltitudeMsl_ft, 100 ) / 100:000} {XMath.RoundInt( acftSrc.Gs_kt, 10 ) / 10:00}"; // use values conditionally ??
+        string values = $"\n{vs}{FSimUtilities.Generic.RoundInt( acftSrc.AltitudeMsl_ft, 100 ) / 100:000} {FSimUtilities.Generic.RoundInt( acftSrc.Gs_kt, 10 ) / 10:00}"; // use values conditionally ??
         string dispString = $"{acftSrc.AircraftID}{values}";
         if (acftList.Values.FirstOrDefault( ac => (ac as AircraftAiItem).AircraftID == acftSrc.AircraftID ) is AircraftAiItem dstItem) {
           // update 
@@ -1024,21 +1024,56 @@ namespace bm98_Map.Drawing
 
     private Bitmap NavaidImage( NavaidTyp navaidType )
     {
-      switch (navaidType) {
-        case NavaidTyp.VOR: return Properties.Resources.vor;
-        case NavaidTyp.VOR_DME: return Properties.Resources.vor_dme;
-        case NavaidTyp.DME: return Properties.Resources.dme;
-        case NavaidTyp.NDB: return Properties.Resources.ndb;
-        case NavaidTyp.NDB_HI: return Properties.Resources.ndb;
-        case NavaidTyp.NDB_LO: return Properties.Resources.ndb;
-        case NavaidTyp.TACVOR: return Properties.Resources.vortac;
-        case NavaidTyp.TACAN: return Properties.Resources.vortac;
-        case NavaidTyp.ILS_LOC: return null; // Properties.Resources.loc;
-        case NavaidTyp.ILS_LOC_DME: return null; //  Properties.Resources.loc;
-        case NavaidTyp.ILS_LOC_GS: return null; //  Properties.Resources.loc_gs;
-        case NavaidTyp.ILS_LOC_GS_DME: return null; //  Properties.Resources.loc_gs;
-        default: return Properties.Resources.vor;
+      if ((navaidType & NavaidTyp.ILS_GRP) > 0) {
+        return null; // Properties.Resources.loc;
       }
+      else if ((navaidType & NavaidTyp.NDB_GRP) > 0) {
+        return Properties.Resources.ndb;
+      }
+      else if ((navaidType & NavaidTyp.TACAN_GRP) > 0) {
+        if ((navaidType & NavaidTyp.VOR_GRP) > 0) {
+          // VOR_GRP includes DME only so check 
+          if ((navaidType & NavaidTyp.DME) > 0) {
+            return Properties.Resources.tacan; // only TAC+DME
+          }
+          else {
+            return Properties.Resources.vortac; // TAC+VOR[DME]
+          }
+        }
+        else {
+          // pure TAC
+          return Properties.Resources.tacan;
+        }
+      }
+      else if ((navaidType & NavaidTyp.VOR_GRP) > 0) {
+        if ((navaidType & NavaidTyp.VOR_DME) > 0) {
+          return Properties.Resources.vor_dme;
+        }
+        else if ((navaidType & NavaidTyp.DME) > 0) {
+          return Properties.Resources.dme;
+        }
+        else {
+          return Properties.Resources.vor;
+        }
+      }
+      return Properties.Resources.vor;
+      /*
+            switch (navaidType) {
+              case NavaidTyp.VOR: return Properties.Resources.vor;
+              case NavaidTyp.VOR_DME: 
+              case NavaidTyp.DME: return Properties.Resources.dme;
+              case NavaidTyp.NDB: return Properties.Resources.ndb;
+              case NavaidTyp.NDB_HI: 
+              case NavaidTyp.NDB_LO: return Properties.Resources.ndb;
+              case NavaidTyp.TACVOR: return Properties.Resources.vortac;
+              case NavaidTyp.TACAN: return Properties.Resources.vortac;
+              case NavaidTyp.ILS_LOC: return null; // Properties.Resources.loc;
+              case NavaidTyp.ILS_LOC_DME: return null; //  Properties.Resources.loc;
+              case NavaidTyp.ILS_LOC_GS: return null; //  Properties.Resources.loc_gs;
+              case NavaidTyp.ILS_LOC_GS_DME: return null; //  Properties.Resources.loc_gs;
+              default: 
+            }
+      */
     }
     private Bitmap NavaidImage( UsageTyp usageType )
     {
@@ -1087,9 +1122,15 @@ namespace bm98_Map.Drawing
           CoordPoint = na.Coordinate,
           OutboundLatLon = LatLon.Empty, // set the next point TODO Set from argument
           ShowOutboundTrack = false, // enable through Apr selection
-          String = na.IsVOR ? $"{na.Ident}\n{na.Frequ_Hz / 1_000_000f:##0.00}"  // ICAO / mmm.nn
-                 : na.IsNDB ? $"{na.Ident}\n{na.Frequ_Hz / 1_000f:###0.0}"      // ICAO / kkkk.n
-                 : "",
+          String = na.IsVOR ?
+              (na.IsTACAN
+                ? $"{na.Ident}\n{na.TacanChannel:000}{(na.TacanModeX ? 'X' : 'Y')}\n{na.Frequ_Hz / 1_000_000f:##0.00}"  // ICAO / mmm.nn  VORTAC - or TAC +DME
+                : $"{na.Ident}\n{na.Frequ_Hz / 1_000_000f:##0.00}")                                // ICAO / mmm.nn  VOR
+              : na.IsTACAN
+                ? $"{na.Ident}\n{na.TacanChannel}{(na.TacanModeX ? 'X' : 'Y')}"      // ICAO / kkkk.n TACAN only
+                : na.IsNDB
+                  ? $"{na.Ident}\n{na.Frequ_Hz / 1_000f:###0.0}"                           // ICAO / kkkk.n
+                  : "",
           Font = FtLarge,
           TextBrush = _state.IsMap ? BrushNavAid : BrushNavAidRdr,
           IsNdbType = na.IsNDB,

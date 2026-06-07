@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-using static dNetBm98.Units;
+using static FSimUtilities.Units;
 
 using CoordLib;
 using CoordLib.Extensions;
@@ -773,7 +773,7 @@ namespace bm98_Map
         foreach (var nav in aptNavaids) {
           double distance_nm = _airportRef.Coordinate.DistanceTo( nav.Coordinate, ConvConsts.EarthRadiusNm );
           if (distance_nm > (nav.Range_nm * 1.1)) continue; // range + 10% else cannot be received at the airport
-          string rsiS = dNetBm98.Utilities.RSI( distance_nm, nav.Range_nm );
+          string rsiS = FSimUtilities.Generic.RSI( distance_nm, nav.Range_nm );
           string dir = Dms.CompassPoint( _airportRef.Coordinate.BearingTo( nav.Coordinate ), 2 );
           var item = nav.VorNdbNameString( dir, distance_nm, rsiS );
           if (!itemList.Contains( item )) {
@@ -882,7 +882,7 @@ namespace bm98_Map
 
         double distance_nm = _trackedAircraft.Position.DistanceTo( nav.Coordinate, ConvConsts.EarthRadiusNm );
         if (distance_nm > (nav.Range_nm * 1.1)) continue; // range + 10% else cannot be received at the airport
-        string rsiS = dNetBm98.Utilities.RSI( distance_nm, nav.Range_nm );
+        string rsiS = FSimUtilities.Generic.RSI( distance_nm, nav.Range_nm );
         string dir = Dms.CompassPoint( _trackedAircraft.Position.BearingTo( nav.Coordinate ), 2 );
 
         _pnlNavaids.AddItem( nav.VorNdbNameString( dir, distance_nm, rsiS ).PadRight( 63 ), null, false );

@@ -13,7 +13,7 @@ namespace FS20_HudBar.Triggers
   ///  
   ///  One need to add FloatEventProc for Levels
   /// </summary>
-  class T_Flaps : TriggerFloat
+  internal class T_Flaps : TriggerFloat
   {
     /// <summary>
     /// Calls to register for dataupdates
@@ -52,11 +52,11 @@ namespace FS20_HudBar.Triggers
     public T_Flaps( GUI.GUI_Speech speaker )
       : base( speaker )
     {
-      _name = "Flaps state";
+      _name = "Flaps state %";
       _test = "Flaps Down";
 
       // add the proc most likely to be hit as the first - saves some computing time on the long run
-      this.AddProc( new EventProcFloat( ) { Detector = new BandDetector<float>( 00f, 5f,0, autoReset: true ), Callback = Say, Text = "Flaps Up" } );//-5-5
+      this.AddProc( new EventProcFloat( ) { Detector = new BandDetector<float>( 00f, 5f, 0, autoReset: true ), Callback = Say, Text = "Flaps Up" } );//-5-5
       this.AddProc( new EventProcFloat( ) { Detector = new BandDetector<float>( 17f, 8f, 0, autoReset: true ), Callback = Say, Text = "Flaps 20" } );//9-25
       this.AddProc( new EventProcFloat( ) { Detector = new BandDetector<float>( 30f, 5f, 0, autoReset: true ), Callback = Say, Text = "Flaps 30" } );//25-35
       this.AddProc( new EventProcFloat( ) { Detector = new BandDetector<float>( 40f, 5f, 0, autoReset: true ), Callback = Say, Text = "Flaps 40" } );//35-45

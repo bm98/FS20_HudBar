@@ -212,6 +212,8 @@
 
     SBALL_ANI,   // SlipBall Graph
     H_COLL_LEV,  // Heli Collective Lever prct
+
+    FLAPS_VOICE, // Flaps with voice callout
   }
 
 
@@ -265,6 +267,7 @@
     GEAR,         // Gear Up/Down
     BRAKES,       // Brakes On Off
     FLAPS,        // Flaps N level 
+    FLAPS_VOICE,  // Flaps with voice callout
     FLAPS_ANI,    // Flaps Graph
     SPOLIER,      // Spoilers / Speedbrakes
     SPOILER_ANI,  // Spoilers Graph

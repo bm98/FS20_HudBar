@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using bm98_hbFolders;
+using FSimFS20Folders;
 
 using DbgLib;
 
@@ -32,17 +32,20 @@ namespace FS20_HudBar
       }
 
       LOG.Info( $"Program Start with Instance ({Instance})" );
+      var fs20Folders = new FS20_Folders( );
+      fs20Folders.InitHudBarStorage( "FShelfAppSettings.json" );
+
 #if DEBUG
       // TODO REMOVE FOR FINAL TEST AND RELEASE
       // Init the Folders Utility with our AppSettings File
-      Folders.InitStorage( "HudBarAppSettings-NEXT.json" );
-//      Folders.InitStorage( "HudBarAppSettings.json" );
+      fs20Folders.InitHudBarStorage( "HudBarAppSettings-NEXT.json" );
+      //      Folders.InitStorage( "HudBarAppSettings.json" );
 #else
       // Init the Folders Utility with our AppSettings File
-      Folders.InitStorage( "HudBarAppSettings.json" );
+      fs20Folders.InitHudBarStorage( "HudBarAppSettings.json" );
 #endif
       // init the V2 AppSettings instance based on the command line argument
-      AppSettingsV2.InitInstance( Folders.SettingsFile, Instance );
+      AppSettingsV2.InitInstance( fs20Folders.SettingsFile, Instance );
       var v2Used = AppSettingsV2.Instance.V2InUse;
 
       // check if never used and Upgrade if needed
@@ -66,7 +69,7 @@ namespace FS20_HudBar
       // Standard Init follows here
       Application.EnableVisualStyles( );
       Application.SetCompatibleTextRenderingDefault( false );
-      Application.Run( new frmMain( ) );
+      Application.Run( new frmMain( fs20Folders ) );
 
       //
       NLog.LogManager.Shutdown( );

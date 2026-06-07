@@ -52,19 +52,16 @@ FacilityDataLoader.exe      MSFS Facility conversion tool
 BGLlib.dll                  BGL and LLM decoder
 CoordLib.dll                A coord. handling library
 FSimFacilityIF.dll          MS facility database interface definition
-FSFData.dll     MS facility database access library
+FSFData.dll                 MS facility database access library
+SimConTool2024.dll          MS2024 Datastreaming helper library
 NLog.config                 Logging config file
 NLog.dll                    3rd party logging library
 LiteDB.dll                  3rd party data management library
 System.Data.SQLite.dll      3rd party data management library
 x64\SQLite.Interop.dll      3rd party data management library 64bit C-library
 x86\SQLite.Interop.dll      3rd party data management library 32bit C-library
-V2020\MSFSPlug.dll			MSFS2020 SimConnect Adapter
-V2020\Microsoft.FlightSimulator.SimConnect.dll  MSFS2020 latest C# assembly 
-V2020\SimConnect.dll        MSFS2020 latest C++ module
-V2024\MSFSPlug.dll			MSFS2024 SimConnect Adapter
-V2024\Microsoft.FlightSimulator.SimConnect.dll  MSFS2024 latest C# assembly 
-V2024\SimConnect.dll        MSFS2024 latest C++ module
+Microsoft.FlightSimulator.SimConnect.dll  MSFS2024 latest C# assembly 
+SimConnect.dll              MSFS2024 latest C++ module
 
 ReadMe-FlightBag.txt                   This file
 
@@ -83,9 +80,8 @@ github@mail.burri-web.org
 Changelog:
 
 V 0.73-B73
-- RERUN FacilityDataLoader !!! will use the new location in %appdata%\bm98ch\GenApt\db
+- RERUN FacilityDataLoader !!!
 
-- Update FacilityDB, settings and map cache relocated to %appdata%\bm98ch\.. (as suggested my MS)
 - Update FacilityDataLoader to be more robust for MS2024
 - Update Map drawing algos
 - Fix METAR support new API 

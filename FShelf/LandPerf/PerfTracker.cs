@@ -4,18 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 using CoordLib;
-using CoordLib.Extensions;
-using bm98_hbFolders;
+using FSimFS20Folders;
 
 using SC = SimConnectClient;
 using static FSimClientIF.Sim;
 
 using FSimClientIF.Modules;
 using FSimFacilityIF;
-using System.Diagnostics;
-using System.Drawing;
 using DbgLib;
 
 namespace FShelf.LandPerf
@@ -35,6 +33,9 @@ namespace FShelf.LandPerf
     // Singleton var
     private static readonly Lazy<PerfTracker> lazy = new Lazy<PerfTracker>( ( ) => new PerfTracker( ) );
 
+    // FS20 HudBar Folders provider
+    private readonly FS20_Folders _fs20Folders;
+
     /// <summary>
     /// The singleton instance of this class
     /// </summary>
@@ -45,6 +46,9 @@ namespace FShelf.LandPerf
     /// </summary>
     private PerfTracker( )
     {
+      _fs20Folders = new FS20_Folders( );
+      _fs20Folders.InitHudBarStorage( "" ); // init without settings file
+
       LPM = SC.SimConnectClient.Instance.LandingPerformanceModule;
       _observerID = LPM.AddObserver( "PerfTracker", 1, OnDataArrival, null ); // get every landing event
     }
@@ -135,7 +139,7 @@ namespace FShelf.LandPerf
         // never fail writing to disk
         try {
           string lImageName = $"{InitialTD.LandingPerf.TdTimeStamp.ToString( "s" ).Replace( ":", "_" )}-{InitialTD.AirportIdent}-{InitialTD.RunwayIdent}.jpg";
-          image.Save( Path.Combine( Folders.LandingsPath, lImageName ), System.Drawing.Imaging.ImageFormat.Jpeg );
+          image.Save( Path.Combine( _fs20Folders.LandingsPath, lImageName ), System.Drawing.Imaging.ImageFormat.Jpeg );
           return true;
         }
         catch { }
@@ -256,7 +260,7 @@ namespace FShelf.LandPerf
 
       var lPerf = _landingList.LastOrDefault( ); // write the latest event
 
-      var tdFile = Folders.LandingsFile;
+      var tdFile = _fs20Folders.LandingsFile;
       // never fail on this sequence
       try {
         if (!File.Exists( tdFile )) {
@@ -293,7 +297,7 @@ namespace FShelf.LandPerf
     private IAirport GetAirport( LatLon acftPos )
     {
       using (var _db = new FSFData.DbConnection( ) { ReadOnly = true, SharedAccess = true }) {
-        if (!_db.Open( Folders.GenAptDBFile )) {
+        if (!_db.Open( _fs20Folders.GenAptDBFile )) {
           LOG.Error( $"PerfTracker.GetAirport - No Apt found: DB file not available" );
           return null; // no db available
         }

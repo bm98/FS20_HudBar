@@ -116,7 +116,7 @@ namespace FS20_CamControl
     /// <summary>
     /// Scales from distance to  0..100 %
     /// </summary>
-    public static int DistToPercent( float dist ) => XMath.Clip( (int)((dist - c_minDist_nm) * 100 / (c_maxDist_nm - c_minDist_nm)), 0, 100 );
+    public static int DistToPercent( float dist ) => (int)FSimUtilities.Generic.Clip( (int)((dist - c_minDist_nm) * 100 / (c_maxDist_nm - c_minDist_nm)), 0, 100 );
 
 
     /// <summary>
@@ -135,14 +135,14 @@ namespace FS20_CamControl
     // using the current VS and GS
     private double VertDistance( double distance_nm )
     {
-      var vs_mPsec = Units.Mps_From_Ftpm( SV.Get<float>( SItem.fG_Acft_VS_Avg_ftPmin ) );
-      var gs_mPsec = Units.Mps_From_Kt( SV.Get<float>( SItem.fG_Acft_GS_kt ) );
+      var vs_mPsec =FSimUtilities.Units.Mps_From_Ftpm( SV.Get<float>( SItem.fG_Acft_VS_Avg_ftPmin ) );
+      var gs_mPsec = FSimUtilities.Units.Mps_From_Kt( SV.Get<float>( SItem.fG_Acft_GS_kt ) );
       if (gs_mPsec < 0.01) return 0;
 
-      var dLon_m = Units.M_From_Nm( distance_nm );
+      var dLon_m = FSimUtilities.Units.M_From_Nm( distance_nm );
       var t_sec = dLon_m / gs_mPsec;
       var dVert_m = t_sec * vs_mPsec;
-      return Units.Nm_From_M( dVert_m );
+      return FSimUtilities.Units.Nm_From_M( dVert_m );
     }
 
     /// <summary>

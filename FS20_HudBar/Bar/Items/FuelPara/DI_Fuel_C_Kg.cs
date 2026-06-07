@@ -49,7 +49,7 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = (float)UnitConv.Lbs_to_Kg( SV.Get<float>( SItem.fG_Fuel_Quantity_center_lb ) );
+        _value1.Value = (float)FSimUtilities.Units.Kg_From_Lbs( SV.Get<float>( SItem.fG_Fuel_Quantity_center_lb ) );
       }
     }
 

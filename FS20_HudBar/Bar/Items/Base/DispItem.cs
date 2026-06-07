@@ -130,7 +130,7 @@ namespace FS20_HudBar.Bar.Items.Base
     protected void AddObserver( string itemId, float reports_perSecond, Action<string> onDataArrival )
     {
       // sanity
-      var rps = dNetBm98.XMath.Clip( reports_perSecond, 0.1f, 10f );
+      var rps = FSimUtilities.Generic.Clip( reports_perSecond, 0.1f, 10f );
 
       // 0.1: 10/0.1=100 (*100ms = 10sec), 1: 10/1=10 (*100ms=1sec),  10: 10/10=1 (*100ms=0.1sec)
       int divider = (int)Math.Round( FSimClientIF.Sim.DataArrival_perSecond / rps );

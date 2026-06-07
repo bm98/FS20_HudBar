@@ -618,7 +618,7 @@ namespace bm98_Map.Drawing
     private void SetScaleFactor( float sFactor )
     {
       // sanity
-      sFactor = dNetBm98.XMath.Clip( sFactor, c_scaleMin, c_scaleMax );
+      sFactor = (float)FSimUtilities.Generic.Clip( sFactor, c_scaleMin, c_scaleMax );
 
       if (float.IsNaN( sFactor ) || sFactor <= (c_scaleMin + float.Epsilon)) {
         // reset zoom

@@ -57,7 +57,7 @@ namespace FS20_HudBar.Bar.Items
     {
       if (this.Visible) {
         // Fuel Tot & Reach
-        _value1.Value = (float)UnitConv.Lbs_to_Kg( SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) );
+        _value1.Value = (float)FSimUtilities.Units.Kg_From_Lbs( SV.Get<float>( SItem.fG_Fuel_Quantity_total_lb ) );
         _value2.Value = Calculator.FuelReach_sec( );
         _value2.ItemForeColor = Calculator.FuelReachAlert ? cTxAlert : (Calculator.FuelReachWarn ? cTxWarn : cTxInfo);
       }

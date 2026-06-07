@@ -55,13 +55,26 @@ namespace bm98_Map.Data
     public static string VorNdbNameString( this INavaid navaid, string direction, double dist_nm, string rsi )
     {
       string nt = navaid.NavaidType.ToString( ).Replace( "_", " " );
-      if (navaid.IsVOR) {
-        return $"{nt,-8} {navaid.Ident,-4} {navaid.Frequ_Hz / 1_000_000f,7:##0.00} MHz ({direction.PadRight( 2 )} {dist_nm,5:##0.0} nm {rsi}) {navaid.Name}";
+      if (navaid.IsTACAN) {
+        nt = nt.Replace( ", TACAN", " TAC" );
+        string tacChannel = $"Ch{navaid.TacanChannel:##0}{(navaid.TacanModeX ? 'X' : 'Y')}".PadRight(6);
+        // can be a VOR as well
+        if (navaid.IsVOR || navaid.HasDME) {
+          // VOR, TACAN
+          return $"{nt,-12} {navaid.Ident,-4} {navaid.Frequ_Hz / 1_000_000f,7:##0.00} {tacChannel} ({direction.PadRight( 2 )} {dist_nm,5:##0.0} nm {rsi}) {navaid.Name}";
+        }
+        else {
+          // only TAC or TAC DME
+          return $"{nt,-12} {navaid.Ident,-4} {tacChannel} ({direction.PadRight( 2 )} {dist_nm,5:##0.0} nm {rsi}) {navaid.Name}";
+        }
+      }
+      else if (navaid.IsVOR) {
+        return $"{nt,-12} {navaid.Ident,-4} {navaid.Frequ_Hz / 1_000_000f,7:##0.00}        ({direction.PadRight( 2 )} {dist_nm,5:##0.0} nm {rsi}) {navaid.Name}";
       }
       else if (navaid.IsNDB) {
-        return $"{nt,-8} {navaid.Ident,-4} {navaid.Frequ_Hz / 1000f,6:###0.0} kHz  ({direction.PadRight( 2 )} {dist_nm,5:##0.0} nm {rsi}) {navaid.Name}";
+        return $"{nt,-12} {navaid.Ident,-4} {navaid.Frequ_Hz / 1000f,6:###0.0} kHz     ({direction.PadRight( 2 )} {dist_nm,5:##0.0} nm {rsi}) {navaid.Name}";
       }
-      // len is:41+NameLen
+
       return "";
     }
 

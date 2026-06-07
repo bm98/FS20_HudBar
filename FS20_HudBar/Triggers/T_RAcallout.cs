@@ -1,4 +1,4 @@
-﻿using static dNetBm98.Units;
+﻿using static FSimUtilities.Units;
 
 using SC = SimConnectClient;
 

@@ -167,7 +167,7 @@ namespace MapLib.Sources.Providers
       // Try DiskCache
       var diskCache = iniFile.ItemValue( "", "DiskCacheMB" );
       if (!string.IsNullOrEmpty( diskCache ) && int.TryParse( diskCache, out var cacheMB )) {
-        DiskCacheMB = dNetBm98.XMath.Clip( cacheMB, 32, 1024 ); // valid limits
+        DiskCacheMB = (int)FSimUtilities.Generic.Clip( cacheMB, 32, 1024 ); // valid limits
       }
     }
 

@@ -67,10 +67,10 @@ namespace FS20_HudBar.Bar.Items
     private void OnDataArrival( string dataRefName )
     {
       if (this.Visible) {
-        _value1.Value = (float)UnitConv.Lbs_to_Kg( SV.Get<float>( SItem.fG_Eng_E1_fuelflow_lbPh ) );
-        _value2.Value = (float)UnitConv.Lbs_to_Kg( SV.Get<float>( SItem.fG_Eng_E2_fuelflow_lbPh ) );
-        _value3.Value = (float)UnitConv.Lbs_to_Kg( SV.Get<float>( SItem.fG_Eng_E3_fuelflow_lbPh ) );
-        _value4.Value = (float)UnitConv.Lbs_to_Kg( SV.Get<float>( SItem.fG_Eng_E4_fuelflow_lbPh ) );
+        _value1.Value = (float)FSimUtilities.Units.Kg_From_Lbs( SV.Get<float>( SItem.fG_Eng_E1_fuelflow_lbPh ) );
+        _value2.Value = (float)FSimUtilities.Units.Kg_From_Lbs( SV.Get<float>( SItem.fG_Eng_E2_fuelflow_lbPh ) );
+        _value3.Value = (float)FSimUtilities.Units.Kg_From_Lbs( SV.Get<float>( SItem.fG_Eng_E3_fuelflow_lbPh ) );
+        _value4.Value = (float)FSimUtilities.Units.Kg_From_Lbs( SV.Get<float>( SItem.fG_Eng_E4_fuelflow_lbPh ) );
       }
     }
 

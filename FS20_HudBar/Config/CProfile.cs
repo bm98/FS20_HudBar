@@ -119,8 +119,23 @@ namespace FS20_HudBar.Config
     {
       // sanity
       if (profile == null) throw new ArgumentNullException( "profile cannot be null" );
-      if (profile.ProfileNumber < 1) return; // ?? should not happen...
-      if (profile.ProfileNumber > c_numProfiles) return; // ?? should not happen...
+      if (profile.ProfileNumber < 1) {
+        // ?? should not happen...
+#if DEBUG
+        throw new ArgumentException( $"invalid profile.ProfileNumber <{profile.ProfileNumber}>" );
+#else
+        return;
+#endif
+      }
+      if (profile.ProfileNumber > c_numProfiles) {
+        // ?? should not happen...
+#if DEBUG
+        throw new ArgumentException( $"invalid profile.ProfileNumber <{profile.ProfileNumber}>" );
+#else
+        return;
+#endif
+      }
+
 
       var sCat = InitSettingCat( profile.ProfileNumber );
 
@@ -807,11 +822,16 @@ namespace FS20_HudBar.Config
     }
 
     /// <summary>
-    /// Convert from a Serialized Profile String to a Profile
+    /// Convert from a Serialized Profile String to a Profile (use GetAsSerString() to create the ser string)
     /// </summary>
+    /// <param name="profileSerString">The profile String</param>
+    /// <param name="profileIndex">The profile Index to set for this one (0..N-1)</param>
     /// <returns>A Profile or null</returns>
-    public static CProfile GetFromSerString( string profileSerString )
+    public static CProfile GetFromSerString( string profileSerString, int profileIndex )
     {
+      // sanity
+      if (!Enum.IsDefined( typeof( DProfile ), profileIndex )) return null;
+
       try {
         string[] p = profileSerString.Replace( "\r", "" ).Split( new char[] { '\n' }, StringSplitOptions.None );
 
@@ -839,8 +859,8 @@ namespace FS20_HudBar.Config
         Boolean.TryParse( p[idx++], out bool frameItems );
         Boolean.TryParse( p[idx++], out bool boxDivider );
         string hkProfile = p[idx++];
-
-        var cp = new CProfile( 0, pName, pString, fBrkString, iPosString,
+        // profile number is Index + 1 (1..N)
+        var cp = new CProfile( profileIndex + 1, pName, pString, fBrkString, iPosString,
           (int)fSize, (int)placement, (int)kind, pLoc, condensed, (int)transparency, bgImageName,
           bgImageBorder, fonts, colReg, colDim, colInv, frameItems, boxDivider, hkProfile );
 

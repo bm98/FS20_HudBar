@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PingLib</RootNamespace>
-    <AssemblyName>PingLib</AssemblyName>
+    <AssemblyName>bm98.PingLib</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -23,7 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\PingLib.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\bm98.PingLib.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,7 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\PingLib.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\bm98.PingLib.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
@@ -70,8 +70,11 @@
     <Compile Include="WaveProc.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="bm98.FSimFS20Folders">
+      <Version>1.2.0</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.26100.4188</Version>
+      <Version>10.0.28000.1839</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -111,10 +114,6 @@
     <None Include="Sounds\TSynth_VBR50Q48kHz.wma" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bm98_hbFolders\bm98_hbFolders.csproj">
-      <Project>{6c729d4d-fe93-4794-8320-af00c90d016d}</Project>
-      <Name>bm98_hbFolders</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DbgLib\DbgLib.csproj">
       <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
       <Name>DbgLib</Name>

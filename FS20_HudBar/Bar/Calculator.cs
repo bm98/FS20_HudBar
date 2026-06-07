@@ -326,7 +326,7 @@ namespace FS20_HudBar.Bar
 
       float dFt = tgtAlt - m_alt;
       float minToTgt = tgtDist / NmPerMin( m_gs );
-      int reqFpm = dNetBm98.XMath.RoundInt( dFt / minToTgt, 100 );
+      int reqFpm = FSimUtilities.Generic.RoundInt( dFt / minToTgt, 100 );
       // return a reasonable number or NaN
       return (Math.Abs( reqFpm ) > 9000f) ? float.NaN : reqFpm;
     }
@@ -344,7 +344,7 @@ namespace FS20_HudBar.Bar
 
       float minToTgt = tgtDist / NmPerMin( m_gs );
       float dAlt = m_vs * minToTgt;
-      int tgtAlt = dNetBm98.XMath.RoundInt( m_alt + dAlt, 100 );// fix at 100 steps
+      int tgtAlt = FSimUtilities.Generic.RoundInt( m_alt + dAlt, 100 );// fix at 100 steps
       // return a reasonable number or NaN
       return tgtAlt > 60_000f ? float.NaN
              : tgtAlt < -200f ? float.NaN

@@ -332,7 +332,7 @@ namespace MapLib.Sources.Providers
     /// </summary>
     /// <param name="zoom">Desired zoom level</param>
     /// <returns>Zoom level clipped within limits</returns>
-    protected ushort ZoomCheck( ushort zoom ) => (ushort)XMath.Clip( zoom, MinZoom, MaxZoom );
+    protected ushort ZoomCheck( ushort zoom ) => (ushort)FSimUtilities.Generic.Clip( zoom, MinZoom, MaxZoom );
 
 
     #region Abstract Templates

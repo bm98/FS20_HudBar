@@ -77,7 +77,7 @@ namespace FS20_HudBar.Config
 
     private bool TestRouteString( string routeString )
     {
-      _tmpRouteString = routeString;
+      _tmpRouteString = routeString.ToUpperInvariant( );
       _tmpRouteHelp = "";
 
       var rtHandler = new RTEplnHandler( );
@@ -91,7 +91,7 @@ namespace FS20_HudBar.Config
 
       // missing DEP ??
       if (!route.HasDeparture) {
-        var tmpRte = rtHandler.FromDocument( txDep.Text + " " + txArr.Text );
+        var tmpRte = rtHandler.FromDocument( txDep.Text.ToUpperInvariant( ) + " " + txArr.Text.ToUpperInvariant( ) );
         if (!tmpRte.IsValid) {
           _tmpRouteHelp += "Missing a known DEP and/or ARR airport, ";
         }
@@ -136,7 +136,7 @@ namespace FS20_HudBar.Config
 
     private void frmApt_Activated( object sender, EventArgs e )
     {
-      lblDataSource.Text = bm98_hbFolders.Folders.FS2024Used ? "MSFS 2024" : "MSFS 2020";
+      lblDataSource.Text = FSimFS20Folders.FS20_Folders.FS2024Used ? "MSFS 2024" : "MSFS 2020";
     }
 
     private void frmApt_FormClosing( object sender, FormClosingEventArgs e )
@@ -209,7 +209,7 @@ namespace FS20_HudBar.Config
     {
       _planLoaded = false;
       lblLoading.Text = "requested";
-      lblLoading.Text = HudBar.FlightBagRef.LoadFromSimBrief( ) ? "loading" : "load failed";
+      lblLoading.Text = HudBar.FlightBagRef.LoadFromSimBrief( ) ? lblLoading.Text : "load failed";
     }
 
     // load the MSFS default PLN
@@ -217,7 +217,7 @@ namespace FS20_HudBar.Config
     {
       _planLoaded = false;
       lblLoading.Text = "requested";
-      lblLoading.Text = HudBar.FlightBagRef.LoadDefaultPLN( ) ? "loading" : "load failed ";
+      lblLoading.Text = HudBar.FlightBagRef.LoadDefaultPLN( ) ? lblLoading.Text : "load failed ";
     }
 
     // load a plan from file
@@ -225,7 +225,7 @@ namespace FS20_HudBar.Config
     {
       _planLoaded = false;
       lblLoading.Text = "requested";
-      lblLoading.Text = HudBar.FlightBagRef.LoadFlightPlanFile( ) ? "loading" : "load failed";
+      lblLoading.Text = HudBar.FlightBagRef.LoadFlightPlanFile( ) ? lblLoading.Text : "load failed";
     }
 
     // load from route input
@@ -233,9 +233,11 @@ namespace FS20_HudBar.Config
     {
       lblRouteStatus.Text = "";
       lblLoading.Text = "testing";
-      if (TestRouteString( txRoute.Text )) {
+
+      if (TestRouteString(txRoute.Text.ToUpperInvariant( ) )) {
         txRoute.Text = _tmpRouteString; // update (may have added the airports)
-        lblLoading.Text = HudBar.FlightBagRef.LoadRouteString( txRoute.Text ) ? "loading" : "load failed";
+        lblLoading.Text = "loading";
+        lblLoading.Text = HudBar.FlightBagRef.LoadRouteString( txRoute.Text ) ? lblLoading.Text : "load failed";
       }
       else {
         lblLoading.Text = "test failed";

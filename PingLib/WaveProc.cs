@@ -98,7 +98,7 @@ namespace PingLib
     {
       if (string.IsNullOrEmpty( _soundFolder )) {
         // initialize if needed
-        _soundFolder = bm98_hbFolders.Folders.UserTempPath;
+        _soundFolder = FSimFS20Folders.FS20_Folders.UserTempPath;
       }
       return _soundFolder;
     }

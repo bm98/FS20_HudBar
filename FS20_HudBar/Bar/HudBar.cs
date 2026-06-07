@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using DbgLib;
-using static dNetBm98.Units;
+using static FSimUtilities.Units;
 
 using SC = SimConnectClient;
 
@@ -140,7 +140,7 @@ namespace FS20_HudBar.Bar
       {LItem.WIND_SD, DI_Wind_SD.Desc },      {LItem.WIND_XY, DI_Wind_XY.Desc },  {LItem.VWIND, DI_Wind_V.Desc },
       {LItem.BARO_HPA, DI_Baro_HPA.Desc },    {LItem.BARO_InHg, DI_Baro_InHg.Desc },
       {LItem.GEAR, DI_Gear.Desc },            {LItem.BRAKES, DI_Brakes.Desc },
-      {LItem.FLAPS, DI_Flaps.Desc },          {LItem.SPOILER, DI_Spoilers.Desc },
+      {LItem.FLAPS, DI_Flaps.Desc },          {LItem.FLAPS_VOICE, DI_Flaps_Voice.Desc }, {LItem.SPOILER, DI_Spoilers.Desc },
       {LItem.FLAPS_ANI, DI_FlapsGraph.Desc }, {LItem.SPOILER_ANI, DI_SpoilersGraph.Desc },
       {LItem.Lights, DI_Lights.Desc },
 
@@ -420,6 +420,7 @@ namespace FS20_HudBar.Bar
       m_dispItems.AddDisp( new DI_Gear( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Brakes( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_Flaps( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
+      m_dispItems.AddDisp( new DI_Flaps_Voice( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_FlapsGraph( m_valueItems, lblProto ) );
       m_dispItems.AddDisp( new DI_Spoilers( m_valueItems, lblProto, valueProto, value2Proto, signProto ) );
       m_dispItems.AddDisp( new DI_SpoilersGraph( m_valueItems, lblProto ) );

@@ -13,7 +13,7 @@ using static FSimClientIF.Sim;
 using SC = SimConnectClient;
 using SimConnectClientAdapter;
 
-using bm98_hbFolders;
+using FSimFS20Folders;
 
 using static FS20_HudBar.GUI.GUI_Colors;
 using FS20_HudBar.GUI.Templates.Base;
@@ -50,6 +50,9 @@ namespace FS20_HudBar
       System.Reflection.Assembly.GetCallingAssembly( ),
       System.Reflection.MethodBase.GetCurrentMethod( ).DeclaringType );
     #endregion
+
+    // FS20 HudBar Folders provider
+    private readonly FS20_Folders _fs20FoldersRef;
 
     // SimConnect Client Adapter
     private readonly SCClient SCAdapter;
@@ -109,7 +112,7 @@ namespace FS20_HudBar
       _facDbChecked = true;
       if (AppSettingsV2.Instance.OmitDBCheck) return; // don't check said User
 
-      if (!File.Exists( Folders.GenAptDBFile )) {
+      if (!File.Exists( _fs20FoldersRef.GenAptDBFile )) {
         if (MessageBox.Show( c_facDBmsg, "Facility Database Missing", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.No) {
           AppSettingsV2.Instance.OmitDBCheck = true;
           AppSettingsV2.Instance.Save( );
@@ -517,8 +520,13 @@ namespace FS20_HudBar
     /// <summary>
     /// Main Form Init
     /// </summary>
-    public frmMain( )
+    public frmMain( FS20_Folders fs20Folders )
     {
+      _fs20FoldersRef = fs20Folders;
+
+      // init with Folders ref early..
+      AirportMgr.Reset( _fs20FoldersRef );
+
       InitializeComponent( );
 
       // Load all from AppSettings
@@ -593,6 +601,8 @@ namespace FS20_HudBar
       SCAdapter.Establishing += SCAdapter_Establishing;
       SCAdapter.Disconnected += SCAdapter_Disconnected;
 
+      SC.SimConnectClient.Instance.StateChanged += Instance_StateChanged;
+
       // Setup the Shelf
       LOG.Info( "frmMain", "Load Shelf" );
       _Shelf = new FShelf.frmShelf( Program.Instance );
@@ -611,6 +621,7 @@ namespace FS20_HudBar
 
       LOG.Info( "frmMain", "Init Form Done" );
     }
+
 
     // Form Load Event
     private void frmMain_Load( object sender, EventArgs e )
@@ -647,7 +658,7 @@ namespace FS20_HudBar
       _ = FShelf.LandPerf.PerfTracker.Instance;
 
       // File Access Check
-      if (Dbg.Instance.AccessCheck( Folders.UserFilePath ) != AccessCheckResult.Success) {
+      if (Dbg.Instance.AccessCheck( _fs20FoldersRef.HudBarUserFilePath ) != AccessCheckResult.Success) {
         string msg = $"MyDocuments Folder Access Check Failed:\n{Dbg.Instance.AccessCheckResult}\n\n{Dbg.Instance.AccessCheckMessage}";
         MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
       }
@@ -770,7 +781,8 @@ namespace FS20_HudBar
       SynchGUISize( (HUD == null) || HUD.QuickVisible );
 
       // Select Facility DB based on the version detected
-      Folders.SelectFSVersion( SCAdapter.FSimVersion == FSimVersion.MSFS2024 );
+      FS20_Folders.SelectFSVersion( SCAdapter.FSimVersion == FSimVersion.MSFS2024 );
+
       // if Connected and any Sim was detected
       if (SCAdapter.FSimVersion != FSimVersion.None) {
         // Check for DB - will ignore it when done or not asked for
@@ -832,6 +844,7 @@ namespace FS20_HudBar
       HudBar.PingLoop.Mute = true;
 
       // Config must use the current environment 
+      CFG.FS20_FoldersRef = _fs20FoldersRef;
       CFG.HudBarRef = HUD;
       CFG.ConfigCopy = m_config.Clone( ); // send only a copy to work with
 
@@ -1127,7 +1140,7 @@ namespace FS20_HudBar
       LOG.Info( "InitGUI", "FlightLogModule Setup" );
       SC.SimConnectClient.Instance.FlightLogModule.Enabled = AS.FRecorder;
       LOG.Info( "InitGUI", "AirportMgr Reset" );
-      AirportMgr.Reset( );
+      AirportMgr.Reset( _fs20FoldersRef );
 
       // Update profile selection item names
       LOG.Info( "InitGUI", "Update profile selection" );
@@ -1280,7 +1293,7 @@ namespace FS20_HudBar
       // It is called prematurely when the Bar connects or a flight is loaded - reset if no acft is selected
       if (string.IsNullOrEmpty( SV.Get<string>( SItem.sG_Cfg_AcftConfigFile ) )) {
         // reset as long as there is no flight active
-        AirportMgr.Reset( );
+        AirportMgr.Reset( _fs20FoldersRef );
         _Shelf.FlightPlanRef.Tracker.ResetWYP( );
       }
       else {
@@ -1389,6 +1402,19 @@ namespace FS20_HudBar
     }
 
     /// <summary>
+    /// Sim State changed
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void Instance_StateChanged( object sender, EventArgs e )
+    {
+      // Disable if not in flight
+      if (SC.SimConnectClient.Instance.IsInFlightState == false) {
+        HudBar.VoiceEnabled = false;
+      }
+    }
+
+    /// <summary>
     /// SimConnect chores on a timer, mostly reconnecting and monitoring the connection status
     /// Intended to be called about every 5 seconds
     /// </summary>
@@ -1399,9 +1425,12 @@ namespace FS20_HudBar
 #endif
 
       if (SC.SimConnectClient.Instance.IsConnected) {
-        // Voice is disabled when a new HUD is created, so enable if not yet done
-        // The timer is enabled after InitGUI - so this one is always 5 sec later which should avoid some of the early talking..
-        HudBar.VoiceEnabled = true;
+        if (SC.SimConnectClient.Instance.IsInFlightState) {
+          // Voice is disabled when a new HUD is created, or state not in flight
+          // so enable if not yet done
+          // The timer is enabled after InitGUI - so this one is always 5 sec later which should avoid some of the early talking..
+          HudBar.VoiceEnabled = true;
+        }
         // Check and Resize at this pace to fit the contents in case some layout changes made it not fitting anymore
         // this is due to long texts or changes in the visibility of items coming in by the SimConnect Data processing in the DI items
         SynchGUISize( (HUD == null) || HUD.QuickVisible );

@@ -369,7 +369,7 @@ namespace FCamControl
           // get Zoom if set
           if (match.Groups["zoom"].Success) {
             if (int.TryParse( match.Groups["zoom"].Value, NumberStyles.Number, CultureInfo.InvariantCulture, out int zoom )) {
-              _zoomLevel = dNetBm98.XMath.Clip( zoom, -1, 100 );
+              _zoomLevel = (int)FSimUtilities.Generic.Clip( zoom, -1, 100 );
             }
           }
 

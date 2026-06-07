@@ -32,7 +32,9 @@ namespace FS20_HudBar.GUI.Templates
     private string c_4 = Convert.ToChar(0x8F).ToString();  // Wingdings char  Filled Circle 4
     private string c_5 = Convert.ToChar(0x90).ToString();  // Wingdings char  Filled Circle 5
     private string c_6 = Convert.ToChar(0x91).ToString();  // Wingdings char  Filled Circle 6
-    private string c_7 = Convert.ToChar(0x92).ToString();  // Wingdings char  Filled Circle 7
+    private string c_7 = Convert.ToChar( 0x92 ).ToString( );  // Wingdings char  Filled Circle 7
+    private string c_8 = Convert.ToChar( 0x93 ).ToString( );  // Wingdings char  Filled Circle 8
+    private string c_9 = Convert.ToChar( 0x94 ).ToString( );  // Wingdings char  Filled Circle 9
 
     private Color m_fColor;
     private Color m_bColor;
@@ -101,6 +103,10 @@ namespace FS20_HudBar.GUI.Templates
             this.Text = c_6; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
           case Steps.P7:
             this.Text = c_7; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
+          case Steps.P8:
+            this.Text = c_8; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
+          case Steps.P9:
+            this.Text = c_9; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
           case Steps.PEnd:
             this.Text = c_Dn; this.ItemForeColor = GUI_Colors.ColorType.cStep; break;
 

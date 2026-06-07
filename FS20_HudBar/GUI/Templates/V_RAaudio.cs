@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using static dNetBm98.Units;
+using static FSimUtilities.Units;
 
 using FS20_HudBar.GUI.Templates.Base;
 
@@ -14,7 +10,7 @@ namespace FS20_HudBar.GUI.Templates
   /// <summary>
   /// Radio Altitude with audible output
   /// </summary>
-  class V_RAaudio : V_Base
+  internal class V_RAaudio : V_Base
   {
     private Triggers.T_RAcallout m_raCallout;
 

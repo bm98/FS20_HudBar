@@ -7,7 +7,7 @@
     <ProjectGuid>{3B178900-7B9F-4B13-A8C5-08B944C92AC0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>FCamControl</RootNamespace>
-    <AssemblyName>FCamControl</AssemblyName>
+    <AssemblyName>bm98.FCamControl</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -38,7 +38,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\x64\Debug\FCamControl.xml</DocumentationFile>
+    <DocumentationFile>bin\x64\Debug\bm98.FCamControl.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -48,28 +48,9 @@
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <DocumentationFile>bin\x64\Release\FCamControl.xml</DocumentationFile>
+    <DocumentationFile>bin\x64\Release\bm98.FCamControl.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="dNetBm98, Version=1.4.0.6, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Redist\dNetBm98.dll</HintPath>
-    </Reference>
-    <Reference Include="FSimClientIF, Version=0.34.0.40, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Redist\FSimClientIF.dll</HintPath>
-    </Reference>
-    <Reference Include="SettingsLib, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Redist\SettingsLib.dll</HintPath>
-    </Reference>
-    <Reference Include="SimConnectClient, Version=0.35.0.41, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Redist\SimConnectClient.dll</HintPath>
-    </Reference>
-    <Reference Include="SimConnectClientAdapter">
-      <HintPath>..\..\..\Redist\SimConnectClientAdapter.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -209,10 +190,6 @@
     <None Include="background.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bm98_hbFolders\bm98_hbFolders.csproj">
-      <Project>{6c729d4d-fe93-4794-8320-af00c90d016d}</Project>
-      <Name>bm98_hbFolders</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DbgLib\DbgLib.csproj">
       <Project>{45f076ab-787b-434d-a4cd-e6b7d0a423df}</Project>
       <Name>DbgLib</Name>
@@ -322,6 +299,29 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\btClose.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="bm98.dNetBm98">
+      <Version>1.13.0.24</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimClientIF">
+      <Version>4.3.91</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimFS20Folders">
+      <Version>1.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.FSimUtilities">
+      <Version>1.0.0.5</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.SettingsLib">
+      <Version>1.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.SimConnectClient">
+      <Version>4.3.91</Version>
+    </PackageReference>
+    <PackageReference Include="bm98.SimConnectClientAdapter">
+      <Version>2.1.9</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

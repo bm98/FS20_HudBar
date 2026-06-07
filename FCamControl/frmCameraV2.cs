@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-using bm98_hbFolders;
+using FSimFS20Folders;
 
 using SC = SimConnectClient;
 using FSimClientIF;
@@ -40,6 +40,9 @@ namespace FCamControl
     internal static readonly Color c_CtrlUnselFColor = Color.Black; // Ctrl buttons unselected forecolor
     internal static readonly Color c_CtrlUnselFColorDim = Color.Gray; // Ctrl buttons unselected forecolor Dimmed
     internal static readonly Color c_CtrlSelFColor = Color.Black;  // Ctrl buttons selected forecolor
+
+    // FS20 HudBar Folders provider
+    private readonly FS20_Folders _fs20Folders;
 
     private readonly ToolTip _tooltip = new ToolTip( );
 
@@ -147,10 +150,12 @@ namespace FCamControl
       // the first thing to do
       Standalone = standalone;
 
+      _fs20Folders = new FS20_Folders( );
       // Init the Folders Utility with our AppSettings File
-      Folders.InitStorage( "FCamAppSettings.json" );
+      _fs20Folders.InitHudBarStorage( "FCamAppSettings.json" );
 
-      AppSettings.InitInstance( Folders.SettingsFile, instance );
+      AppSettings.InitInstance( _fs20Folders.SettingsFile, instance );
+
       // ---------------
 
       InitializeComponent( );
@@ -302,7 +307,7 @@ namespace FCamControl
       // standalone handling
       if (Standalone) {
         // File Access Check
-        if (DbgLib.Dbg.Instance.AccessCheck( Folders.UserFilePath ) != DbgLib.AccessCheckResult.Success) {
+        if (DbgLib.Dbg.Instance.AccessCheck( _fs20Folders.HudBarUserFilePath ) != DbgLib.AccessCheckResult.Success) {
           string msg = $"MyDocuments Folder Access Check Failed:\n{DbgLib.Dbg.Instance.AccessCheckResult}\n\n{DbgLib.Dbg.Instance.AccessCheckMessage}";
           MessageBox.Show( msg, "Access Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Error );
         }

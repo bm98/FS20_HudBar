@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using dNetBm98;
+using FSimUtilities;
 
 namespace FShelf.Energy
 {
@@ -100,8 +100,8 @@ namespace FShelf.Energy
       _accel_ktPsec = 0;
       _vs_ftPsec = 0;
       if (dT > 0) {
-        _accel_ktPsec = (float)XMath.Clip( dTas / dT, -30, 30 ); // 
-        _vs_ftPsec = (float)XMath.Clip( dAlt / dT, -150, 150 ); // +- 9000fpm should be enough...
+        _accel_ktPsec = (float)Generic.Clip( dTas / dT, -30, 30 ); // 
+        _vs_ftPsec = (float)Generic.Clip( dAlt / dT, -150, 150 ); // +- 9000fpm should be enough...
       }
 
       // Calc Estimates for a defined future
